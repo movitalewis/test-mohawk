@@ -1,0 +1,192 @@
+# ============================================
+# CLOUD BUILD: QA Environment
+# Project: fna-ui-mx-qa-mhk
+# ============================================
+#
+# Usage:
+#   gcloud builds submit --config=cloudbuild-qa.yaml --project=fna-ui-mx-qa-mhk
+#
+# First run: Creates Artifact Registry, deploys Cloud Run, switches Load Balancer
+# Subsequent runs: Just builds and deploys (faster)
+# ============================================
+
+substitutions:
+  _ENV: 'qa'
+  _REGION: 'us-central1'
+  _DEPLOY_PROJECT: 'fna-ui-mx-qa-mhk'
+  _REPO_NAME: 'angular-ssr-repo'
+  _SERVICE_NAME: 'fna-ui-xchange-ssr'
+  _MIN_INSTANCES: '0'
+  _MAX_INSTANCES: '10'
+  _MEMORY: '1Gi'
+  _CPU: '1'
+  _NODE_VERSION: '22'
+
+steps:
+  # Step 1: Create Artifact Registry (skips if exists)
+  - id: 'setup-artifact-registry'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud artifacts repositories describe ${_REPO_NAME} \
+          --location=${_REGION} \
+          --project=${_DEPLOY_PROJECT} 2>/dev/null || \
+        gcloud artifacts repositories create ${_REPO_NAME} \
+          --repository-format=docker \
+          --location=${_REGION} \
+          --project=${_DEPLOY_PROJECT} \
+          --description="Angular SSR Docker images"
+
+  # Step 2: npm install
+  - id: 'npm-install'
+    name: 'node:${_NODE_VERSION}'
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        npm install --legacy-peer-deps
+
+  # Step 3: Build Angular SSR
+  - id: 'npm-build'
+    name: 'node:${_NODE_VERSION}'
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        echo "Building for environment: ${_ENV}"
+        npm run build-${_ENV}:ssr
+    env:
+      - 'NODE_OPTIONS=--max-old-space-size=4096'
+
+  # Step 4: Build Docker image
+  - id: 'build-image'
+    name: 'gcr.io/cloud-builders/docker'
+    args:
+      - build
+      - -t
+      - ${_REGION}-docker.pkg.dev/${_DEPLOY_PROJECT}/${_REPO_NAME}/${_SERVICE_NAME}:${SHORT_SHA}
+      - -t
+      - ${_REGION}-docker.pkg.dev/${_DEPLOY_PROJECT}/${_REPO_NAME}/${_SERVICE_NAME}:latest
+      - -f
+      - Dockerfile.cloudrun
+      - .
+    waitFor: ['npm-build']
+
+  # Step 5: Push image
+  - id: 'push-image'
+    name: 'gcr.io/cloud-builders/docker'
+    args:
+      - push
+      - --all-tags
+      - ${_REGION}-docker.pkg.dev/${_DEPLOY_PROJECT}/${_REPO_NAME}/${_SERVICE_NAME}
+
+  # Step 6: Deploy to Cloud Run
+  - id: 'deploy-cloudrun'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud run deploy ${_SERVICE_NAME} \
+          --image=${_REGION}-docker.pkg.dev/${_DEPLOY_PROJECT}/${_REPO_NAME}/${_SERVICE_NAME}:${SHORT_SHA} \
+          --project=${_DEPLOY_PROJECT} \
+          --region=${_REGION} \
+          --platform=managed \
+          --port=8080 \
+          --memory=${_MEMORY} \
+          --cpu=${_CPU} \
+          --min-instances=${_MIN_INSTANCES} \
+          --max-instances=${_MAX_INSTANCES} \
+          --ingress=all \
+          --allow-unauthenticated \
+          --set-env-vars=NODE_ENV=${_ENV} \
+          --concurrency=80 \
+          --timeout=300s
+
+  # Step 7: Setup Load Balancer (create NEG and switch backend)
+  - id: 'setup-load-balancer'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        echo "Setting up Load Balancer..."
+
+        # Check if Cloud Run NEG exists
+        if gcloud compute network-endpoint-groups describe cloudrun-neg \
+            --region=${_REGION} \
+            --project=${_DEPLOY_PROJECT} 2>/dev/null; then
+          echo "Cloud Run NEG already exists"
+        else
+          echo "Creating Cloud Run NEG..."
+          gcloud compute network-endpoint-groups create cloudrun-neg \
+            --region=${_REGION} \
+            --network-endpoint-type=serverless \
+            --cloud-run-service=${_SERVICE_NAME} \
+            --project=${_DEPLOY_PROJECT}
+        fi
+
+        # Check if backend service has Cloud Run NEG
+        BACKENDS=$(gcloud compute backend-services describe ae-backend-service \
+          --global \
+          --project=${_DEPLOY_PROJECT} \
+          --format="value(backends.group)" 2>/dev/null)
+
+        if echo "$BACKENDS" | grep -q "cloudrun-neg"; then
+          echo "Cloud Run NEG already attached to backend service"
+        else
+          echo "Switching Load Balancer to Cloud Run..."
+
+          # Remove App Engine NEG (if exists)
+          gcloud compute backend-services remove-backend ae-backend-service \
+            --global \
+            --network-endpoint-group=ae-neg \
+            --network-endpoint-group-region=${_REGION} \
+            --project=${_DEPLOY_PROJECT} 2>/dev/null || echo "App Engine NEG not found or already removed"
+
+          # Add Cloud Run NEG
+          gcloud compute backend-services add-backend ae-backend-service \
+            --global \
+            --network-endpoint-group=cloudrun-neg \
+            --network-endpoint-group-region=${_REGION} \
+            --project=${_DEPLOY_PROJECT}
+
+          echo "Load Balancer switched to Cloud Run!"
+        fi
+
+  # Step 8: Output deployment info
+  - id: 'deployment-info'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        echo "============================================"
+        echo "QA Deployment Complete!"
+        echo "Project: ${_DEPLOY_PROJECT}"
+        echo "Environment: ${_ENV}"
+        echo "============================================"
+        echo ""
+        echo "Cloud Run URL:"
+        gcloud run services describe ${_SERVICE_NAME} \
+          --project=${_DEPLOY_PROJECT} \
+          --region=${_REGION} \
+          --format='value(status.url)'
+        echo ""
+        echo "Load Balancer Backend:"
+        gcloud compute backend-services describe ae-backend-service \
+          --global \
+          --project=${_DEPLOY_PROJECT} \
+          --format="value(backends.group)"
+
+images:
+  - ${_REGION}-docker.pkg.dev/${_DEPLOY_PROJECT}/${_REPO_NAME}/${_SERVICE_NAME}:${SHORT_SHA}
+  - ${_REGION}-docker.pkg.dev/${_DEPLOY_PROJECT}/${_REPO_NAME}/${_SERVICE_NAME}:latest
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
+
+timeout: '3600s'

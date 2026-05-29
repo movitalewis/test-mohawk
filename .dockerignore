@@ -1,0 +1,56 @@
+# Dependencies
+# node_modules intentionally NOT excluded — Azure pipeline pre-installs and
+# the runtime Dockerfile copies them in. (Dockerfile.cloudrun does its own
+# install so it's unaffected by this.)
+npm-debug.log
+yarn-error.log
+
+# Build cache (not needed in container)
+.angular
+
+# IDE and editors
+.idea
+.vscode
+*.swp
+*.swo
+
+# Git
+.git
+.gitignore
+
+# Documentation
+*.md
+docs
+
+# Test files
+coverage
+*.spec.ts
+e2e
+karma.conf.js
+protractor.conf.js
+
+# Config files not needed in build
+.editorconfig
+.prettierrc
+.eslintrc*
+tslint.json
+
+# App Engine configs (not needed for Cloud Run)
+app-*.yaml
+dispatch.yaml
+
+# Other Cloud Build configs
+cloudbuild.yaml
+cloudbuild-dev.yaml
+
+# Scripts not needed in container
+*.sh
+
+# Environment files (built into the image via angular.json)
+.env*
+
+# Temp files
+tmp
+temp
+*.tmp
+*.log

@@ -1,0 +1,23 @@
+# Ignore test files
+**/*.spec.ts
+# Ignore auto-generated environments
+src/environments/
+# Ignore configuration files
+angular.json
+tsconfig*.json
+# Ignore build artifacts
+dist/
+# Ignore IDE specific files
+.vscode/
+# Ignore node_modules
+node_modules/
+# Ignore package lock files
+package-lock.json
+# Ignore coverage reports
+coverage/
+# Ignore build artifacts
+build/
+# Ignore log files
+*.log
+# Ignore documentation files
+docs/

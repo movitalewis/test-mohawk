@@ -1,0 +1,14 @@
+runtime: nodejs
+env: flex
+runtime_config:
+  operating_system: "ubuntu22"
+build_env_variables:
+  GOOGLE_NODE_RUN_SCRIPTS: 'build-production:ssr'
+env_variables:
+  port: '4800'
+automatic_scaling:
+  min_num_instances: 1
+  max_num_instances: 7
+resources:
+  cpu: 2
+  memory_gb: 2

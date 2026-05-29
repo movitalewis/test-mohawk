@@ -1,0 +1,38 @@
+steps:
+  # 1. Build Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - build
+      - -t
+      - us-east1-docker.pkg.dev/$PROJECT_ID/angular-ssr-repo/fna-ui-xchange-dev-ssr:$SHORT_SHA
+      - --build-arg
+      - ENV=dev
+      - .
+
+  # 2. Push image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - push
+      - us-east1-docker.pkg.dev/$PROJECT_ID/angular-ssr-repo/fna-ui-xchange-dev-ssr:$SHORT_SHA
+
+  # 3. Deploy to Cloud Run (creates service if not exists, updates if already there)
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - fna-ui-xchange-dev-ssr
+      - --image=us-east1-docker.pkg.dev/$PROJECT_ID/angular-ssr-repo/fna-ui-xchange-dev-ssr:$SHORT_SHA
+      - --region=us-east1
+      - --platform=managed
+      - --port=4000
+      - --allow-unauthenticated
+
+images:
+  - us-east1-docker.pkg.dev/$PROJECT_ID/angular-ssr-repo/fna-ui-xchange-dev-ssr:$SHORT_SHA
+
+# 👇 serviceAccount is top-level, not inside options
+serviceAccount: 'cloud-build-deployer@angular-ssr-build.iam.gserviceaccount.com'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

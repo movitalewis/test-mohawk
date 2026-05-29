@@ -1,0 +1,362 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "analytics": false
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "mohawk-xchange": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "xchange",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/mohawk-xchange/browser",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "tsconfig.app.json",
+            "allowedCommonJsDependencies": [
+              "rxjs-compat",
+              "html2canvas"
+            ],
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              "src/manifest.webmanifest"
+            ],
+            "styles": [
+              "src/styles.scss",
+              "node_modules/ngx-spinner/animations/ball-clip-rotate.css"
+            ],
+            "scripts": [],
+            "serviceWorker": false,
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "index": {
+                "input": "src/index.prod.html",
+                "output": "index.html"
+              },
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "8mb",
+                  "maximumError": "10mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "8mb",
+                  "maximumError": "10mb"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "serviceWorker": false
+            },
+            "dev": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev.ts"
+                }
+              ],
+              "index": {
+                "input": "src/index.html",
+                "output": "index.html"
+              },
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "serviceWorker": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "8mb",
+                  "maximumError": "10mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "8mb",
+                  "maximumError": "10mb"
+                }
+              ]
+            },
+            "staging": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.staging.ts"
+                }
+              ],
+              "index": {
+                "input": "src/index.staging.html",
+                "output": "index.html"
+              },
+              "optimization": {"styles": {"inlineCritical": false}},
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "serviceWorker": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "8mb",
+                  "maximumError": "10mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "8mb",
+                  "maximumError": "10mb"
+                }
+              ]
+            },
+            "qa": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.qa.ts"
+                }
+              ],
+              "index": {
+                "input": "src/index.staging.html",
+                "output": "index.html"
+              },
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "serviceWorker": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "8mb",
+                  "maximumError": "10mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "8mb",
+                  "maximumError": "10mb"
+                }
+              ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "disableHostCheck": false,
+              "buildTarget": "mohawk-xchange:build:production"
+            },
+            "staging": {
+              "buildTarget": "mohawk-xchange:build:staging"
+            },
+            "qa": {
+              "buildTarget": "mohawk-xchange:build:staging"
+            },
+            "dev": {
+              "buildTarget": "mohawk-xchange:build:dev"
+            },
+            "development": {
+              "buildTarget": "mohawk-xchange:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "buildTarget": "mohawk-xchange:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "src/test.ts",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              "src/manifest.webmanifest"
+            ],
+            "styles": ["src/styles.scss"],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "e2e/protractor.conf.js",
+            "devServerTarget": "mohawk-xchange:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "mohawk-xchange:serve:production"
+            },
+            "staging": {
+              "devServerTarget": "mohawk-xchange:serve:staging"
+            },
+            "qa": {
+              "devServerTarget": "mohawk-xchange:serve:staging"
+            },
+            "dev": {
+              "devServerTarget": "mohawk-xchange:serve:dev"
+            }
+          }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/mohawk-xchange/server",
+            "main": "server.ts",
+            "tsConfig": "tsconfig.server.json",
+            "sourceMap": true,
+            "optimization": false
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "sourceMap": false,
+              "optimization": true
+            },
+            "staging": {
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.staging.ts"
+                }
+              ],
+              "sourceMap": false,
+              "optimization": true
+            },
+            "qa": {
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.qa.ts"
+                }
+              ],
+              "sourceMap": false,
+              "optimization": true
+            },
+            "dev": {
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev.ts"
+                }
+              ],
+              "sourceMap": false,
+              "optimization": true
+            }
+          }
+        },
+        "serve-ssr": {
+          "builder": "@angular-devkit/build-angular:ssr-dev-server",
+          "options": {
+            "browserTarget": "mohawk-xchange:build",
+            "serverTarget": "mohawk-xchange:server"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "mohawk-xchange:build:production",
+              "serverTarget": "mohawk-xchange:server:production"
+            },
+            "staging": {
+              "browserTarget": "mohawk-xchange:build:staging",
+              "serverTarget": "mohawk-xchange:server:staging"
+            },
+            "qa": {
+              "browserTarget": "mohawk-xchange:build:staging",
+              "serverTarget": "mohawk-xchange:server:staging"
+            },
+            "dev": {
+              "browserTarget": "mohawk-xchange:build:dev",
+              "serverTarget": "mohawk-xchange:server:dev"
+            }
+          }
+        },
+        "prerender": {
+          "builder": "@angular-devkit/build-angular:prerender",
+          "options": {
+            "buildTarget": "mohawk-xchange:build:production",
+            "serverTarget": "mohawk-xchange:server:production",
+            "routes": ["/"]
+          },
+          "configurations": {
+            "production": {}
+          }
+        }
+      }
+    }
+  }
+}

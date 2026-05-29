@@ -1,0 +1,28 @@
+# ============================================
+# RUNTIME-ONLY DOCKERFILE FOR CLOUD RUN
+# Build happens in Cloud Build, this just runs the app
+# Image size: ~150MB (vs 1GB+ with full build)
+# ============================================
+
+FROM node:22-alpine
+
+WORKDIR /app
+
+# Install only runtime dependencies
+RUN npm init -y && npm install express compression --omit=dev
+
+# Copy pre-built application from Cloud Build
+COPY dist ./dist
+
+# Non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 angular && \
+    chown -R angular:nodejs /app
+
+USER angular
+
+# Cloud Run injects PORT env variable
+ENV PORT=8080
+EXPOSE 8080
+
+CMD ["node", "dist/mohawk-xchange/server/main.js"]

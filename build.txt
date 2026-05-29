@@ -1,0 +1,158 @@
+
+> mohawk-xchange@0.0.0 build-staging:ssr /Users/e199398/Documents/projects/Xchange/xchange-frontend
+> ng build --configuration=staging && ng run mohawk-xchange:server:staging
+
+
+Initial Chunk Files           | Names                                                                      |  Raw Size | Estimated Transfer Size
+main.4214a9cb99a5490a.js      | main                                                                       |   1.37 MB |               294.64 kB
+styles.dc398d43ac39e963.css   | styles                                                                     | 257.95 kB |                29.38 kB
+polyfills.3aa8f4a68d3719f1.js | polyfills                                                                  |  33.09 kB |                10.67 kB
+runtime.8814ce92edf133c2.js   | runtime                                                                    |   5.03 kB |                 2.40 kB
+
+| Initial Total                                                              |   1.66 MB |               337.10 kB
+
+Lazy Chunk Files              | Names                                                                      |  Raw Size | Estimated Transfer Size
+2330.ba581f4ac7ec4b52.js      | pricing-pricing-module                                                     |   1.15 MB |               230.38 kB
+8992.f405a601d4902368.js      | claims-claims-module                                                       | 828.21 kB |                58.18 kB
+1298.d0f529866133ecb3.js      | claims-claims-module                                                       | 828.16 kB |                58.29 kB
+8170.80b12f9f687c13a7.js      | orders-orders-module                                                       | 359.88 kB |                49.31 kB
+3583.5b9828428c458275.js      | orders-orders-module                                                       | 341.57 kB |                94.09 kB
+4990.1d2598bc094753f2.js      | orders-orders-module                                                       | 339.63 kB |                46.27 kB
+9565.aec81ccd19fb0785.js      | quotes-quote-module                                                        | 311.02 kB |                47.79 kB
+3106.f239527ed0aaad17.js      | post-modification-products-post-modification-products-module               | 221.16 kB |                36.31 kB
+814.dd49034afad1f744.js       | post-modification-products-post-modification-products-module               | 217.96 kB |                35.75 kB
+2778.bba659541dab8421.js      | cart-cart-module                                                           | 215.83 kB |                33.09 kB
+7596.4a48bb0f81c51f86.js      | cart-cart-module                                                           | 212.23 kB |                32.36 kB
+4930.0c71ce430616a89d.js      | products-products-module                                                   | 206.63 kB |                36.15 kB
+8778.b3505e2d08fc4ca6.js      | products-products-module                                                   | 203.45 kB |                35.64 kB
+4159.4b4be34ee6dc3660.js      | orders-orders-module                                                       | 195.43 kB |                36.70 kB
+6858.c663e1a892365a23.js      | products-products-module                                                   | 191.31 kB |                29.39 kB
+9522.a71f246d17bd2ac1.js      | payments-payments-module                                                   | 180.40 kB |                23.10 kB
+4789.d09e7a27869acc68.js      | payments-payments-module                                                   | 167.11 kB |                21.74 kB
+6489.ab561dc5830bb091.js      | canvg                                                                      | 151.09 kB |                43.43 kB
+1912.b590dbcfada991a4.js      | company-company-module                                                     | 148.43 kB |                18.36 kB
+9700.bf6190329786ff6c.js      | company-company-module                                                     | 148.01 kB |                18.40 kB
+3057.4135be61b3ae90a3.js      | clone-orders-clone-orders-module                                           | 131.12 kB |                19.58 kB
+68.c91beba745713a99.js        | pricing-pricing-module                                                     |  68.88 kB |                17.78 kB
+6748.cdfa6f7c81ecd9c5.js      | my-profile-my-profile-module                                               |  67.27 kB |                 9.73 kB
+6799.aa5cf728396e0cf7.js      | my-profile-my-profile-module                                               |  67.07 kB |                 9.71 kB
+9821.cf96d0d66ca270c1.js      | bank-bank-module                                                           |  65.90 kB |                10.87 kB
+6562.91c84a65974a7545.js      | bank-bank-module                                                           |  65.86 kB |                10.93 kB
+8032.6a2d5b846132045b.js      | pricing-pricing-module                                                     |  65.66 kB |                17.54 kB
+2150.95f9a2fcd586e763.js      | account-account-module                                                     |  59.47 kB |                11.18 kB
+3380.81fda99d76fa2830.js      | account-account-module                                                     |  59.47 kB |                11.14 kB
+3315.361c13377d945353.js      | payments-payments-module                                                   |  56.77 kB |                 9.71 kB
+9002.89f51a99a3dc79de.js      | products-products-module                                                   |  54.26 kB |                 3.83 kB
+859.2449a2f1212e16f5.js       | budget-budget-module                                                       |  53.37 kB |                 8.00 kB
+4865.84cf70639319f3ba.js      | products-products-module                                                   |  51.82 kB |                 9.42 kB
+9943.44c05325c0b83798.js      | orders-orders-module                                                       |  50.92 kB |                 9.37 kB
+8579.e503f8255a48ff56.js      | products-products-module                                                   |  50.39 kB |                10.33 kB
+5131.56b544001c725d72.js      | budget-budget-module                                                       |  48.34 kB |                 7.52 kB
+2168.ab6d209548cd2a9e.js      | orders-orders-module                                                       |  46.39 kB |                 9.56 kB
+4162.124297fe5aed808d.js      | clone-orders-clone-orders-module                                           |  45.53 kB |                 9.31 kB
+6616.4fec06e5da61c381.js      | home-home-module                                                           |  45.18 kB |                 8.97 kB
+4751.56b37f9a6bfe2311.js      | home-home-module                                                           |  42.01 kB |                 8.28 kB
+4606.e86101df781dd760.js      | cart-cart-module                                                           |  41.38 kB |                 6.93 kB
+common.ee5a593acabbd264.js    | common                                                                     |  31.96 kB |                 6.14 kB
+5309.ecaab9776d7f83a8.js      | orders-orders-module                                                       |  31.09 kB |                 7.09 kB
+7843.4742b96174f67545.js      | orders-orders-module                                                       |  30.95 kB |                 7.08 kB
+4319.6ec35cc9d3a76c0c.js      | orders-orders-module                                                       |  30.41 kB |                 6.06 kB
+4454.c4fb597d2d42c9de.js      | special-goods-special-goods-module                                         |  30.00 kB |                 6.25 kB
+4565.edf828bd764e80a7.js      | features-documentation-documentation-module                                |  28.12 kB |                 6.81 kB
+3084.0c41fd24f703e709.js      | clone-orders-clone-orders-module                                           |  23.90 kB |                 6.25 kB
+2735.a431aac5c577d593.js      | dompurify                                                                  |  20.98 kB |                 7.43 kB
+1646.803f932466d5098d.js      | entitlement-manager-entitlement-manager-module                             |  20.10 kB |                 4.87 kB
+9080.c6c4a23dbc675297.js      | entitlement-manager-entitlement-manager-module                             |  19.39 kB |                 4.77 kB
+9346.6a1c304f431e979f.js      | invoices-invoices-module                                                   |  19.29 kB |                 5.22 kB
+2697.a80ad59770afe978.js      | invoices-invoices-module                                                   |  19.19 kB |                 5.20 kB
+6094.c9e1d32824bb1b52.js      | company-company-module                                                     |  18.93 kB |                 3.73 kB
+9005.e9d809e09ae33e12.js      | products-products-module                                                   |  17.68 kB |                 4.38 kB
+7654.0ea79031145ca654.js      | clone-orders-clone-orders-module                                           |  15.84 kB |                 4.50 kB
+7093.727bdad73cd7a68b.js      | orders-orders-module                                                       |  14.78 kB |                 3.26 kB
+5945.caae818c9ca3fbcb.js      | orders-orders-module                                                       |  13.47 kB |                 2.54 kB
+1335.877834b180da9e78.js      | orders-orders-module                                                       |  13.40 kB |                 2.41 kB
+2211.74e251515ec9d213.js      | products-products-module                                                   |  13.37 kB |                 2.50 kB
+609.2aa5413f6cb5b511.js       | quotes-quote-module                                                        |  12.05 kB |                 2.77 kB
+4398.40a9e4d856b32202.js      | home-home-module                                                           |  11.29 kB |                 3.06 kB
+5330.f4f15374515162f8.js      | orders-orders-module                                                       |  11.22 kB |                 3.00 kB
+4764.09a04aaf8eb131ab.js      | orders-orders-module                                                       |  11.07 kB |                 3.01 kB
+3933.7eec764c98f17336.js      | home-home-module                                                           |  10.87 kB |                 2.08 kB
+8754.071e7147060d8de7.js      | search-search-module                                                       |   9.10 kB |                 2.58 kB
+6023.a9eaa36c82f2c560.js      | search-search-module                                                       |   9.06 kB |                 2.59 kB
+3902.9642a827c33a8ba0.js      | post-modification-product-catalog-post-modification-product-catalog-module |   6.39 kB |                 1.73 kB
+5265.01967635716cb45d.js      | clone-order-clone-order-module                                             |   5.91 kB |                 1.86 kB
+7516.02c76aee3711397d.js      | features-commercial-commercial-module                                      |   3.99 kB |               868 bytes
+8539.f2fda65e1e908b65.js      | contact-us-contact-us-module                                               |   3.60 kB |                 1.37 kB
+2065.0a6783cc0f60b0a1.js      | contact-us-contact-us-module                                               |   3.58 kB |                 1.38 kB
+3112.dcd774989ab6df74.js      | features-residential-residential-module                                    |   3.55 kB |               862 bytes
+2667.362dd4ed6b26fe3c.js      | post-modification-product-catalog-post-modification-product-catalog-module |   1.83 kB |               837 bytes
+1715.344f12885e7a6847.js      | finance-finance-module                                                     | 983 bytes |               369 bytes
+4957.f45d1e68442cf728.js      | post-modification-post-modification-module                                 | 911 bytes |               419 bytes
+7120.df4a41c317244fc4.js      | post-modification-post-modification-module                                 | 909 bytes |               417 bytes
+5142.174e11692bc31764.js      | finance-finance-module                                                     | 866 bytes |               369 bytes
+1348.4272f6568140aa17.js      | sales-person-dashboard-sales-person-dashboard-module                       | 862 bytes |               424 bytes
+5824.9262efc68b705ab0.js      | sales-person-dashboard-sales-person-dashboard-module                       | 862 bytes |               425 bytes
+
+Build at: 2024-05-06T17:52:19.289Z - Hash: 7c6fffcfec28ad85 - Time: 119897ms
+
+Initial Chunk Files | Names                                                                      |  Raw Size
+main.js             | main                                                                       |   5.27 MB |
+
+| Initial Total                                                              |   5.27 MB
+
+Lazy Chunk Files    | Names                                                                      |  Raw Size
+4930.js             | products-products-module                                                   |   2.33 MB |
+68.js               | pricing-pricing-module                                                     |   2.09 MB |
+8032.js             | pricing-pricing-module                                                     |   2.09 MB |
+8778.js             | products-products-module                                                   |   1.82 MB |
+4990.js             | orders-orders-module                                                       |   1.57 MB |
+8170.js             | orders-orders-module                                                       |   1.41 MB |
+7596.js             | cart-cart-module                                                           |   1.41 MB |
+2778.js             | cart-cart-module                                                           |   1.40 MB |
+3106.js             | post-modification-products-post-modification-products-module               |   1.38 MB |
+814.js              | post-modification-products-post-modification-products-module               |   1.37 MB |
+9565.js             | quotes-quote-module                                                        |   1.32 MB |
+1298.js             | claims-claims-module                                                       |   1.24 MB |
+8992.js             | claims-claims-module                                                       |   1.24 MB |
+7654.js             | clone-orders-clone-orders-module                                           | 814.84 kB |
+1395.js             | clone-orders-clone-orders-module                                           | 802.84 kB |
+9522.js             | payments-payments-module                                                   | 346.94 kB |
+4789.js             | payments-payments-module                                                   | 333.50 kB |
+105.js              | html2canvas                                                                | 265.21 kB |
+2566.js             | canvg                                                                      | 249.31 kB |
+1912.js             | company-company-module                                                     | 229.05 kB |
+9700.js             | company-company-module                                                     | 228.54 kB |
+3380.js             | account-account-module                                                     | 119.57 kB |
+2150.js             | account-account-module                                                     | 119.23 kB |
+6616.js             | home-home-module                                                           | 115.08 kB |
+4751.js             | home-home-module                                                           | 112.34 kB |
+9821.js             | bank-bank-module                                                           | 100.75 kB |
+6562.js             | bank-bank-module                                                           | 100.18 kB |
+6748.js             | my-profile-my-profile-module                                               |  91.85 kB |
+6799.js             | my-profile-my-profile-module                                               |  91.61 kB |
+859.js              | budget-budget-module                                                       |  83.91 kB |
+5131.js             | budget-budget-module                                                       |  75.39 kB |
+4454.js             | special-goods-special-goods-module                                         |  44.34 kB |
+3902.js             | post-modification-product-catalog-post-modification-product-catalog-module |  41.72 kB |
+2667.js             | post-modification-product-catalog-post-modification-product-catalog-module |  36.57 kB |
+4565.js             | features-documentation-documentation-module                                |  36.28 kB |
+6336.js             | dompurify                                                                  |  34.56 kB |
+1646.js             | entitlement-manager-entitlement-manager-module                             |  33.56 kB |
+9346.js             | invoices-invoices-module                                                   |  32.22 kB |
+2697.js             | invoices-invoices-module                                                   |  32.04 kB |
+9080.js             | entitlement-manager-entitlement-manager-module                             |  31.71 kB |
+8754.js             | search-search-module                                                       |  15.37 kB |
+6023.js             | search-search-module                                                       |  15.33 kB |
+7516.js             | features-commercial-commercial-module                                      |  14.95 kB |
+3112.js             | features-residential-residential-module                                    |  14.33 kB |
+5265.js             | clone-order-clone-order-module                                             |  11.21 kB |
+8539.js             | contact-us-contact-us-module                                               |   7.60 kB |
+2065.js             | contact-us-contact-us-module                                               |   7.58 kB |
+1348.js             | sales-person-dashboard-sales-person-dashboard-module                       |   2.24 kB |
+5824.js             | sales-person-dashboard-sales-person-dashboard-module                       |   2.24 kB |
+1715.js             | finance-finance-module                                                     |   1.73 kB |
+4957.js             | post-modification-post-modification-module                                 |   1.65 kB |
+7120.js             | post-modification-post-modification-module                                 |   1.65 kB |
+5142.js             | finance-finance-module                                                     |   1.59 kB |
+
+Build at: 2024-05-06T17:54:19.660Z - Hash: 881d55b3ac151570 - Time: 118178ms

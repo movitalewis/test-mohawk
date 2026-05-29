@@ -1,0 +1,48 @@
+steps:
+  - name: gcr.io/cloud-builders/git
+    args:
+      - checkout
+      - $REVISION_ID
+    id: Checkout Commit
+  
+  - name: "ubuntu"
+    args: ["bash", "-c", "ls"]
+
+  - name: 'node:$_NODE_VERSION'
+    id: NPM Install
+    args:
+      - install
+      - '--legacy-peer-deps'
+    entrypoint: npm
+
+  - name: 'node:$_NODE_VERSION'
+    id: NPM Build
+    args:
+      - run 
+      - $_NPM_RUN_COMMAND
+    entrypoint: npm
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args: ['-c', 'gcloud config set app/cloud_build_timeout 4200 && gcloud app deploy --appyaml=$_DEPLOY_DESCRIPTOR --project=$_DEPLOY_PROJECT' ]
+    timeout: '4200s'
+    
+  - name: gcr.io/cloud-builders/gcloud
+    id: Load Balancer set up
+    args:
+      - applbsetup.sh
+      - $_DEPLOY_PROJECT
+    entrypoint: bash
+
+  - name: gcr.io/cloud-builders/gcloud
+    id: Cleaning up older versions
+    args:
+      - appremoveolderversions.sh
+      - $_DEPLOY_PROJECT
+    entrypoint: bash
+
+timeout: 7200s
+logsBucket: 'gs://bootstrap-cbuild-mhk_cloudbuild'
+
+options:
+  machineType: E2_HIGHCPU_32

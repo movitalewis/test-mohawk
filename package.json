@@ -1,0 +1,107 @@
+{
+  "name": "mohawk-xchange",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "node dist/mohawk-xchange/server/main.js",
+    "start-local": "node --max-old-space-size=8192 ./node_modules/@angular/cli/bin/ng serve --port 4200 --open",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration dev",
+    "test": "ng test",
+    "build-dev": "ng build --configuration=dev",
+    "build-staging": "ng build --configuration=staging",
+    "build-production": "ng build --configuration=production",
+    "lint": "ng lint",
+    "lint:prettier": "prettier \"src/**/*.ts\"  --check",
+    "format:prettier": "prettier \"src/**/*.ts\" --write",
+    "e2e": "ng e2e",
+    "dev:ssr": "ng run mohawk-xchange:serve-ssr --port 4200",
+    "build:ssr": "ng build --configuration=production && ng run mohawk-xchange:server:production",
+    "build-dev:ssr": "ng build --configuration=dev && ng run mohawk-xchange:server:dev",
+    "build-staging:ssr": "ng build --configuration=staging && ng run mohawk-xchange:server:staging",
+    "build-qa:ssr": "ng build --configuration=staging && ng run mohawk-xchange:server:staging",
+    "build-production:ssr": "node --max-old-space-size=8192 ./node_modules/@angular/cli/bin/ng build --configuration=production && node --max-old-space-size=8192 ./node_modules/@angular/cli/bin/ng run mohawk-xchange:server:production",
+    "serve:ssr": "node dist/mohawk-xchange/server/main.js",
+    "prerender": "ng run mohawk-xchange:prerender",
+    "prepare": "husky install",
+    "gzipcompress": "gulp compress"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^21.0.0",
+    "@angular/cdk": "^21.0.0",
+    "@angular/common": "^21.0.0",
+    "@angular/compiler": "^21.0.0",
+    "@angular/core": "^21.0.0",
+    "@angular/forms": "^21.0.0",
+    "@angular/material": "^21.0.0",
+    "@angular/platform-browser": "^21.0.0",
+    "@angular/platform-browser-dynamic": "^21.0.0",
+    "@angular/platform-server": "^21.0.0",
+    "@angular/router": "^21.0.0",
+    "@angular/service-worker": "^21.0.0",
+    "@fortawesome/angular-fontawesome": "^4.0.0",
+    "@fortawesome/fontawesome-svg-core": "^6.1.2",
+    "@fortawesome/free-solid-svg-icons": "^6.1.2",
+    "@ng-select/ng-select": "^21.0.0",
+    "@angular/ssr": "^21.0.0",
+    "@solidexpert/ng-sidebar": "^20.0.0",
+    "agent-base": "^7.1.4",
+    "bootstrap": "^5.2.0",
+    "bootstrap-icons": "^1.9.1",
+    "exceljs": "^4.3.0",
+    "html2canvas": "^1.4.1",
+    "husky": "^8.0.2",
+    "idb-keyval": "^6.2.0",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.5.28",
+    "ngx-bootstrap": "^21.0.0",
+    "ngx-bootstrap-navbar": "^14.0.0",
+    "ngx-easy-table": "^15.7.0",
+    "ngx-owl-carousel-o": "^21.0.0",
+    "ngx-pagination": "^6.0.3",
+    "ngx-spinner": "^21.0.0",
+    "pdf-lib": "^1.17.1",
+    "powerbi-client": "^2.23.1",
+    "powerbi-client-angular": "^6.0.3",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^21.0.0",
+    "@angular-devkit/core": "^21.0.0",
+    "@angular-devkit/schematics": "^21.0.0",
+    "@angular/cli": "^21.0.0",
+    "@angular/compiler-cli": "^21.0.0",
+    "@schematics/angular": "^21.0.0",
+    "@types/file-saver": "^2.0.5",
+    "@types/jasmine": "~4.0.0",
+    "gulp": "^3.9.1",
+    "gulp-gzip": "^1.4.2",
+    "gulp-minify": "^3.0.0",
+    "jasmine-core": "~4.2.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.0.0",
+    "typescript": "~5.9.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.+(ts)": [
+      "eslint"
+    ],
+    "*.+(ts|json|css|md)": [
+      "prettier --write"
+    ]
+  },
+  "engines": {
+    "node": ">=12 <=22.x"
+  }
+}
