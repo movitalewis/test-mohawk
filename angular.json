@@ -243,27 +243,6 @@
             "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "mohawk-xchange:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "mohawk-xchange:serve:production"
-            },
-            "staging": {
-              "devServerTarget": "mohawk-xchange:serve:staging"
-            },
-            "qa": {
-              "devServerTarget": "mohawk-xchange:serve:staging"
-            },
-            "dev": {
-              "devServerTarget": "mohawk-xchange:serve:dev"
-            }
-          }
-        },
         "server": {
           "builder": "@angular-devkit/build-angular:server",
           "options": {
