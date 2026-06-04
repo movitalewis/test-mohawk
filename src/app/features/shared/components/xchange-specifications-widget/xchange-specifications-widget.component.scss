@@ -1,0 +1,31 @@
+@import '/src/styles/colors';
+:host{
+    display: block;
+    width: 100%;
+}
+
+.specifications-table{
+        border: 1px solid $color-gray-b7;
+        width: 100%; 
+        table-layout: fixed;
+
+        tr{
+            th, td{
+                padding: 10px 20px;
+                border-bottom: 1px solid $color-gray-b7;
+                font-size: 16px;
+                width: 50%;
+                word-wrap: break-word;
+            }
+            th{
+                background: $color-light-gray;
+                font-weight: 500;
+            }
+            td.salesMaterial{
+                color: $color-red;
+                &:hover{
+                    cursor: pointer;
+                }
+            }
+        }
+}

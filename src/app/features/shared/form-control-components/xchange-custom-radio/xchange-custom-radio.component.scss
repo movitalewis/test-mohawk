@@ -1,0 +1,79 @@
+@import "src/styles/colors";
+
+.xchange-checkbox {
+  display: inline-block;
+  margin-right: 15px;
+
+  &.strong-600 {
+    .xchange-checkbox-label {
+      font-weight: 600;
+    }
+  }
+
+  &.strong-500 {
+    .xchange-checkbox-label {
+      font-weight: 500;
+    }
+  }
+
+  .xchange-checkbox-input {
+    display: none;
+
+    &:checked + .xchange-checkbox-label {
+      &::before {
+        background-color: $color-dark-gray;
+        border-color: $color-dark-gray;
+        content: "";
+        color: $color-white;
+        text-align: center;
+        line-height: 20px;
+        font-size: 22px;
+        font-weight: 700;
+        background: url("/assets/images/icons/checkbox.svg");
+        background-size: 110%;
+        background-position: -0.5px;
+      }
+    }
+  }
+
+  .xchange-checkbox-label {
+    display: block;
+    position: relative;
+    padding-left: 27px;
+    min-height: 20px;
+    cursor: pointer;
+
+    &::before {
+      content: "";
+      width: 20px;
+      height: 20px;
+      border: 1px solid $color-gray;
+      display: inline-block;
+      position: absolute;
+      left: 0;
+      top: 2px;
+      border-radius: 100%;
+    }
+
+    &.checkdisable {
+      &::before {
+        cursor: not-allowed;
+        background-color: #b1b1b1;
+      }
+    }
+    &.isInvalid {
+      &::before {
+        border-color: $color-red;
+      }
+    }
+    &.right-control {
+      padding-right: 27px;
+      padding-left: 0;
+
+      &::before {
+        right: 0;
+        left: auto;
+      }
+    }
+  }
+}

@@ -1,0 +1,196 @@
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <h2 class="text-center mb-4">Manage Users</h2>
+
+  <div class="mb-4" *ngIf="visible">
+    <alert type="info" class="dashboard-page-alert" [dismissible]="true">
+      <div class="container">
+        {{ alertBox }}
+      </div>
+    </alert>
+  </div>
+  <div class="_card-container">
+    <form [formGroup]="permissionsFilterForm">
+      <div class="row">
+        <h4>User Permission</h4>
+        <div class="col-md-3 col-sm-6">
+          <ng-select
+            formControlName="permission"
+            placeholder="All Usergroups"
+            class="mb-3"
+          >
+            <ng-option
+              *ngFor="let group of userAuthorizationGroups"
+              [value]="group.id"
+              >{{ group.name }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-3 col-sm-6" *ngIf="permissionsFilterForm.controls['permission'].value !== null">
+          <ng-select
+            placeholder="All"
+            class="mb-3"
+            formControlName="children"
+            [hidden]="
+              permissionsFilterForm.controls['permission'].value == null
+            "
+            (change)="onChangeUserPermission($event)"
+          >
+            <ng-option
+              *ngFor="let option of permissionOptions"
+              [value]="option.value"
+              >{{ option.name }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <button
+            class="btn btn-secondary restore-btn"
+            (click)="onRestoreList()"
+          >
+            RESTORE/SHOW ALL
+          </button>
+        </div>
+      </div>
+    </form>
+    <div class="row">
+      <div class="col-md-3 col-sm-6">
+        <h4>Status</h4>
+        <ng-select
+          placeholder="All"
+          class="mb-3"
+          [(ngModel)]="status"
+          (change)="onChangeStatus($event)"
+          [clearable]="false"
+        >
+          <ng-option [value]="'all'">All</ng-option>
+          <ng-option [value]="'active'">Active</ng-option>
+          <ng-option [value]="'inactive'">Inactive</ng-option>
+        </ng-select>
+      </div>
+      <div class="col-md-4 col-lg-4 d-grid align-items-end mb-3">
+        <xchange-search-control
+          placeholder="Search Name"
+          [isGlobalSearchEnabled]="false"
+          (sendValue)="onChange($event)"
+          [searchKey]="searchText"
+        ></xchange-search-control>
+      </div>
+      <div class="col-md-2 col-lg-2 d-grid align-items-end mb-3 userqty">
+        <h3 class="">{{ totalResults }} Users</h3>
+      </div>
+      <div
+        class="col-md-3 col-lg-3 d-grid align-items-end mb-3"
+        *ngIf="!isSalesPerson &&  !storageService?.userInfo?.isMtMarketing"
+      >
+        <button
+          class="btn btn-primary w-100"
+          routerLink="/residential/company/add-new-user"
+        >
+          ADD NEW USER
+        </button>
+      </div>
+    </div>
+    <div class="margin-top" >
+      <ngx-table
+        #table
+        [configuration]="configuration1"
+        [data]="
+          data
+            | paginate
+              : {
+                  id: 'pg1',
+                  itemsPerPage: tableItemsSize,
+                  currentPage: pageIndex,
+                  totalItems: this.totalResults
+                }
+        "
+        [columns]="columns1"
+        class="margin-top"
+        (event)="onsort($event)"
+      >
+      <!-- (click)="sorting('name')" -->
+        <ng-template let-row>
+          <td>
+            <a routerLink="/residential/company/manage-users/{{ row?.uid }}">{{
+              row?.name
+            }}</a>
+          </td>
+          <td class="email-col">
+            <div class="d-flex flex-column">
+              <p [class.m-0]="row?.payBillPendingApproval">
+                {{ row?.uid }}
+                <img [src]="invoiceDollar.src" [alt]="invoiceDollar.alt" *ngIf="row?.payBillSignup" class="invoice-dollar"/>
+              </p>
+              <p *ngIf="row?.payBillPendingApproval" class="paybill-Approval-status m-0">Pending Approval</p>
+            </div>
+          </td>
+          <td>
+            <p>{{ row?.primaryRole }}</p>
+          </td>
+          <td>
+            <p>{{ row?.active ? "Active" : "Inactive" }}</p>
+          </td>
+          <!-- <td>
+            <a
+              class="cursor-pointer"
+              (click)="onSelect(row?.uid, row?.active)"
+              (click)="removeDoumentModal(template3)"
+              >{{ row?.active ? "Disable" : "Enable" }}</a
+            >
+          </td> -->
+        </ng-template>
+      </ngx-table>
+      <div class="row mb-4 mt-4" *ngIf="totalResults > 0">
+        <div class="d-flex justify-content-center mx-auto">
+          <pagination-controls
+            id="pg1"
+            [maxSize]="5"
+            [responsive]="true"
+            [nextLabel]="''"
+            [previousLabel]="''"
+            (pageChange)="onTableDataChange($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div class="col-md-12">
+          <p class="text-center">
+            {{ totalResults > 0 ? startValue : 0 }} -
+            {{ lastValue > totalResults ? totalResults : lastValue }}
+            OF {{ totalResults > 0 ? totalResults : 0 }} USERS
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Remove Document Popup -->
+<ng-template #template3>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w w-100">{{ userStatus }} User</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef!.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>
+        Are you sure you want to {{ userStatus }} this user? {{ userEmail }}
+      </p>
+      <div class="mt-4 mb-4">
+        <button class="btn btn-primary disable-user" (click)="deleteUser()">
+          {{ userStatus }} User
+        </button>
+        <button class="btn btn-outline-secondary" (click)="modalRef!.hide()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,405 @@
+<app-loader *ngIf="spinnerLoading"></app-loader>
+<div class="container" id="scrollTop">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <app-alerts
+    [alertData]="alertData"
+    [alertType]="alertType"
+    *ngIf="alertTrigger"
+  ></app-alerts>
+  <div class="row align-items-center">
+    <div class="col-12 col-sm-3 mb-1 text-start" (click)="navigateToBack()">
+      <xchange-icon-button
+        icon="back"
+        [label]="claimsService.selectedInvoiceLines?.isFromClaimHistory ? 'Back To Details':'Back To Claims'"
+      ></xchange-icon-button>
+    </div>
+    <div class="col-12 col-sm-6 mb-1 text-center">
+      <h2 class="mb-0 h2-title"><span *ngIf="!claimsService.selectedInvoiceLines?.claimData">New Claim</span> <span *ngIf="claimsService.selectedInvoiceLines?.claimData">Edit Claim <span *ngIf="claimsService.selectedInvoiceLines?.claimData?.claimStatus !== 'Draft'" class="clr-red">{{claimsService.selectedInvoiceLines?.claimNumber}}</span></span> – Pricing Billing Error</h2>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <form [formGroup]="newClaimForm">
+      <div class="_card-container">
+        <div>
+          <div>
+            <span class="clr-red">Step 1: </span>Select Invoice(s) for this
+            Claim
+          </div>
+          <commercial-invoice-search
+            #invoiceSearchRef
+            [claimColumns]="columns"
+            (commentsChanged)="commentsChanged()"
+          ></commercial-invoice-search>
+          <hr />
+        </div>
+        <div *ngIf="this.claimsService.selectedInvoiceLines.line?.length > 0">
+          <div class="mb-4">
+            <span class="clr-red">Step 2: </span>Enter Claim Details
+          </div>
+          <!-- Dealer Information -->
+          <div class="mt-4 mx-2">
+            <div class="row pt-2 pb-2 info-header">
+              <div
+                class="col-md-11 col-md-11 d-flex justify-content-between align-items-center"
+              >
+                <b>Dealer Information</b>
+                <span *ngIf="dealerFlag" class="status-complete">COMPLETE</span>
+                <span *ngIf="!dealerFlag" class="status-incomplete"
+                  >INCOMPLETE</span
+                >
+              </div>
+              <div class="col-md-1">
+                <button
+                  class="btn btn1 text-center"
+                  [attr.aria-expanded]="!dealerBtn"
+                  (click)="openAccordion('dealer')"
+                  aria-controls="collapseBasic"
+                >
+                  <h6 *ngIf="dealerBtn" class="d-flex justify-content-center">
+                    <span class="mohawak-icon angle-left-icon up-icon"></span>
+                  </h6>
+                  <h6 *ngIf="!dealerBtn" class="d-flex justify-content-center">
+                    <span class="mohawak-icon angle-left-icon down-icon"></span>
+                  </h6>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            class="mt-2 acco-content"
+            id="dealerBtn"
+            [collapse]="!dealerBtn"
+            [isAnimated]="true"
+          >
+            <div class="row">
+              <div class="col-md-6 mb-2">
+                <div>* = Required input</div>
+              </div>
+              <div class="col-md-6 right">
+                <div>
+                  <xchange-custom-checkbox
+                    type="checkbox"
+                    [id]="'32'"
+                    label="Use my account information"
+                    [disabled]="disabledMyAcc"
+                    (model)="useMyAccountInfo($event); newClaimForm.markAsDirty()"
+                    [checked]="useAccountInformation"
+                  >
+                  </xchange-custom-checkbox>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <h4>Name*</h4>
+                <input
+                  type="text"
+                  placeholder="Type Here"
+                  class="form-control"
+                  maxlength="20"
+                  formControlName="dealerName"
+                  id="dealerName"
+                  (input)="completeDealerInfo()"
+                  oninput="this.value = this.value.replace(/[^a-z,A-Z]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^a-z,A-Z, ' ']/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+                  [class.is-invalid]="
+                    (newClaimForm.controls['dealerName'].touched ||
+                      useAccountInformation) &&
+                    (newClaimForm.controls['dealerName'].hasError('pattern') ||
+                    newClaimForm.controls['dealerName'].hasError('required'))
+                  "
+                />
+                <div class="invalid-feedback">
+                  Please enter a valid dealer name
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <h4>Phone*</h4>
+                <input
+                  type="text"
+                  placeholder="Type Here"
+                  class="form-control"
+                  maxlength="14"
+                  (input)="
+                    checkMobilePhoneValidation($event); completeDealerInfo()
+                  "
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+                  formControlName="dealerPhone"
+                  id="dealerPhone"
+                  [ngClass]="
+                    newClaimForm.controls['dealerPhone'].touched &&
+                    (newClaimForm.controls['dealerPhone'].invalid)
+                      ? 'is-invalid'
+                      : ''
+                  "
+                />
+                <div
+                  class="invalid-feedback"
+                  *ngIf="
+                    newClaimForm.controls['dealerPhone'].touched &&
+                    newClaimForm.controls['dealerPhone'].hasError('min') ||
+                    newClaimForm.controls['dealerPhone'].hasError('max') ||
+                    newClaimForm.controls['dealerPhone'].hasError('pattern')
+                  "
+                >
+                  Dealer phone # should be a 10 digits
+                </div>
+                <div
+                  class="invalid-feedback"
+                  *ngIf="
+                    newClaimForm.controls['dealerPhone'].touched &&
+                    newClaimForm.controls['dealerPhone'].hasError('required')
+                  "
+                >
+                  Please enter a valid dealer phone #
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <h4>Ext</h4>
+                <input
+                  type="text"
+                  (keypress)="avoidSpace($event)"
+                  maxlength="10"
+                  placeholder="Type Here"
+                  class="form-control"
+                  formControlName="dealerPhoneExtn"
+                  id="dealerPhoneExtn"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+                  [ngClass]="
+                    newClaimForm.controls['dealerPhoneExtn'].touched &&
+                    (newClaimForm.controls['dealerPhoneExtn'].hasError('max') ||
+                      newClaimForm.controls['dealerPhoneExtn'].hasError(
+                        'pattern'
+                      ))
+                      ? 'is-invalid'
+                      : ''
+                  "
+                />
+              </div>
+              <div class="col-md-4 mb-3">
+                <h4>Email*</h4>
+                <input
+                  type="text"
+                  placeholder="Type Here"
+                  class="form-control"
+                  maxlength="255"
+                  formControlName="dealerEmail"
+                  id="dealerEmail"
+                  (input)="completeDealerInfo()"
+                  (keypress)="avoidSpace($event)"
+                    [ngClass]="
+                    newClaimForm.controls['dealerEmail'].touched &&
+                    newClaimForm.controls['dealerEmail'].invalid
+                      ? 'is-invalid'
+                      : ''
+                  "
+                  [class.is-valid]="
+                    newClaimForm.controls['dealerEmail'].touched &&
+                    newClaimForm.controls['dealerEmail'].hasError('pattern')"
+                />
+                <div class="invalid-feedback">
+                  Please enter a valid dealer Email
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <h4>Role*</h4>
+                <ng-select
+                  placeholder="Please Select"
+                  formControlName="dealerRole"
+                  id="dealerRole"
+                  (change)="completeDealerInfo()"
+                    [ngClass]="
+                    newClaimForm.controls['dealerRole'].touched &&
+                    newClaimForm.controls['dealerRole'].invalid
+                      ? 'is-invalid'
+                      : ''
+                  "
+                  [class.errorBorder]="
+                    newClaimForm.controls['dealerRole'].touched &&
+                    newClaimForm.controls['dealerRole'].invalid
+                  "
+                  [class.is-valid]="
+                    newClaimForm.controls['dealerRole'].touched &&
+                    newClaimForm.controls['dealerRole'].hasError('pattern')"
+                >
+                  <ng-option value="">Select</ng-option>
+                  <ng-option value="Accounts Payable / Receivable">
+                    Accounts Payable / Receivable
+                  </ng-option>
+                  <ng-option value="Builder/Multi-Family Sales Associate">
+                    Builder/Multi-Family Sales Associate
+                  </ng-option>
+                  <ng-option value="Claims Support">Claims Support</ng-option>
+                  <ng-option value="Commercial Sales Associate">
+                    Commercial Sales Associate
+                  </ng-option>
+                  <ng-option value="Estimator">Estimator</ng-option>
+                  <ng-option value="Installation support">
+                    Installation support
+				          </ng-option>
+                  <ng-option value="Manager">Manager</ng-option>
+                  <ng-option value="Marketing">Marketing</ng-option>
+                  <ng-option value="Owner">Owner</ng-option>
+                  <ng-option value="Purchasing">Purchasing</ng-option>
+                  <ng-option value="Retail Sales Associate">
+				            Retail Sales Associate
+				          </ng-option>
+                  <ng-option value="Specifier">Specifier</ng-option>
+                  <ng-option value="Warehouse Support">
+                    Warehouse Support
+                  </ng-option>
+                  <ng-option value="Other">Other</ng-option>
+                </ng-select>
+                <div class="invalid-feedback">
+                  Please select role
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <h4>Dealer Claim #</h4>
+                <input
+                  type="text"
+                  maxlength="10"
+                  placeholder="Type Here"
+                  class="form-control"
+                  (keypress)="avoidSpace($event)"
+                  onkeypress="return /[0-9a-zA-Z]/i.test(event.key)"
+                  formControlName="dealerClaimNumber"
+                  id="dealerClaimNumber"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 mb-3 mt-3">
+              <h4>Requested price quoted at Order Entry? *</h4>
+              <ng-select
+                placeholder="Please Select"
+                formControlName="quotedAtOrderEntry"
+                id="quotedAtOrderEntry"
+                [class.errorBorder]="
+                  newClaimForm.controls['quotedAtOrderEntry'].invalid &&
+                  newClaimForm.controls['quotedAtOrderEntry'].touched
+                "
+                [class.is-invalid]="
+                  newClaimForm.controls['quotedAtOrderEntry'].invalid &&
+                  newClaimForm.controls['quotedAtOrderEntry'].touched
+                "
+                (change)="completeReasonsInfo()"
+              >
+                <ng-option [value]="true">Yes</ng-option>
+                <ng-option [value]="false">No</ng-option>
+              </ng-select>
+              <div class="invalid-feedback">
+                Please select option
+              </div>
+            </div>
+            <div class="col-md-12 mb-3">
+              <h4>Reason for Claim*</h4>
+              <textarea
+                maxlength="1000"
+                formControlName="reasonForClaimNotes"
+                id="reasonForClaimNotes"
+                class="form-control"
+                [class.is-invalid]="
+                  newClaimForm.controls['reasonForClaimNotes'].touched ==
+                    true && newClaimForm.controls['reasonForClaimNotes'].invalid
+                "
+                (input)="completeReasonsInfo()"
+              ></textarea>
+              <div class="invalid-feedback">
+                Please enter a reason for claim
+              </div>
+            </div>
+          </div>
+          <div class="row mt-4">
+            <div class="col-md-9">
+              <div class="mb-3"><b>Photos And Documentation</b></div>
+              <p>
+                File formats accepted: PDF, Word, Excel, JPEG / JPG, GIF, PNG
+                and MP4
+              </p>
+              <p>
+                <b>Attach Photos / Documentation.</b> (Per item, max file size 10
+                MB. Total of files cannot exceed 50 MB) <br /><b>or</b><br />
+                <b>Attach Videos.</b> Max file size per item: 33 MB (15-20 seconds long in default iPhone video format - HEVC 1080p 30 fps - for iPhone 07 and later)
+              </p>
+              <div class="mt-3">
+                <input
+                  type="file"
+                  id="myfile"
+                  multiple
+                  name="myfile"
+                  #upload
+                  class="d-none"
+                  (change)="uploadFile($event)"
+                />
+                <button class="btn btn-primary" (click)="upload.click()">
+                  Upload file
+                </button>
+                <div class="claim-added">
+                  <ul>
+                    <li *ngFor="let item of filesArray; let i = index">
+                      <span>{{ item?.name }} </span>
+                      <button
+                        type="button"
+                        class="btn-close close pull-right"
+                        (click)="removeFile(i)"
+                        *ngIf="!item?.key"
+                      >
+                        <span aria-hidden="true" class="visually-hidden"
+                          >&times;</span
+                        >
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mt-3">
+            </div>
+          </div>
+          <hr />
+          <div class="row align-item">
+            <div class="col-md-6">
+              <div class="mt-3">
+                All Applicable Tax, Freight, And Miscellaneous Charges Will Be
+                Incorporated In The Disposition Of The Claim.
+              </div>
+            </div>
+            <div class="col-md-6">
+              <button type="button"
+                class="btn btn-secondary mt-3 mr-15"
+                (click)="claimsService.navigateBack()"
+                *ngIf="claimsService.selectedInvoiceLines?.claimNumber"
+              >
+                Discard
+              </button>
+              <button type="button"
+              #draftBtn
+                class="btn btn-secondary mt-3 mr-15"
+                (click)="draftBtn.disabled = true;saveClaim(true, invoiceSearchRef,draftBtn)"
+                [disabled]="disableDraftBtn()"
+              >
+                SAVE AS DRAFT
+              </button>
+              <button type="button"
+              #submitBtn
+                class="btn btn-primary mt-3"
+                (click)="saveClaim(false, invoiceSearchRef,submitBtn)"
+                [disabled]="!newClaimForm.dirty"
+               
+              >
+                SUBMIT CLAIM
+              </button>
+            </div>
+          </div>
+        </div>
+        <ng-template #step2> Please Complete Step 1 </ng-template>
+      </div>
+    </form>
+  </div>
+  <ng-template #Invoice>
+    <app-invoice-search-popup
+      [modalRef]="modalRef"
+      (recordsSelected)="invoiceRecords($event)"
+    ></app-invoice-search-popup>
+  </ng-template>
+</div>

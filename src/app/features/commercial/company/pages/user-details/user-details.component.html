@@ -1,0 +1,799 @@
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <h2 class="text-center mb-4">User Details</h2>
+  <!-- <div class="mb-4" *ngIf="visible">
+    <alert type="info" class="dashboard-page-alert" [dismissible]="true">
+      <div class="container">
+        {{ alertBox }}
+      </div>
+    </alert>
+  </div> -->
+  <div class="mb-3">
+    <app-alerts
+      [alertData]="alertData"
+      *ngIf="alertData?.message != ''"
+      [alertType]="alertData.type"
+      class="dashboard-page-alert"
+    ></app-alerts>
+    <alert
+      *ngIf="showAlertWithLink"
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+    >
+      <div class="container">
+        User cannot be disabled until another user is selected to receive the
+        invoice PDF. <br />
+        Click on the
+        <a routerLink="/commercial/finance/payments/receivables/select-users"
+          >link</a
+        >
+        to choose another user to receive the invoice PDF or contact finance
+        admin to make the change.
+      </div>
+    </alert>
+  </div>
+  <div class="row mb-3">
+    <div
+      class="col-lg-12 back-to"
+      routerLink="/commercial/company/manage-users"
+    >
+      <span class="mohawak-icon angle-left-icon back-i"></span>Back To Your
+      Company
+    </div>
+  </div>
+  <div class="_card-container">
+    <div class="edit-btn">
+      <button
+        class="btn btn-primary"
+        routerLink="/commercial/company/manage-users/{{
+          userDetails?.uid
+        }}/edit"
+      >
+        EDIT USER
+      </button>
+    </div>
+    <tabset class="static-tab" [justified]="true" #staticTabs>
+      <tab>
+        <ng-template tabHeading
+          ><div
+            class="status-change"
+            (click)="userStatus === 'Inactive' ? onShowStatusModal(enable) : ''"
+          >
+            Active User
+          </div></ng-template
+        >
+        <div class="row mb-4 brd">
+          <div class="head-sec">Demographics</div>
+          <div class="col-md-4 mb-3">
+            <h4>Title:</h4>
+            <label>{{ userDetails?.title }}</label>
+          </div>
+          <div class="col-md-4 mb-3">
+            <h4>First Name:</h4>
+            <label>{{ userDetails?.firstName }}</label>
+          </div>
+          <div class="col-md-4 mb-3">
+            <h4>Last Name:</h4>
+            <label>{{ userDetails?.lastName }}</label>
+          </div>
+        </div>
+        <div class="row mb-4 brd">
+          <div class="head-sec">Contact Information</div>
+          <div class="col-md-4 mb-3">
+            <h4>Email Address:</h4>
+            <label class="textWrap">{{ userDetails?.displayUid }}</label>
+          </div>
+          <div class="col-md-3 mb-3">
+            <h4>Work Phone:</h4>
+            <label
+              >{{ userDetails?.workPhone
+              }}<span *ngIf="userDetails?.extension !== ''">
+                ext.{{ userDetails?.extension }}</span
+              ></label
+            >
+          </div>
+          <div class="col-md-4 mb-3">
+            <h4>Mobile Phone:</h4>
+            <label>{{ userDetails?.mobilePhone }}</label>
+          </div>
+          <!-- <div class="col-md-4 mb-3">
+            <h4>Fax:</h4>
+            <label>{{userDetails?.fax}}</label>
+          </div> -->
+          <div class="col-md-4 mb-3">
+            <h4>Language Preference:</h4>
+            <label>English</label>
+          </div>
+        </div>
+        <div class="row mb-4 brd">
+          <div class="head-sec">Role and Location</div>
+          <div class="col-md-4 mb-3">
+            <h4>Primary Role</h4>
+            <label>{{ userDetails?.primaryRole }}</label>
+          </div>
+        </div>
+        <div class="row mb-4 brd">
+          <div class="head-sec">Account Selection</div>
+          <ngx-table
+            [configuration]="configuration"
+            [data]="accountDetails"
+            [columns]="columns"
+          >
+            <ng-template let-row>
+              <td>
+                {{ row.accountNumber }}
+              </td>
+              <td>
+                ({{ row.company }}.{{ row.accountNumber }}) - {{ row.name }},{{
+                  row.addresses[0].formattedAddress
+                }}
+              </td>
+            </ng-template>
+          </ngx-table>
+        </div>
+        <div class="row mb-4 brd">
+          <div class="head-sec">
+            <div class="row">
+              <div class="wdth">Notifications</div>
+            </div>
+          </div>
+          <div class="col-md-6 mt-4 mb-4">
+            <div class="">
+              <b>
+                <label>ORDER NOTIFICATIONS</label>
+              </b>
+            </div>
+            <div *ngIf="orderConfirmation">
+              <label>Order Confirmation</label>
+            </div>
+            <div *ngIf="deliveryPickup">
+              <label>Planned Arrival & Delivery/Pick-Up Update</label>
+            </div>
+            <div *ngIf="loadLeaves">
+              <label>Load Leaves the Mill to Shipping Warehouse</label>
+            </div>
+            <div *ngIf="loadArrives">
+              <label>Load Arrives at the Shipping Warehouse</label>
+            </div>
+            <div *ngIf="outForDelivery">
+              <label>Out for Delivery</label>
+            </div>
+            <div *ngIf="signUpPricing">
+              <label>Sign me up for any pricing announcements</label>
+            </div>
+            <div *ngIf="advanceShip">
+              <label>Advance Ship Notification</label>
+            </div>
+            <div *ngIf="orderUpdates">
+              <label>Daily Status Report - All Orders</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>QUOTE NOTIFICATIONS</label>
+              </b>
+            </div>
+
+            <div *ngIf="quoteConfirmation">
+              <label>Quote Submitted / Offered</label>
+            </div>
+            <div *ngIf="quoteCancelled">
+              <label>Quote Cancelled</label>
+            </div>
+            <div *ngIf="quoteExpire">
+              <label>Quote Expiry</label>
+            </div>
+          </div>
+          <div class="col-md-6 mt-4 mb-4">
+            <div>
+              <b>
+                <label>CLAIMS NOTIFICATIONS</label>
+              </b>
+            </div>
+
+            <div *ngIf="claimConfirm">
+              <label>New Claims Confirmation</label>
+            </div>
+            <div *ngIf="claimStatus">
+              <label>Claim Status Update</label>
+            </div>
+            <div *ngIf="custAction">
+              <label>Customer Action Required</label>
+            </div>
+            <div *ngIf="claimProcess">
+              <label>Claims Process Complete</label>
+            </div>
+            <div *ngIf="claimExpiry">
+              <label>Draft Claims Expiry</label>
+            </div>
+            <div *ngIf="returnAuth">
+              <label>Return Authorization</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>FINANCIAL NOTIFICATIONS</label>
+              </b>
+            </div>
+
+            <div *ngIf="newInvoice">
+              <label>New Invoices (PDF via email)</label>
+            </div>
+            <div *ngIf="paymentConfirm">
+              <label>Payment Schedule Confirmation</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>RESERVE NOTIFICATIONS</label>
+              </b>
+            </div>
+
+            <div *ngIf="reserveExpire">
+              <label>Reserve is about to Expire</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-4 brd">
+          <div class="head-sec">User Permissions</div>
+          <div class="col-md-6 mt-4 mb-4">
+            <div class="">
+              <b>
+                <label>WEBSITE SECURITY ADMIN</label>
+              </b>
+            </div>
+            <div *ngIf="permissions?.includes('B2B Admin Group')">
+              <label>Administrator</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>FINANCIALS</label>
+              </b>
+            </div>
+            <div *ngIf="permissions?.includes('Invoice Inquiry')">
+              <label>Invoice Inquiry</label>
+            </div>
+            <div *ngIf="permissions?.includes('Receivables Inquiry')">
+              <label>Receivables Inquiry</label>
+            </div>
+            <div *ngIf="permissions?.includes('Pay Bills')">
+              <label>Pay Bills</label>
+            </div>
+            <div *ngIf="permissions?.includes('Bank Account Setup')">
+              <label>Bank Account Setup</label>
+            </div>
+            <div *ngIf="permissions?.includes('Earning Statements')">
+              <label>Earning Statements</label>
+            </div>
+            <div *ngIf="permissions?.includes('Account Statements')">
+              <label>Account Statements</label>
+            </div>
+            <div *ngIf="permissions?.includes('View Payment Group')">
+              <label>Recent Payments</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>CUSTOM RUG PROGRAM</label>
+              </b>
+            </div>
+            <div *ngIf="permissions?.includes('Custom Rug Quote')">
+              <label>Custom Rug Quote</label>
+            </div>
+            <div *ngIf="permissions?.includes('Custom Rug Order Entry')">
+              <label>Custom Rug Order Entry</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>PRICING</label>
+              </b>
+            </div>
+            <div *ngIf="permissions?.includes('Pricing Visibility & Inquiry')">
+              <label>Pricing Visibility & Inquiry</label>
+            </div>
+            <div *ngIf="permissions?.includes('Pricing Download')">
+              <label>Pricing Download</label>
+            </div>
+            <!-- <div *ngIf="permissions?.includes('Pricing Download Setup')">
+              <label>Pricing Download Setup</label>
+            </div> -->
+          </div>
+          <div class="col-md-6 mt-4 mb-4">
+            <div>
+              <b>
+                <label>PRODUCT ORDER MANAGEMENT</label>
+              </b>
+            </div>
+            <div *ngIf="permissions?.includes('Existing Order Inquiry')">
+              <label>Existing Order Inquiry</label>
+            </div>
+            <div *ngIf="permissions?.includes('Check Product Availability')">
+              <label>Check Product Availability</label>
+            </div>
+            <div
+              *ngIf="
+                permissions?.includes('View, Create, Extend & Delete Reserves')
+              "
+            >
+              <label>View, Create, Extend & Delete Reserves</label>
+            </div>
+            <div
+              *ngIf="
+                permissions?.includes(
+                  'Product Order Entry Create, Edit & Cancel'
+                )
+              "
+            >
+              <label>Product Order Entry Create, Edit & Cancel</label>
+            </div>
+             <div
+              *ngIf="
+                permissions?.includes('Product Order Entry (Create, Edit & Cancel)')
+              "
+            >
+              <label>Product Order Entry (Create, Edit & Cancel)</label>
+            </div>
+            <div *ngIf="permissions?.includes('Special Goods')">
+              <label>Special Goods</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>MOHAWK TODAY</label>
+              </b>
+            </div>
+            <div *ngIf="permissions?.includes('Co-op') || permissions?.includes('Coop')">
+              <label>Co-op</label>
+            </div>
+            <div *ngIf="permissions?.includes('Manage Leads & Lead Center')">
+              <label>Manage Leads & Lead Center</label>
+            </div>
+            <div *ngIf="permissions?.includes('Retail Storefront Locator')">
+              <label>Retail Storefront Locator</label>
+            </div>
+            <div *ngIf="permissions?.includes('Mohawk Infinite Rewards')">
+              <label>Mohawk Infinite Rewards</label>
+            </div>
+            <div *ngIf="permissions?.includes('Promotions')">
+              <label>Promotions</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>SAMPLE ORDER MANAGEMENT</label>
+              </b>
+            </div>
+            <div *ngIf="permissions?.includes('Existing Sample Order Inquiry')">
+              <label>Existing Sample Order Inquiry</label>
+            </div>
+            <div *ngIf="permissions?.includes('Sample Order Entry')">
+              <label>Sample Order Entry</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>CLAIMS MANAGEMENT</label>
+              </b>
+            </div>
+            <div *ngIf="permissions?.includes('Claims Entry')">
+              <label>Claims Entry</label>
+            </div>
+            <div *ngIf="permissions?.includes('Existing Claims Inquiry')">
+              <label>Existing Claims Inquiry</label>
+            </div>
+          </div>
+        </div>
+        <div class="row align-center">
+          <div class="col-md-3 btn-grid">
+            <button
+              class="btn btn-outline-secondary"
+              (click)="navigateToCompanyList()"
+            >
+              Back to Users
+            </button>
+          </div>
+          <!-- <div class="col-md-3 mb-3 btn-grid">
+            <button class="btn btn-primary" (click)="navigateToAddUser()">
+              ADD NEW USER
+            </button>
+          </div> -->
+        </div>
+      </tab>
+      <tab>
+        <ng-template tabHeading
+          ><div
+            class="status-change"
+            (click)="userStatus === 'Active' ? onShowStatusModal(disable) : ''"
+          >
+            Inactive User
+          </div></ng-template
+        >
+        <div class="row mb-4 brd">
+          <div class="head-sec">Demographics</div>
+          <div class="col-md-4 mb-3">
+            <h4>Title:</h4>
+            <label>{{ userDetails?.title }}</label>
+          </div>
+          <div class="col-md-4 mb-3">
+            <h4>First Name:</h4>
+            <label>{{ userDetails?.firstName }}</label>
+          </div>
+          <div class="col-md-4 mb-3">
+            <h4>Last Name:</h4>
+            <label>{{ userDetails?.lastName }}</label>
+          </div>
+        </div>
+        <div class="row mb-4 brd">
+          <div class="head-sec">Contact Information</div>
+          <div class="col-md-4 mb-3">
+            <h4>Email Address:</h4>
+            <label class="textWrap">{{ userDetails?.displayUid }}</label>
+          </div>
+          <div class="col-md-3 mb-3">
+            <h4>Work Phone:</h4>
+            <label
+              >{{ userDetails?.workPhone
+              }}<span *ngIf="userDetails?.extension !== ''">
+                ext.{{ userDetails?.extension }}</span
+              ></label
+            >
+          </div>
+          <div class="col-md-4 mb-3">
+            <h4>Mobile Phone:</h4>
+            <label>{{ userDetails?.mobilePhone }}</label>
+          </div>
+          <!-- <div class="col-md-4 mb-3">
+            <h4>Fax:</h4>
+            <label>{{userDetails?.fax}}</label>
+          </div> -->
+          <div class="col-md-4 mb-3">
+            <h4>Language Preference:</h4>
+            <label>{{ userDetails?.language?.name }}</label>
+          </div>
+        </div>
+        <div class="row mb-4 brd">
+          <div class="head-sec">Role and Location</div>
+          <div class="col-md-4 mb-3">
+            <h4>Primary Role</h4>
+            <label>{{ userDetails?.primaryRole }}</label>
+          </div>
+        </div>
+        <div class="row mb-4 brd">
+          <div class="head-sec">Account Selection</div>
+          <ngx-table
+            [configuration]="configuration"
+            [data]="accountDetails"
+            [columns]="columns"
+          >
+            <ng-template let-row>
+              <td>
+                {{ row.accountNumber }}
+              </td>
+              <td>
+                ({{ row.company }}.{{ row.accountNumber }}) - {{ row.name }},{{
+                  row.addresses[0].formattedAddress
+                }}
+              </td>
+            </ng-template>
+          </ngx-table>
+        </div>
+        <div class="row mb-4 brd">
+          <div class="head-sec">
+            <div class="row">
+              <div class="wdth">Notifications</div>
+            </div>
+          </div>
+          <div class="col-md-6 mt-4 mb-4">
+            <div class="">
+              <b>
+                <label>ORDER NOTIFICATIONS</label>
+              </b>
+            </div>
+            <div *ngIf="orderConfirmation">
+              <label>Order Confirmation</label>
+            </div>
+            <div *ngIf="deliveryPickup">
+              <label>Planned Arrival & Delivery/Pick-Up Update</label>
+            </div>
+            <div *ngIf="loadLeaves">
+              <label>Load Leaves the Mill to Shipping Warehouse</label>
+            </div>
+            <div *ngIf="loadArrives">
+              <label>Load Arrives at the Shipping Warehouse</label>
+            </div>
+            <div *ngIf="outForDelivery">
+              <label>Out for Delivery</label>
+            </div>
+            <div *ngIf="signUpPricing">
+              <label>Sign me up for any pricing announcements</label>
+            </div>
+            <div *ngIf="advanceShip">
+              <label>Advance Ship Notification</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>QUOTE NOTIFICATIONS</label>
+              </b>
+            </div>
+
+            <div *ngIf="quoteConfirmation">
+              <label>Quote Submitted / Offered</label>
+            </div>
+            <div *ngIf="quoteCancelled">
+              <label>Quote Cancelled</label>
+            </div>
+            <div *ngIf="quoteExpire">
+              <label>Quote Expiry</label>
+            </div>
+          </div>
+          <div class="col-md-6 mt-4 mb-4">
+            <div>
+              <b>
+                <label>CLAIMS NOTIFICATIONS</label>
+              </b>
+            </div>
+
+            <div *ngIf="claimConfirm">
+              <label>New Claims Confirmation</label>
+            </div>
+            <div *ngIf="claimStatus">
+              <label>Claim Status Update</label>
+            </div>
+            <div *ngIf="custAction">
+              <label>Customer Action Required</label>
+            </div>
+            <div *ngIf="claimProcess">
+              <label>Claims Process Complete</label>
+            </div>
+            <div *ngIf="claimExpiry">
+              <label>Draft Claims Expiry</label>
+            </div>
+            <div *ngIf="returnAuth">
+              <label>Return Authorization</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>FINANCIAL NOTIFICATIONS</label>
+              </b>
+            </div>
+
+            <div *ngIf="newInvoice">
+              <label>New Invoices (PDF via email)</label>
+            </div>
+            <div *ngIf="paymentConfirm">
+              <label>Payment Schedule Confirmation</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>RESERVE NOTIFICATIONS</label>
+              </b>
+            </div>
+
+            <div *ngIf="reserveExpire">
+              <label>Reserve is about to Expire</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-4 brd">
+          <div class="head-sec">User Permissions</div>
+          <div class="col-md-6 mt-4 mb-4">
+            <div class="">
+              <b>
+                <label>WEBSITE SECURITY ADMIN</label>
+              </b>
+            </div>
+            <div *ngIf="permissions?.includes('B2B Admin Group')">
+              <label>Administrator</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>FINANCIALS</label>
+              </b>
+            </div>
+            <div *ngIf="permissions?.includes('Invoice Inquiry')">
+              <label>Invoice Inquiry</label>
+            </div>
+            <div *ngIf="permissions?.includes('Receivables Inquiry')">
+              <label>Receivables Inquiry</label>
+            </div>
+            <div *ngIf="permissions?.includes('Pay Bills')">
+              <label>Pay Bills</label>
+            </div>
+            <div *ngIf="permissions?.includes('Bank Account Setup')">
+              <label>Bank Account Setup</label>
+            </div>
+            <div *ngIf="permissions?.includes('Earning Statements')">
+              <label>Earning Statements</label>
+            </div>
+            <div *ngIf="permissions?.includes('Account Statements')">
+              <label>Account Statements</label>
+            </div>
+            <div *ngIf="permissions?.includes('Recent Payments')">
+              <label>Recent Payments</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>CUSTOM RUG PROGRAM</label>
+              </b>
+            </div>
+            <div *ngIf="permissions?.includes('Custom Rug Quote')">
+              <label>Custom Rug Quote</label>
+            </div>
+            <div *ngIf="permissions?.includes('Custom Rug Order Entry')">
+              <label>Custom Rug Order Entry</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>PRICING</label>
+              </b>
+            </div>
+            <div *ngIf="permissions?.includes('Pricing Visibility & Inquiry')">
+              <label>Pricing Visibility & Inquiry</label>
+            </div>
+            <div *ngIf="permissions?.includes('Pricing Download')">
+              <label>Pricing Download</label>
+            </div>
+            <!-- <div *ngIf="permissions?.includes('Pricing Download Setup')">
+              <label>Pricing Download Setup</label>
+            </div> -->
+          </div>
+          <div class="col-md-6 mt-4 mb-4">
+            <div>
+              <b>
+                <label>PRODUCT ORDER MANAGEMENT</label>
+              </b>
+            </div>
+            <div *ngIf="permissions?.includes('Existing Order Inquiry')">
+              <label>Existing Order Inquiry</label>
+            </div>
+            <div *ngIf="permissions?.includes('Check Product Availability')">
+              <label>Check Product Availability</label>
+            </div>
+            <div
+              *ngIf="
+                permissions?.includes('View, Create, Extend & Delete Reserves')
+              "
+            >
+              <label>View, Create, Extend & Delete Reserves</label>
+            </div>
+            <div
+              *ngIf="
+                permissions?.includes(
+                  'Product Order Entry (Create, Edit & Cancel)'
+                )
+              "
+            >
+              <label>Product Order Entry (Create, Edit & Cancel)</label>
+            </div>
+            <div *ngIf="permissions?.includes('Special Goods')">
+              <label>Special Goods</label>
+            </div>
+            <div *ngIf="permissions?.includes('Restrict Place Order')">
+              <label>Restrict Place Order</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>MOHAWK TODAY</label>
+              </b>
+            </div>
+            <div *ngIf="permissions?.includes('Co-op') || permissions?.includes('Coop')">
+              <label>Co-op</label>
+            </div>
+            <div *ngIf="permissions?.includes('Manage Leads & Lead Center')">
+              <label>Manage Leads & Lead Center</label>
+            </div>
+            <div *ngIf="permissions?.includes('Retail Storefront Locator')">
+              <label>Retail Storefront Locator</label>
+            </div>
+            <div *ngIf="permissions?.includes('Mohawk Infinite Rewards')">
+              <label>Mohawk Infinite Rewards</label>
+            </div>
+            <div *ngIf="permissions?.includes('Promotions')">
+              <label>Promotions</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>SAMPLE ORDER MANAGEMENT</label>
+              </b>
+            </div>
+            <div *ngIf="permissions?.includes('Existing Sample Order Inquiry')">
+              <label>Existing Sample Order Inquiry</label>
+            </div>
+            <div *ngIf="permissions?.includes('Sample Order Entry')">
+              <label>Sample Order Entry</label>
+            </div>
+            <div class="mt-4">
+              <b>
+                <label>CLAIMS MANAGEMENT</label>
+              </b>
+            </div>
+            <div *ngIf="permissions?.includes('Claims Entry')">
+              <label>Claims Entry</label>
+            </div>
+            <div *ngIf="permissions?.includes('Existing Claims Inquiry')">
+              <label>Existing Claims Inquiry</label>
+            </div>
+          </div>
+        </div>
+        <div class="row align-center">
+          <div class="col-md-3 mb-3 btn-grid">
+            <button
+              class="btn btn-outline-secondary"
+              (click)="navigateToCompanyList()"
+            >
+              Back to Users
+            </button>
+          </div>
+          <!-- <div class="col-md-3 mb-3 btn-grid">
+            <button class="btn btn-primary" (click)="navigateToAddUser()">
+              ADD NEW USER
+            </button>
+          </div> -->
+        </div>
+      </tab>
+    </tabset>
+  </div>
+</div>
+
+<ng-template #enable>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w w-100">Enable User</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="onCancelEnable()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>Are you sure you want to enable this user? {{ userId }}</p>
+      <div class="mt-4 mb-4">
+        <button
+          class="btn btn-primary disable-user mx-1"
+          (click)="onEnableStatus()"
+          [disabled]="storageService.userInfo?.isCustomer && !storageService.userInfo?.b2bAdmin"
+        >
+          Enable User
+        </button>
+        <button
+          class="btn btn-outline-secondary mx-1"
+          (click)="onCancelEnable()"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #disable>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w w-100">Disable User</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="onCancelDisable()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>Are you sure you want to disable this user? {{ userId }}</p>
+      <div class="mt-4 mb-4">
+        <button
+          class="btn btn-primary disable-user mx-1"
+          (click)="onDisableStatus()"
+          [disabled]="storageService.userInfo?.isCustomer && !storageService.userInfo?.b2bAdmin"
+        >
+          Disable User
+        </button>
+        <button
+          class="btn btn-outline-secondary mx-1"
+          (click)="onCancelDisable()"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

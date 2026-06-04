@@ -1,0 +1,82 @@
+<div class="modal-header text-center mb-0">
+  <h4 class="modal-title f-w w-100">SELECT COLOR</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="onHideModal()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body p-20">
+  <!-- <div class="d-flex justify-content-between">
+    <h2>Natural Intrique -B1023</h2>
+    <h6>All Available Colors</h6>
+  </div> -->
+  <div class="row col-md-10 col-xs-12 offset-md-1 offset-xs-0">
+    <div class="col-12 col-md-4 my-1">
+      <ng-select
+        [(ngModel)]="searchBy"
+        (change)="onSearchBy($event)"
+        [clearable]="false"
+      >
+        <ng-option
+          [value]="value"
+          *ngFor="let value of searchByList"
+          >{{ value }}</ng-option
+        >
+      </ng-select>
+    </div>
+    <div class="col-12 col-md-8 my-1">
+      <xchange-search-control 
+        [isGlobalSearchEnabled]="false"  
+        (input)="onSearch($event)"
+        [placeholder]="placeholder"
+        [searchKey]="searchkey"
+      ></xchange-search-control>
+    </div>
+    </div>
+  <div class="mt-3">
+    <ul class="colors-list-ul"  [class.desk-color-ul]="colorVarient?.length < 6" [class.mob-color-ul]="colorVarient?.length < 4">
+      <li
+        *ngFor="let product of colorVarient; let t = index"
+        class="product"
+        [ngClass]="{ 'active': product?.value?.code == activeSlideId?.value?.code, 'desk-color-p': colorVarient?.length < 6, 'mob-color-p': colorVarient?.length < 4}"
+        (click)="changeSelection(product)"
+      >
+        <a>
+          <span class="color-image-container">
+            <div class="ribbon-wrapper-plp" *ngIf="product?.value?.isDropped">
+              <div class="ribbon">DROPPED</div>
+            </div>
+            <img
+            [src]="product?.value?.productImageURL ? getProductImage(product?.value?.productImageURL) : imageBaseUrl + product?.value?.image"
+              alt="{{ product?.value?.name }}"
+            />
+          </span>
+        </a>
+        <span class="color-name">
+          {{ product?.value?.name }} <br />
+          {{ product?.key }}
+        </span>
+        <span class="w-100 text-center d-block color-code">
+          {{ product?.value?.colorCode }}
+        </span>
+      </li>
+    </ul>
+    <div class="row justify-content-center" *ngIf="colorVarient.length === 0">No colors available</div>
+  </div>
+  <div class="mt-3 row justify-content-center">
+    <div class="col-12 col-md-3">
+      <button
+        class="btn btn-primary w-100"
+        [disabled]="!activeSlideId"
+        (click)="submit()"
+      >
+        Submit
+      </button>
+    </div>
+  </div>
+</div>

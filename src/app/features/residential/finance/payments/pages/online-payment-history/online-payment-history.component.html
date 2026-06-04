@@ -1,0 +1,841 @@
+<!-- <app-loader *ngIf="loadingFlag"></app-loader> -->
+<div class="container custom-order-tabs">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <div class="row">
+    <h2 class="text-center mb-4">Online Payment History</h2>
+    <h2 class="text-center" *ngIf="priceLabel == 'USD'">
+      <b>Payments made after 13th of Dec 2024, Can be viewed in EBill Express.</b>
+    </h2>
+  </div>
+  <div class="mb-4">
+    <alert
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="errorMessage"
+    >
+      <div class="container">
+        {{ errorMessage }}
+      </div>
+    </alert>
+    <alert
+      type="success"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="successMessage"
+    >
+      <div class="container">
+        {{ successMessage }}
+      </div>
+    </alert>
+  </div>
+  <tabset responsiveTabs [justified]="true">
+    <tab class="tab-content" (selectTab)="loadOnlinePayments()">
+      <ng-template tabHeading>Online Payment History</ng-template>
+      <div class="_card-container">
+        <div class="row mb-4 mt-4">
+          <div class="col-md-4 col-lg-3 d-grid align-items-end">
+            <h4>Search</h4>
+            <xchange-search-control
+              [isGlobalSearchEnabled]="false"
+              (input)="onSearchOnlinePayments($event)"
+              placeholder="Document #"
+            ></xchange-search-control>
+          </div>
+        </div>
+        <div class="row mb-4 mt-4">
+          <ng-container *ngIf="onlineFlag">
+            <div class="col-md-12 col-lg-12">
+              <ul class="table-ul">
+                <li *ngFor="let payment of onlinePaymentsData | paginate
+                : {
+                    id: 'pg1',
+                    itemsPerPage: 10,
+                    currentPage: page + 1,
+                    totalItems: pagination.count
+                  }; let i = index">
+                  <div class="list-header">
+                    <div class="d-flex">
+                      <div class="b-c"></div>
+                      <div class="b-t">
+                        <div class="info-text">
+                          <span>Creation Date</span>
+                          <p>{{ setDateFormat(payment.scheduledDate) }}</p>
+                        </div>
+                        <div class="info-text">
+                          <span>Bank Account #</span>
+                          <p>{{ payment.bankAccountNumber }}</p>
+                        </div>
+                        <div class="info-text">
+                          <span>Amount ({{ priceLabel }})</span>
+                          <p>{{ payment.amount | currency : priceLabel }}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="action">
+                      <button
+                        type="button"
+                        class="btn"
+                        (click)="expand(i)"
+                        [disabled]="isDisabled(payment.entries)"
+                        [attr.aria-expanded]="i !== expandedIndex"
+                      >
+                        <h4 *ngIf="i !== expandedIndex">
+                          Show Details
+                          <span
+                            class="mohawak-icon angle-left-icon down-icon"
+                          ></span>
+                        </h4>
+                        <h4 *ngIf="i === expandedIndex">
+                          Hide Details<span
+                            class="mohawak-icon angle-left-icon up-icon"
+                          ></span>
+                        </h4>
+                      </button>
+                    </div>
+                  </div>
+                  <div></div>
+                  <div
+                    id="collapseBasic1-{{ i }}"
+                    [collapse]="i !== expandedIndex"
+                    [isAnimated]="true"
+                  >
+                    <div class="cust-inline-flex">
+                      <div class="info-text">
+                        <span>Changed By</span>
+                        <p>{{ payment.changedBy }}</p>
+                      </div>
+                      <div class="info-text">
+                        <span>Created By</span>
+                        <p>{{ payment.createdBy }}</p>
+                      </div>
+                    </div>
+                    <div class="overflow-auto">
+                      <ngx-table
+                        [configuration]="configuration"
+                        [data]="payment?.entries"
+                        [columns]="columns"
+                        (event)="tableSort($event)"
+                      >
+                        <ng-template let-row>
+                          <td>
+                            {{
+                              payment.status === "SENT_TO_CAMS"
+                                ? "SETTLED"
+                                : row.status
+                            }}
+                          </td>
+                          <td>
+                            {{ row.documentNumber }}
+                          </td>
+                          <td>
+                            {{ setDateFormat(row.documentDate) }}
+                          </td>
+                          <td>
+                            {{ row.openAmount | currency : priceLabel }}
+                          </td>
+                          <td>
+                            {{
+                              setPositive(row.discountAmount)
+                                | currency : priceLabel
+                            }}
+                          </td>
+                          <td>
+                            {{ row.scheduledAmount | currency : priceLabel }}
+                          </td>
+                          <td>
+                            {{ row.poNumber }}
+                          </td>
+                          <td>
+                            {{ setDateFormat(payment.scheduledDate) }}
+                          </td>
+                          <td
+                            class="text-danger"
+                            *ngIf="row.deductionEntries?.length === null"
+                          >
+                            No Deductions
+                          </td>
+                          <td
+                            class="text-danger"
+                            *ngIf="row.deductionEntries?.length >= 1"
+                          >
+                            <p
+                              (click)="
+                                viewDeductions(
+                                  viewDeductionsTemplate,
+                                  row.deductionEntries
+                                )
+                              "
+                            >
+                              View Deductions
+                            </p>
+                          </td>
+                        </ng-template>
+                      </ngx-table>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+              <p class="text-center" *ngIf="onlinePaymentsData?.length === 0 && !loadingFlag">
+                No Results Found
+              </p>
+              <p class="text-center" *ngIf="loadingFlag">
+                Loading...
+              </p>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <!-- Pagination -->
+      <div class="row mb-4 mt-4">
+        <div class="d-flex justify-content-center desk-view" *ngIf="onlinePaymentsData.length > 0">
+          <pagination-controls
+            id="pg1"
+            [maxSize]="maxSize"
+            [responsive]="true"
+            [nextLabel]="''"
+            [previousLabel]="''"
+            (pageChange)="onPaginationChange($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div class="d-flex justify-content-center m-view">
+          <pagination-controls
+            id="pg1"
+            [maxSize]="5"
+            [responsive]="true"
+            [nextLabel]="''"
+            [previousLabel]="''"
+            (pageChange)="onPaginationChange($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div class="col-md-12">
+          <p class="text-center mb-0">
+            {{ pagination.count > 0 ? page * 10 + 1 : 0 }} -
+            {{
+              page * 10 + 10 > pagination.count
+                ? pagination.count
+                : page * 10 + 10
+            }}
+            OF {{ pagination.count }} PAYMENTS
+          </p>
+        </div>
+      </div>
+    </tab>
+    <tab (selectTab)="loadScheduledPayments()" *ngIf="priceLabel != 'USD'">
+      <ng-template tabHeading>Scheduled Payments</ng-template>
+      <div class="_card-container">
+        <div class="row mb-4 mt-4">
+          <alert
+            type="danger"
+            class="dashboard-page-alert"
+            [dismissible]="false"
+            *ngIf="scheduledCancellationErrorMessage"
+            class="mb-15"
+          >
+            <div class="container">
+              {{ scheduledCancellationErrorMessage }}
+            </div>
+          </alert>
+          <alert
+            type="success"
+            class="dashboard-page-alert"
+            [dismissible]="false"
+            *ngIf="scheduledCancellationSuccessMessage"
+            class="mb-15"
+          >
+            <div class="container">
+              {{ scheduledCancellationSuccessMessage }}
+            </div>
+          </alert>
+          <div class="col-md-3 search-sec">
+            <h4>Search</h4>
+            <xchange-search-control
+              [isGlobalSearchEnabled]="false"
+              (input)="onSearchScheduledPayments($event)"
+              placeholder="Document #"
+            ></xchange-search-control>
+          </div>
+          <div
+            class="col-xs-12 col-md-9 mt-4 schedule_buttons"
+            [hidden]="!payBills"
+          >
+            <button
+              class="btn btn-outline-secondary"
+              (click)="suspendPaymentModal(template2)"
+              [disabled]="scheduledSelectedData?.length === 0"
+            >
+              Suspend Payment
+            </button>
+            <button
+              class="btn btn-outline-secondary btn-margin"
+              (click)="cancelPaymentModal(template3)"
+              [disabled]="scheduledSelectedData?.length === 0"
+            >
+              Cancel Payment
+            </button>
+            <button
+              class="btn btn-outline-secondary"
+              (click)="editPayment(scheduledSelectedData, 'scheduled')"
+              [disabled]="scheduledSelectedData.length === 0"
+            >
+              Edit Payment
+            </button>
+          </div>
+        </div>
+        <div class="row mb-4 mt-4">
+          <ng-container *ngIf="scheduledFlag">
+            <div class="col-md-12 col-lg-12">
+              <ul class="table-ul">
+                <li *ngFor="let payment of scheduledPaymentsData | paginate
+                : {
+                    id: 'pg1',
+                    itemsPerPage: 10,
+                    currentPage: page + 1,
+                    totalItems: pagination.count
+                  }; let i = index">
+                  <div class="list-header">
+                    <div class="d-flex">
+                      <div class="b-c">
+                        <xchange-custom-checkbox
+                          type="checkbox"
+                          id="'sheduled{{ i }}"
+                          [value]="payment"
+                          [checked]="payment.isChecked"
+                          [disabled]="
+                            payment?.entries == undefined ||
+                            payment?.entries.length == 0
+                          "
+                          (model)="onSelectPayments($event, payment)"
+                          label=""
+                        >
+                        </xchange-custom-checkbox>
+                      </div>
+                      <div class="b-t">
+                        <div class="info-text">
+                          <span>Schedule Date</span>
+                          <p>{{ setDateFormat(payment.scheduledDate) }}</p>
+                        </div>
+                        <div class="info-text">
+                          <span>Bank Account #</span>
+                          <p>{{ payment.bankAccountNumber }}</p>
+                        </div>
+                        <div class="info-text">
+                          <span>Amount ({{ priceLabel }})</span>
+                          <p>{{ payment.amount | currency : priceLabel }}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="action">
+                      <button
+                        type="button"
+                        class="btn"
+                        (click)="expand(i)"
+                        [disabled]="isDisabled(payment.entries)"
+                        [attr.aria-expanded]="i !== expandedIndex"
+                      >
+                        <h4 *ngIf="i !== expandedIndex">
+                          Show Details
+                          <span
+                            class="mohawak-icon angle-left-icon down-icon"
+                          ></span>
+                        </h4>
+                        <h4 *ngIf="i === expandedIndex">
+                          Hide Details<span
+                            class="mohawak-icon angle-left-icon up-icon"
+                          ></span>
+                        </h4>
+                      </button>
+                    </div>
+                  </div>
+                  <div
+                    id="collapseBasic2-{{ i }}"
+                    [collapse]="i !== expandedIndex"
+                    [isAnimated]="true"
+                  >
+                    <ngx-table
+                      [configuration]="configuration1"
+                      [data]="payment.entries"
+                      [columns]="columns1"
+                      (event)="tableSort($event)"
+                    >
+                      <ng-template let-row>
+                        <td>
+                          {{ row.status }}
+                        </td>
+                        <td>
+                          {{ row.documentNumber }}
+                        </td>
+                        <td>
+                          {{ setDateFormat(row.documentDate) }}
+                        </td>
+                        <td>
+                          {{ row.openAmount | currency : priceLabel }}
+                        </td>
+                        <td>
+                          {{
+                            setPositive(row.discountAmount)
+                              | currency : priceLabel
+                          }}
+                        </td>
+                        <td>
+                          {{ row.scheduledAmount | currency : priceLabel }}
+                        </td>
+                        <td>
+                          {{ row.poNumber }}
+                        </td>
+                        <td
+                          class="text-danger"
+                          *ngIf="
+                            row.deductionEntries?.length === null ||
+                            !row.deductionEntries
+                          "
+                        >
+                          No Deductions
+                        </td>
+                        <td
+                          class="text-danger"
+                          *ngIf="row.deductionEntries?.length >= 1"
+                        >
+                          <p
+                            (click)="
+                              viewDeductions(
+                                viewDeductionsTemplate,
+                                row.deductionEntries
+                              )
+                            "
+                          >
+                            View Deductions
+                          </p>
+                        </td>
+                      </ng-template>
+                    </ngx-table>
+                  </div>
+                </li>
+              </ul>
+              <p
+                class="text-center"
+                *ngIf="scheduledPaymentsData?.length === 0 && !loadingFlag"
+              >
+                No Results Found
+              </p>
+              <p class="text-center" *ngIf="loadingFlag">
+                Loading...
+              </p>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <!-- Pagination -->
+      <div class="row mb-4 mt-4">
+        <div class="d-flex justify-content-center desk-view" *ngIf="scheduledPaymentsData.length > 0">
+          <pagination-controls
+            id="pg1"
+            [maxSize]="10"
+            [responsive]="true"
+            [nextLabel]="''"
+            [previousLabel]="''"
+            (pageChange)="onPaginationChange($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div class="d-flex justify-content-center m-view">
+          <pagination-controls
+            id="pg1"
+            [maxSize]="5"
+            [responsive]="true"
+            [nextLabel]="''"
+            [previousLabel]="''"
+            (pageChange)="onPaginationChange($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div class="col-md-12">
+          <p class="text-center mb-0">
+            {{ pagination.count > 0 ? page * 10 + 1 : 0 }} -
+            {{
+              page * 10 + 10 > pagination.count
+                ? pagination.count
+                : page * 10 + 10
+            }}
+            OF {{ pagination.count }} PAYMENTS
+          </p>
+        </div>
+      </div>
+    </tab>
+    <tab (selectTab)="loadSuspendedPayments()" *ngIf="priceLabel != 'USD'">
+      <ng-template tabHeading>Suspended Payments</ng-template>
+      <div class="_card-container">
+        <div class="row mb-4 mt-4">
+          <alert
+            type="danger"
+            class="dashboard-page-alert"
+            [dismissible]="false"
+            *ngIf="suspendedCancellationErrorMessage"
+            class="mb-15"
+          >
+            <div class="container">
+              {{ suspendedCancellationErrorMessage }}
+            </div>
+          </alert>
+          <alert
+            type="success"
+            class="dashboard-page-alert"
+            [dismissible]="false"
+            *ngIf="suspendedCancellationSuccessMessage"
+            class="mb-15"
+          >
+            <div class="container">
+              {{ suspendedCancellationSuccessMessage }}
+            </div>
+          </alert>
+          <div class="col-md-3 search-sec">
+            <h4>Search</h4>
+            <xchange-search-control
+              [isGlobalSearchEnabled]="false"
+              (input)="onSearchSuspendedPayments($event)"
+              placeholder="Document #"
+            ></xchange-search-control>
+          </div>
+          <div
+            class="col-xs-12 col-md-9 mt-4 schedule_buttons"
+            [hidden]="!payBills"
+          >
+            <button
+              class="btn btn-outline-secondary"
+              (click)="schedulePaymentModal(template1)"
+              [disabled]="suspendedSelectedData?.length === 0"
+            >
+              Schedule Payment
+            </button>
+            <button
+              class="btn btn-outline-secondary btn-margin"
+              (click)="cancelPaymentModal(template4)"
+              [disabled]="suspendedSelectedData?.length === 0"
+            >
+              Cancel Payment
+            </button>
+            <button
+              class="btn btn-outline-secondary"
+              (click)="editPayment(suspendedSelectedData, 'suspended')"
+              [disabled]="suspendedSelectedData.length === 0"
+            >
+              Edit Payment
+            </button>
+          </div>
+        </div>
+        <div class="row mb-4 mt-4">
+          <ng-container *ngIf="suspendedFlag">
+            <div class="col-md-12 col-lg-12">
+              <ul class="table-ul">
+                <li *ngFor="let payment of suspendedPaymentsData | paginate
+                : {
+                    id: 'pg1',
+                    itemsPerPage: 10,
+                    currentPage: page + 1,
+                    totalItems: pagination.count
+                  }; let i = index">
+                  <div class="list-header">
+                    <div class="d-flex">
+                      <div class="b-c">
+                        <xchange-custom-checkbox
+                          type="checkbox"
+                          id="'suspended{{ i }}"
+                          [value]="payment"
+                          [checked]="payment.isChecked"
+                          [disabled]="
+                            payment?.entries == undefined ||
+                            payment?.entries.length == 0
+                          "
+                          (model)="onSelectPayments($event, payment)"
+                          label=""
+                        >
+                        </xchange-custom-checkbox>
+                      </div>
+                      <div class="b-t">
+                        <div class="info-text">
+                          <span>Suspended Date</span>
+                          <p>{{ setDateFormat(payment.scheduledDate) }}</p>
+                        </div>
+                        <div class="info-text">
+                          <span>Bank Account #</span>
+                          <p>{{ payment.bankAccountNumber }}</p>
+                        </div>
+                        <div class="info-text">
+                          <span>Amount ({{ priceLabel }})</span>
+                          <p>
+                            {{
+                              payment.amount
+                                | currency : priceLabel : "symbol" : "1.2-2"
+                            }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="action">
+                      <button
+                        type="button"
+                        class="btn"
+                        (click)="expand(i)"
+                        [disabled]="isDisabled(payment.entries)"
+                        [attr.aria-expanded]="i !== expandedIndex"
+                      >
+                        <h4 *ngIf="i !== expandedIndex">
+                          Show Details
+                          <span
+                            class="mohawak-icon angle-left-icon down-icon"
+                          ></span>
+                        </h4>
+                        <h4 *ngIf="i === expandedIndex">
+                          Hide Details<span
+                            class="mohawak-icon angle-left-icon up-icon"
+                          ></span>
+                        </h4>
+                      </button>
+                    </div>
+                  </div>
+                  <div
+                    id="collapseBasic3-{{ i }}"
+                    [collapse]="i !== expandedIndex"
+                    [isAnimated]="true"
+                  >
+                    <ngx-table
+                      [configuration]="configuration2"
+                      [data]="payment.entries"
+                      [columns]="columns2"
+                      (event)="tableSort($event)"
+                    >
+                      <ng-template let-row>
+                        <td>
+                          {{ row.status }}
+                        </td>
+                        <td>
+                          {{ row.documentNumber }}
+                        </td>
+                        <td>
+                          {{ setDateFormat(row.documentDate) }}
+                        </td>
+                        <td>
+                          {{ row.openAmount | currency : priceLabel }}
+                        </td>
+                        <td>
+                          {{
+                            setPositive(row.discountAmount)
+                              | currency : priceLabel
+                          }}
+                        </td>
+                        <td>
+                          {{ row.scheduledAmount | currency : priceLabel }}
+                        </td>
+                        <td>
+                          {{ row.poNumber }}
+                        </td>
+                        <td
+                          class="text-danger"
+                          *ngIf="
+                            row.deductionEntries?.length === null ||
+                            !row.deductionEntries
+                          "
+                        >
+                          No Deductions
+                        </td>
+                        <td
+                          class="text-danger"
+                          *ngIf="row.deductionEntries?.length >= 1"
+                        >
+                          <p
+                            (click)="
+                              viewDeductions(
+                                viewDeductionsTemplate,
+                                row.deductionEntries
+                              )
+                            "
+                          >
+                            View Deductions
+                          </p>
+                        </td>
+                      </ng-template>
+                    </ngx-table>
+                  </div>
+                </li>
+              </ul>
+              <p
+                class="text-center"
+                *ngIf="suspendedPaymentsData?.length === 0 && !loadingFlag"
+              >
+                No Results Found
+              </p>
+              <p class="text-center" *ngIf="loadingFlag">
+                Loading...
+              </p>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <!-- Pagination -->
+      <div class="row mb-4 mt-4">
+        <div class="d-flex justify-content-center desk-view" *ngIf="suspendedPaymentsData.length > 0">
+          <pagination-controls
+            id="pg1"
+            [maxSize]="10"
+            [responsive]="true"
+            [nextLabel]="''"
+            [previousLabel]="''"
+            (pageChange)="onPaginationChange($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div class="d-flex justify-content-center m-view">
+          <pagination-controls
+            id="pg1"
+            [maxSize]="5"
+            [responsive]="true"
+            [nextLabel]="''"
+            [previousLabel]="''"
+            (pageChange)="onPaginationChange($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div class="col-md-12">
+          <p class="text-center mb-0">
+            {{ pagination.count > 0 ? page * 10 + 1 : 0 }} -
+            {{
+              page * 10 + 10 > pagination.count
+                ? pagination.count
+                : page * 10 + 10
+            }}
+            OF {{ pagination.count }} PAYMENTS
+          </p>
+        </div>
+      </div>
+    </tab>
+  </tabset>
+</div>
+<!-- Suspend Payment Popup -->
+<ng-template #template2>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w">Suspend Payment?</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>Are you sure you want to suspend this scheduled payment?</p>
+      <div class="mt-4 mb-4">
+        <button
+          class="btn btn-outline-secondary me-2"
+          (click)="modalRef?.hide()"
+        >
+          No
+        </button>
+        <button class="btn btn-primary" (click)="onModalScheduleToSuspend()">
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- Schedule Payment Popup -->
+<ng-template #template1>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w">Schedule Payment?</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>Are you sure you want to continue scheduling payment?</p>
+      <p>Payments after 9 PM ET will be processed the next business day.</p>
+      <div class="mt-4 mb-4">
+        <button
+          class="btn btn-outline-secondary me-2"
+          (click)="modalRef?.hide()"
+        >
+          No
+        </button>
+        <button class="btn btn-primary" (click)="onModalScheduleToSuspend()">
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- Cancel Payment Popup -->
+<ng-template #template3>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w">Cancel Payment?</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>Are you sure you want to cancel this schedule payment?</p>
+      <div class="mt-4 mb-4">
+        <button
+          class="btn btn-outline-secondary me-2"
+          (click)="modalRef?.hide()"
+        >
+          No
+        </button>
+        <button class="btn btn-primary" (click)="onModalCancelPayment()">
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #template4>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w">Cancel Payment?</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>Are you sure you want to cancel this suspended payment?</p>
+      <div class="mt-4 mb-4">
+        <button
+          class="btn btn-outline-secondary me-2"
+          (click)="modalRef?.hide()"
+        >
+          No
+        </button>
+        <button class="btn btn-primary" (click)="onModalCancelPayment()">
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- View Deductions Modal -->
+<ng-template #viewDeductionsTemplate>
+  <xchange-view-deductions
+    [deductions]="selectedDeductions"
+  ></xchange-view-deductions>
+</ng-template>

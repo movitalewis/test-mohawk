@@ -1,0 +1,91 @@
+<div class="container">
+  <h2 class="text-center mt-4 mb-4">Accounts</h2>
+  <div class="_card-container">
+    <div class="row">
+      <h2 class="filter-by-widget-text">Filter By</h2>
+      <div class="col-12 col-md-6 col-lg-3 mt-3 mb-3 m-btn-0">
+        <h4>Senior Vice President</h4>
+        <filter-by
+          [select]="seniorViceOption"
+          placeholder=" All Salespersons "
+        ></filter-by>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3 mt-3 mb-3 m-btn-0">
+        <h4>Regional Vice President</h4>
+        <filter-by
+          [select]="regionalViceOption"
+          placeholder=" All Salespersons "
+        ></filter-by>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3 mt-3 mb-3 m-btn-0">
+        <h4>District Manager</h4>
+        <filter-by
+          [select]="districtOption"
+          placeholder=" All Salespersons "
+        ></filter-by>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3 mt-3 mb-3 m-btn-0">
+        <h4>Territory Manager</h4>
+        <filter-by
+          [select]="territoryOption"
+          placeholder="All Salespersons "
+        ></filter-by>
+      </div>
+
+      
+      
+    </div>
+    <hr>
+
+    <div class="row">
+      <div class="col-sm-6  col-md-6 col-lg-6 col-xl-6">
+        <div class="row">
+          <div class="col-7 col-sm-8 ">
+            <h4>Account Search</h4>
+            <input type="text" placeholder="Account Name or #" class="form-control" />
+          </div>
+          <div class="col-4 col-sm-4   d-flex align-items-end pd-l-0">
+            <button class="btn btn-primary ">SEARCH</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-3 col-md-3 col-lg-3 col-xl-2 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-4">
+        <div class="col-12 mb-3 m-btn-0">
+          <h4>Shown</h4>
+          <filter-by
+            [select]="shownOption"
+            placeholder="All Results "
+          ></filter-by>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 mt-3">
+      <ngx-table
+        [configuration]="configuration"
+        [data]="data"
+        [columns]="columns"
+      >
+        <ng-template let-row>
+          <td>
+            <a href="">
+              {{ row.account }}
+            </a>
+          </td>
+          <td>
+              {{ row.accountName }}
+          </td>
+          <td>
+            {{ row.address }}
+          </td>
+          <td>
+            {{ row.phone }}
+          </td>
+        </ng-template>
+      </ngx-table>
+    </div>
+
+    
+  </div>
+</div>

@@ -1,0 +1,23 @@
+@import "/src/styles/my-profile";
+.toUpperCase {
+  text-transform: capitalize;
+}
+input[type="text"] {
+  width: 100%;
+}
+.profile-content-section{
+  header{
+    position: unset;
+  }
+}
+.textWrap{  
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+}
+.form-field-disable{
+  pointer-events: none;
+  background: #e8e8e8;
+  opacity: 0.5;
+  cursor: not-allowed;
+}

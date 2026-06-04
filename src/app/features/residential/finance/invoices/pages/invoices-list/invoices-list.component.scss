@@ -1,0 +1,229 @@
+@import 'src/styles/mixins/breakpoints';
+@import "src/styles/colors";
+
+
+.ngx-pagination-wrapper {
+    display: flex;
+    justify-content: center;
+}
+.sharebtnGroup{
+  display: flex !important;
+  justify-content: flex-start !important;
+  column-gap: 15px;
+  margin-top:27px !important;
+}
+@include breakpoint-range($max : md) {
+    .d-flex {
+        display: block !important;
+    }
+    .d-xs-none{
+        display: none !important;
+    }
+    .btn{
+        width: 100%;
+    }
+}
+.d-flex-absolute {
+  display: flex !important;
+}
+.mb-3{
+    @include breakpoint-range($max : sm) {
+        margin-bottom: 0px !important;
+    }
+}
+.no-results {
+    text-align: center;
+    height: 75px;
+}
+:host::ng-deep .ngx-pagination-wrapper {
+    display: flex;
+    justify-content: center;
+}
+div.drp {
+    position: relative;
+
+    .span-clear {
+      position: absolute;
+      top: 5px;
+      padding: 5px 9px;
+      right: 5px;
+      background-color: $color-white;
+      font-size: 18px;
+      box-sizing: border-box;
+      color: $color-red;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+  }
+
+.desk-view {
+  @include breakpoint-range($max : md) {
+    display: none;
+  }
+}
+
+.m-view {
+  display: none;
+
+  @include breakpoint-range($max : md) {
+      display: block;
+  }
+}
+
+  /** ngx-pagination styling **/
+::ng-deep {
+    pagination-controls {
+      pagination-template {
+        ul {
+          border-radius: unset !important;
+          li {
+            border: none !important;
+            border-radius: 0 5px 5px 0;
+            box-shadow: inset 0px 5px 6px #00000014;
+            &:nth-child(3) {
+              &.current {
+                border-radius: 5px 0px 0px 5px;
+              }
+            }
+            &:nth-last-child(2) {
+              &.current {
+                border-radius: 0px 5px 5px 0px;
+              }
+            }
+            &.current {
+              display: flex !important;
+              box-shadow: unset;
+            }
+            a {
+              text-decoration: unset !important;
+              height: 100%;
+              display: flex !important;
+              align-items: center;
+              justify-content: center;
+            }
+            &.pagination-next,
+            &.pagination-previous {
+              a {
+                color: $color-red;
+                font-size: 24px;
+                &::after,
+                &::before {
+                  margin-left: 0px !important;
+                  margin-bottom: 3px !important;
+                }
+              }
+            }
+          }
+          &.ngx-pagination.responsive {
+            li:not(.small-screen):not(.pagination-previous):not(
+                .pagination-next
+              ) {
+              display: inline-block;
+            }
+            li.small-screen {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  ::ng-deep {
+    .sorting-arrow {
+      .pointer {
+        position: relative;
+        display: block !important;
+        &::after {
+          content: "";
+          width: 22px;
+          height: 22px;
+          background: url("../../../../../../../assets/icons/sort.png") no-repeat;
+          top: 14px;
+          bottom: 0px;
+          right: 0px;
+          position: absolute;
+          display: inline-block;
+        }
+        .ngx-table__header-title {
+          .ngx-icon {
+            display: none;
+          }
+        }
+      }
+    }
+    .sorting-arrow-active {
+      .pointer {
+        position: relative;
+        display: block !important;
+        &::after {
+          content: "";
+          width: 22px;
+          height: 22px;
+          background: url("../../../../../../../assets/icons/sort-ascending-icon.svg")
+            no-repeat;
+          top: 8px;
+          bottom: 0px;
+          right: 0px;
+          position: absolute;
+          display: inline-block;
+          -webkit-transform: scaleY(-1);
+          transform: scaleY(-1);
+        }
+        .ngx-table__header-title {
+          .ngx-icon {
+            display: none;
+          }
+        }
+      }
+    }
+    .sorting-arrow-down-icon {
+      .pointer {
+        position: relative;
+        display: block !important;
+        &::after {
+          content: "";
+          width: 22px;
+          height: 22px;
+          background: url("../../../../../../../assets/icons/sort-descending-icon.svg")
+            no-repeat;
+          top: 14px;
+          bottom: 0px;
+          right: 0px;
+          position: absolute;
+          display: inline-block;
+          // -webkit-transform: scaleY(-1);
+          // transform: scaleY(-1);
+        }
+        .ngx-table__header-title {
+          .ngx-icon {
+            display: none;
+          }
+        }
+      }
+    }
+    .ngx-table__header-title {
+      padding: 10px 25px 10px 10px;
+    }
+    .ngx-table__table--normal > thead > tr > th {
+      vertical-align: top;
+    }
+  }
+::ng-deep {
+  .invoice-list-table-container{
+        @include breakpoint-range($max : sm) {
+          margin-top:15px;
+        }
+    ngx-table{
+      table{
+        thead{
+          tr{
+            th:first-child{
+              padding: 10px 15px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

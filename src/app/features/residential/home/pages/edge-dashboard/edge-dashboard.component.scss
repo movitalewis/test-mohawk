@@ -1,0 +1,719 @@
+
+@import "src/styles/colors";
+@import 'src/styles/mixins/breakpoints';
+@import url('https://fonts.googleapis.com/css?family=Titillium+Web:200,200i,300,300i,400,400i,600,600i,700,700i,900');
+.search-box-widget
+{
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    width: 100%;
+    text-align: center;
+    border: 0.5px solid #b1b1b1;
+    padding: 37px;
+    border-radius: 8px;
+    background: #fff;
+}
+.text-white {
+  color: #ffffff !important;
+}
+
+.ex-sales-landpage-heading
+        {
+            font-size: 24px;
+            text-transform: none;
+            font-weight: 600;
+            color: #383838;
+            border-bottom: #e1e1e1 solid 1px;
+            width: 100%;
+            padding-bottom: 12px;
+            text-align: left;
+            @include breakpoint-range($min: md) 
+            {
+              font-size: 22px;
+            }
+        }
+        .chart-graph-height
+        {
+            min-height: 440px;
+        }
+.search-box-widget{
+    &.sales-top-bar-height
+    
+    {
+        min-height: 308px;
+        @include breakpoint-range($max: sm) 
+            {
+                min-height: auto;
+            }
+            .sales-slider{
+              margin-top: 4rem !important;
+            }
+            .sales-bar-container {
+              width: 100%;
+              margin: 20px 0;
+              position: relative;
+            }
+            
+            .sales-bar {
+              position: relative;
+              height: 40px;
+              background-color: #f0f0f0;
+              border: 1px solid #ccc;
+              border-radius: 15px;
+              overflow: visible; /* Ensures visibility of labels and marker */
+              max-width: 96%;
+            }
+            
+            .sales-bar-progress {
+              height: 100%;
+              background-color: #d0021b; /* Red progress bar */
+              position: relative;
+              border-radius: 15px 0 0 15px; /* Keep rounded edges for the left */
+            }
+            
+            .current-sales-label {
+              position: absolute;
+              right: 0;
+              top: 8px;
+              //color: #fff;
+              font-size: 12px;
+              white-space: nowrap;
+            //  background: #d0021b; /* Matches progress bar color */
+              padding: 2px 6px;
+              border-radius: 8px;
+              font-weight: bold;
+            }
+            
+            .sales-milestone {
+              position: absolute;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              transform: translateX(-50%);
+              top: 0; /* Align vertical lines with the bar */
+            }
+            
+            .milestone-line {
+              width: 0.5px; /* Thicker lines for better visibility */
+              height: 38px; /* Extends below the bar */
+              background-color: grey; /* Black vertical line */
+            }
+            
+            .milestone-label {
+              margin-top: 10px; /* Space below the line */
+              font-size: 12px;
+              color: #000;
+              text-align: center;
+              white-space: nowrap;
+              font-weight: bold;
+              @include breakpoint-range($max: sm) {
+                font-size: 9px;
+              }
+            }
+            
+            .sales-marker {
+              position: absolute;
+              top: -15px; /* Place the marker above the bar */
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              transform: translateX(-50%);
+            }
+            
+            .triangle {
+              width: 11px;
+              height: 0;
+              border-left: 5px solid transparent;
+              border-right: 5px solid transparent;
+              border-bottom: 10px solid grey;
+              margin-bottom: 5px;
+            }
+            
+            .sales-marker-line {
+              width: 1px;
+              height:35px; /* Dashed line height */
+              background-color: transparent;
+              border-left: 1px dashed grey;
+            }
+            
+            .marker-label {
+              position: absolute;
+              top: -43px;
+              text-align: center;
+              font-size: 12px;
+              color: #000;
+              font-weight: bold;
+              line-height: 1.2;
+              white-space: nowrap;
+            }
+            
+            .marker-label .marker {
+              color: #d0021b; /* Red color for Net Sales amount */
+              font-weight: bold;
+            }
+            
+            
+              
+    }
+    .edge-top-logo {
+      width: 28%;
+      display: flex;
+  }
+  .mt-db-msr-txt {
+    color: #000;
+    display: flex;
+    font-weight: 800;
+    font-size: 16px;
+    margin-top: 52px;
+}
+    .rewards-cont
+    {
+        text-align: center;
+        span
+        {
+            font-size: 18px;
+            color: #CE0E2D;
+            font-weight: 600;
+        }
+        p
+        {
+            font-size: 24px;
+            color: #000;
+            font-weight: 600;
+        }
+        .star-ratings {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+          }
+          
+          .star-ratings p {
+            margin: 0;
+            margin-right: 8px;
+            font-size: 24px;
+            color: #333;
+          }
+          
+          .fa-star {
+            font-size: 20px;
+            margin-right: 4px;
+            color: #ccc; /* Default grey color for stars */
+            transition: color 0.2s ease; /* Smooth transition for color change */
+          }
+          
+          .fa-star.checked {
+            color: gold; /* Yellow color for filled stars */
+          }
+          
+          .fa-star:last-child {
+            margin-right: 0;
+          }
+          
+        .star-ratings
+        {
+            .star-ratings {
+                display: flex;
+                align-items: center;
+                font-size: 16px;
+              }
+              
+              .star-ratings p {
+                margin: 0;
+                margin-right: 8px;
+                font-size: 14px;
+                color: #ccc;
+              }
+              
+              .fa-star {
+                font-size: 20px;
+                margin-right: 4px;
+              }
+              
+              .fa-star.checked {
+                color: gold; /* Yellow for filled stars */
+              }
+              
+              .fa-star:last-child {
+                margin-right: 0;
+              }
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            p
+            {
+                margin-bottom: 0px;
+                margin-right: 5px;
+            }
+            span
+            {
+                font-size: 12px;
+                color: #ccc;
+            }
+            &.checked
+            {
+                font-size: 12px;
+                color: #FFC502;
+            }
+        }
+    }
+    
+    .chart-cont
+        {
+            display: grid;
+            grid-template-columns: 20% 75%;
+            justify-content: space-between;
+            border-bottom: #ccc solid 1px;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            .chart-per
+        {
+          
+            font-size: 33px;
+            font-weight: 600;
+            @include breakpoint-range($min: md) 
+            {
+              font-size: 25px;
+            }
+            &.orange
+            {
+                color:#D35400;
+            }
+            &.blue
+            {
+                color:#3081C4;
+            }
+            &.red
+            {
+                color:#E9353C;
+            }
+        }
+        }
+    .chart-align-bottom
+    {
+        position: relative;
+        min-height: 370px;
+        @include breakpoint-range($min: md) 
+        {
+          min-height: 297px;
+        }
+    }
+    .chart-values
+    {
+        h1{
+                width: 100%;
+                font-size: 18px;
+                color: #000;
+                font-weight: 600;
+                margin-top: 0px;
+                margin-bottom: 0px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                @include breakpoint-range($min: md) 
+            {
+              font-size: 17px;
+            }
+            img
+            {
+                height: 12px;
+            }
+            }
+    } 
+    .chart-values-disc
+    {
+        display: flex;
+        justify-content: space-between;
+        span{
+            font-size: 16px;
+            font-weight: 500;
+            color: #464646;
+            &.red{
+                color: #CE0E2D;
+            }
+        }
+        p{
+            font-size: 16px;
+            font-weight: 400;
+            color: #000;
+            margin-bottom: 0px;
+        }
+    }
+    .color-repr-main-div
+    {
+        position: absolute;
+        bottom: 0px;
+        @include breakpoint-range($min: md) 
+        {
+          position: unset;
+        }
+        .color-repr-div
+    {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        margin-top: 10px;
+        p{
+            font-size: 16px;
+            color: #000;
+            margin-bottom: 0px;
+            margin-top: 0px;
+            @include breakpoint-range($min: md) 
+            {
+              font-size: 15px;
+            }
+
+        }
+        .color-box-repr
+        {
+            width: 20px;
+            height: 18px;
+            border: #000 solid 1px;
+            margin-right: 5px;
+            &.orange
+            {
+                background-color: #F88F29;
+            }
+            &.blue{
+                background-color: #3081C4;
+            }
+            &.red{
+                background-color: #E9353C;
+            }
+        }
+    }
+    }
+    
+}
+// Circles Css
+// VARS
+$circle-width: 0.09em;
+$circle-width-hover: 0.07em;
+// colors default
+$primary-color: #000000; // czarny
+$secondary-color: #dfe8ed; //szary bcg
+$bg-color: #ffffff; //srodkowy bezowy 
+// colors customized
+$primary-color-blue: #3081C4;
+$primary-color-green: #15c7a8;
+$primary-color-orange: #F88F29; 
+$primary-color-pink: #d74680; 
+$primary-color-red: #E9353C; 
+$primary-color-span: #3c4761;
+// CIRCLE
+// classes 2 extend
+.rect-auto{
+	clip: rect(auto, auto, auto, auto);
+}
+.pie {
+	position: absolute;
+	border: $circle-width solid $primary-color;
+	width: 1 - (2 * $circle-width);
+	height: 1 - (2 * $circle-width);
+	clip: rect(0em, 0.5em, 1em, 0em);
+	border-radius: 50%;
+    rotate: 0deg;
+	// @include rotate(0deg);
+}
+.pie-fill {
+    rotate: 180deg;
+	// @include rotate(180deg);
+}
+.wrapper {
+  width: 100%;
+  margin: 0 auto;
+}
+// main
+.c100 {
+	*, *:before, *:after {
+        box-sizing: content-box;
+		// @include box-sizing(content-box);
+	}
+	position: relative;
+	font-size: 228px;
+	width: 1em;
+	height: 1em;
+	border-radius: 50%;
+	float: left;
+	margin: 10px;
+	background-color: $secondary-color;
+    @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
+    /* Styles */
+    font-size: 178px;
+    }
+    /* iPads (portrait) ----------- */
+    @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
+    /* Styles */
+    font-size: 178px;
+    }
+    &.c80{
+        font-size: 173px;
+        margin-top: -210px;
+        margin-left: 39px;
+        @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
+            /* Styles */
+            font-size: 130px;
+            margin-top: -164px;
+            margin-left: 35px;
+            }
+        
+            /* iPads (portrait) ----------- */
+            @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
+            /* Styles */
+            font-size: 130px;
+            margin-top: -164px;
+            margin-left: 35px;
+            }
+    }
+    &.c60
+    {
+        font-size: 130px;
+        margin-top: -188px;
+        margin-left: 61px;
+        @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
+            /* Styles */
+            font-size: 90px;
+            margin-top: -144px;
+            margin-left: 56px;
+            }
+        
+            /* iPads (portrait) ----------- */
+            @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
+            /* Styles */
+            font-size: 90px;
+            margin-top: -144px;
+            margin-left: 56px;
+            }
+    }
+// 	// center circle to its parent
+// 	&.center{
+// 		float: none;
+// 		margin: 0 auto;
+// 	}
+// 	&.small{
+// 		font-size: 80px;
+// 	}
+	// centered value inside circle
+	> span {
+		position: absolute;
+		width: 100%;
+		z-index: 1;
+		left: 0;
+		top: 0;
+		width: 5em;
+		line-height: 5em;
+		font-size: 0.2em;
+		color: $primary-color-span;
+		display: block;
+		text-align: center;
+		white-space: nowrap;
+        transition-property: all;
+        transition-duration: 0.2s;
+        transition-timing-function: ease-out;
+		// @include transition-property(all);
+		// @include transition-duration(0.2s);
+		// @include transition-timing-function(ease-out);
+	}
+	// background inside the circle
+	&:after{
+		position: absolute;
+		top: $circle-width;
+		left: $circle-width;
+		display: block;
+		content: " ";
+		border-radius: 50%;
+		background-color: $bg-color;
+		width: 1 - (2 * $circle-width);
+		height: 1 - (2 * $circle-width);
+        transition-property: all;
+        transition-duration: 0.2s;
+        transition-timing-function: ease-out;
+		// @include transition-property(all);
+		// @include transition-duration(0.2s);
+		// @include transition-timing-function(ease-in);
+	}
+	// the slice (mask)
+	.slice {
+		position: absolute;
+		width: 1em;
+		height: 1em;
+		clip: rect(0em, 1em, 1em, 0.5em);
+	}
+	// circle to show the status
+	.bar {
+		@extend .pie;
+	}
+	// loop to create all needed elements automatically
+	@for $j from 51 through 100 {
+		&.p#{$j} .slice {
+			@extend .rect-auto;
+		}
+		&.p#{$j} .bar:after{
+			@extend .pie-fill;
+		}
+		&.p#{$j} .fill{
+			@extend .pie;
+			@extend .pie-fill;
+		}
+	}
+	// loop to rotate all 100 circles
+	@for $j from 1 through 100 {
+		&.p#{$j} .bar {
+            rotate: (360/100*$j) + deg;
+			// @include rotate((360/100*$j) + deg);
+		}
+	}
+	// hover styles
+	&:hover{
+		cursor: default;
+		> span {
+			width: 3.33em;
+			line-height: 3.33em;
+			font-size: 0.3em;
+			color: $primary-color-span;
+		}
+		&:after{
+			top: $circle-width-hover;
+			left: $circle-width-hover;
+			width: 1 - (2 * $circle-width-hover);
+			height: 1 - (2 * $circle-width-hover);
+		}
+	}
+  
+	// blue
+	&.blue{
+		.bar, .fill { border-color: $primary-color-blue !important;}
+		&:hover{
+			> span { color: $primary-color-span;}
+		}
+	}
+	// pink skin
+	&.red{
+		.bar, .fill { border-color: $primary-color-red !important;}
+		&:hover{
+			> span { color: $primary-color-span;}
+		}
+	}
+	// green skin
+	&.green{
+		.bar, .fill { border-color: $primary-color-green !important;}
+		&:hover{
+			> span { color: $primary-color-span;}
+		}
+	}
+	// orange skin
+	&.orange{
+		.bar, .fill { border-color: $primary-color-orange !important;}
+		&:hover{
+			> span { color: $primary-color-span;}
+		}
+	}
+}
+.mt-db-edge-vis-name{
+    font-weight: 700;
+    text-transform: uppercase;
+    color: $color-red;
+    position: relative;
+    font-size: 18px;  
+  }
+  .mt-db-edge-vis-bar {
+    line-height: 1;
+    font-size: 0;
+    border: 2px solid #b1b1b1;
+    // border-radius: 0px 5px 5px 0px;
+  }
+  
+  .mt-db-edge-vis-bar-section-container {
+    display: inline-block;
+    border-left: 2px solid $color-gray-b1;
+    line-height: 1;
+    &:first-child{
+      border-left:unset
+    }
+  }
+  .mt-db-edge-vis-bar-section-achieved-last {
+    // border-top-right-radius: 0.33rem;
+    // border-bottom-right-radius: 0.33rem;
+    position: relative;
+  }
+  .mt-db-edge-vis-bar-section-achieved {
+    background-color: #1b1b1b;
+  }
+  .mt-db-edge-vis-bar-section {
+    display: inline-block;
+    height: 2rem;
+    line-height: 1;
+    font-size: 1rem;
+  }
+  .mt-db-edge-vis-bar-current-outside-bar {
+    right: auto;
+    left: calc(100% + 6px);
+    color: $color-black;
+  }
+  .mt-db-edge-vis-bar-current {
+    position: absolute;
+    font-size: 1rem;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    line-height: 1;
+    vertical-align: middle;
+    right: 2px;
+    font-weight: 700;
+    color: $color-black;
+    height: 1rem;
+  }
+  .mt-db-edge-vis-bar-section-remaining {
+    background-color: initial;
+    // border: 2px solid $color-gray-b1;
+    border-left: none;
+    border-right: none;
+  }
+  .mt-db-edge-vis-bar-section-remaining-after-current {
+    margin-left: -2.5px;
+  }
+  
+  // .mt-db-edge-vis-bar-section-container-tail {
+  //   border-top-right-radius: 0.33rem;
+  //   border-bottom-right-radius: 0.33rem;
+  // }
+  
+  .mt-db-edge-vis-bar-section-container-tail .mt-db-edge-vis-bar-section-remaining {
+    border-right: 2px solid $color-gray-b1;
+    // border-top-right-radius: 0.33rem;
+    // border-bottom-right-radius: 0.33rem;
+  }
+  
+  .mt-db-edge-vis-statuses {
+    font-size: var(--mt-text-size-small);
+    font-weight: 700;
+    line-height: 1.33;
+    color: $color-red;
+    text-transform: uppercase;
+    margin-top: 0.15rem;
+  }
+  
+  .mt-db-edge-vis-status-container {
+    display: inline-block;
+    text-align: right;
+  }
+  .removeBorders{
+    border-radius: 0px;
+  }
+  
+  .premierType{
+    left: unset;
+    color: #fff;
+    text-align: center;
+  }
+  .row.align-items-stretch > [class*="col-"] {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .search-box-widget.sales-top-bar-height {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  

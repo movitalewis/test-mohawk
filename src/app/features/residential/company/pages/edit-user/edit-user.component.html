@@ -1,0 +1,550 @@
+<div class="container" #scrollToTop>
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <app-alerts
+    [alertData]="alertData"
+    [alertType]="alertType"
+    *ngIf="alertTrigger"
+  ></app-alerts>
+  <h2 class="text-center mb-4">Edit User</h2>
+  <div class="row mb-3">
+    <div
+      class="col-lg-12 back-to"
+      routerLink="/residential/company/manage-users"
+    >
+      <span class="mohawak-icon angle-left-icon back-i"></span>Back To Your
+      Company
+    </div>
+  </div>
+  <app-loader [fullScreen]="true" *ngIf="loading"></app-loader>
+  <form [formGroup]="editUserForm">
+    <div class="row mb-4">
+      <div class="_card-container">
+        <div class="row mb-4 brd">
+          <div class="head-sec">Demographics</div>
+          <div class="col-md-4 mb-3">
+            <h4>Title</h4>
+            <ng-select placeholder="Please Select" formControlName="title">
+              <ng-option *ngFor="let title of titles" [value]="title.value">{{
+                title.name
+              }}</ng-option>
+            </ng-select>
+          </div>
+          <div class="col-md-4 mb-3">
+            <h4>First Name*</h4>
+            <input
+              type="text"
+              placeholder="Type Here"
+              class="form-control"
+              formControlName="firstName"
+            />
+          </div>
+          <div class="col-md-4 mb-3">
+            <h4>Last Name*</h4>
+            <input
+              type="text"
+              placeholder="Type Here"
+              class="form-control"
+              formControlName="lastName"
+            />
+          </div>
+        </div>
+        <div class="row mb-4 brd">
+          <div class="head-sec">Contact Information</div>
+          <div class="col-md-4 mb-3">
+            <h4>Email Address*</h4>
+            <input
+              type="text"
+              placeholder="Type Here"
+              class="form-control"
+              [ngClass]="
+                editUserForm.controls['email'].touched &&
+                editUserForm.controls['email'].hasError('pattern')
+                  ? 'is-invalid'
+                  : hasMohawkEmail || existingEmail?.length !== 0
+                  ? 'email-invalid'
+                  : ''
+              "
+              formControlName="email"
+              [(ngModel)]="emailExists"
+              (blur)="getUsers($event)"
+              (input)="checkForMhkEmail($event)"
+            />
+            <p
+              class="small text-danger"
+              *ngIf="
+                editUserForm.controls['email'].touched &&
+                editUserForm.controls['email'].hasError('required')
+              "
+            >
+              Field is required
+            </p>
+            <div class="invalid-feedback">Invalid / incorrect format</div>
+            <p
+              class="text-primary small mt-1"
+              *ngIf="existingEmail?.length !== 0"
+            >
+              Email Already Exists
+            </p>
+            <p class="text-primary small mt-1" *ngIf="hasMohawkEmail">
+              Domain "mohawkind.com" not allowed
+            </p>
+          </div>
+          <div class="col-md-3 mb-3">
+            <h4>Work Phone*</h4>
+            <input #inputRef
+              type="text"
+              placeholder="Type Here"
+              class="form-control"
+              formControlName="workPhone"
+              [maxlength]="inputRef.value.includes('+') ? '17' : '14'"
+              (input)="formateWorkPhone($event);checkWorkPhoneValidation($event)"
+            />
+          </div>
+          <div class="col-md-2 mb-3">
+            <h4>Ext</h4>
+            <input type="text" placeholder="Type Here" class="form-control" 
+            formControlName="extension"
+            maxlength="10"
+            minlength="0"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+            />
+          </div>
+          <div class="col-md-3 mb-3">
+            <h4>Mobile Phone</h4>
+            <input #inputRef
+              type="text"
+              placeholder="Type Here"
+              class="form-control"
+              formControlName="mobilePhone"
+              [maxlength]="inputRef.value.includes('+') ? '17' : '14'"
+              (input)="formateWorkPhone($event);checkMobilePhoneValidation($event)"
+            />
+          </div>
+          <!-- <div class="col-md-4 mb-3">
+            <h4>Fax</h4>
+            <input
+              type="text"
+              placeholder="Type Here"
+              class="form-control"
+              formControlName="fax"
+            />
+          </div> -->
+          <div class="col-md-4 mb-3">
+            <h4>Language Preference</h4>
+            <ng-select placeholder="Please Select" formControlName="language">
+              <ng-option *ngFor="let lang of languages" [value]="lang">{{
+                lang
+              }}</ng-option>
+            </ng-select>
+          </div>
+        </div>
+        <div class="row mb-4 brd">
+          <div class="head-sec">Role and Location</div>
+          <div class="col-md-4 mb-3">
+            <h4>Primary Role</h4>
+            <ng-select
+              placeholder="Please Select Account"
+              formControlName="primaryRole"
+              [class.form-field-disabled]="storageService.userInfo?.primaryRole !== 'Owner' && storageService.userInfo?.isCustomer"
+              (change)="onPrimaryRoleChange($event)"
+              [ngClass]="
+                !editUserForm.controls['primaryRole'].value ? 'is-invalid' : ''
+              "
+            >
+              <ng-option *ngFor="let role of roles" [value]="role.value">{{
+                role.name
+              }}</ng-option>
+            </ng-select>
+          </div>
+        </div>
+        <div class="row mb-4 brd">
+          <div class="head-sec">Account Selection</div>
+          <div class="col-md-6 col-lg-4 mb-3">
+            <div class="search-section" *ngIf="isUserCSR">
+              <h4>Account Search</h4>
+              <xchange-search-control
+                placeholder="Enter Full Account Number"
+                [isGlobalSearchEnabled]="false"
+                [searchKey]="searchText"
+                (sendValue)="getsearchaccount($event)"
+                (input)="onSearchClear($event)"
+              ></xchange-search-control>
+              <ng-template [ngIf]="checkvalue">
+                <div class="user-exists">
+                  Account doesn't exist for given account number
+                </div>
+              </ng-template>
+              <div class="mx-search-suggestions" *ngIf="setSuffixData">
+                <span
+                  *ngFor="let item of suffixData"
+                  (click)="getSuffixList(item.accountNumber)"
+                >
+                  <ul>
+                    <a> {{ item?.accountNumber }}</a>
+                  </ul>
+                </span>
+              </div>
+            </div>
+
+            <h4 [ngClass]="isUserCSR ? 'mt-2' : ''">Accounts</h4>
+            <ng-select
+              placeholder="Please Select Account"
+              formControlName="accountList"
+              (change)="getSuffixList($event)"
+            >
+              <ng-option
+                *ngFor="let account of accountsList"
+                [value]="account?.accountNumber"
+                >{{ account?.accountNumber }}</ng-option
+              >
+            </ng-select>
+          </div>
+
+          <!-- <div class="col-md-3 mb-3"> -->
+          <!-- <h4>Division</h4>
+                <input
+                  type="text"
+                  placeholder="Type Here"
+                  class="form-control"
+                /> -->
+          <!-- </div> -->
+          <div class="row">
+            <div class="col-md-6 col-lg-4 mb-3 d-flex flex-column">
+              <h4>Divisions</h4>
+              <select multiple="multiple" formControlName="SuffixAccounts">
+                <option value="" disabled="">
+                  Use Ctrl to select multiple divisions
+                </option>
+                <option
+                  value=""
+                  disabled=""
+                  *ngIf="hasEmptyResponse"
+                  class="text-primary"
+                >
+                  No divisions for
+                  {{ editUserForm.controls["accountList"].value }}
+                </option>
+                <option *ngFor="let suffix of suffixList" [value]="suffix?.uid">
+                  ({{ suffix?.company }}.{{ suffix?.accountNumber }})-{{
+                    suffix?.addresses[0]?.formattedAddress
+                  }}
+                </option>
+              </select>
+              <button
+                class="btn btn-secondary mt-2"
+                (click)="addAccountsSufix()"
+                [ngClass]="{
+                  'btn-grid-disabled': suffixList.length == 0
+                }"
+              >
+                <span class="mohawak-icon plus-icon me-1"></span>Add
+              </button>
+            </div>
+            <div class="mb-3 spacer"></div>
+            <div class="col-md-6 col-lg-4 mb-3 d-flex flex-column">
+              <h4>Selected Account(s)*</h4>
+              <select
+                multiple="multiple"
+                formControlName="selectedSuffixAccounts"
+              >
+                <option value="" disabled="">
+                  Use Ctrl to select multiple options
+                </option>
+
+                <option
+                  *ngFor="let suffix of selectedSuffixAccounts"
+                  [value]="suffix?.uid"
+                >
+                  ({{ suffix?.company }}.{{ suffix?.accountNumber }})-{{
+                    suffix?.addresses?.[0].formattedAddress
+                  }}
+                </option>
+              </select>
+              <button
+                class="btn btn-secondary mt-2"
+                [ngClass]="{
+                  'btn-grid-disabled': selectedSuffixAccounts.length == 0
+                }"
+                (click)="removeAccountsSufix()"
+              >
+                <span class="mohawak-icon minus-icon minus-icon-size"></span
+                >Remove
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-4 brd">
+          <div class="head-sec">
+            <div class="row">
+              <div class="wdth">User Permissions</div>
+              <div class="wdth text-right">
+                <div class="entire-site-tooltip-wrapper"
+                  [class.disabled-tooltip]="entireSiteDisable"
+                  (mouseenter)="showEntireSiteTooltip = entireSiteDisable"
+                  (mouseleave)="showEntireSiteTooltip = false"
+                  (focusin)="showEntireSiteTooltip = entireSiteDisable"
+                  (focusout)="showEntireSiteTooltip = false"
+                  tabindex="0"
+                  aria-describedby="entireSiteTooltip"
+                >
+                  <xchange-custom-checkbox
+                    type="checkbox"
+                    [id]="'xyz1'"
+                    label="Entire Site"
+                    [checked]="selectAllValues"
+                    (change)="onParentChecked($event)"
+                    [disabled]="(!(selectAllValues && isZMSHAccountSelected) && isZMSHAccountSelected) || entireSiteDisable">
+                  </xchange-custom-checkbox>
+                  <span
+                    *ngIf="showEntireSiteTooltip && entireSiteDisable"
+                    class="entire-site-tooltip"
+                    id="entireSiteTooltip"
+                    role="tooltip"
+                  >
+                    This option is disabled because 'Restrict Place Order' is selected. Uncheck it to enable 'Entire Site'.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mt-4 mb-4">
+            <app-table-view
+              [tableData]="permissions.websiteSecurityAdmin.rows"
+              [id]="'6'"
+              [columns]="permissions.websiteSecurityAdmin.columns"
+              [checkboxes]="true"
+              [pagination]="false"
+              [minimal]="true"
+              [selectAll]="permissions.websiteSecurityAdmin.columns[0].checked"
+              (recordsSelected)="
+                onChangePermissionSelection(
+                  $event,
+                  permissions.websiteSecurityAdmin
+                )
+              "
+              [disableCheckBoxes]="isZMSHAccountSelected"
+            >
+            </app-table-view>
+            <!-- {{permissions.financials.columns[0].checked}} -->
+            <app-table-view
+              [tableData]="permissions.financials.rows"
+              [id]="'7'"
+              [columns]="permissions.financials.columns"
+              [checkboxes]="true"
+              [pagination]="false"
+              [minimal]="true"
+              [selectAll]="permissions.financials.columns[0].checked"
+              (recordsSelected)="
+                onChangePermissionSelection($event, permissions.financials)
+              "
+              [disableCheckBoxes]="isZMSHAccountSelected"
+            >
+            </app-table-view>
+            <app-table-view
+              [tableData]="permissions.customRugProgram.rows"
+              [id]="'8'"
+              [columns]="permissions.customRugProgram.columns"
+              [checkboxes]="true"
+              [pagination]="false"
+              [minimal]="true"
+              [selectAll]="permissions.customRugProgram.columns[0].checked"
+              (recordsSelected)="
+                onChangePermissionSelection(
+                  $event,
+                  permissions.customRugProgram
+                )
+              "
+            >
+            </app-table-view>
+            <app-table-view
+              [tableData]="permissions.pricing.rows"
+              [id]="'9'"
+              [columns]="permissions.pricing.columns"
+              [checkboxes]="true"
+              [pagination]="false"
+              [minimal]="true"
+              [selectAll]="permissions.pricing.columns[0].checked"
+              (recordsSelected)="
+                onChangePermissionSelection($event, permissions.pricing)
+              "
+            >
+            </app-table-view>
+          </div>
+          <div class="col-md-6 mt-4 mb-4">
+            <app-table-view
+              [tableData]="permissions.productOrderManagement.rows"
+              [id]="'10'"
+              [columns]="permissions.productOrderManagement.columns"
+              [checkboxes]="true"
+              [pagination]="false"
+              [minimal]="true"
+              [selectAll]="
+                permissions.productOrderManagement.columns[0].checked
+              "
+              (selectionChange)="
+                onChangePermissionSelection(
+                  $event,
+                  permissions.productOrderManagement, 'productOrderManagement'
+                )
+              "
+              [disableCheckBoxes]="productOrderManagementDisable"
+            >
+            </app-table-view>
+            <app-table-view
+              [tableData]="permissions.mohawkToday.rows"
+              [id]="'11'"
+              [columns]="permissions.mohawkToday.columns"
+              [checkboxes]="true"
+              [pagination]="false"
+              [minimal]="true"
+              [selectAll]="permissions.mohawkToday.columns[0].checked"
+              (recordsSelected)="
+                onChangePermissionSelection($event, permissions.mohawkToday)
+              "
+            >
+            </app-table-view>
+            <app-table-view
+              [tableData]="permissions.sampleOrderManagement.rows"
+              [id]="'12'"
+              [columns]="permissions.sampleOrderManagement.columns"
+              [checkboxes]="true"
+              [pagination]="false"
+              [minimal]="true"
+              [selectAll]="permissions.sampleOrderManagement.columns[0].checked"
+              (recordsSelected)="
+                onChangePermissionSelection(
+                  $event,
+                  permissions.sampleOrderManagement
+                )
+              "
+            >
+            </app-table-view>
+            <app-table-view
+              [tableData]="permissions.claimsManagement.rows"
+              [id]="'13'"
+              [columns]="permissions.claimsManagement.columns"
+              [checkboxes]="true"
+              [pagination]="false"
+              [minimal]="true"
+              [selectAll]="permissions.claimsManagement.columns[0].checked"
+              (recordsSelected)="
+                onChangePermissionSelection(
+                  $event,
+                  permissions.claimsManagement
+                )
+              "
+            >
+            </app-table-view>
+          </div>
+        </div>
+        <div class="row mb-4 brd">
+          <div class="head-sec">
+            <div class="row">
+              <div class="wdth">Notifications</div>
+            </div>
+          </div>
+          <div class="col-md-6 mt-4 mb-4">
+            <app-table-view
+              [tableData]="notifications.order.rows"
+              [id]="'1'"
+              [columns]="notifications.order.columns"
+              [checkboxes]="true"
+              [pagination]="false"
+              [minimal]="true"
+              (recordsSelected)="
+                onChangeNotificationSelection($event, notifications.order)
+              "
+              [selectAll]="notifications.order.columns[0].checked"
+              [disableCheckBoxes]="isZMSHAccountSelected"
+            >
+            </app-table-view>
+            <!-- <app-table-view
+              [tableData]="notifications.quote.rows"
+              [id]="'2'"
+              [columns]="notifications.quote.columns"
+              [checkboxes]="true"
+              [pagination]="false"
+              [minimal]="true"
+              (recordsSelected)="
+                onChangeNotificationSelection($event, notifications.quote)
+              "
+              [selectAll]="notifications.quote.columns[0].checked"
+              [disableCheckBoxes]="isZMSHAccountSelected"
+            >
+            </app-table-view> -->
+          </div>
+          <div class="col-md-6 mt-4 mb-4">
+            <app-table-view
+              [tableData]="notifications.claims.rows"
+              [id]="'3'"
+              [columns]="notifications.claims.columns"
+              [checkboxes]="true"
+              [pagination]="false"
+              [minimal]="true"
+              (recordsSelected)="
+                onChangeNotificationSelection($event, notifications.claims)
+              "
+              [selectAll]="notifications.claims.columns[0].checked"
+            >
+            </app-table-view>
+            <app-table-view
+              [tableData]="notifications.financial.rows"
+              [id]="'4'"
+              [columns]="notifications.financial.columns"
+              [checkboxes]="true"
+              [pagination]="false"
+              [minimal]="true"
+              (recordsSelected)="
+                onChangeNotificationSelection($event, notifications.financial)
+              "
+              [selectAll]="notifications.financial.columns[0].checked"
+            >
+            </app-table-view>
+            <app-table-view
+              [tableData]="notifications.reserve.rows"
+              [id]="'5'"
+              [columns]="notifications.reserve.columns"
+              [checkboxes]="true"
+              [pagination]="false"
+              [minimal]="true"
+              (recordsSelected)="
+                onChangeNotificationSelection($event, notifications.reserve)
+              "
+              [selectAll]="notifications.reserve.columns[0].checked"
+              [disableCheckBoxes]="isZMSHAccountSelected"
+            >
+            </app-table-view>
+          </div>
+        </div>
+
+        <div class="row align-center">
+          <div class="col-md-3 mb-3 btn-grid">
+            <button
+              class="btn btn-outline-secondary"
+              (click)="navigateToCompanyList()"
+            >
+              Cancel
+            </button>
+          </div>
+          <div
+            class="col-md-3 mb-3 btn-grid"
+            [ngClass]="{
+              'btn-grid-disabled':
+                !editUserForm.valid ||
+                selectedSuffixAccounts.length == 0 ||
+                hasMohawkEmail
+            }"
+          >
+            <button
+              class="btn btn-primary"
+              (click)="onSubmit(editUserForm.value)"
+            >
+              SAVE CHANGES
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

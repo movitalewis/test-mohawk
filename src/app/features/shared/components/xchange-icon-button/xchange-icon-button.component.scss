@@ -1,0 +1,16 @@
+@import 'src/styles/colors';
+
+.xchange-icon-btn {
+    background: transparent;
+    border: none;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $color-red;
+    font-weight: 600;
+
+    img {
+        margin-right: 10px;
+    }
+}

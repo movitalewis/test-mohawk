@@ -1,0 +1,50 @@
+<div class="container d-flex flex-column">
+  <!-- <div class="_card-container mt-5">
+    <div class="row">
+      <div class="col-12">
+        <div class="row">
+          <div class="col-12 col-sm-4 col-md-6 col-lg-3 mt-2 mb-2 m-btn-0">
+            <button type="button" (click) = "navigateToOrders()" class="btn btn-primary btn-grid w-100">
+              OPEN ORDERS: {{getCount('open_orders')}}
+            </button>
+          </div>
+          <div class="col-12 col-sm-4 col-md-6 col-lg-3 mt-2 mb-2 m-btn-0">
+            <button type="button" (click) = "navigateToClaims()" class="btn btn-primary btn-grid w-100">
+              OPEN CLAIMS: {{getCount('claims')}}
+            </button>
+          </div>
+          <div class="col-12 col-sm-4 col-md-6 col-lg-3 mt-2 mb-2 m-btn-0">
+            <button type="button" class="btn btn-primary btn-grid w-100">
+              RECENT INVOICES: {{getCount('recent_invoices')}}
+            </button>
+          </div>
+          <div class="col-12 col-sm-4 col-md-6 col-lg-3 mt-2 mb-2 m-btn-0">
+            <button type="button" (click) = "navigateToClaims()" class="btn btn-primary btn-grid w-100">
+                CLAIMS APPROVAL: {{getCount('claims')}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div> -->
+  <div class="row mb-5 margin-0">
+    <app-product-features [list]="productFeaturesList"></app-product-features>
+  </div>
+
+  <!-- <div
+    class="row mb-5 margin-0"
+    *ngIf="salesManRole === 'AE' || salesManRole === 'TM'"
+  >
+    <app-product-features [list]="productFeaturesListAE"></app-product-features>
+  </div> -->
+
+  <!-- <app-rvp></app-rvp>
+  <div class="col-md-6 mb-5 align-self-center">
+    <xchange-home-search
+      label="Order Search"
+      [type]="'commercialOrder'"
+      (searchTextChanged)="onSearchTextEntered($event)"
+    ></xchange-home-search>
+  </div> -->
+</div>

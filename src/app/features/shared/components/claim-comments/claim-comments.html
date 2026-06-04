@@ -1,0 +1,127 @@
+<div class="modal-header text-center">
+    <h4 class="modal-title w-100">
+        Line {{ selectedLine.invoiceSeq || "NA" }} ({{ selectedLine.component }})
+        Comments
+    </h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="onHideModal()"></button>
+</div>
+<div class="modal-body modal-body-padding">
+    <div *ngIf="!submittedFlag">
+    <alert type="danger" class="dashboard-page-alert mb-2" [dismissible]="true" *ngIf="errorMessage">
+        <div class="container">
+            {{ errorMessage }}
+        </div>
+    </alert>
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-4 mb-xs-3">
+            <div class="comments-header">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="pt-2">
+                        <h3 class="comments-h-title">User Comments ({{selectedLine.claimComments?.length || 0}})</h3>
+                    </div>
+                    <div class="text-right" *ngIf="selectedLine.claimComments?.length > 0">
+                        <!-- <button type="button" class="btn btn1" 
+                            aria-controls="collapseBasic"> -->
+                            <span class="posted-comments-icon" aria-hidden="true"(click)="showPostedComments = !showPostedComments">
+                                <img *ngIf="showPostedComments" src="assets/icons/arrow-dropdown-circle-up.svg"                                    alt="Collapse Icon" />
+                                <img *ngIf="!showPostedComments" src="assets/icons/arrow-dropdown-circle-down.svg"
+                                    alt="Expand Icon" />
+                            </span>
+                        <!-- </button> -->
+                    </div>
+                </div>
+                <div class="comments-container collapsible" [class.open]="showPostedComments" [attr.aria-hidden]="!showPostedComments">
+                    <div *ngFor="let item of selectedLine.claimComments; let i = index"
+                        [class.comment-section]="i !== selectedLine.claimComments.length - 1" class="py-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="comment-user-name">
+                                <h4>{{ item?.userName }}</h4>
+                            </div>
+                            <div class="text-right text-muted comment-date"> <span class="italic">{{ item?.claimCommentDate }}</span>
+                            </div>
+                        </div>
+                        <p class="text-muted comment-text mb-0">{{ item?.claimComment }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-4 mb-xs-3" *ngIf="storageService?.userInfo?.isCustomer != true">
+            <div class="comments-header">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="pt-2">
+                        <h3 class="comments-h-title">Salesperson Comments ({{selectedLine.claimSalesComments?.length || 0}})</h3>
+                    </div>
+                    <div class="text-right" *ngIf="selectedLine.claimSalesComments?.length > 0">
+
+                        <!-- <button type="button" class="btn btn1"
+                            aria-controls="collapseBasic"> -->
+                            <span  (click)="showSalesComments = !showSalesComments" class="posted-comments-icon" aria-hidden="true">
+                                <img *ngIf="showSalesComments" src="assets/icons/arrow-dropdown-circle-up.svg"
+                                    alt="Collapse Icon" />
+                                <img *ngIf="!showSalesComments" src="assets/icons/arrow-dropdown-circle-down.svg"
+                                    alt="Expand Icon" />
+                            </span>
+                        <!-- </button> -->
+                    </div>
+                </div>
+                <div class="comments-container collapsible" [class.open]="showSalesComments" [attr.aria-hidden]="!showSalesComments">
+                    <div *ngFor="let item of selectedLine.claimSalesComments; let i = index"
+                        [class.comment-section]="i !== selectedLine.claimSalesComments.length - 1" class="py-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="comment-user-name">
+                                <h4>{{ item?.userName }}</h4>
+                            </div>
+                            <div class="text-right text-muted comment-date"> <span class="italic">{{ item?.claimCommentDate }}</span>
+                            </div>
+                        </div>
+                        <p class="text-muted comment-text mb-0">{{ item?.claimComment }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="new-comments-section p-30">
+            <h3 class="h5 text-center">Add New Comment</h3>
+            <div class="form-group py-2">
+                <label class="font-weight-600 mb-1 d-flex align-items-center input-label" for="commentInput">
+                    Enter Comment
+                </label>
+                <textarea id="commentInput" placeholder="Type Here" class="form-control"
+                    [(ngModel)]="newComment"></textarea>
+            </div>
+            <div class="py-1 info-section">
+                <p>
+                    To attach photos or documentation associated with this claim, visit
+                    edit claim
+                </p>
+            </div>
+            <div class="row mt-3 justify-content-center gap-3">
+                <!-- <div class="col-6"> -->
+                    <button type="button" class="btn btn-secondary action-btn" (click)="onHideModal()">
+                        Cancel
+                    </button>
+                <!-- </div> -->
+                <!-- <div class="col-6"> -->
+                    <button type="button" class="btn btn-primary action-btn"
+                        [disabled]="!newComment || (selectedLine?.erpStatus|uppercase) == 'CLOSED'"
+                        (click)="submitComment()">
+                        Submit
+                    </button>
+                <!-- </div> -->
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+    <div class="row" *ngIf="submittedFlag">
+        <div class="text-center">
+            <img class="successful-icon" src="assets/icons/successful-icon.svg" alt="SuccessfulIcon" />
+            <h3 class="h5">Comment added successfully!</h3>
+            <button type="button" class="btn btn-primary action-btn my-3" (click)="onHideModal()">
+                Close
+            </button>
+        </div>
+    </div>
+</div>

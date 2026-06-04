@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="45" height="45" viewBox="0 0 45 45">
+  <defs>
+    <filter id="Ellipse_157" x="0" y="0" width="45" height="45" filterUnits="userSpaceOnUse">
+      <feOffset input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_6078" data-name="Group 6078" transform="translate(-420 -1086)">
+    <g transform="matrix(1, 0, 0, 1, 420, 1086)" filter="url(#Ellipse_157)">
+      <circle id="Ellipse_157-2" data-name="Ellipse 157" cx="13.5" cy="13.5" r="13.5" transform="translate(9 9)" fill="#fff"/>
+    </g>
+    <path id="Icon_awesome-comment-alt" data-name="Icon awesome-comment-alt" d="M10.637,0H1.52A1.521,1.521,0,0,0,0,1.52V8.358a1.521,1.521,0,0,0,1.52,1.52H3.8v1.994a.286.286,0,0,0,.453.23L7.218,9.877h3.419a1.521,1.521,0,0,0,1.52-1.52V1.52A1.521,1.521,0,0,0,10.637,0Z" transform="translate(436.751 1102.751)" fill="#ce0e2d"/>
+  </g>
+</svg>

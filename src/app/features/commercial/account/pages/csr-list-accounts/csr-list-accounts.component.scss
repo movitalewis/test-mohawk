@@ -1,0 +1,59 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+
+.minus-icon-size {
+  font-size: 3px;
+  transform: translateY(9px);
+  position: absolute;
+  margin-left: -22px;
+}
+
+.operations {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  column-gap: 27px;
+
+  .save-btn {
+
+    .btn {
+      max-width: auto;
+    }
+  }
+}
+
+.cta-align {
+  @include breakpoint-range($min: lg) {
+    margin-top: 27px;
+  }
+}
+
+::ng-deep .table-responsive {
+  .ngx-table__table--normal > thead > tr > th {
+    padding: 6px 15px;
+  }
+
+  .ngx-table {
+    text-align: center;
+  }
+}
+.align-btn {
+  margin-bottom: 41.5px;
+}
+::ng-deep{
+  .csrlist{
+    // .ngx-table__table--normal > tbody > tr > td:nth-child(2){
+    //   padding: 0px 25px !important;
+    //   text-align: left !important;
+    // }
+    // .ngx-table__table--normal > tbody > tr > td:nth-child(3) {
+    //   padding: 0px 95px !important;
+    //   text-align: left !important; 
+    //   }
+      .ngx-pagination-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+      }
+}

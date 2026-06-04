@@ -1,0 +1,55 @@
+<app-loader *ngIf="tableLoading"></app-loader>
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <h2 class="text-center mb-4">Account Statements</h2>
+  <div class="row mb-4 mt-4 justify-content-center">
+    <div class="col-md-7 col-lg-9">
+      <div class="_card-container">
+        <div class="row mb-1 mt-1">
+          <div class="col-md-4">
+            <h4>Year</h4>
+            <ng-select
+              placeholder="Select Year"
+              [items]="years"
+              [formControl]="yearSelected"
+            >
+              <ng-option></ng-option>
+            </ng-select>
+          </div>
+          <div class="col-md-8 align-end mt-4 statements_btn">
+            <button
+              class="btn btn-primary"
+              (click)="viewStatements()"
+              [disabled]="(yearSelected.value === lastYearSelected) || !yearSelected.value"
+            >
+              View Statement(s)
+            </button>
+          </div>
+        </div>
+        <div class="row mt-4">
+          <app-loader *ngIf="tableLoading"></app-loader>
+          <ngx-table
+            [configuration]="configuration"
+            [data]="accountStatement"
+            [columns]="columns"
+            class="d-inline-table"
+          >
+            <ng-template let-row let-index="index">
+              <td>
+                {{ dateConvert(row) | date : "MM/dd/yyyy" }}
+              </td>
+              <td class="text-right text-danger">
+                <button
+                  class="btn btn-primary"
+                  (click)="navigateToAccountStatementDetails(row)"
+                >
+                  View Statement
+                </button>
+              </td>
+            </ng-template>
+          </ngx-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

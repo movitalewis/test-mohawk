@@ -1,0 +1,236 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+@import "src/styles/mixins/box-shadow.mixin";
+
+::ng-deep {
+  .tab-content {
+    padding: 0px !important;
+  }
+
+  .custom-order-tabs {
+    .choose-address-lightbox-tabset {
+      .nav-tabs {
+        border-radius: 20px 20px 0px 0px;
+        .nav-item.active {
+          .nav-link {
+            border-radius: 20px 20px 0px 0px;
+          }
+        }
+        .responsive-tab-action {
+          border-radius: 20px 20px 0px 0px;
+        }
+      }
+    }
+  }
+}
+
+.align-center {
+  justify-content: center;
+}
+.custom-order-tabs {
+  ._card-container {
+    border-radius: 0 0 8px 8px;
+  }
+}
+.default-addr {
+  .default-addr-left {
+    .dsa-container {
+      margin: 5px 0;
+      padding: 20px;
+      background: #f5f5f5;
+      // min-height: 353px;
+      display: grid;
+      align-content: space-between;
+      @include breakpoint-range($max: md) {
+        min-height: auto;
+        display: block;
+      }
+      .address-text {
+        font-size: 14px;
+      }
+    }
+  }
+  .default-addr-right {
+    .dsa-container {
+      margin: 5px 0;
+      padding: 20px;
+      background: #f5f5f5;
+      // min-height: 353px;
+      display: grid;
+      align-content: space-between;
+      @include breakpoint-range($max: md) {
+        min-height: auto;
+        display: block;
+      }
+    }
+  }
+}
+// .border-box {
+//   border: 1px solid #b1b1b1;
+//   padding: 20px 30px;
+//   border-radius: 5px;
+//   min-height: 100px;
+//   margin: 10px 0;
+//   .address-text {
+//     p {
+//       font-size: 14px;
+//       margin-bottom: 5px;
+//     }
+//     span {
+//       display: block;
+//       font-size: 12px;
+//       margin-bottom: 10px;
+//     }
+//   }
+// }
+.full-btns {
+  .btn {
+    width: 100%;
+  }
+}
+.address-check {
+  font-weight: 600;
+  p {
+    padding-left: 35px;
+    font-weight: 300;
+  }
+}
+.c-r {
+  margin-right: 20px;
+}
+.p-50 {
+  padding: 0 50px;
+  @include breakpoint-range($max: sm) {
+    padding: 0;
+  }
+}
+.text-right {
+  text-align: right;
+  @include breakpoint-range($max: sm) {
+    text-align: left;
+  }
+}
+.fs-12 {
+  font-size: 12px;
+}
+.blue-bg {
+  background-color: #ecf6ff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  p {
+    margin-bottom: 0;
+  }
+}
+.mt-4 {
+  @include breakpoint-range($max: sm) {
+    margin-top: 10px;
+  }
+}
+.form-control {
+  &.ng-invalid {
+    color: unset;
+    border-color: unset;
+    border: 1px solid #b1b1b1;
+    &.ng-touched {
+      color: #ce0e2d;
+      border-color: #ce0e2d;
+    }
+  }
+}
+
+::ng-deep .error {
+  .ng-select-container {
+    border: 1px solid #ce0e2d;
+  }
+}
+.buttons-modal {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+.change-date {
+  display: flex;
+  gap: 20px;
+}
+::ng-deep .xchange-loader {
+  top: 0px;
+  height: 177vh;
+}
+
+::ng-deep .custom-spinner {
+  position: absolute;
+  top: 28%;
+}
+.ng-select-disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+.mr-15 {
+  margin-right: 15px;
+}
+
+::ng-deep {
+  alert {
+    .alert.alert-danger.alert-dismissible {
+      margin: auto 50px;
+      margin-bottom: 15px;
+    }
+  }
+}
+::ng-deep {
+  .acknowlege {
+    .xchange-checkbox-label {
+      @media (min-device-width: 768px) and (max-device-width: 1366px) {
+        display: -webkit-inline-box !important;
+        flex-wrap: nowrap !important ;
+      }
+    }
+    .xchange-checkbox {
+      @media (min-device-width: 768px) and (max-device-width: 1366px) {
+        width: 600px !important;
+      }
+    }
+  }
+}
+.mt-55 {
+  @include breakpoint-range($max: sm) {
+    margin-top: 0px !important;
+  }
+  margin-top: 55px !important;
+}
+
+.disabled-div {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.searchspinner {
+  position: relative;
+  z-index: 9;
+  text-align: right;
+  right: 70px;
+  top: 10px;
+  color: #ce0e2d;
+  font-size: 12px;
+  opacity: 0.8;
+  width: 22px;
+  height: 22px;
+}
+.invalid-info {
+  color: $color-red;
+  margin-bottom: 10px;
+  margin-left: 50px;
+}
+
+::ng-deep{
+  .shipvia-change{
+    .shipvia.ng-select-single .ng-select-container .ng-value-container .ng-input > input{
+      text-transform: uppercase;
+    }
+    .shipvia div, .shipvia input, .shipvia span{
+      text-transform: uppercase;
+      .span-preferred{
+        text-transform: capitalize;
+      }
+    }
+  }
+}

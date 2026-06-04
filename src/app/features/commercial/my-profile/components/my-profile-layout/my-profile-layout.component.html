@@ -1,0 +1,53 @@
+<div class="container">
+  <xchange-breadcrumb
+    class="mb-4 d-block"
+    [breadcrumbItems]="breadcrumbItems"
+  ></xchange-breadcrumb>
+  <div class="row mb-4 mt-4">
+    <div class="col-lg-4 col-xl-3 my-profile-nav-bg">
+      <div class="my-profile-nav-container">
+        <div class="my-profile-avatar-section">
+          <xchange-custom-icon icon="user"></xchange-custom-icon>
+          <h6>Mohawk Xchange</h6>
+        </div>
+        <ul class="my-profile-nav" myProfileNav>
+          <li class="nav-action-li" (click)="toggleDropdown()">
+            {{ selectedmenuItem }}
+          </li>
+          <li
+            class="nav-item"
+            routerLinkActive="active"
+            *ngFor="let nav of navigation"
+          >
+            <a
+              class="nav-link"
+              [routerLink]="'/commercial/my-profile/' + nav.path"
+            >
+              {{ nav.name }}
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="nav-item my-profile-nav" *ngIf="isMobile">
+        <div class="nav-link dropdown">
+          <div class="dropdown-content" [ngClass]="{ show: isDropdownOpen }">
+            <div class="dropdown-item">
+              <a
+                (click)="closeDropdown()"
+                class="nav-link"
+                *ngFor="let nav of navigation"
+                [routerLink]="['/commercial/my-profile/', nav.path]"
+                routerLinkActive="active"
+              >
+                {{ nav.name }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8 col-xl-9 white-bg">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

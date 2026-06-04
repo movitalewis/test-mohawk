@@ -1,0 +1,24 @@
+<div class="search-box-widget">
+    <label class="search-box-widget-label">{{ label }}</label>
+    <div class="row">
+        <div *ngIf="searchBy" class="col-md-6">
+            <ng-select placeholder="Search By.."
+            (change)="onSearchByChange($event)">
+              <ng-option *ngFor="let item of SearchBy" [value]="item?.value">
+                {{ item?.label }}
+              </ng-option>
+            </ng-select>
+          </div>
+          <div [class.col-md-6]="searchBy" [class.col-md-12]="!searchBy">
+            <xchange-search-control
+              [disabled]="isSearchDisabled"
+              [isGlobalSearchEnabled]="false"
+              [searchByIcon]="true"
+              [placeholder]="getDynamicPlaceholder()"
+                [(ngModel)]="searchValue"
+              (sendValue)="onSearchTextChanged($event)"
+              [searchFlag]="searchFlag"
+            ></xchange-search-control>
+          </div>
+    </div>
+</div>

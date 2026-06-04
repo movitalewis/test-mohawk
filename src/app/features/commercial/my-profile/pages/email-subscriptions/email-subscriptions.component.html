@@ -1,0 +1,22 @@
+<div class="profile-section">
+  <section>
+    <header class="page-header w-100">
+      <h2>Email Subscriptions</h2>
+    </header>
+
+    <p class="mt-4 w-100">Please select email subscriptions.</p>
+    <ul class="subscribe-list w-100">
+      <li *ngFor="let item of mailSubscriptionList; let i = index">
+        <xchange-custom-checkbox
+          type="checkbox"
+          [id]="'es' + i"
+          [label]="item"
+        ></xchange-custom-checkbox>
+      </li>
+    </ul>
+  </section>
+
+  <button class="btn btn-primary align-self-end save-btn mt-4">
+    SAVE CHANGES
+  </button>
+</div>

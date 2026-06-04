@@ -1,0 +1,62 @@
+<div class="modal-header text-center">
+  <h4 class="modal-title f-w text-center">Saved Addresses</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="onHideModal('plpsaves')"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body p-20">
+  <div class="row mb-4 full-btns p-50">
+    <div class="col-md-6">
+      <xchange-search-control
+      [isGlobalSearchEnabled]="false" 
+        placeholder="Search by Non-Sample Order#"
+        (sendValue)="sendValue($event)" [searchByIcon]="true"
+      ></xchange-search-control>
+      
+    </div>
+  </div>
+  <div class="text-center">
+    <div class="mb-2">
+      <ngx-table
+        #table
+        [configuration]="configuration"
+        [data]="allAddressData"
+        [columns]="columns"
+        class="d-inline-table"
+      >
+        <ng-template let-row let-index="index">
+          <td>
+            <xchange-custom-radio
+              [type]="'radio'"
+              [id]="'radio-' + index"
+              [checked]="row.selected"
+              [value]="row"
+              (model)="onSubmitModal(row, 'plpsaves')"
+            ></xchange-custom-radio>
+          </td>
+          
+          <td>
+            {{ row?.id || "NA" }}
+          </td>
+          <td>
+            {{ row?.formattedAddress || "NA" }}
+          </td>
+          <td>
+            {{ row?.shippingAddress || "NA" }}
+          </td>
+
+          <td>
+            <div class="color-red">
+              <span class="mohawak-icon back-i"></span>Delete
+            </div>
+          </td>
+        </ng-template>
+      </ngx-table>
+    </div>
+  </div>
+</div>

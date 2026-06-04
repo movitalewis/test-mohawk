@@ -1,0 +1,100 @@
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+
+  <div class="col-md-12">
+    <div class="row">
+      <div class="col-12 col-sm-5 back-to">
+        <xchange-icon-button
+          icon="back"
+          label="Back To Reserves"
+          routerLink="/residential/orders/reserves"
+        ></xchange-icon-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- error alert  -->
+  <!-- <error-alert class="mb-4"></error-alert> -->
+
+  <alert type="info" class="dashboard-page-alert" [dismissible]="true">
+    <div class="container">Products are removed from the Reserve</div>
+  </alert>
+
+  <div class="_card-container mt-3">
+    <h2>Reserve #32023043</h2>
+    <div class="row mt-4">
+      <div class="col-12 col-sm-6 col-lg-2">
+        <h4>Reserve Name</h4>
+        <p>SAH</p>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-2">
+        <h4>Reserve By</h4>
+        <p>Reserve By</p>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <h4>Shipping Address</h4>
+        <p>
+          About All Floors(Suffix#0) <br />
+          5 Maplewood Dr Hefner
+        </p>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-2">
+        <h4>Ship Via</h4>
+        <p>PA42-MHK THF</p>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <h4>Shipping Warehouse</h4>
+        <p>PAS-MOHAWK IND PHILADELPHIA PA</p>
+      </div>
+    </div>
+
+    <div
+      class="alert alert-secondary claim-text mt-4 mb-4"
+      role="Select All Items"
+    >
+      <xchange-custom-checkbox
+        [disabled]="true"
+        type="checkbox"
+        [id]="'xyz'"
+        label="Select All Items"
+      ></xchange-custom-checkbox>
+    </div>
+
+    <div class="_card-container text-center">
+      <h3 class="pb-5 pt-5">No Items in this reserve</h3>
+    </div>
+
+    <div class="row">
+      <div class="col-12 text-center mt-4">
+        <button
+          type="button"
+          disabled
+          class="btn btn-secondary col-12 col-sm-4 col-md-4 col-lg-2 btn-grid me-3 mb-3"
+        >
+          CANCEL RESERVE
+        </button>
+        <button
+          type="button"
+          disabled
+          class="btn btn-primary col-12 col-sm-4 col-md-4 col-lg-2 btn-grid me-3 mb-3"
+        >
+          EXTEND RESERVE
+        </button>
+        <button
+          type="button"
+          disabled
+          class="btn btn-primary col-12 col-sm-4 col-md-4 col-lg-2 btn-grid me-3 mb-3"
+        >
+          REQUEST QUOTE
+        </button>
+        <button
+          type="button"
+          disabled
+          class="btn btn-primary col-12 col-sm-4 col-md-4 col-lg-2 btn-grid me-3 mb-3"
+        >
+          ADD TO CART
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

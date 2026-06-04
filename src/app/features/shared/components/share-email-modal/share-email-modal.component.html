@@ -1,0 +1,154 @@
+<!-- <app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader> -->
+<form [formGroup]="toemailForm">
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w text-center w-100">{{ title }}</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="onHideModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-50">
+    <div class="row">
+      <div class="col-md-12">
+        <h4>From:</h4>
+        <p>XChange Support (Xchange_Support&#64;mohawkind.com)</p>
+      </div>
+      <div class="col-md-12 sender-email-suggestions">
+        <h4>To:</h4>
+        <!-- <textarea
+          placeholder="Enter email address separated by a comma on the same line"
+          class="form-control w-100"
+          [class.is-invalid]="
+            toemailForm.controls['senderEmail'].touched == true &&
+            toemailForm.controls['senderEmail'].hasError('pattern')
+          "
+          formControlName="senderEmail"
+          [typeahead]="emailsList"
+          [typeaheadMultipleSearch]="true"
+        ></textarea> -->
+        <textarea
+          type="textarea"
+          placeholder="Enter email address separated by a comma on the same line"
+          class="form-control w-100"
+          [class.is-invalid]="
+            toemailForm.controls['senderEmail'].touched &&
+            toemailForm.controls['senderEmail'].invalid
+          "
+          formControlName="senderEmail"
+          (input)="onInputChange($event); onChangeValue($event)"
+          (blur)="toemailForm.controls['senderEmail'].markAsTouched()"
+          (keypress)="spaceKeyValidation($event)"
+         ></textarea>
+         <div *ngIf="suggestions!==undefined && suggestions.length > 0" class="suggestions">
+            <div class="dropdown">
+              <div class="dropdown-menu w-100" aria-labelledby="suggestionDropdown">
+                <ng-container *ngIf="!apiLoading">
+                  <ng-container>
+                    <div
+                      *ngFor="let suggestion of suggestions"
+                      class="dropdown-item suggestion-item"
+                      (click)="selectSuggestion(suggestion)"
+                    >
+                      <div class="email">{{ suggestion }}</div>
+                    </div>
+                  </ng-container>
+                  <ng-template *ngIf="
+                    toemailForm.controls['senderEmail']?.value?.trim() &&
+                    suggestions?.length === 0 &&
+                    showSuggestions
+                  " >
+                  <div class="dropdown-item-error suggestion-item">
+                    <div class="error">No email found</div>
+                  </div>
+                </ng-template>                      
+              </ng-container>
+              <ng-container *ngIf="apiLoading">
+                <div class="cssload-container">
+                  <div class="cssload-loading">
+                    <i></i><i></i><i></i><i></i>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <p class="fs-12 mt-2">Place a comma after each email address.</p>
+        <div
+          class="text-danger"
+          *ngIf="toemailForm.controls['senderEmail'].touched &&
+           toemailForm.controls['senderEmail'].errors?.['invalidEmails']?.length"
+        >
+          The following emails are invalid:
+          {{ toemailForm.controls['senderEmail'].errors['invalidEmails'].join(', ') }}
+        </div>
+      </div>
+      <div class="col-md-12">
+        <h4>Subject:</h4>
+        <input
+          readonly
+          type="text"
+          placeholder="Type Here"
+          class="form-control"
+          maxlength="500"
+          formControlName="subject"
+          (keypress)="avoidSpace($event)"
+          [class.is-invalid]="
+            toemailForm.controls['subject'].touched == true &&
+            toemailForm.controls['subject'].hasError('pattern')
+          "
+        />
+        <div class="invalid-feedback">Please enter subject</div>
+      </div>
+      <div class="col-md-12 mt-4">
+        <xchange-custom-radio
+          type="radio"
+          [group]="'PDF'"
+          [checked]="selectPDFFlag"
+          (model)="docTypeSelection($event)"
+          [id]="'xyz2'"
+          label="PDF"
+        >
+        </xchange-custom-radio>
+        <xchange-custom-radio
+          type="radio"
+          [group]="'Excel'"
+          [checked]="selectExcelFlag"
+          (model)="docTypeSelection($event)"
+          [id]="'xyz3'"
+          label="EXCEL"
+        >
+        </xchange-custom-radio>
+      </div>
+    </div>
+    <div class="mt-3">
+      <alert
+        [type]="alertType"
+        class="mb-3"
+        [dismissible]="true"
+        *ngIf="showMessage"
+      >
+        <div class="container">{{ showMessage }}</div>
+      </alert>
+    </div>
+    <div class="row mt-4 mb-4 p-50">
+      <div class="col-md-12 text-center">
+        <button class="btn btn-outline-secondary mb-2" (click)="onHideModal()">
+          CLOSE
+        </button>
+        <button
+          class="btn btn-primary mb-2"
+          (click)="sendEmail()"
+          [disabled]="
+            !toemailForm.valid || (!selectPDFFlag && !selectExcelFlag)
+          "
+        >
+          SEND
+        </button>
+      </div>
+    </div>
+  </div>
+</form>

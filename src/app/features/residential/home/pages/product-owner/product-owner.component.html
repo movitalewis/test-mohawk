@@ -1,0 +1,31 @@
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+
+  <h1 class="text-center fw-normal mb-4">Product Catalog</h1>
+
+  <div class="row">
+    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-3">
+      <app-product-catalog [type]="'residential'" [list]="productSoftSurfaceList"></app-product-catalog>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-3">
+      <app-product-catalog [type]="'residential'" [list]="productHardSurfaceList"></app-product-catalog>
+    </div>
+
+    <!-- <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-3">
+      <app-product-catalog [type]="'residential'" [list]="productTileList"></app-product-catalog>
+    </div> -->
+
+    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-3">
+      <app-product-catalog [type]="'residential'" [list]="productIndoorList"></app-product-catalog>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-3">
+      <app-product-catalog [type]="'residential'" [list]="productAccessoriesList"></app-product-catalog>
+    </div>
+
+    <!-- <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-3">
+      <app-product-catalog [type]="'residential'" [list]="productSampleList"></app-product-catalog>
+    </div> -->
+  </div>
+</div>

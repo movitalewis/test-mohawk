@@ -1,0 +1,159 @@
+<div class="container" id="print-content">
+  <!-- Breadcrumbs -->
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+
+  <!-- Print Button -->
+  <div class="col-md-12 mb-0 mt-4">
+    <div class="row">
+      <div class="col-12 col-sm-5"></div>
+      <div class="col-12 col-sm-7 back-to d-flex justify-content-end">
+        <div (click)="printPage()" class="print-btn print-ignore">
+          <span class="mohawak-icon print-icon back-i"></span>Print
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="row mt-4">
+    <div class="col-md-12 col-xs-12">
+      <h2 class="text-center mb-4">Scheduled Payment Confirmation</h2>
+    </div>
+  </div>
+
+  <!-- Page Body -->
+  <div class="_card-container">
+    <!-- Payment Information -->
+    <div class="row mt-4">
+      <div class="col-md-7 col-lg-5 mb-3">
+        <div class="d-flex">
+          <p class="mr-4 text-bold">Account #:</p>
+          <p>
+            {{ accountNumber?.split("_")[0] || accountNumber || "Not Found" }}
+          </p>
+        </div>
+        <div class="d-flex">
+          <p class="mr-4 text-bold">Address:</p>
+          <p>{{ address || "Not Found" }}</p>
+        </div>
+        <div class="d-flex">
+          <p class="mr-4 text-bold">Scheduled Date:</p>
+          <p>{{ currentDate | date : "MM/dd/YYYY" }}</p>
+        </div>
+        <div class="d-flex">
+          <p class="mr-4 text-bold">Confirmation Number:</p>
+          <p>{{ confirmationNumber || "Not Found" }}</p>
+        </div>
+      </div>
+      <div class="col-md-7 col-lg-5 mb-3">
+        <div class="d-flex">
+          <p class="mr-4 text-bold">Bank Account #:</p>
+          <p>{{ bankAccountNumber || "Not Found" }}</p>
+        </div>
+        <div class="d-flex">
+          <p class="mr-4 text-bold">Amount:</p>
+          <p>
+            {{
+              totalAmount
+                | currency : priceLabel : "symbol" : "1.2-2"
+            }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Receivables Table -->
+    <div
+      class="table-data"
+      *ngIf="{
+        content: receivables
+      } as data"
+    >
+      <table>
+        <thead>
+          <tr>
+            <th *ngFor="let item of columns">
+              {{ item?.title }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let item of data?.content"
+          >
+            <td>
+              {{ item?.company }}
+            </td>
+            <td>Scheduled</td>
+            <td>
+              {{ item?.documentNumber }}
+            </td>
+            <td>
+              {{ item?.documentDate | date : "MM/dd/yyyy" }}
+            </td>
+            <td>
+              {{
+                item?.openAmount | currency : priceLabel : "symbol" : "1.2-2"
+              }}
+            </td>
+            <td>
+              {{
+                item?.discountAmount
+                  | currency : priceLabel : "symbol" : "1.2-2"
+              }}
+            </td>
+            <td>
+              {{
+                item?.scheduledAmount
+                  | currency : priceLabel : "symbol" : "1.2-2"
+              }}
+            </td>
+            <td>
+              {{ item?.poNumber }}
+            </td>
+            <td
+              class="text-danger"
+              *ngIf="item?.deductionEntries?.length === 0"
+            >
+              No Deductions
+            </td>
+            <td [colSpan]="columns.length" class="w-100 print-only" *ngIf="item?.deductionEntries?.length >= 1">
+              <table class="black-header-table-one">
+                <thead>
+                  <tr>
+                    <th>Deduction</th>
+                    <th>Description</th>
+                    <th>Comments</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let d of item?.deductionEntries">
+                  <td>{{ d?.deductionAmount | currency : priceLabel : "symbol" : "1.2-2" }}</td>
+                  <td>{{ d?.deductionDescription }}</td>
+                  <td>{{ d?.comments }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td class="text-danger d-flex print-ignore" *ngIf="item?.deductionEntries?.length >= 1">
+              <p
+                (click)="
+                  viewDeductions(viewDeductionsTemplate, item?.deductionEntries)
+                "
+              >
+                View Deductions
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- View Deductions Modal -->
+<ng-template #viewDeductionsTemplate>
+  <xchange-view-deductions
+    [deductions]="selectedDeductions"
+  ></xchange-view-deductions>
+</ng-template>

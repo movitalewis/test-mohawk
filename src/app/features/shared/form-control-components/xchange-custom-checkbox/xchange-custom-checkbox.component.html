@@ -1,0 +1,20 @@
+<div class="xchange-checkbox">
+  <label class="xchange-checkbox-label" [ngClass]="{ 'right-control': rtl }">
+    <input
+      [type]="type"
+      class="xchange-checkbox-input"
+      [id]="id"
+      [value]="value"
+      [name]="name"
+      [disabled]="disabled"
+      [checked]="checked"
+      ngModel
+      (ngModelChange)="onControlChange($event)"
+      tabindex="0"
+      
+    />
+    <div class="checkbox" [ngClass]="{'checkdisable': disabled}" [class.isInvalid]="isInvalid"></div>
+    <span *ngIf="!link">{{ label }}</span>
+  </label>
+  <a class="text-white" *ngIf="link" (click)="goTo()">{{ label }}</a>
+</div>

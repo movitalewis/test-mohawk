@@ -1,0 +1,27 @@
+@import "/src/styles/colors";
+@import "/src/styles/my-profile";
+@import "/src/styles/mixins/breakpoints";
+
+.order-notification-header {
+  display: flex;
+  justify-content: space-evenly;
+  max-width: 70%;
+  margin-left: auto;
+
+  @include breakpoint-range($max: md) {
+    max-width: 100%;
+    margin-left: unset;
+  }
+}
+
+::ng-deep {
+  xchange-custom-checkbox.select-all {
+    .xchange-checkbox {
+      .xchange-checkbox-label {
+        .checkbox {
+          margin-right: 8px !important;
+        }
+      }
+    }
+  }
+}

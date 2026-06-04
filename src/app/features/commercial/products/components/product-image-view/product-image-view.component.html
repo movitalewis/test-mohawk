@@ -1,0 +1,510 @@
+<app-loader *ngIf="spinnerLoading"></app-loader>
+<div class="row">
+  <div class="col-lg-5 left-carousal">
+    <div class="col-12 row">
+      <div class="col-6 col-sm-8">
+        <h2 class="product-name">
+          {{
+            pdpDataOptions?.otherDetails?.selected?.sellingStyleName || "N/A"
+          }}
+          <small>{{
+            pdpDataOptions?.otherDetails?.selected?.sellingStyleId || "N/A"
+          }}</small>
+        </h2>
+      </div>
+      <div class="col-6 col-sm-4 product-name">
+        <xchange-logo-pdp
+          [type]="'mohawk-group'"
+          [theme]="'dark'"
+          [selectedPdpData]="selectedPdpData"
+        ></xchange-logo-pdp>
+      </div>
+    </div>
+    <owl-carousel-o
+      [options]="customOptions"
+      #owlCar
+      (changed)="getPassedData($event)"
+      (initialized)="getPassedData($event)"
+    >
+      <ng-template
+        carouselSlide
+        *ngFor="let product of productImages; let i = index"
+        [id]="'product' + i"
+      >
+        <div
+          class="ribbon-wrapper"
+          *ngIf="pdpDataOptions?.otherDetails?.selected?.isDropped"
+        >
+          <div class="ribbon">
+            <p>
+              DROPPED
+              <br />{{
+                pdpDataOptions?.otherDetails?.selected?.dropDate
+                  | date : "MM/dd/yyyy"
+              }}
+              <span *ngIf="!pdpDataOptions?.otherDetails?.selected?.dropDate"
+                >N/A</span
+              >
+            </p>
+          </div>
+        </div>
+        <div
+          class="ribbon-wrapper"
+          *ngIf="pdpDataOptions?.otherDetails?.selected?.preferredStock"
+        >
+          <div class="ribbon preferred-stock">
+            <p>
+              PREFERRED <br/> STOCKING
+            </p>
+          </div>
+        </div>
+        <div [ngClass]="{ 'quick-ship': pdpData?.quickShipEligible }">
+          <div class="image-overlay-container">
+            <img
+              data-action="zoom"
+              (click)="
+                openLightBoxModal(getswatchRoomImage())
+              "
+              [src]="getswatchRoomImage()"
+              width="100%"
+              alt=""
+            />
+            <div class="overlay" *ngIf="pdpData?.quickShipEligible">
+              <img
+                src="/assets/images/quick-ship.svg"
+                class="swatch-reload-icon"
+              />
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </owl-carousel-o>
+    <div
+      class="mt-3 row mb-4 justify-content-between change-image-mod-btns align-items-center ipro-btn"
+    >
+      <div class="col-7 mx-auto parnt">
+        <xchange-switch-button
+          [config]="switchBtnConfig"
+          (onValueOutput)="onSwitch($event)"
+        ></xchange-switch-button>
+      </div>
+      <div class="col-5 pre-order">
+        <div class="row justify-content-end" *ngIf="!inHouseAccount">
+          <div class="col-12" *ngIf="preOrderFlag">
+            <button
+              class="btn btn-secondary mx-1 w-100"
+              (click)="openOrderSamplepdpModal()"
+            >
+              Pre Order Sample
+            </button>
+          </div>
+          <div class="col-12" *ngIf="!preOrderFlag">
+            <button
+              class="btn btn-secondary mx-1 w-100"
+              (click)="openOrderSamplepdpModal()"
+              [disabled]="!pdpDataOptions?.showOrderSample || (pdpData?.migratedBuilderProduct && isCustomer) || isMohawkOneuser  ||  userService.salesBlocked"
+            >
+             {{!pdpDataOptions?.showOrderSample || (pdpData?.migratedBuilderProduct && isCustomer) ? "No Sample Available" : "Order Sample"}} 
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <!-- <div class="col-12 row">
+      <div class="col-6 col-sm-8">
+        <h2 class="product-name">
+          {{
+            pdpDataOptions?.otherDetails?.selected?.sellingStyleName || "N/A"
+          }}
+          <small>{{
+            pdpDataOptions?.otherDetails?.selected?.sellingStyleId || "N/A"
+          }}</small>
+        </h2>
+      </div>
+      <div class="col-6 col-sm-4 product-name">
+        <xchange-logo-pdp
+          [type]="'mohawk-group'"
+          [theme]="'dark'"
+          [selectedPdpData]="selectedPdpData"
+        ></xchange-logo-pdp>
+      </div>
+    </div> -->
+
+    <div class="product-colors-container">
+      <div class="w-100 mb-2 row">
+        <div class="col-6">
+          <p class="mb-0">CHOOSE A COLOR</p>
+        </div>
+        <div class="col-6 text-end p-0">
+          <span class="" *ngIf="multiSizeAvailable">
+            * Multiple options available
+          </span>   
+          <button
+            (click)="viewAllColors()"
+            class="view_all"
+            *ngIf="colorVariant?.length > 5"
+          >
+            View all Colors
+          </button>
+        </div>
+
+        <!-- <pagination id="paginationRef" nextText="&rsaquo;" previousText="&lsaquo;" class="pagination-v2"
+          [totalItems]="colorVariant?.length" [itemsPerPage]="itemPerPage" (pageChanged)="pageChanged($event)"
+          [(ngModel)]="currentPage">
+        </pagination> -->
+        <!-- <pagination-controls
+          [maxSize]="itemPerPage"
+          [responsive]="true"
+          [nextLabel]="''"
+          [previousLabel]="''"
+          (pageChange)="onTableDataChange($event)"
+        >
+        </pagination-controls> -->
+      </div>
+      <div class="product-varient-carousel">
+        <owl-carousel-o [options]="customOptionsProducts" #owlCarNew>
+          <ng-container *ngFor="let product of colorVariant; let t = index">
+            <ng-template carouselSlide [id]="product?.value?.code">
+              <div
+                [ngClass]="
+                   !FromPlpFlag && product?.value?.code == activeSlideId ? 'activeSlide' : ''
+                "
+                (click)="
+                  productClick(product?.value?.code, product?.value); resetSizeValue();
+                  owlCar.to('product/details/' + product?.value?.code)
+                "
+              >
+                <div
+                  class="ribbon-wrapper-preview"
+                  *ngIf="product?.value?.isDropped"
+                >
+                  <div class="ribbon">DROPPED</div>
+                </div>
+                <div
+                  class="ribbon-wrapper-preview"
+                  *ngIf="product?.value?.preferredStock"
+                >
+                  <div class="ribbon preferred-stock">PREFERRED <br/> STOCKING</div>
+                </div>
+                <div
+                  [ngClass]="{
+                    'quick-ship': product?.value?.quickShipEligible
+                  }"
+                >
+                  <div class="image-overlay-container">
+                    <img
+                      [src]="
+                        product?.value?.productImageURL
+                          ? getProductImage(product?.value?.productImageURL)
+                          : imageBaseUrl 
+                      "
+                      alt="{{ product?.value?.name }}"
+                    />
+                    <div class="overlay"></div>
+                    <img
+                      src="/assets/images/quick-ship.svg"
+                      *ngIf="product?.value?.quickShipEligible"
+                      class="reload-icon"
+                      alt="Reload Icon"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="text-center">
+                <span class="color-name">
+                  {{ product?.value?.name }} <br />
+                  {{ product?.key }}
+                  <span>
+                    {{ product?.value?.multiSize == true ? "*" : "" }}
+                  </span>
+                </span>
+                <span class="w-100 text-center d-block color-code">
+                  {{ product?.value?.colorCode }}
+                </span>
+              </div>
+            </ng-template>
+          </ng-container>
+        </owl-carousel-o>
+      </div>
+      <!-- <ul class="colors-list-ul">
+        <li
+        *ngFor="
+        let product of colorVariant
+          | paginate
+            : {
+                itemsPerPage: itemPerPage,
+                currentPage: pageIndex
+              };
+        let t = index
+      "
+          [ngClass]="product?.value?.code === activeSlideId ? 'active' : ''"
+        >
+          <a
+            (click)="
+              productClick(product?.value?.code, product?.value);
+              owlCar.to('product/details/' + product?.value?.code)
+            "
+          >
+            <span class="color-image-container">
+              <img
+              [src]="product?.value?.productImageURL ? getProductImage(product?.value?.productImageURL) : imageBaseUrl + product?.value?.image"
+              alt="{{ product?.value?.name }}"
+            />
+            </span>
+          </a>
+          <span class="color-name">
+            {{ product?.value?.name }} <br />
+            {{ product?.key }}
+          </span>
+          <span class="w-100 text-center d-block color-code">
+            {{ product?.value?.colorCode }}
+          </span>
+        </li>
+      </ul> -->
+    </div>
+    <div>
+      <form [formGroup]="productImageForm">
+        <div class="row mt-2">
+          <div class="col-md-5 mb-2">
+            <label class="font-weight-600 mb-1 align-items-center"
+              >Choose a color</label
+            >
+            <ng-select
+              placeholder="Select Color"
+              (change)="onColorValueChange($event, colorVariant)"
+              formControlName="colorCode"
+              [ngClass]="
+              productImageForm.controls['colorCode'].touched &&
+              productImageForm.controls['colorCode'].hasError('required')
+                ? 'is-invalid'
+                : ''
+            "
+            >
+              <ng-option
+                *ngFor="let product of colorVariant"
+                [value]="product?.value.code"
+              >
+                {{ product?.key }} - {{ product?.value?.name }}
+              </ng-option>
+            </ng-select>
+          </div>
+          <div class="col-md-5 mb-2">
+            <label class="font-weight-600 mb-1 align-items-center"
+              >{{ softSurfaceProduct ? "Width" : "Size" }} &nbsp;<span
+                tooltip="Click here to change width/size of your product"
+                class="mohawak-icon info-icon color-red cursor-pointer"
+              ></span
+            ></label>
+            <ng-select
+              placeholder="Select One"
+              formControlName="size"
+              [class.disabledSize]="FromPlpFlag ? true : false"
+              (change)="
+                onValueChange('size', $event, pdpDataOptions?.sizeOptions)
+              "
+              [ngClass]="
+                (productImageForm.controls['size'].touched &&
+                productImageForm.controls['size'].hasError('required')&& !FromPlpFlag)
+                  ? 'is-invalid'
+                  : ''
+              "
+            >
+              <ng-option
+                *ngFor="let item of pdpDataOptions?.sizeOptions"
+                [value]="item.key"
+                ><!--{{ item?.key + "Ft" }} - -->
+                {{item.key}} - {{ item?.value?.name ? item?.value?.name : "N/A" }}</ng-option
+              >
+            </ng-select>
+          </div>
+          <ng-container *ngIf="pdpData?.productFamily != 'Accessories'">
+            <div class="col-md-5 mb-1" *ngIf="pdpData?.productType != 'TILE'">
+              <label class="font-weight-600 mb-1 d-flex align-items-center"
+                >Backing &nbsp;
+                <span
+                  tooltip="Click here to change backing of your product"
+                  class="mohawak-icon info-icon color-red cursor-pointer"
+                ></span
+              ></label>
+              <ng-select
+                placeholder="Select One"
+                formControlName="backing"
+                [class.disabledBacking]="FromPlpFlag ? true : false"
+                (change)="
+                  onValueChange(
+                    'backing',
+                    $event,
+                    pdpDataOptions?.backingOptions
+                  )
+                "
+              >
+                <ng-option
+                  *ngFor="let item of pdpDataOptions?.backingOptions"
+                  [value]="item.key"
+                  >{{ item?.key }} -
+                  {{ item?.value?.name ? item?.value?.name : "N/A" }}</ng-option
+                >
+              </ng-select>
+            </div>
+          </ng-container>
+        </div>
+        <div class="row mt-2">
+          <ng-container *ngIf="pdpData?.productFamily != 'Accessories'">
+            <div class="col-md-5 mb-1">
+              <label
+                class="font-weight-600 mb-1 d-flex align-items-center"
+                *ngIf="activeColorName != undefined"
+                >Color: 
+                <p class="mb-0">
+                  &nbsp;{{ activeColorName ? activeColorName : "N/A" }}
+                </p></label
+              >
+              <label
+                class="font-weight-600 mb-1 d-flex align-items-center"
+                *ngIf="activeColorId != undefined"
+                >Color #:
+                <p class="mb-0">
+                  &nbsp;{{ activeColorId ? activeColorId : "N/A" }}
+                </p></label
+              >
+            </div>
+            <div
+              class="mb-2"
+              [class.col-md-5]="!activeSpreadRate"
+              [class.col-md-12]="activeSpreadRate"
+              *ngIf="
+                activePartNumber != undefined || activeSpreadRate != undefined
+              "
+            >
+              <label
+                class="font-weight-600 mb-1 d-flex align-items-center"
+                *ngIf="activePartNumber != undefined"
+                >Part Number:
+                <p class="mb-0">
+                  &nbsp;{{ activePartNumber ? activePartNumber : "N/A" }}
+                </p></label
+              >
+              <label
+                class="font-weight-600 mb-1 d-flex align-items-center"
+                *ngIf="activeSpreadRate != undefined"
+                >Spread Rate:
+                <p class="mb-0">
+                  &nbsp;{{ activeSpreadRate ? activeSpreadRate : "N/A" }}
+                </p></label
+              >
+            </div>
+          </ng-container>
+           <ng-container *ngIf="pdpData?.productType == 'MERCHANDISING' && !pdpDataOptions?.styleBlocked && isCustomer == false">
+            <div class="col-md-5 mb-2">
+              <label class="font-weight-600"
+                >Est. Freight Cost (Included in Price)</label
+              >
+              <p *ngIf="pdpDataOptions?.priceDetails?.isLoading">
+                <span class="cssload-loading"><i></i><i></i><i></i><i></i></span>
+              </p>
+              <p class="mb-0" *ngIf="!pdpDataOptions?.priceDetails?.isLoading">
+                <strong
+                  >{{
+                    pdpDataOptions?.priceDetails && pdpDataOptions?.priceDetails['freightPrice'] ?
+                    '$'+(pdpDataOptions?.priceDetails['freightPrice']) :'NA'
+                  }}</strong
+                >
+              </p>
+            </div>
+            <div class="col-md-5 mb-2">
+              <label class="font-weight-600">Hero Sample SKU</label>
+              <p class="mb-0">
+                <strong>{{
+                  pdpDataOptions?.otherDetails?.selected?.heroFlag == false
+                    ? "No"
+                    : "Yes"
+                }}</strong>
+              </p>
+            </div>
+            <div class="col-md-5 mb-2">
+              <label class="font-weight-600 mb-1 align-items-center"
+                >Version *</label
+              >
+              <ng-select
+                placeholder="Select Color"
+                (change)="onColorValueChange($event, colorVariant)"
+                formControlName="colorCode"
+                *ngIf="colorVariant.length > 1"
+              >
+                <ng-option
+                  *ngFor="let product of colorVariant"
+                  [value]="product?.value.code"
+                >
+                  {{ product?.key }} - {{ product?.value?.name }}
+                </ng-option>
+              </ng-select>
+              <p class="mb-0" *ngIf="colorVariant.length == 1">
+                <strong
+                  >{{ colorVariant[0].value?.name }} 
+                  {{ colorVariant[0].key }}</strong
+                >
+              </p>
+            </div>
+          </ng-container>
+        </div>
+        <div class="row mt-2" *ngIf="userService?.isShowPrice() && ((pdpDataOptions?.styleBlocked == false && isCustomer) || !isCustomer)">
+          <div
+            class="col-md-5"
+            *ngFor="
+              let item of pdpPfxPriceFields[pdpData?.subProductType] || []
+            "
+          >
+            <label class="font-weight-600">{{
+              item?.fieldName.replace("USD", storageService.userPriceLabel)
+            }}</label>
+            <!-- <p class="mb-0"><strong>$11.94</strong> / sq. yd.</p> -->
+            <ng-container
+              *ngIf="
+                pdpDataOptions?.priceDetails &&
+                  pdpDataOptions?.priceDetails[item?.key] == 0;
+                then noPriceInfo;
+                else priceInfo
+              "
+            >
+            </ng-container>
+            <ng-template #noPriceInfo>
+              <p *ngIf="pdpDataOptions?.priceDetails?.isLoading">
+                <span class="cssload-loading"><i></i><i></i><i></i><i></i></span>
+              </p>
+              <p class="mb-0" *ngIf="!pdpDataOptions?.priceDetails?.isLoading">
+                <strong>N/A </strong>
+              </p></ng-template
+            >
+            <ng-template #priceInfo>
+              <p *ngIf="pdpDataOptions?.priceDetails?.isLoading">
+                <span class="cssload-loading"><i></i><i></i><i></i><i></i></span>
+              </p>
+              <p class="mb-0" *ngIf="!pdpDataOptions?.priceDetails?.isLoading">
+                <span
+                  >${{
+                    (pdpDataOptions?.priceDetails &&
+                    pdpDataOptions?.priceDetails[item?.key]
+                      ? pdpDataOptions?.priceDetails[item?.key]
+                      : "0"
+                    ) | number : "1.2-2"
+                  }}</span
+                >
+                / {{ pdpPricingUOMValue ? pdpPricingUOMValue : item?.type }}
+                <!-- {{
+                  item?.key == "cartonPriceSY" && pdpData?.productType == "TILE"
+                    ? "sq. ft."
+                    : item?.key == "priceEach"
+                    ? "ea."
+                    : "sq. yd."
+                }} -->
+              </p>
+            </ng-template>
+          </div>
+        </div>
+      </form>
+    </div>
+    <ng-container [ngTemplateOutlet]="availabilityForms"></ng-container>
+  </div>
+</div>

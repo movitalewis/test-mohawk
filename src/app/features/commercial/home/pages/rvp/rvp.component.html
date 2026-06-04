@@ -1,0 +1,39 @@
+<div class="container mb-5">
+  <div class="_card-container mt-1">
+    <h2 class="filter-by-widget-text text-center">Claims - Pending Approval</h2>
+
+    <div class="col-12 mt-4">
+      <ngx-table
+        [configuration]="configuration"
+        [data]="data"
+        [columns]="columns"
+      >
+        <ng-template let-row>
+          <td>
+            <a href="">
+              {{ row.claim }}
+            </a>
+          </td>
+          <td>
+            {{ row.claimType }}
+          </td>
+          <td>
+            {{ row.account }}
+          </td>
+          <td>
+            {{ row.customer }}
+          </td>
+          <td>
+            {{ row.endUser }}
+          </td>
+          <td>
+            {{ row.claimDate }}
+          </td>
+          <td>
+            {{ row.invoice }}
+          </td>
+        </ng-template>
+      </ngx-table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,427 @@
+<!-- Site Top Bar  -->
+<section class="top-bar-section">
+  <div class="container">
+    <div class="mobile-top-bar">
+      <div class="mobile-content d-flex justify-content-center">
+        <!-- <ul class="toggle-project" *ngIf="accountInfoSet">
+          <li
+            [ngClass]="{ active: project === item.link }"
+            [routerLink]="'/' + item.link"
+            [routerLinkActive]="'active'"
+            *ngFor="let item of menuLeft"
+            (click)="hideMenu()"
+          >
+            {{ item.name }}
+          </li>
+        </ul> -->
+        <ul
+          [ngClass]="{
+            'toggle-project-set': mobilemenuLeft.length > 1,
+            'toggle-set ': mobilemenuLeft.length <= 1
+          }"
+          *ngIf="accountInfoSet"
+        >
+          <ng-container
+            *ngFor="
+              let item of mobilemenuLeft;
+              let first = first;
+              let i = index
+            "
+          >
+            <ng-container *ngIf="i === 0 || showItems">
+              <div
+                class="dot-container"
+                *ngIf="!showItems && i === 0 && mobilemenuLeft.length > 1"
+                (click)="toggleItems()"
+              >
+                <fa-icon [icon]="faEllipsisVertical"></fa-icon>
+              </div>
+
+              <div class="dot-container" *ngIf="mobilemenuLeft.length > 1">
+                <div *ngIf="showItems && i === 0" (click)="toggleItems()">
+                  <fa-icon [icon]="faTimes"></fa-icon>
+                </div>
+              </div>
+              <li
+                [class.active]="setActive(item.menuName)"
+                (click)="selectItem(item); setEnvironment(item); hideMenu()"
+              >
+                <ng-container>{{ item.name }}</ng-container>
+              </li>
+            </ng-container>
+          </ng-container>
+          <!-- *ngIf="isBuilderXchnage === true" -->
+          <li
+            *ngIf="showItems && isBuilderXchnage == true"
+            (click)="toggleItems()"
+          >
+            <a href="https://staging-crest.mohawkbuilder.com/" target="_blank"
+              >Builder Xchange</a
+            >
+          </li>
+        </ul>
+        <ul class="toggle-project" *ngIf="!accountInfoSet">
+          <li
+            [ngClass]="{ active: project === item.linkWithCustomer }"
+            [routerLink]="'/' + item.linkWithCustomer"
+            [routerLinkActive]="'active'"
+            *ngFor="let item of menuLeft"
+            (click)="hideMenu()"
+          >
+            {{ item.name }}
+          </li>
+        </ul>
+      </div>
+      <div class="mobile-top-right-menu">
+        <button (click)="hideMenu()">
+          <div class="btn-group" dropdown placement="bottom right">
+            <span class="mohawak-icon document-icon" dropdownToggle></span>
+            <ul
+              id="dropdown-alignment"
+              *dropdownMenu
+              class="dropdown-menu account-dropdown dropdown-menu-right"
+              role="menu"
+              aria-labelledby="button-alignment"
+            >
+              <ng-container *ngTemplateOutlet="accountDropdown"></ng-container>
+            </ul>
+          </div>
+        </button>
+        <button *ngIf="accountInfoSet && !isProductManager && this.commercialSiteSelectorService?.selectedSite !== 'I'">
+          <a (click)="navigateToCart(); hideMenu()">
+            <span
+              class="mohawak-icon user-icon"
+              (click)="navigateToCart()"
+            ></span>
+            <div class="cart-icon__count">
+              {{ cartCount }}
+            </div>
+          </a>
+          <!-- <span
+            class="mohawak-icon user-icon"
+            (click)="navigateToCart()"
+          ></span> -->
+        </button>
+      </div>
+    </div>
+
+    <div class="top-bar">
+      <ul class="top-bar-menu-left">
+        <li *ngFor="let m of menuLeft">
+          <a
+            [routerLink]="'/' + m.link"
+            [class.active]="setActive(m.menuName)"
+            (click)="setEnvironment(m); hideMenu()"
+          >
+            {{ m.name }}
+          </a>
+        </li>
+        <li *ngIf="isBuilderXchnage === true">
+          <!-- *ngIf="isBuilderXchnage === true" -->
+          <a href="https://staging-crest.mohawkbuilder.com/" target="_blank"
+            >Builder Xchange</a
+          >
+        </li>
+        <!-- <li>
+          <a
+            href="https://mohawkind.enable-now.cloud.sap/pub/c6mgfe5l2z/index.html?library=library.txt&show=group!GR_67E5D5BD3490FAB7"
+            target="_blank"
+          >
+            <img
+              src="/assets/images/question-mark.png"
+              height="20"
+              width="20"
+            />
+          </a>
+        </li> -->
+      </ul>
+
+      <!--   <div *ngIf="accountInfo == 'True'"> -->
+      <ul class="top-bar-menu-right">
+        <li *ngFor="let m of menuRight; let i = index">
+          <span class="is-icon" *ngIf="m?.icon == true">{{ logo }}</span>
+          <a>
+            <label *ngIf="i === 1">&nbsp;Account</label>
+            &nbsp; {{ m.name }}
+            <button
+              class="change-btn"
+              *ngIf="
+                  accountInfoSet &&
+                i + 1 === menuRight.length &&
+                m?.isShow === true &&
+                '/residential/account/search' !== url &&
+                '/commercial/account/search' !== url && !isSalesOps && !isSalesPerson
+              "
+              (click)="exitClick()"
+            >
+              Exit <fa-icon [icon]="faAngleRight"></fa-icon>
+            </button>
+            <button
+              class="change-btn"
+              *ngIf="
+                (i + 1 === menuRight.length &&
+                  isSalesPerson &&
+                  currentUserInfo?.orgUnit?.inHouseAccount == false) ||
+                (i + 1 === menuRight.length &&
+                  isSalesOps &&
+                  currentUserInfo?.orgUnit?.inHouseAccount == false &&
+                  currentUserInfo?.orgUnit?.uid !== 'EMPTY_B2BUNIT')
+              "
+              (click)="exitClick(); hideMenu()"
+            >
+              Exit <fa-icon [icon]="faAngleRight"></fa-icon>
+            </button>
+            <!-- <button class="change-btn" *ngIf="i + 1 === menuRight.length  && project === 'commercial' && currentUserInfo?.orgUnit?.companies?.length > 1"
+              (click)="exitSite()">
+              Exit Site <fa-icon [icon]="faAngleRight"></fa-icon>
+            </button> -->
+          </a>
+        </li>
+      </ul>
+      <!--  </div> -->
+    </div>
+  </div>
+</section>
+<!-- Header Part Logo, Search, Cart and Profile -->
+<header class="header-section" *ngIf="!hideNavigation">
+  <div class="container">
+    <header class="site-header">
+      <div class="site-logo-and-search-container">
+        <ng-container *ngIf="accountInfoSet && !hideSideBar">
+          <ng-container *ngIf="showSideNav === menuType">
+            <button
+              *ngIf="!menuState"
+              (click)="showMenu()"
+              class="mohawak-icon bars-icon menu-bars"
+            ></button>
+            <button
+              *ngIf="menuState"
+              (click)="hideMenu()"
+              class="mohawak-icon close-icon menu-bars"
+            ></button>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngIf="showTopNav === menuType">
+          <button
+            (click)="toggleMobileTopNav()"
+            class="mohawak-icon bars-icon menu-bars"
+          ></button>
+        </ng-container>
+        <div class="site-env-logo">
+          <xchange-logo
+            [type]="logoType"
+            [className]="'header-logo'"
+            theme="light"
+            class="mt-1"
+            [routerLink]="getLogoRouterLink()"
+            class="cursor-pointer"
+            (click)="hideMenu()"
+          ></xchange-logo>
+          <span class="site-env-text">{{ backendEnvironment }}</span>
+        </div>
+        <div class="site-header-search-container" *ngIf="accountInfoSet && !storageService?.userInfo?.isMtMarketing">
+          <ng-container *ngTemplateOutlet="searchTemplate"></ng-container>
+        </div>
+        <!-- hide in edgexchange -->
+        <button
+          *ngIf="accountInfoSet"
+          class="mohawak-icon lg-search-btn"
+          [ngClass]="mobileSearchCollapse ? 'search-icon' : 'close-icon'"
+          (click)="mobileSearchCollapse = !mobileSearchCollapse; hideMenu()"
+        ></button>
+      </div>
+      <div class="site-header-cart-container">
+        <div
+          class="btn-group"
+          dropdown
+          placement="bottom right"
+          (click)="hideMenu()"
+        >
+          <xchange-custom-icon dropdownToggle></xchange-custom-icon>
+          <ul
+            id="dropdown-alignment"
+            *dropdownMenu
+            class="dropdown-menu account-dropdown dropdown-menu-right {{isSalesPerson ? 'w-auto': ''}}"
+            role="menu"
+            aria-labelledby="button-alignment"
+          >
+            <ng-container *ngTemplateOutlet="accountDropdown"></ng-container>
+          </ul>
+        </div>
+        <div class="cart-icon" *ngIf="accountInfoSet && !isProductManager && this.commercialSiteSelectorService?.selectedSite !== 'I'">
+          <a (click)="navigateToCart(); hideMenu()">
+            <xchange-custom-icon
+              class="ml-10"
+              icon="cart"
+            ></xchange-custom-icon>
+            <div class="cart-icon__count">
+              {{ cartCount }}
+            </div>
+          </a>
+        </div>
+      </div>
+    </header>
+  </div>
+</header>
+<xchange-asm-ability *ngIf="checkIsASMSessionStarted() === 'true' || this.commercialSiteSelectorService?.selectedSite !== 'I'"></xchange-asm-ability>
+<section
+  class="mobile-search-tempate"
+  [collapse]="mobileSearchCollapse"
+  [isAnimated]="true"
+>
+  <div class="container">
+    <ng-container *ngTemplateOutlet="searchTemplate"></ng-container>
+  </div>
+</section>
+<ng-template #searchTemplate>
+  <div
+    *ngIf="
+      accountInfoSet &&
+      !isFinanceUser && this.commercialSiteSelectorService?.selectedSite !== 'I' && this.commercialSiteSelectorService?.selectedSite !== 'H'
+    "
+  >
+    <xchange-search-control
+      placeholder="Search Products"
+      title="Please fill out this field."
+      (focus)="hideMenu()"
+    ></xchange-search-control>
+    <a
+      class="advance-search-link"
+      (click)="navigateToAdvanceSearch(); hideMenu()"
+      *ngIf="!advncSearchFlag"
+    >
+      Advanced Search
+      <span
+        tooltip="Click for more Advanced Search"
+        class="mohawak-icon help-icon help-info red-question-mark"
+      ></span>
+    </a>
+  </div>
+</ng-template>
+
+<!-- Site Navigation -->
+
+<nav
+  class="navbar navbar-light navbar-expand-lg"
+  *ngIf="showTopNav === menuType"
+>
+  <div class="container">
+    <ngx-navbar-collapse id="main-nav" #collapse="ngxNavbarCollapse">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item mobile-search">
+          <div
+            class="site-header-search-container"
+            *ngIf="accountInfo == 'True'"
+          >
+            <xchange-search-control></xchange-search-control>
+            <a class="advance-search-link">
+              Advanced Search
+              <img
+                style="
+                  filter: brightness(50%) sepia(100) saturate(100)
+                    hue-rotate(25deg);
+                "
+                src="/assets/images/icons/advance-search-help.svg"
+                alt=""
+              />
+            </a>
+          </div>
+        </li>
+        <li class="nav-item mobile-search account-change">
+          <div>
+            <span *ngFor="let item of menuRight">
+              {{ item.name }}
+            </span>
+          </div>
+          <button (click)="navigateToUserSearch(); hideMenu()">
+            Change <fa-icon [icon]="faAngleRight"></fa-icon>
+          </button>
+        </li>
+        <li class="nav-item" *ngFor="let item of menuList; let i = index">
+          <a
+            href="javascript:void(0)"
+            (click)="toggleDropdown('mainMenu' + i)"
+            class="nav-link"
+            >{{ item.name }}
+            <fa-icon *ngIf="item.subMenus" [icon]="faAngleDown"> </fa-icon>
+          </a>
+          <ng-container *ngIf="item.subNav">
+            <ul class="dropdown-menu" [id]="'mainMenu' + i">
+              <li
+                class="nav-item"
+                *ngFor="let submenu of item.subNav; let subIndex = index"
+              >
+                <a
+                  class="nav-link"
+                  [ngClass]="{ 'child-nav': submenu.subNav }"
+                  (click)="toggleDropdown('subMenu' + subIndex)"
+                  [routerLink]="submenu.path"
+                >
+                  {{ submenu.name }}
+                  <fa-icon *ngIf="submenu.subNav" [icon]="faAngleRight">
+                  </fa-icon>
+                </a>
+                <ul
+                  class="dropdown-menu"
+                  *ngIf="submenu.subNav"
+                  [id]="'subMenu' + i"
+                >
+                  <li class="nav-item" *ngFor="let submenu1 of submenu.subNav">
+                    <a class="nav-link" [routerLink]="submenu1.path">{{
+                      submenu1.name
+                    }}</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </ng-container>
+        </li>
+        <li class="nav-item mobile-search account-change">
+          <div>
+            <span></span>
+            <span>
+              <fa-icon [icon]="faAngleUp"></fa-icon> Logged in as Jhon Smith
+            </span>
+          </div>
+          <button>Sign Out <fa-icon [icon]="faAngleRight"></fa-icon></button>
+        </li>
+      </ul>
+    </ngx-navbar-collapse>
+  </div>
+</nav>
+<ng-template #accountDropdown>
+  <ng-container *ngFor="let item of accountDropdownItems">
+    <li role="menuitem" *ngIf="!item.divider">
+      <ng-container *ngIf="item.name === 'Sales Dashboard'">
+        <a class="dropdown-item" (click)="salesDashboardClick()">
+          {{ item.name }}
+        </a>
+      </ng-container>
+
+      <ng-container *ngIf="item.name !== 'Sales Dashboard'">
+      <a class="dropdown-item" *ngIf="item.path" [routerLink]="item.path">
+        {{ item.name }}
+      </a>
+      <a
+        class="dropdown-item"
+        *ngIf="item.pageUrl"
+        [href]="item.url"
+        target="_blank"
+      >
+        {{ item.name }}
+      </a>
+      <a class="dropdown-item" *ngIf="item.logout" (click)="logout()">
+        {{ item.name }}
+      </a>
+      <a class="dropdown-item" *ngIf="item.popup" (click)="openSalesModal()">
+        {{ item.name }}
+      </a>
+      <a class="dropdown-item" *ngIf="item.accounts">
+        {{ item.name }}
+      </a>
+    </ng-container>
+    </li>
+    <li *ngIf="item.divider" class="divider dropdown-divider"></li>
+    <li *ngIf="item.salesDivider" class="divider dropdown-divider"></li>
+  </ng-container>
+</ng-template>

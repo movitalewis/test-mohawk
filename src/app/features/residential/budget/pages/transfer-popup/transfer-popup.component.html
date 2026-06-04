@@ -1,0 +1,21 @@
+<div class="modal-header text-center">
+    <h4 class="modal-title w-100">{{!data['err'] && data?.type == 'tranfer' ? 'Transfer Complete' :!data['err'] && data['budgetData'].action == 'create'?
+          'Create Complete':!data['err'] && data['budgetData'].action == 'update'?
+          'Update Complete':!data['err'] && data['budgetData'].action == 'reduce'?
+          'Reduce Complete':data['err'] ? 'Error' :data['heading'] }}</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="onHideModal()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="text-center">
+      <p *ngIf="!data['err'] && data?.type == 'tranfer'">Funds ({{data['budgetData'].amount | currency:'USD'}}) transferred successfully from {{data?.selectedFromToName}} to {{data?.selectedToName}}.</p>
+      <p *ngIf="!data['err'] && data['budgetData'].action == 'create'">Funds ({{data['budgetData'].amount | currency:'USD'}}) successfully created to {{data?.selectedFromName}}.</p>
+      <p *ngIf="!data['err'] && data['budgetData'].action == 'update'">Funds ({{data['budgetData'].amount | currency:'USD'}}) successfully updated to {{data?.selectedFromName}}.</p>
+      <p *ngIf="!data['err'] && data['budgetData'].action == 'reduce'">Funds ({{data['budgetData'].amount | currency:'USD'}}) successfully reduced to {{data?.selectedFromName}}.</p>
+      <p *ngIf="data['err']">{{data['budgetData']}}</p>
+      <div class="mt-4 mb-4">
+        <button class="btn btn-primary me-3" (click)="onHideModal()">CLOSE</button>
+      </div>
+    </div>
+  </div>

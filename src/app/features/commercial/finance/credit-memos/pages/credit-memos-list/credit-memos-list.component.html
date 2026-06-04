@@ -1,0 +1,222 @@
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <h2 class="text-center mb-4">CREDIT MEMOS</h2>
+  <div class="col-md-12 mb-3" *ngIf="showAlert">
+    <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+      <div class="container">
+        {{ showMessage }}
+      </div>
+    </alert>
+  </div>
+  <div class="col-md-12 mb-3" *ngIf="viewPdfErrors.length > 0">
+    <div class="mb-1" *ngFor="let msg of viewPdfErrors">
+      <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+        <div class="container">
+          {{ msg }}
+        </div>
+      </alert>
+    </div>
+  </div>
+  <app-loader *ngIf="spinnerLoading"></app-loader>
+  <div class="_card-container">
+    <div class="row mb-3">
+      <div class="col-md-6 d-none d-xl-block col-lg-4 col-xl-3 mt-4 mb-3 sharebtnGroup">
+        <button
+          class="btn btn-primary"
+          [disabled]="this.selectedInvoices.length == 0"
+          (click)="viewPdfBtnClick()"
+        >
+          View PDF
+        </button>
+        <button
+        class="btn btn-primary"
+        [disabled]="this.selectedInvoices.length == 0"
+        (click)="sharePdf()"
+      >
+       Share
+      </button>
+      </div>
+    
+      <div class="col-md-4 col-lg-4 col-xl-3 mb-3">
+        <h4>Date Range</h4>
+        <div class="drp">
+          <input
+            type="text"
+            placeholder="Date Range Picker"
+            [bsConfig]="{
+              dateInputFormat: 'MM/DD/YYYY',
+              showWeekNumbers: false,
+              containerClass: 'theme-red',
+              showClearButton: true
+            }"
+            class="form-control"
+            bsDaterangepicker
+            [(ngModel)]="dateRange"
+            [maxDate]="maxDate"
+            (ngModelChange)="getAllCreditMemos(0, orderby, sortBy)"
+          />
+          <span
+            class="ng-clear-wrapper span-clear"
+            title="Clear "
+            *ngIf="dateRange.length > 0"
+            (click)="clearDate()"
+            ><span aria-hidden="true" class="ng-clear">×</span></span
+          >
+        </div>
+      </div>
+     
+      <div class="col-md-4 col-lg-4 col-xl-3 mb-3">
+        <h4>Search By</h4>
+        <ng-select
+          placeholder="Select Search By #"
+          (change)="onSearchBy($event)"
+          [(ngModel)]="searchBy"
+        >
+          <ng-option *ngFor="let search of searchByList" [value]="search.id">{{
+            search.name
+          }}</ng-option>
+        </ng-select>
+      </div>
+      <div class="col-md-4 col-lg-4 col-xl-3  d-grid align-items-end mb-3" >
+                <xchange-search-control
+            [isGlobalSearchEnabled]="false"
+            [disabled]="!searchBy"
+            [placeholder]="'Search By ' + (selectedSearchBy?.name || '')"
+            (sendValue)="onSearch($event)"
+            [searchKey]="searchText"
+          ></xchange-search-control>
+      </div>
+    <!-- <div class="col-md-2 col-lg-12 d-sm-block d-xl-none mt-4 mb-3">
+      <button
+        class="btn btn-primary"
+        [disabled]="selectedInvoices.length === 0"
+        (click)="viewPdfBtnClick()"
+      >
+        View PDF
+      </button>
+    </div> -->
+    </div>
+    <div class="overflow-auto invoice-list-table-container">
+      <ng-template #selectAllTemplate let-changeEvent>
+        <label class="ngx-form-checkbox">
+          <input type="checkbox" [checked]="selectedInvoices.length > 0 && selectedInvoices.length == invoiceData.length" 
+            (input)="changeEvent($event)"
+          />            
+          <i
+            class="ngx-form-icon custom-checkbox-color"
+            id="selectAllCheckbox"
+          ></i>
+        </label>
+      </ng-template>
+      <ngx-table
+        [configuration]="configuration"
+        [data]="
+          invoiceData
+            | paginate
+              : {
+                  id: 'pg1',
+                  itemsPerPage: tableItemsSize,
+                  currentPage: pageIndex,
+                  totalItems: totalInvoicesLength
+                }
+        "
+        [columns]="columns"
+        [noResultsTemplate]="spinnerLoading ? emptyTemplate : noResultsTemplate"
+        (event)="selectedValues($event)"
+        [selectAllTemplate]="selectAllTemplate"
+        [loadingTemplate]="!spinnerLoading ? emptyTemplate : tableLoader"
+      >
+        <ng-template let-row>
+          <td>
+            <label class="ngx-form-checkbox">
+              <input type="checkbox" 
+            [(ngModel)]="row.selected"
+            (ngModelChange)="onCheckboxChange()"
+            />
+            <i class="ngx-form-icon custom-checkbox-color"></i>
+            </label>
+          </td>
+          <td>
+            <a
+              (click)="viewPdf(row.invoiceNumber)"
+              class="text-danger"
+              style="cursor: pointer"
+            >
+              {{ row.invoiceNumber }}
+            </a>
+          </td>
+          <td>
+            {{ row.invoiceDate }}
+          </td>
+          <td>
+            {{ row.sideMark }}
+          </td>
+          <td>
+            {{ row.orderNumber }}
+          </td>
+          <td>
+            {{ row.orderDate }}
+          </td>
+          <td>
+            {{ row.invoiceDueDate }}
+          </td>
+          <td>
+            {{ row.poNumber }}
+          </td>
+          <td>
+            {{ row.invoiceTotal }}
+          </td>
+        </ng-template>
+      </ngx-table>
+    </div>
+
+    <ng-template #noResultsTemplate>
+      <td [attr.colspan]="columns.length + 1" class="no-results">
+        Credit Memo(s) Not Found
+      </td>
+    </ng-template>
+    <div class="row mb-4 mt-4" *ngIf="invoiceData.length > 0">
+      <div
+        class="d-flex-absolute justify-content-center"
+        *ngIf="invoiceData.length > 0"
+      >
+        <pagination-controls
+          id="pg1"
+          [maxSize]="10"
+          [responsive]="true"
+          [nextLabel]="''"
+          [previousLabel]="''"
+          (pageChange)="onTableDataChange($event)"
+          class="desk-view"
+        >
+        </pagination-controls>
+        <pagination-controls
+          id="pg1"
+          [maxSize]="5"
+          [responsive]="true"
+          [nextLabel]="''"
+          [previousLabel]="''"
+          (pageChange)="onTableDataChange($event)"
+          class="m-view"
+        >
+        </pagination-controls>
+      </div>
+      <div class="col-md-12">
+        <p class="text-center mb-0">
+          {{ totalInvoicesLength > 0 ? startValue : 0 }} -
+          {{
+            lastValue > totalInvoicesLength ? totalInvoicesLength : lastValue
+          }}
+          OF {{ totalInvoicesLength > 0 ? totalInvoicesLength : 0 }} CREDIT MEMO(S)
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #tableLoader>
+  <td *ngIf="(configuration.isLoading==true || spinnerLoading)" [attr.colspan]="columns.length + 1" class="no-results text-center">
+    <div class="loader">Loading...</div>
+  </td>
+</ng-template>
+<ng-template #emptyTemplate>
+</ng-template>

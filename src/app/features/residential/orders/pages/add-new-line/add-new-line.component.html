@@ -1,0 +1,247 @@
+<form [formGroup]="form">
+  <ng-container
+    formArrayName="orderNewLineForm"
+    *ngFor="let orderNewLineForm of orderNewLineForm.controls; let i = index"
+  >
+    <div class="row" [formGroupName]="i">
+      <div class="col-sm-2">
+        <ng-select
+          class="w385 mb-2"
+          #sellingStyleDropdown
+          formControlName="styleName"
+          [ngModel]="pdbData?.styleId"
+          [items]="productStyleList"
+          (search)="
+            sellingStyleUpdate.next({
+              event: $event,
+              ref: sellingStyleDropdown
+            })
+          "
+          (change)="handleStyleChange($event)"
+          [searchFn]="handleCustomStyleSearch"
+          placeholder="STYLE NUMBER / NAME"
+          bindLabel="styleId"
+        >
+          <ng-template ng-option-tmp let-item="item">
+            <div title="item">{{ item?.styleId }}-{{ item?.styleName }}</div>
+          </ng-template>
+        </ng-select>
+        <p *ngIf="sellingStyle">{{ pdbData?.styleId }} - {{ pdbData?.styleName}}</p> 
+      </div>
+
+      <div class="col-sm-2">
+        <ng-select
+          class="w385 mb-2"
+          placeholder="COLOR CODE"
+          formControlName="colorId"
+          [ngModel]="variantData?.selected?.code"
+          (change)="onColorChange($event)"
+        >
+          <ng-option
+            *ngFor="let product of productColorVariantData"
+            [value]="product?.value.code"
+          >
+            {{ product?.key }} - {{ product?.value?.name }}
+          </ng-option>
+        </ng-select>
+        <p *ngIf="sellingStyle"> {{ variantData?.selected?.sellingColorId }} - {{ variantData?.selected?.sellingColorName }} </p>
+      </div>
+      <div class="col-sm-2">
+        <ng-select
+          class="w385 mb-2"
+          placeholder="Size / width"
+          formControlName="size"
+          [ngModel]="variantData?.selected?.sellingSizeId"
+          (change)="onSizeChange($event)"
+        >
+          <ng-option
+            *ngFor="let item of variantData?.sizeOptions"
+            [value]="item?.key"
+            >{{ item?.key }} -
+            {{ item?.value?.name ? item?.value?.name : "N/A" }}</ng-option
+          >
+        </ng-select>
+        <p *ngIf="sellingStyle"> {{ variantData?.selected?.sellingSizeId }} - {{ variantData?.selected?.sellingSizeId }} </p>
+      </div>
+      <div class="col-sm-2">
+        <ng-select
+          class="w385 mb-2"
+          placeholder="Backing"
+          formControlName="backing"
+          [ngModel]="variantData?.selected?.sellingBackingId"
+          (change)="onBackingChange($event)"
+        >
+          <ng-option
+            *ngFor="let item of variantData?.backingOptions"
+            [value]="item?.value.code"
+          >
+            {{ item?.key }} - {{ item?.value?.name }}</ng-option
+          >
+        </ng-select>
+        <p *ngIf="sellingStyle"> {{ variantData?.selected?.sellingBackingId }} - {{ variantData?.selected?.sellingBackingName }}</p>
+      </div>
+      <div class="col-sm-2">
+        <ng-select
+          placeholder="Unit of Measure"
+          class="w385"
+          formControlName="uom"
+        >
+          <ng-option *ngFor="let item of unitArray" [value]="item.type">{{
+            item.value | titlecase
+          }}</ng-option>
+        </ng-select>
+      </div>
+      <div class="col-sm-2 d-flex">
+        <input
+          type="text"
+          class="form-control qtyinput"
+          placeholder="Qty"
+          formControlName="qty"
+          *ngIf="orderNewLineForm.value.uom != 'RO'"
+          (keypress)="numberOnly($event, orderNewLineForm.value.uom)"
+        />
+        <input
+          type="text"
+          class="form-control qtyinput"
+          placeholder="in."
+          formControlName="inches"
+          *ngIf="orderNewLineForm.value.uom == 'LF'"
+          maxlength="2"
+          (keypress)="keyPressNumbers($event)"
+        />
+        <input
+          type="text"
+          class="form-control qtyinput"
+          placeholder="Qty"
+          formControlName="qty"
+          (input)="restrictUptoTwoDecimal($event)"
+          (keypress)="numberOnly($event, orderNewLineForm.value.uom)"
+          *ngIf="orderNewLineForm.value.uom == 'RO'"
+        />
+        
+      </div>
+      <div class="col-sm-4 d-flex align-items-center">
+        <div>
+        <label>REQUEST PRICE</label>
+          <p class="mb-0 d-flex align-items-center ">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Requested Price"
+              formControlName="requestedPrice"
+              (input)="onReqPriceChange($event, i)"
+              (keypress)="numberAndDcecimalvaluesOnly($event)"
+            /> <label class="ml-10" *ngIf="orderNewLineForm.value.uom"> /{{ pdpPricingUOMValue }} </label>
+          <input
+            type="text"
+            class="form-control ml-10"
+            placeholder="Price Comment"
+            formControlName="priceComment"
+          />
+          </p>
+        </div>
+        
+        <button
+          class="btn btn-primary mt-4 ml-10 addline"
+          (click)="addOrderLine()"
+          [disabled]="form.invalid"
+        >
+          Add
+        </button>
+      </div>
+    </div>
+  </ng-container>
+  <div class="row mt-2 mb-2">
+      <div
+        class="col-md-2"
+        *ngFor="let item of pdpPfxPriceFields[pdbData?.subProductType] || []"
+      >
+        <label class="font-weight-600">
+          {{ item?.fieldName.replace("USD", storageService.userPriceLabel) }}
+        </label>
+        <ng-container
+          *ngIf="
+            productPriceDetails && productPriceDetails[item?.key] == 0;
+            then noPriceInfo;
+            else priceInfo
+          "
+        >
+        </ng-container>
+        <ng-template #noPriceInfo>
+          <p *ngIf="isPriceLoading">
+            <span class="cssload-loading"><i></i><i></i><i></i><i></i></span>
+          </p>
+          <p class="mb-0" *ngIf="!isPriceLoading">
+            <strong>N/A </strong>
+          </p></ng-template
+        >
+        <ng-template #priceInfo>
+          <p *ngIf="isPriceLoading">
+            <span class="cssload-loading"><i></i><i></i><i></i><i></i></span>
+          </p>
+          <p class="mb-0" *ngIf="!isPriceLoading">
+            <span
+              >${{
+                (productPriceDetails && productPriceDetails[item?.key]
+                  ? productPriceDetails[item?.key]
+                  : "0"
+                ) | number : "1.2-2"
+              }}
+            </span>
+            /{{ pdpPricingUOMValue ? pdpPricingUOMValue : item?.type }}
+          </p>
+        </ng-template>
+      </div>
+      <ng-container *ngIf="pdbData?.productType == 'MERCHANDISING'">
+        <div class="col-md-2 mb-2">
+          <label class="font-weight-600"
+            >Est. Freight Cost (Included in Price)</label
+          >
+          <p *ngIf="isPriceLoading">
+            <span class="cssload-loading"><i></i><i></i><i></i><i></i></span>
+          </p>
+          <p class="mb-0" *ngIf="!isPriceLoading">
+            <strong>
+              {{
+                productPriceDetails && productPriceDetails["freightPrice"]
+                  ? "$" + productPriceDetails["freightPrice"]
+                  : "NA"
+              }}</strong
+            >
+          </p>
+        </div>
+        <div class="col-md-3 mb-2">
+          <label class="font-weight-600">Hero Sample SKU</label>
+          <p class="mb-0">
+            <strong>{{
+              variantData?.selected?.heroFlag == false ? "No" : "Yes"
+            }}</strong>
+          </p>
+        </div>
+        <div class="col-md-2 mb-2">
+          <label class="font-weight-600">Version *</label>
+          <p class="mb-0">
+            <strong
+              >{{ productColorVariantData[0].value?.name }}
+              {{ productColorVariantData[0].key }}</strong
+            >
+          </p>
+        </div>
+      </ng-container>
+      <ng-container
+        *ngIf="
+          pdbData?.subProductType == 'POWDERS' ||
+          pdbData?.subProductType == 'TOOLS'
+        "
+      >
+        <div class="col-md-3 mb-2" *ngIf="uomDetails?.cartonsPerPallet">
+          <label class="font-weight-600">Bags per Pallet</label>
+          <p class="mb-0">
+            <strong>{{
+              uomDetails?.cartonsPerPallet ? uomDetails?.cartonsPerPallet : "NA"
+            }}</strong>
+          </p>
+        </div>
+      </ng-container>
+    </div>
+</form>

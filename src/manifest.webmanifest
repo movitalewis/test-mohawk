@@ -1,0 +1,23 @@
+{
+  "name": "mohawk-xchange",
+  "short_name": "mohawk-xchange",
+  "theme_color": "#1976d2",
+  "background_color": "#fafafa",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./",
+  "icons": [
+    {
+      "src": "assets/icons/residential-favicon.png",
+      "sizes": "36x36",
+      "type": "image/png",
+      "density": "0.75"
+    },
+    {
+      "src": "assets/icons/commercial-favicon.png",
+      "sizes": "36x36",
+      "type": "image/png",
+      "density": "0.75"
+    }
+  ]
+}

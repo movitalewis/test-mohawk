@@ -1,0 +1,748 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+@import "/src/styles/table";
+
+::ng-deep {
+  .mohawk-logo img {
+    width: 150px !important;
+  }
+}
+.orderdetail {
+  .f-s {
+    font-size: 0.875rem;
+    color: $color-red;
+    text-decoration: none;
+  }
+  ul.comment-list {
+    font-size: 0.875rem;
+  }
+  ul.hold-list {
+    list-style-type: disc;
+    li {
+      display: inline-flex;
+      text-align: -webkit-match-parent;
+      .btn-close {
+        width: 6px;
+        height: 6px;
+        position: relative;
+        top: 5px;
+        left: 10px;
+      }
+    }
+  }
+  .back-link {
+    text-align: left;
+
+    @include breakpoint-range($max: xs) {
+      text-align: center;
+    }
+  }
+  .back-to {
+    color: #{$color-red};
+    display: flex;
+    cursor: pointer;
+    div {
+      margin-right: 8px;
+    }
+  }
+  .justify-content-end {
+    .back-i {
+      top: 1px;
+    }
+  }
+  .social-sec {
+    padding-right: 0rem;
+    font-size: 0.875rem;
+    margin-top: -0.625rem;
+
+    @include breakpoint-range($max: xs) {
+      padding-right: 0.5rem;
+      justify-content: center;
+      margin-top: 0rem;
+    }
+  }
+  .red-question-mark {
+    padding-left: 20px;
+    cursor: pointer;
+    position: relative;
+  }
+  .cart_conatiner {
+    ::ng-deep {
+      .tab-container {
+        .nav-tabs {
+          .nav-item.disabled:hover {
+            cursor: not-allowed;
+          }
+        }
+      }
+      .tab-content {
+        padding: 0px !important;
+      }
+      .mohawk-logo img {
+        width: 150px !important;
+      }
+      .tooltip.show {
+        position: absolute;
+        margin: -30px 0px 0px 85px !important;
+        --mx-tooltip-bg: #ce0e2d;
+        font-size: 12px;
+      }
+      .bs-tooltip-top .tooltip-arrow::before {
+        left: 15px;
+        top: 38px;
+      }
+    }
+  }
+  .help-info {
+    color: #ce0e2d;
+  }
+
+  .back-to {
+    display: flex;
+
+    .back-icon {
+      transform: rotate(180deg);
+      -webkit-transform: rotate(180deg);
+      position: relative;
+      margin-right: 5px;
+      font-size: 12px;
+      top: -6px;
+    }
+  }
+
+  .order-body-sec {
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+
+    // @include breakpoint-range($max: md) {
+    //   padding: 0rem;
+    // }
+  }
+  .order-txt-sec {
+    text-align: left;
+
+    @include breakpoint-range($max: xs) {
+      text-align: center;
+    }
+  }
+  .ship-txt-sec {
+    padding-left: 32px !important;
+    text-align: left;
+
+    @include breakpoint-range($max: xs) {
+      padding: 1rem 0 !important;
+      text-align: center;
+    }
+  }
+  .line {
+    border-top: 0px solid $color-gray;
+
+    @include breakpoint-range($max: md) {
+      border-top: 1px solid $color-gray;
+      margin-bottom: 1rem;
+    }
+  }
+  .status-line {
+    border-top: 0px solid $color-gray;
+
+    @include breakpoint-range($max: xs) {
+      border-bottom: 1px solid $color-gray;
+      margin-bottom: 1rem;
+    }
+  }
+  .down-icon {
+    transform: rotate(-90deg);
+    transition: transform 0.3s ease-in-out;
+    display: inline-flex;
+    font-size: 0.75rem;
+    margin-left: 14px;
+  }
+
+  .up-icon {
+    transform: rotate(-270deg);
+    transition: transform 0.3s ease-in-out;
+    display: inline-flex;
+    font-size: 14px;
+    margin-left: 0.313rem;
+  }
+  .card-img-top {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  .text-f-s {
+    font-size: 0.75rem;
+  }
+  .text-f-s p {
+    font-size: 0.875rem;
+    font-weight: normal;
+  }
+  .text-f-s span {
+    font-size: 0.625rem;
+    display: block;
+    color: $color-light-black;
+    margin-bottom: 1rem;
+  }
+  .text-f-s {
+    .price-unit {
+      position: relative;
+      span {
+        display: inline;
+        font-size: 12px;
+        padding-left: 15px;
+        color: $color-red;
+        cursor: pointer;
+      }
+    }
+  }
+  .text-f-s a,
+  .change-text {
+    text-decoration: none;
+    font-size: 0.875rem;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .header-section {
+    padding: 15px;
+    border-radius: 10px;
+    background: $color-dark-gray;
+    border-radius: 7px 7px 0px 0px;
+    color: $color-white;
+    .text-white {
+      margin: 0;
+      text-decoration: none;
+      padding-left: 1rem;
+    }
+    .text-white:hover {
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    @media (max-width: 990px) and (min-width: 770px) {
+      padding: 4%;
+    }
+    .card-header {
+      @media (max-width: 768px) {
+        padding: 4%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+    @include breakpoint-range($max: xs) {
+      margin: 0 -1.25rem;
+    }
+  }
+  @media (max-width: 990px) and (min-width: 770px) {
+    .header-section {
+      .text-white {
+        padding-left: 0rem;
+      }
+    }
+  }
+  .header-section-down {
+    padding: 10px 20px;
+    border: 1px solid $color-medium-gray;
+    border-radius: 10px;
+    border-radius: 0px 0px 7px 7px;
+
+    @include breakpoint-range($max: xs) {
+      margin: 0 -1.25rem;
+    }
+  }
+
+  .cancel-btn-1 {
+    display: block;
+
+    @include breakpoint-range($max: xs) {
+      display: none;
+    }
+  }
+  .cancel-btn-2 {
+    display: none;
+    @include breakpoint-range($max: xs) {
+      display: block;
+    }
+  }
+  .toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 7px;
+  }
+  .switch {
+    cursor: pointer;
+    cursor: pointer;
+    display: flex;
+    gap: 12px;
+  }
+  .card {
+    border: none;
+
+    .card-header {
+      background-color: $color-medium-gray;
+      border: none;
+      padding: 0px;
+
+      button {
+        text-decoration: none;
+        text-transform: capitalize;
+        border: none !important;
+        padding-top: 0.75rem;
+        margin-bottom: 0rem;
+      }
+      .down-icon {
+        transform: rotate(-90deg);
+        display: inline-flex;
+        font-size: 0.625rem;
+        margin-left: 0.313rem;
+      }
+      .up-icon {
+        transform: rotate(-270deg);
+        display: inline-flex;
+        font-size: 0.625rem;
+        margin-left: 0.625rem;
+      }
+    }
+  }
+
+  .img {
+    height: 9.125rem;
+    object-fit: cover;
+  }
+
+  .back-i {
+    @include breakpoint-range($max: sm) {
+      margin-right: 5px;
+    }
+    margin-right: 5px;
+    top: 4px;
+    position: relative;
+    //transform: rotate(180deg);
+  }
+  .card-img-top {
+    border-radius: 0px;
+  }
+  .align-center {
+    justify-content: center;
+  }
+  .p-50 {
+    padding: 0 50px;
+  }
+  .buttons {
+    gap: 20px;
+  }
+  .change-date {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+  }
+  ._card-container {
+    border: none !important;
+  }
+  div > xchange-custom-radio:first-child {
+    margin-right: 12px;
+  }
+  ::ng-deep {
+    // .orderHistorycommercial{
+    //   .black-header-table-one{
+    //    th{
+    //     text-wrap: nowrap !important;
+    //    }
+    //   }
+    // }
+    .xchange-loader {
+      z-index: 100000 !important;
+    }
+    .tooltip-inner {
+      background: #ce0e2d;
+    }
+  }
+  ::ng-deep .mdc-switch__icons {
+    display: none;
+  }
+  .status-indicator {
+    font-size: 16px !important;
+    display: inline-flex !important;
+    margin: 0px;
+    text-transform: uppercase;
+  }
+  .inprogress,
+  .seelinedetails {
+    font-size: 12px !important;
+    display: inline;
+    color: green;
+  }
+  .shipped, .cancelled {
+    font-size: 12px !important;
+    display: inline;
+    color: #ce0e2d;
+  }
+  .line-status {
+    font-size: 14px;
+  }
+  .image-overlay-container{
+    position: relative;
+  }
+  .ribbon-wrapper-preview {
+    width: 150px;
+    height: 150px;
+    overflow: hidden;
+    position: absolute;
+    top: 0px;
+    z-index: 1;
+    border-radius: 0px;
+    .ribbon {
+      color: $color-white;
+      text-align: center;
+      -webkit-transform: rotate(-45deg);
+      -moz-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+      -o-transform: rotate(-45deg);
+      position: relative;
+      padding: 2px 0;
+      top: 15px;
+      left: -40px;
+      width: 140px;
+      background-color: #ce0e2d;
+    }
+    .preferred-stock{
+      top: 11px;
+      left: -38px;
+      font-size: 11px;
+    }
+  }
+  .print-element {
+    display: none;
+  }
+
+  .po-added {
+    ul {
+      margin: 15px;
+      li {
+        font-size: 0.875rem;
+        list-style-type: disc;
+      }
+    }
+  }
+
+  ::ng-deep .errors-div {
+    .alert.alert-danger.alert-dismissible {
+      margin-bottom: 4px;
+    }
+  }
+  .space-between {
+    justify-content: space-between !important;
+  }
+  .align-error {
+    text-align: left;
+  }
+
+  sup,
+  sub {
+    font-style: normal;
+    padding-left: 5px;
+  }
+
+  .backgound-yellow {
+    background-color: #fffdeb;
+    border: 1px solid #d9c400;
+    border-radius: 6px;
+    padding: 15px;
+  }
+  .flex-wrap {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .text-center-change-shipping-options {
+    display: flex;
+    justify-content: center;
+  }
+  .order-number {
+    font-weight: bold;
+  }
+  .flex-column-gap {
+    display: flex;
+    column-gap: 20px;
+  }
+  .right-section {
+    padding-left: 20px;
+    @include breakpoint-range($max: xs) {
+      padding: 0;
+    }
+  }
+  .text-red {
+    color: $color-red;
+  }
+  .invalid-info {
+    color: $color-red;
+    margin-bottom: 10px;
+  }
+
+  span.space-normalizer.text-f-s {
+    font-size: unset;
+    display: unset;
+    color: unset;
+    margin-bottom: unset;
+  }
+}
+
+.customer-name-suggestions {
+  position: relative;
+  input {
+    padding-right: 39px;
+  }
+  ::ng-deep {
+    typeahead-container {
+      width: 94.5%;
+      max-height: 200px;
+      overflow-y: auto;
+      .dropdown-item {
+        &:active {
+          // text-decoration: underline !important;
+          color: inherit !important;
+          background-color: #e9ecef !important;
+        }
+        &.active {
+          // text-decoration: underline !important;
+          color: inherit !important;
+          background-color: #e9ecef !important;
+        }
+      }
+    }
+  }
+  button {
+    position: absolute;
+    background: transparent;
+    border: none;
+    top: 8px;
+    right: 6px;
+    img {
+      height: 8px;
+    }
+  }
+}
+:host ::ng-deep xchange-logo-pdp {
+  img {
+    width: 150px;
+  }
+}
+
+.readMore{
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+::ng-deep{
+  .shipvia-change{
+    .shipvia.ng-select-single .ng-select-container .ng-value-container .ng-input > input{
+      text-transform: uppercase;
+    }
+    .shipvia div, .shipvia input, .shipvia span{
+      text-transform: uppercase;
+      .span-preferred{
+        text-transform: capitalize;
+      }
+    }
+  }
+}
+
+.cams-order-header{
+  padding: 12px;
+  background-color: #f8f8f8;
+  border-radius: 12px;
+  align-items: center;
+  display: flex;
+  .change-shipping-options{
+    width: 80px !important;
+  }
+}
+.yellow-border{
+  border: #D9C400 solid 1px;
+  border-radius: 12px;
+}
+.cams-order-border{
+  margin: 0px;
+  height: 2px;
+}
+.light-blue-bg{
+  background-color: #def1ff;
+  height: auto;
+  border: #A8CCE6 solid 1px;
+  border-radius: 8px;
+  margin-top: 8px;
+  padding: 15px;
+  flex-grow: 1; 
+  align-self: flex-start
+}
+
+.bg-yellow{
+  background-color: #fff7ba;
+  border: 1px solid #C6C02A;
+  border-radius: 4px;
+  padding: 4px;
+  h4{
+    color: #055989;
+  }
+  .form-control {
+    height: 35px;
+    border: 1px solid #055989;
+    border-radius: 5px;
+    color: #4c4d4b;
+    padding: 0 12px;
+  }
+  .rdd{
+    width: 120px;
+  }
+  &.shipping-options-change{
+    padding: 15px;
+  }
+}
+
+.edit-btns{
+  position: absolute;
+  right: 20px;
+  top: -39px;
+}
+
+.bottom-edit-btns{
+  height: 123px;
+  button{
+    font-size: 20px;
+    height: 60px;
+    width: 210px;
+  }
+}
+
+.btn-blue{
+  background-color: #055989;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  &:hover {
+    background-color: darken(#055989, 10%);
+  }
+}
+.btn-blue-container{
+  position: relative;
+}
+.width-50{
+  min-width: 50px;
+}
+.vieworderupdates{
+  font-size:22px;
+  .cart-desc-col{
+    color: #055989;
+    font-weight: bold;
+    text-transform: capitalize;
+  }
+  .inprogress-status{
+    color: #e69311;
+    font-weight: bold;
+    text-transform: capitalize;
+  }
+  .approved-status{
+    color: green;
+    font-weight: bold;
+    text-transform: capitalize;
+  }
+  .decline-status{
+    color: #ce0e2d;
+    font-weight: bold;
+    text-transform: capitalize;
+  }
+  ::ng-deep {
+    .up-icon {
+      margin-right: 14px;
+      font-size: 18px !important;
+    }
+    .down-icon {
+      font-size: 18px !important;
+    }
+    .bx-accordian .panel{
+      border: 1px solid #C6C02A;
+      border-radius: 4px;
+    }
+    .card-header{
+      border-bottom: none !important;
+    }
+    .bx-accordian .panel .panel-heading{
+      background: #fff7ba !important;
+    }
+    .color-yellow{
+      color: #847F00;
+    }
+  }
+  
+}
+
+#print-section{
+  position: relative;
+}
+
+.editbuttonsticky{
+  position: sticky;
+}
+
+.editabsolute{
+  position: absolute;
+  right: 0;
+  width: 96%;
+  padding: 22px;
+  background-color: #202020;
+  bottom: 0;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  .btn{
+    height: 70px !important;
+    font-size: 24px !important;
+    padding: 0 30px !important;
+  }
+  .bg-blue{
+    background-color: #055989;
+    margin-left: 15px;
+    &:hover{
+      color: #fff !important;
+    }
+  }
+  @include breakpoint-range($max: xs) {
+     .btn{
+        height: 50px !important;
+        font-size: 14px !important;
+        padding: 0 10px !important;
+      }
+      .bg-blue{
+        margin-left: 0px;
+      }
+    }
+}
+
+::ng-deep .ng-select.ng-select-disabled {
+	.ng-select-container{
+    background-color: #ededed;
+  }
+}
+
+.charge{
+  ::ng-deep xchange-custom-checkbox {
+    .xchange-checkbox {
+      .xchange-checkbox-label {
+        span {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}

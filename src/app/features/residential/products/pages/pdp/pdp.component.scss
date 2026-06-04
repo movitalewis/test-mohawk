@@ -1,0 +1,271 @@
+@import "/src/styles/colors";
+@import "/src/styles/mixins/breakpoints";
+
+.pdp-container {
+  background: $color-white;
+  padding: 25px;
+  border-radius: 5px;
+  border: 1px solid $color-light-gray;
+
+  @include breakpoint-range($max: sm) {
+    padding: 15px;
+  }
+}
+
+.enter-quantity-tabs {
+  display: block;
+  .tab-content {
+    padding: 4px 0;
+  }
+}
+
+.pdp-container .card {
+  --mx-card-border-width: 0;
+  .card-header {
+    background: $color-dark-gray;
+    font-weight: 600;
+    color: $color-white;
+  }
+  .card-body {
+    box-shadow: 0px 0px 6px 0 rgb(0 0 0 / 10%);
+    border: none;
+  }
+}
+.change-date {
+  display: flex;
+  gap: 20px;
+}
+.invalid-info {
+  color: $color-red;
+  margin-bottom: 10px;
+}
+.change-pricing {
+}
+.recomonded-products {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  & > li {
+    margin: 0 12px;
+    .p-image {
+      width: 153px;
+      padding: 10px;
+      box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: center;
+      &:hover {
+        cursor: pointer;
+      }
+      img {
+        max-width: 100%;
+      }
+    }
+    .p-name {
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: 0;
+    }
+  }
+}
+
+.specification-container {
+  display: block;
+  width: 100%;
+  margin-bottom: 20px;
+  h4 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+}
+
+@include breakpoint-range($max: xs) {
+  .order-actions {
+    flex-wrap: wrap;
+    .request-quote-btn,
+    .place-order-btn {
+      width: 100%;
+      margin-left: 0 !important;
+    }
+  }
+}
+.form-control.ng-untouched.is-invalid{  
+  color: #ce0e2d;
+  border-color: #ce0e2d;
+}
+.form-control {
+  &.ng-invalid {
+    color: unset;
+    border-color: unset;
+    // color: #ce0e2d;
+    // border-color: #ce0e2d;
+    border: 1px solid #b1b1b1;
+    &.ng-touched {
+      color: #ce0e2d;
+      border-color: #ce0e2d;
+    }
+    &.invalid-input {
+      color: #ce0e2d !important;
+      border-color: #ce0e2d !important;
+    }
+  }
+}
+
+.invalid-input {
+  &.ng-touched {
+    color: #ce0e2d;
+    border-color: #ce0e2d;
+  }
+}
+.pl-0 {
+  padding-left: 0px;
+}
+
+.tablist-icons {
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 20px;
+  img {
+    width: 40px;
+  }
+  p {
+    word-wrap: break-word;
+  }
+}
+
+.print-element {
+  display: none;
+}
+::ng-deep {
+  .modal-xl.modal-dialog {
+    @include breakpoint-range($min: md, $max: lg) {
+      max-width: 90%;
+    }
+  }
+}
+.cross {
+  .specifications-table {
+    border: 1px solid $color-gray-b7;
+
+    tr {
+      th,
+      td {
+        padding: 10px 20px;
+        border: 1px solid $color-gray-b7;
+        font-size: 16px;
+      }
+      th {
+        background: $color-light-gray;
+        font-weight: 500;
+      }
+    }
+  }
+}
+.cross-over {
+  background: transparent;
+  border: none;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ce0e2d;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 1px 6px;
+  cursor: pointer;
+}
+.crossover-product {
+  label {
+    padding-left: 0px !important;
+    font-weight: bolder;
+  }
+  .crossover-product-image {
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+  .right-details {
+    display: flex;
+    justify-content: space-between;
+    align-content: space-around;
+    align-items: center;
+  }
+}
+.left-details {
+  padding-left:10%
+}
+.border-right{
+  border-right: #ccc solid 1px;
+  @include breakpoint-range($max: sm) {
+   border-right: none;
+  }
+}
+.background-yellow {
+  background-color: #fffdeb;
+  border: 1px solid #d9c400;
+  border-radius: 6px;
+  padding: 10px;
+}
+.btn-w-100{
+  width: auto;
+  @include breakpoint-range($max: sm) {
+    width: 100%;
+   }
+   @include breakpoint-range($max: xs) {
+    width: 100%;
+   }
+}
+
+::ng-deep{
+  .shipvia-change{
+    .shipvia.ng-select-single .ng-select-container .ng-value-container .ng-input > input{
+      text-transform: uppercase;
+    }
+    .shipvia div, .shipvia input, .shipvia span{
+      text-transform: uppercase;
+      .span-preferred{
+        text-transform: capitalize;
+      }
+    }
+  }
+}
+
+.inventory-status-details{
+  .instock label{
+    font-weight: bold;
+  }
+}
+.inventory-status-table {
+  th {
+      background: #383838;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      padding: 5px 20px;
+      border-left: 0.2px solid #b1b1b1;
+      text-align: center;
+      text-transform: uppercase;
+  }
+  td {
+      background-color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border: 1px solid #aeaeae;
+      font-size: 16px;
+      color: 231f20;
+      text-align: center;
+  }
+}
+
+.sticky-alert-banner {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  width: 100%;
+  .alert-danger{
+    background-color: #ce0e2d;
+  }
+}

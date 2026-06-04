@@ -1,0 +1,56 @@
+@import "src/styles/mixins/breakpoints";
+@import "src/styles/colors";
+
+.continue-btn-mrg-right {
+    margin-right: 15px;
+}
+
+.margin-top-3 {
+    margin-top: 0.75rem;
+
+    @include breakpoint-range($max : xs) {
+        margin-top: 0rem;
+    }
+}
+
+.card-container {
+    width: 100%;
+    border: 0.8px solid #b1b1b1;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 20px;
+
+
+    @include breakpoint-range($max : xs) {
+        border: none;
+        padding: 0px;
+        background: none;
+        border-radius: 0px;
+        margin-bottom: 20px;
+    }
+}
+@include breakpoint-range($max:sm) {
+    .reqr {
+        display: none;
+    }
+    .mt-4 {
+        margin-top: 0 !important;
+    }
+    
+}
+@include breakpoint-range($max:xs, $min:sm) {
+    .mts{
+        margin-top: 0 !important
+    }  
+}
+@include breakpoint-range($max:lg, $min:md){
+.mts{
+    margin-top: 1.8rem !important
+}
+}
+.offset-2 {
+    @include breakpoint-range($max : sm) {
+        margin-left: 0px;
+    }
+}

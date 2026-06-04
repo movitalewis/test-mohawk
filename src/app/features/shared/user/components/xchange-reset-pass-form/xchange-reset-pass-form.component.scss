@@ -1,0 +1,42 @@
+@import 'src/styles/colors';
+@import "src/styles/mixins/breakpoints";
+
+.justify-content-between a {
+    color: $color-white;
+}
+
+h2 {
+    color: $color-white;
+}
+
+.sign-in-form {
+    width: 400px;
+    max-width: 100%;
+
+    @include breakpoint-range($max : lg) {
+        width: 100%;
+    }
+}
+
+.sign-up-link {
+    font-size: 14px;
+
+    span {
+        font-weight: 700;
+        color: $color-red;
+    }
+}
+
+@include breakpoint-range($max : lg) {
+    .submit-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .form-fields-container {
+        background: $color-white;
+        padding: 20px;
+        border: 1px solid $color-gray;
+        margin-bottom: 20px;
+    }
+}

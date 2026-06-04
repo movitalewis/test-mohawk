@@ -1,0 +1,321 @@
+<app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+
+<form class="sign-up-form" [formGroup]="registrationForm">
+  <h2><strong>AWESOME!</strong></h2>
+  <p class="d-flex flex-wrap justify-content-between align-items-center">
+    <span>You’re one step closer, fill out form below.</span>
+    <!-- <a class="text-decoration-none sign-up-link" routerLink="/">
+      <strong>
+        <fa-icon [icon]="faAngleLeft"></fa-icon> Return to Login
+      </strong>
+    </a> -->
+  </p>
+  <div class="form-fields-container">
+    <div class="form-fields-container">
+      <p class="instructions">* = required field</p>
+      <ul class="sign-up-form-container">
+        <li>
+          <label class="form-label">First Name* </label>
+          <input
+            type="text"
+            placeholder="Enter First Name"
+            class="form-control"
+            formControlName="firstName"
+            (blur)="firstNameUnSelected = true"
+            (focus)="firstNameUnSelected = false"
+          />
+          <span
+            *ngIf="
+              registrationForm.controls['firstName'].invalid &&
+              firstNameUnSelected === true
+            "
+            class="registration"
+            >Please enter a valid First Name</span
+          >
+        </li>
+        <li>
+          <label class="form-label">Last Name* </label>
+          <input
+            type="text"
+            placeholder="Enter Last Name"
+            class="form-control"
+            formControlName="lastName"
+            (blur)="lastNameUnSelected = true"
+            (focus)="lastNameUnSelected = false"
+          />
+          <span
+            *ngIf="
+              registrationForm.controls['lastName'].invalid &&
+              lastNameUnSelected === true
+            "
+            class="registration"
+            >Please enter a valid Last Name</span
+          >
+        </li>
+        <!-- <li>
+          <label class="form-label">Dealer Name* </label>
+          <input
+            type="text"
+            placeholder="Enter dealer Name"
+            class="form-control"
+            formControlName="dealerName"
+            (blur)="dealerNameUnSelected = true"
+            (focus)="dealerNameUnSelected = false"
+          />
+          <span
+            *ngIf="
+              registrationForm.controls['dealerName'].invalid &&
+              dealerNameUnSelected === true
+            "
+            class="registration"
+            >Please enter a valid Dealer Name</span
+          >
+        </li>
+        <li>
+          <label class="form-label">Account Number*</label>
+          <input
+            #accountNumberInput
+            type="text"
+            placeholder="Enter account number"
+            class="form-control"
+            formControlName="accountNumber"
+            (change)="getCompany()"
+            (blur)="accountNumberUnSelected = true"
+            (focus)="accountNumberUnSelected = false"
+          />
+          <span
+            *ngIf="
+              registrationForm.controls['accountNumber'].invalid &&
+              accountNumberUnSelected === true
+            "
+            class="registration"
+            >Please enter a valid Account Number</span
+          >
+          <span class="registration" *ngIf="accountNotExist">
+            {{ accountNotExist }}
+          </span>
+        </li> -->
+        <!-- <li class="w-100">
+          <label class="form-label">Company*</label>
+          <ng-select
+            [multiple]="true"
+            formControlName="company"
+            placeholder="Select company"
+            class="company-select"
+            [items]="companyData"
+            [ngClass]="{
+              'disabled-select': registrationForm.get('company')?.disabled
+            }"
+          >
+          </ng-select>
+        </li> -->
+        <li class="w-100">
+          <label class="form-label">Primary Role*</label>
+          <ng-select placeholder="Select Role" formControlName="primaryRole">
+            <ng-option *ngFor="let role of roles" [value]="role.value">{{
+              role.title
+            }}</ng-option>
+          </ng-select>
+        </li>
+        <li class="w-100 phone-field">
+          <div>
+            <label class="form-label">Work Phone*</label>
+            <input
+              type="text"
+              placeholder="Enter work phone"
+              class="form-control"
+              formControlName="workPhone"
+              (blur)="workPhoneUnSelected = true"
+              (focus)="workPhoneUnSelected = false"
+              maxlength="14"
+              (input)="checkWorkPhoneValidation($event)"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+            />
+            <span
+              *ngIf="
+                registrationForm.controls['workPhone'].invalid &&
+                workPhoneUnSelected === true
+              "
+              class="registration"
+              >Please enter a valid Work Phone</span
+            >
+          </div>
+          <div class="ext">
+            <label class="form-label">Ext.</label>
+            <input
+              type="text"
+              placeholder="Ext."
+              class="form-control"
+              formControlName="ext"
+            />
+          </div>
+          <div class="phone-number">
+            <label class="form-label">Mobile Number</label>
+            <input
+              type="text"
+              placeholder="Enter Mobile number"
+              class="form-control"
+              formControlName="phoneNumber"
+              (blur)="phoneNumberUnSelected = true"
+              (focus)="phoneNumberUnSelected = false"
+              maxlength="14"
+              (input)="checkPhoneValidation($event)"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+            />
+            <!-- <span
+              *ngIf="
+                registrationForm.controls['phoneNumber'].invalid &&
+                phoneNumberUnSelected === true
+              "
+              class="registration"
+              >Please enter a valid Phone Number</span
+            > -->
+          </div>
+        </li>
+        <li class="w-100">
+          <label class="form-label">Email Address*</label>
+          <input
+            type="text"
+            placeholder="johdoe@gmail.com"
+            class="form-control"
+            [ngClass]="
+              registrationForm.controls['emailAddress'].touched &&
+              registrationForm.controls['emailAddress'].hasError('pattern')
+                ? 'is-invalid'
+                : ''
+            "
+            formControlName="emailAddress"
+            (blur)="emailAddressUnSelected = true"
+            (focus)="emailAddressUnSelected = false"
+            (input)="onEmailInput($event)"
+          />
+          <span
+            *ngIf="
+              registrationForm.controls['emailAddress'].invalid &&
+              emailAddressUnSelected === true
+            "
+            class="registration"
+            >Please enter a valid Email Address
+          </span>
+          <span *ngIf="hasMohawkEmail" class="registration mt-1"
+            >Domain "mohawkind.com" not allowed</span
+          >
+        </li>
+        <li class="password-field">
+          <label class="form-label">Choose Password*</label>
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="Choose Password"
+            class="form-control"
+            formControlName="choosePassword"
+            (blur)="choosePasswordUnSelected = true"
+            (focus)="choosePasswordUnSelected = false"
+          />
+          <fa-icon
+            [icon]="displayEyePassword()"
+            [ngClass]="showPassword ? 'show-eye' : 'hide-eye'"
+            (click)="showHidePassword()"
+          ></fa-icon>
+
+          <span
+            class="registration"
+            *ngIf="
+              registrationForm.controls['choosePassword'].hasError('pattern') &&
+              choosePasswordUnSelected
+            "
+            >Please review guidelines below</span
+          >
+        </li>
+        <li class="password-field">
+          <label class="form-label">Confirm Password*</label>
+          <input
+            [type]="showConfirm ? 'text' : 'password'"
+            placeholder="Confirm Password"
+            class="form-control"
+            formControlName="confirmPassword"
+            (blur)="confirmPasswordUnSelected = true"
+            (focus)="confirmPasswordUnSelected = false"
+            (paste)="preventCopyPaste($event)"
+          />
+          <fa-icon
+            *ngIf="!registrationForm.controls['confirmPassword'].disabled"
+            [icon]="displayEyeConfirm()"
+            [ngClass]="showConfirm ? 'show-eye' : 'hide-eye'"
+            (click)="showHideConfirm()"
+          ></fa-icon>
+          <span
+            class="registration"
+            *ngIf="
+              registrationForm.controls['confirmPassword'].hasError(
+                'confirmedValidator'
+              ) && confirmPasswordUnSelected
+            "
+            >Passwords must match</span
+          >
+          <span
+            *ngIf="
+              registrationForm.controls['confirmPassword'].hasError(
+                'required'
+              ) ||
+              registrationForm.controls['confirmPassword'].hasError(
+                'minlength'
+              ) ||
+              (registrationForm.controls['confirmPassword'].hasError(
+                'maxlength'
+              ) &&
+                confirmPasswordUnSelected)
+            "
+            class="registration"
+            >Please enter a valid matching password</span
+          >
+        </li>
+      </ul>
+    <p>
+      (Minimum of 16 characters, at least one upper and lower case letter, one number,
+      Must contain one of the following characters “!&#64;#$%^&+=,” and no spaces)
+    </p>
+
+      <div
+        class="mb-4 d-flex justify-content-between align-items-center flex-wrap sign-up-actions"
+      >
+        <a
+          class="color-dark-gray text-decoration-none sign-up-link"
+          routerLink="/"
+        >
+          <strong>
+            <fa-icon [icon]="faAngleLeft"></fa-icon> Return to Login
+          </strong>
+        </a>
+        <button
+          [disabled]="!registrationForm.valid || hasMohawkEmail"
+          class="btn btn-primary submit-btn"
+          (click)="registerMTUser(registrationForm.value)"
+        >
+          Register
+        </button>
+      </div>
+    </div>
+  </div>
+  <alert
+    type="danger"
+    class="alert-message"
+    [dismissible]="true"
+    *ngIf="errorMessage !== ''"
+  >
+    <div class="container text-">
+      {{ errorMessage }}
+    </div>
+  </alert>
+  <div class="mb-0 d-flex flex-wrap justify-content-center align-items-center">
+    <h3 class="w-100 text-center">Need assistance?</h3>
+    <p class="text-center w-100 mb-0">
+      Email:
+      <a href="mailto:Xchange_Support&#64;mohawkind.com">
+        Xchange_Support&#64;mohawkind.com
+      </a>
+
+      <br />
+      Call: <a href="tel:1-800-276-7007">1-800-276-7007</a>
+    </p>
+  </div>
+</form>

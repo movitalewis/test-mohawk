@@ -1,0 +1,59 @@
+@import "/src/styles/mixins/breakpoints";
+
+.sort-dropdown-container {
+  width: 275px;
+  max-width: 100%;
+  margin-bottom: 20px;
+  label {
+    font-weight: 500;
+    font-size: 16px;
+  }
+  @include breakpoint-range($max: lg) {
+    width: 100%;
+  }
+}
+.sort-filters-container {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+
+  h3 {
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 700;
+  }
+//   button{
+//     max-width: 306px;
+//   }
+}
+.filters-section {
+  padding-top: 4px;
+}
+.selected-fliters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+ 
+  &__chips {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    border-radius: 5px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+
+    padding: 5px 10px;
+    button {
+      width: 8px;
+      height: 6px;
+      margin-bottom: 1px;
+    }
+  }
+}
+
+::ng-deep{
+  .modal-xl.modal-dialog{
+    @include breakpoint-range($min: md,$max: lg) {
+      max-width: 90%;
+    }
+  }
+}

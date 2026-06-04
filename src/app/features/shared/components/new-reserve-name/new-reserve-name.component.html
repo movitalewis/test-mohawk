@@ -1,0 +1,42 @@
+<app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+<div class="modal-header text-center">
+  <h4 class="modal-title w-100">New Reserve Name</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="bsModalRef.hide()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="modalForm">
+  <div class="text-center">
+    <h4>Reserve Name</h4>
+        <input
+        type="text"
+        placeholder="Type Here"
+        maxlength="30"
+        class="form-control"
+        (input)="onInputChange($event)"
+        formControlName="reserveName"
+        />
+        <div class="invalid-feedback">
+        Please enter a name for the reserve
+        </div>
+        <div class="text-danger" *ngIf="modalForm.controls['reserveName'].touched && modalForm.controls['reserveName'].hasError('pattern')">
+          Special characters are not allowed.
+        </div>
+    <div class="mt-4 mb-4">
+      <button
+        class="btn btn-outline-secondary me-3"
+        (click)="cancelReserve();bsModalRef.hide()"
+      >
+        CANCEL
+      </button>
+      <button class="btn btn-primary" (click)="doneReserve()" [disabled]="!modalForm.valid">DONE</button>
+    </div>
+  </div>
+  </form>
+</div>

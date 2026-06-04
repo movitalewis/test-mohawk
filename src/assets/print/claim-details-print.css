@@ -1,0 +1,378 @@
+.claim-text {
+    border-radius: 5px;
+    border: none;
+    padding-left: 15px;
+    padding-bottom: 5px;
+}
+body{
+    background-color: #fff;
+}
+
+.w-90 {
+    width: 90%;
+}
+.padding-left {
+    padding-left: 25px;
+}
+.checkout-card-header {
+    background-color: #fff;
+}
+button.btn1 {
+    text-decoration: none;
+    text-transform: capitalize;
+    border: none !important;
+    padding-top: 0.75rem;
+    margin-bottom: 0rem;
+}
+.down-icon {
+    transform: rotate(-90deg);
+    display: inline-flex;
+    font-size: 0.625rem;
+    margin-left: 0.313rem;
+}
+.up-icon {
+    transform: rotate(-270deg);
+    display: inline-flex;
+    font-size: 0.625rem;
+    margin-left: 0.625rem;
+}
+.hide-w-100 {
+    width: auto;
+}
+.back-to {
+    color: #ce0e2d;
+    display: flex;
+    cursor: pointer;
+    text-decoration: none;
+}
+.back-i {
+    margin-right: 5px;
+    top: 5px;
+    position: relative;
+}
+.full-btns {
+    gap: 20px;
+}
+.table-data {
+    overflow-x: auto;
+}
+.table-data table {
+    width: 100%;
+}
+.table-data table thead tr label, .table-data table tbody tr label {
+    position: relative;
+}
+.table-data table thead tr label input, .table-data table tbody tr label input {
+    clip: rect(0, 0, 0, 0);
+    height: 1px;
+    /* margin: -1px; */
+    overflow: hidden;
+    position: absolute;
+    width: 1px;
+}
+.table-data table thead tr label input:checked + .checkbox, .table-data table tbody tr label input:checked + .checkbox {
+    background: #383838;
+}
+.table-data table thead tr label input:checked + .checkbox::before, .table-data table tbody tr label input:checked + .checkbox::before {
+    background-clip: padding-box;
+    border: 0.1rem solid #fff;
+    border-left-width: 0;
+    border-top-width: 0;
+    content: "";
+    height: 12px;
+    left: 50%;
+    /* margin-left: -3px;
+    margin-top: -8px; */
+    position: absolute;
+    top: 50%;
+    transform: rotate(45deg);
+    width: 6px;
+}
+.table-data table thead tr label .checkbox, .table-data table tbody tr label .checkbox {
+    height: 20px;
+    width: 20px;
+    border: 1px solid #b1b1b1;
+    background: #fff;
+    cursor: pointer;
+    border-radius: 2px;
+}
+.table-data table thead tr th, .table-data table tbody tr th {
+    width: 11.1111%;
+    background: #e8e8e8;
+    padding: 6px 15px;
+    border-right: 0.5px solid #b1b1b1;
+    color: #383838;
+    font-size: 16px;
+    font-weight: 600;
+}
+.table-data table thead tr th img, .table-data table tbody tr th img {
+    display: none;
+}
+.table-data table thead tr th img.active, .table-data table tbody tr th img.active {
+    display: inline-block;
+}
+.table-data table thead tr th img.rotate, .table-data table tbody tr th img.rotate {
+    transform: rotate(180deg);
+}
+.table-data table thead tr td, .table-data table tbody tr td {
+    width: 11.1111%;
+    height: 63px;
+    padding: 6px 15px;
+    border-right: 0.5px solid #b1b1b1;
+    border-left: 0.5px solid #b1b1b1;
+    vertical-align: center;
+}
+.table-data table thead tr td .mohawak-icon, .table-data table tbody tr td .mohawak-icon {
+    color: #ce0e2d;
+    cursor: pointer;
+}
+.table-data table tbody tr {
+    border-bottom: 1px solid #c2c7d1;
+}
+.table-data table tbody tr:last-child {
+    border-bottom: 0.5px solid #c2c7d1;
+}
+.table-data table tbody tr .non-product-lines {
+    color: #a5a5a5;
+}
+.claim-docs {
+    color: #e21836;
+    cursor: pointer;
+    margin-bottom: 0px;
+}
+.claim-docs:hover {
+    text-decoration: underline;
+}
+.cart-action-cta {
+    margin-left: 15px;
+    margin-right: 15px;
+}
+.mx-clear-input-brn {
+    background: transparent;
+    border: none;
+}
+.comment-row {
+    display: flex;
+    flex-direction: row;
+}
+.posted-comment-container {
+    width: 50%;
+    padding: 0 30px 0 50px;
+    overflow-y: auto;
+}
+.posted-comment-container .comment-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.addnew-comment-container {
+    width: calc(50% - 1px);
+    border-left: 1px solid #ccc;
+    padding-left: 10px;
+}
+.italic {
+    font-style: italic;
+    font-size: smaller;
+}
+/* Hide components */
+header, footer, aside, form, xchange-breadcrumb, .order-details-links {
+    display: none;
+}
+
+.print-p{
+    /* height: 2px; */
+}
+
+.card-content{
+    border: 0px;
+    padding: 0px;
+}
+.claim-text{
+ margin-bottom: 0px !important;
+}
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+.mt-4 {
+    margin-top: 1.5rem !important;
+}
+.claim-text
+{
+    margin-bottom: 1rem !important;
+}
+h4
+{
+    font-size: 16px;
+    font-weight: 600;
+}
+p{
+    font-size: 16px;
+}
+
+
+.row.div-sec{
+    border-radius: 5px;
+    border: none;
+    padding-left: 15px;
+    padding-bottom: 5px;
+}
+.row.inv-line{
+    margin: auto;
+    border-bottom: 0.5px solid #b1b1b1;
+    padding-top: 15px;
+}
+
+.printT{
+    table{
+        width: 100%;
+    }
+    /* border: 1px solid #b1b1b1; */
+    thead{
+      background-color: #e2e3e5;
+      tr{
+        th{
+          text-align: center;
+          font-size: 12px;
+          border: 1px solid #b1b1b1;
+          color: #4C4D4B;
+          border-right: 1px solid #b1b1b1;
+          &:last-child {
+            border-right: unset;
+          }
+  
+        }
+      }
+    }
+    tbody{
+      tr{
+        border: unset;        
+        border-top: 1px solid #b1b1b1;
+        td{
+          text-align: center;
+          font-size: 12px;
+          color: #212529;
+          border-right: 1px solid #b1b1b1;
+          vertical-align: center;  
+          &:last-child {
+            border-right: unset;
+          }
+         
+        }
+  
+      }
+    }
+  }
+  .c-header{
+    .col-md-3{
+        width: 25%;
+    }
+  }
+    
+  .non-product-line-bg{
+    background-color: #f8f8f8 !important;
+  }
+  .product-line-bg{
+    background-color: #fff !important;
+  }
+  .removed-line{
+    display: none;
+  }
+
+  .xchange-loader {
+      position: fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      /* background-color: rgba(51, 51, 51, 0.8); */
+      z-index: 999;
+      left: 0;
+      /* top: 9.1vw; */
+      bottom: 0;
+      right: 0;
+
+      @include breakpoint-range($max: sm) {
+          // top: 26vw !important;
+          // position: fixed !important;
+      }
+
+  }
+
+.custom-spinner {
+  border: 4px solid #ce0e2d;
+  border-top: 4px solid transparent; 
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+.p-none{
+    display: none;
+  }
+  .p-row{
+    display: flex !important;
+    flex-wrap: wrap !important;
+  }
+  .p-body{
+padding: 50px !important;
+  }
+  .p-col-12 {
+      flex: 0 0 auto !important;
+      width: 100% !important;
+  }
+  .p-col-6 {
+    flex: 0 0 auto !important;
+    width: 50% !important;
+  }
+  .p-col-3 {
+    flex: 0 0 auto !important;
+    width:25% !important;
+  }
+  .p-col-24 { /* p-col-24 means 5 columns in a row*/
+    flex: 0 0 auto !important;
+    width:20% !important;
+  }
+  
+  .p-col-5 {
+    flex: 0 0 auto !important;
+    width: 41.66666667% !important;
+  }
+  
+  .p-col-9 {
+    flex: 0 0 auto !important;
+    width: 75% !important;
+  }
+  .p-col-4{
+    flex: 0 0 auto !important;
+    width: 33.3333333% !important;
+  }
+  
+  .p-col-8 {
+    flex: 0 0 auto !important;
+    width: 66.66666667% !important;
+  }
+  .p-col-7 {
+    flex: 0 0 auto !important;
+    width: 58.33333333% !important;
+}  
+.card-header.checkout{
+    border: 1px solid #b1b1b1;
+}
+.inv-line{
+    border-bottom: 3px solid #c4c4c5;
+    padding: 2px 4px;
+}
+.pdf-font{
+    font-size: 20px;
+    font-weight: 600 !important;
+    color: #000 !important;
+}
+p.pdf-font{
+    font-weight: 100 !important;
+    font-size: 20px !important;
+    color: #353a36 !important;
+    /* opacity: 0.7 !important; */
+}
+.print-p{
+    padding-left: 12px !important;
+}

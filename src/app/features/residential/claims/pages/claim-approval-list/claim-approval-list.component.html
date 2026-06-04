@@ -1,0 +1,197 @@
+<app-loader *ngIf="spinnerLoading"></app-loader>
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <h2 class="text-center mb-4">Claims Approval List</h2>
+  <div class="mb-3" *ngIf="claimsService.approveRejectSuccessMsg != ''">
+    <alert type="success" class="dashboard-page-alert" [dismissible]="true">
+      <div class="container">
+        {{ claimsService.approveRejectSuccessMsg }}
+      </div>
+    </alert>
+  </div>
+  <div class="_card-container">
+    <div class="row">
+      <div class="col-xxl-3 col-md-3 col-lg-3 d-grid align-items-end mb-3 cust-col-md-4">
+        <button
+          class="btn btn-primary w-100 new-claim"
+          [routerLink]="['/residential/claims/createclaim']"
+          [disabled]="storageService.userInfo?.isFinancialUser"
+        >
+          CREATE A NEW CLAIM
+        </button>
+      </div>
+      <div class="col-xxl-3 col-md-3 col-lg-3 d-grid align-items-end mb-3 cust-col-md-4">
+        <button
+          class="btn btn-primary w-100 new-claim"
+          [routerLink]="['/residential/claims/history']"
+        >
+          CLAIMS HISTORY
+        </button>
+      </div>
+      <div class="col-xxl-3 col-lg-3 col-md-3 col-sm-12 cust-col-md-4">
+        <h4>Status</h4>
+        <ng-select
+          placeholder="Action Required"
+          class="mb-3"
+          (change)="onStatus($event)"
+          [(ngModel)]="selectedStatus"
+        >
+          <ng-option [value]="''">All</ng-option>
+          <ng-option [value]="'status-ACTIONREQUIRED'">Action Required</ng-option>
+          <ng-option [value]="'status-INPROCESS'">In Process</ng-option>
+          <ng-option [value]="'status-RESOLVED'">Resolved</ng-option>
+          <ng-option [value]="'status-CLOSED'">Closed</ng-option>
+          <ng-option [value]="'status-DRAFT'">Draft</ng-option>
+        </ng-select>
+      </div>
+
+      <div class="col-xxl-3 col-lg-3 col-md-3 col-sm-12 cust-col-md-4">
+        <h4>Claim Type</h4>
+        <ng-select placeholder="All" class="mb-3" (change)="onClaim($event)">
+          <ng-option [value]="claimType.key" *ngFor="let claimType of claimTypes | keyvalue">{{claimType.value}}</ng-option>
+        </ng-select>
+      </div>
+      <div class="col-xxl-3 col-lg-3 col-md-3 col-sm-12 cust-col-md-4">
+        <h4>Date Range</h4>
+        <input
+          type="text"
+          placeholder="Select Date"
+          class="form-control mb-3"
+          [(ngModel)]="daterange1"
+          [maxDate]="maxDate"
+          (ngModelChange)="datechange($event)"
+          bsDaterangepicker
+        />
+      </div>
+      <div class="col-xxl-3 col-lg-3 col-md-3 col-sm-12 cust-col-md-4 search-mob-width">
+        <h4>Search By</h4>
+        <ng-select
+          placeholder="Claim"
+          class="mb-3"
+          (change)="onSearchBy($event)"
+          (clear)="clearSearchBy()"
+          [(ngModel)]="this.searchBy"
+        >
+          <ng-option value="claimNumber">Claim #</ng-option>
+          <ng-option value="invoiceNumber">Invoice #</ng-option>
+          <ng-option value="poNumber">PO #</ng-option>
+          <ng-option value="sidemark">Sidemark</ng-option>
+          <ng-option value="consumerName">Consumer Name</ng-option>
+          <ng-option value="styleNumber">Style #</ng-option>
+          <ng-option value="styleName">Style Name</ng-option>
+          <ng-option value="colorName">Color #</ng-option>
+          <ng-option value="colorNumber">Color Name</ng-option>
+        </ng-select>
+      </div>
+      <div
+        class="col-xxl-3 col-lg-3 col-md-3 col-sm-12 cust-col-md-4 d-grid align-items-end mb-3 search-mob-width"
+      >
+        <h4>Search For</h4>
+        <xchange-search-control
+          [disabled]="searchBy != '' ? false : true"
+          (sendValue)="onSearch($event)"
+          (keyup)="onSearchClear($event)"
+          [isGlobalSearchEnabled]="false"
+          placeholder="{{
+            searchBy != '' ? 'Type here' : 'Select Search By'
+          }}"
+          [searchKey]="searchText"
+        ></xchange-search-control>
+      </div>
+    </div>
+    <div class="margin-top">
+      <div class="overflow-auto">
+        <div class="page-size-container col-md-12 text-end mb-3">
+          <label for="pageSize" class="page-size-label">Show </label>
+          <select
+            id="pageSize"
+            class="page-size-dropdown"
+            [ngModel]="tableItemsSize"
+            (change)="onPageSizeChange($event.target)"
+          >
+            <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+          </select>
+        </div>
+      <ngx-table
+        #claim
+        [configuration]="configuration1"
+        [data]="
+          claimDetails
+            | paginate
+              : {
+                  id: 'clhstry',
+                  itemsPerPage: tableItemsSize,
+                  currentPage: pageIndex,
+                  totalItems: totalLength
+                }
+        "
+        [columns]="columns1"
+        class="margin-top"
+        (event)="sortingByColumns($event)"
+      >
+        <ng-template let-row>
+          <td>
+            <p
+              (click)="navigateToClaimDetail(row.claimNumber)"
+              class="claim-number"
+            >
+              {{
+                row?.claimStatus == "Draft" ? "DRAFT" : row?.claimNumber || "NA"
+              }}
+            </p>
+          </td>
+          <td>
+            <p>{{ row?.claimSubmitDate || "NA" }}</p>
+          </td>
+          <td>
+            <p>{{ row?.claimType || "NA" }}</p>
+          </td>
+          <td>
+            <p>{{ row?.submittedByName || "NA" }}</p>
+          </td>
+          <td>
+            <p>{{ row?.sideMark || "NA" }}</p>
+          </td>
+          <td>
+            <p>{{ row?.invoiceNumber || "NA" }}</p>
+          </td>
+          <td>
+            <p>{{ row?.poNumber || "NA" }}</p>
+          </td>
+          <td>
+            <p>{{ row?.totalClaimedAmount || "NA" }}</p>
+          </td>
+          <td>
+            <p>{{ row?.claimStatus || "NA" }}</p>
+          </td>
+        </ng-template>
+      </ngx-table>
+      </div>
+      <div class="row mb-4 mt-4">
+        <div class="d-flex justify-content-center" 
+        *ngIf="totalLength > 10">
+          <pagination-controls
+            id="clhstry"
+            [maxSize]="maxSize"
+            [responsive]="true"
+            [nextLabel]="''"
+            [previousLabel]="''"
+            [maxSize]="5"
+            (pageChange)="onTableDataChange($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div class="col-md-12">
+          <p class="text-center mb-0">
+            {{
+              totalLength > 0 ? (startValue > totalLength ? 1 : startValue) : 0
+            }}
+            -
+            {{ lastValue > totalLength ? totalLength : lastValue }}
+            OF {{ totalLength > 0 ? totalLength : 0 }} CLAIMS
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

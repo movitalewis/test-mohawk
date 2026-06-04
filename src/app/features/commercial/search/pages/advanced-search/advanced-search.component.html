@@ -1,0 +1,134 @@
+<div class="container">
+  <app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+    <form class="sign-up-form" [formGroup]="advancedSearchForm">
+      <h2 class="text-center mb-4">Advanced Search</h2>
+      <div >
+        <div class="mb-3" *ngIf="showDialog">
+          <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+            <div class="container">
+              Please specify a 'Style Name', 'Style Code' or a 'Part Number', or
+                a combination of 'Style Code', 'Style Name' or a 'Part Number'
+                along with a 'Color Code', 'Color Name' or 'Backing Code' to
+                search for a product
+            </div>
+          </alert>
+        </div>
+        <!-- <div class="messages alert alert-danger alert-dismissible" role="alert">
+          <button
+            type="button"
+            class="close"
+            data-dismiss="alert"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+          <div class="messages_content">
+            <div>
+              <div>
+                Please specify a 'Style Name','Style Code' or a 'Part Number', or
+                a combination of 'Style Code','Style Name' or a 'Part Number'
+                along with a 'Color Code', 'Color Name' or 'Backing Code' to
+                search for a product
+              </div>
+            </div>
+          </div>
+        </div> -->
+      </div>
+      <div class="row mb-4">
+        <div class="col-md-12">
+          <div class="_card-container">
+            <div class="row mb-4">
+              <div class="col-md-4">
+                <h4>Style Code*</h4>
+  
+                <input
+                  type="text"
+                  placeholder="Type Here"
+                  class="form-control"
+                  formControlName="styleCode"
+                  (blur)="enableSearch()"
+                  (input)="enableSearch()"
+                />
+              </div>
+              <div class="col-md-4">
+                <h4>Style Name*</h4>
+                <input
+                  type="text"
+                  placeholder="Type Here"
+                  class="form-control"
+                  formControlName="styleName"
+                  (blur)="enableSearch()"
+                  (input)="enableSearch()"
+                />
+              </div>
+              <div class="col-md-4">
+                <h4>Color Code</h4>
+                <input
+                  type="text"
+                  placeholder="Type Here"
+                  class="form-control"
+                  formControlName="colorCode"
+                />
+              </div>
+            </div>
+            <div class="row mb-4">
+              <div class="col-md-4">
+                <h4>Color Name</h4>
+                <input
+                  type="text"
+                  placeholder="Type Here"
+                  class="form-control"
+                  formControlName="colorName"
+                />
+              </div>
+              <div class="col-md-4">
+                <h4>Backing #</h4>
+                <input
+                  type="text"
+                  placeholder="Type Here"
+                  class="form-control"
+                  formControlName="backing"
+                />
+              </div>
+  
+              <div class="col-md-4">
+                <h4>Part #*</h4>
+                <input
+                  type="text"
+                  placeholder="Type Here"
+                  class="form-control"
+                  formControlName="part"
+                  (blur)="enableSearch()"
+                  (input)="enableSearch()"
+                />
+              </div>
+            </div>
+            <div class="row align-center">
+              <div class="col-md-3 mb-3 btn-grid col-6">
+                <button class="btn btn-primary" (click)="submit()"
+                [disabled]="!advancedSearchForm.dirty || !advancedSearchForm.valid">Submit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    
+  <div class="row mb-4">
+    <div class="col-lg-8 col-xl-12" *ngIf="dataList.length > 0">
+      <xchange-products-list
+        #productref
+        [productList]="dataList"
+        [columnSize]= "'3'"
+      ></xchange-products-list>
+    </div>
+    <div class="col-md-12" *ngIf="dataList.length == 0 && componentInitialized">
+      <div class="d-flex justify-content-center h-100 align-items-center">
+        No match found
+      </div> 
+    </div>
+  </div>
+  </div>
+
+  

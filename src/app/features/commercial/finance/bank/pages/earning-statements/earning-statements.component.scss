@@ -1,0 +1,19 @@
+@import "src/styles/mixins/breakpoints";
+
+.align-end {
+    justify-content: flex-end
+}
+
+@include breakpoint-range($max : xs) {
+
+    .align-end {
+        justify-content: start;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+.row-no-data {
+    margin-top: 30px;
+}

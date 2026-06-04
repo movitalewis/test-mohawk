@@ -1,0 +1,89 @@
+<ng-container>
+  <div class="container">
+    <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+    <h2 class="text-center mb-4">Recent Payments</h2>
+    <div class="mb-4">
+        <alert type="danger" class="dashboard-page-alert" [dismissible]="true" *ngIf="errorMessage">
+            <div class="container">
+                {{ errorMessage }}
+            </div>
+        </alert>
+    </div>
+    <div class="_card-container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-6 search-mob-width">
+                <h4>Sort</h4>
+                <ng-select name="sortBy" placeholder="Sort By" class="mb-3" [(ngModel)]="sortBy"(ngModelChange)="sortData(sortDataBy,sortBy)">
+                    <ng-option [value]="item.key" *ngFor="let item of sortDirectionData">
+                        {{ item.value }}
+                    </ng-option>
+                </ng-select>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-6 search-mob-width">
+                <h4>Sort By</h4>
+                <ng-select placeholder="Sort By" class="mb-3" name="sortDataBy" [(ngModel)]="sortDataBy" (ngModelChange)="sortData(sortDataBy,sortBy)">
+                    <ng-option [value]="item.key" *ngFor="let item of sortByData">
+                        {{ item.value }}
+                    </ng-option>
+                </ng-select>
+            </div>
+        </div>
+      <ngx-table
+      [configuration]="configuration"
+      [data]="
+      tableData
+        | paginate
+          : {
+              id: 'clhstry',
+              itemsPerPage: tableItemsSize,
+              currentPage: pageIndex,
+              totalItems: totalLength
+            }
+    "
+      [columns]="columns"
+      (event)="selectedValues($event)"
+      >
+          <ng-template let-row>
+              <td>
+                {{ row?.paymentType }}
+              </td>
+              <td>
+                  {{ row?.paymentAmount | currency: priceLabel :'symbol':'1.2-2' }}
+              </td>
+              <td>
+                  {{ row?.currency }}
+              </td>
+              <td>
+                  {{ row?.paymentDate | date:'MM/dd/yyyy' }}
+              </td>
+          </ng-template>
+      </ngx-table>
+      
+     </div>
+     <div class="row mb-4 mt-4">
+        <div class="d-flex justify-content-center" *ngIf="totalLength > 10">
+            <pagination-controls
+            id="clhstry"
+            [maxSize]="10"
+            [responsive]="true"
+            [nextLabel]="''"
+            [previousLabel]="''"
+            [maxSize]="5"
+            (pageChange)="onTableDataChange($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div class="col-md-12">
+          <p class="text-center mb-0">
+            {{
+              totalLength > 0 ? (startValue > totalLength ? 1 : startValue) : 0
+            }}
+            -
+            {{ lastValue > totalLength ? totalLength : lastValue }}
+            OF {{ totalLength > 0 ? totalLength : 0 }} payments
+          </p>
+        </div>
+      </div>
+    </div>
+
+</ng-container>

@@ -1,0 +1,228 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+
+.back-to {
+  color: #{$color-red};
+  display: flex;
+  cursor: pointer;
+}
+.pdf-print {
+  color: #{$color-red};
+  display: flex;
+  justify-content: flex-end;
+  cursor: pointer;
+}
+.pdf {
+  @include breakpoint-range($max: sm) {
+    margin-right: 5px;
+  }
+  position: relative;
+  top: 2px;
+  margin-right: 5px;
+}
+.back-i {
+  @include breakpoint-range($max: sm) {
+    margin-right: 5px;
+  }
+  margin-right: 5px;
+  top: 4px;
+  position: relative;
+  //transform: rotate(180deg);
+}
+.content-div{
+  overflow: auto;
+  background-color: white;
+}
+
+.compare-list-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  // @include breakpoint-range($max: lg) {
+  //   justify-content: end;
+  // }
+}
+.compare-list {
+  display: flex;
+  width: 100%;
+  
+  // justify-content: end;
+  // overflow: auto;
+  & > div.no-img.two>div{
+    width: 240px;
+  }
+  & > div.no-img.three>div{
+    // min-width: 100%/4;
+  }
+  & > div.p-img>div {
+    // width: 296px;
+    background: $color-white;
+    // box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.1);
+    border: 0.5px solid #d7d7d7d0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 12px 0;
+    margin: auto;
+    position: relative;
+    border-radius: 5px;
+    .image {
+      width: 200px;
+      height: 200px;
+      overflow: hidden;
+      border-radius: 5px;
+      img {
+        width: 100%;
+        height: 100%;
+        // object-fit: contain;
+      }
+    }
+
+    h4 {
+      font-size: 18px;
+      font-weight: 900;
+      width: 100%;
+      text-align: start;
+      margin-top: 15px;
+      margin-bottom: 0px;
+      margin-left: 0px;
+      word-break: break-word;
+      padding: 0px;
+    }
+    div {
+      margin: 10px 6px;
+      p {
+        font-size: 14px;
+        font-weight: 600;
+        color: $color-gray;
+        margin-bottom: 0;
+      }
+    }
+  }    
+  &> div.two{
+    margin: auto;
+    div{
+    width: 265px;
+  }
+  }
+  &> div.three{
+    // min-width: 250px;
+    margin: auto;
+    div{
+      width: 265px;
+    }
+  }
+
+  // @include breakpoint-range($max: lg) {
+  //   & > li {
+  //     margin: 0 5px;
+  //     padding: 7px 0;
+  //     .image {
+  //       width: 90%;
+  //     }
+  //     h4 {
+  //       margin-top: 5px;
+  //     }
+  //   }
+  // }
+  // @include breakpoint-range($max: sm) {
+  //   flex-wrap: wrap;
+  //   & > li {
+  //     width: 100px;
+  //     .image {
+  //       height: 60px;
+  //     }
+  //   }
+  // }
+}
+
+.close-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid $color-gray;
+  background: transparent;
+  border-radius: 100%;
+  color: $color-gray;
+  background: $color-white;
+  font-size: 14px;
+  position: absolute;
+  top: 2px;
+  right: 2px;
+}
+.compare-div {
+    padding: 20px;
+  .spec-table, .design-table, .sus-table, .warranty-table{
+    border: 1px solid $color-gray-b7;
+    width: 100%; 
+    table-layout: fixed;
+    tr{
+        th, td{
+            padding: 10px 20px;
+            border-bottom: 1px solid $color-gray-b7;
+            font-size: 16px;
+            width: 50%;
+            word-wrap: break-word;
+            border: 0.5px solid #b1b1b1;
+        }
+        th{
+            background: $color-light-gray;
+            font-weight: 500;
+        }
+    }
+   
+  }
+}
+
+.bottom-div {
+  margin-top: 20px;
+
+  button {
+    width: 200px;
+  }
+}
+
+.div-desc{
+  h4{
+    font-size: 15px;
+  }
+  ::ng-deep xchange-logo-pdp{
+    display: flex;
+    justify-content: center;
+    img{
+      // height: 32px;
+      margin: 5px;
+      width: 100px;
+      margin-top: 10px;
+    }
+  }
+}
+.compare-list.three{
+  div{
+    width: 100%/4;
+    margin: auto;
+  }
+}
+.compare-list.two{
+  div{
+    width: 100%/3;
+  }
+}
+table{
+  width: 100%;
+  &.three{
+  tr {
+    th, td{
+      width: 25%;
+      min-width: 265px;
+    }
+  }
+  }
+  &.two{
+    tr {
+      th, td{
+        width: 100%/3;
+        min-width: 265px;
+      }
+    }
+    }
+}

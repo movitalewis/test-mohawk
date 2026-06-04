@@ -1,0 +1,52 @@
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+
+  <h1 class="text-center fw-normal mb-4">Product Catalog</h1>
+
+  <div class="row">
+    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-3" *ngFor="let item of productListing">
+      <app-product-catalog
+        [type]="'commercial_order_detail'"
+        [isPostOrder]="true"
+        [orderNumber]="order_number"
+        [list]="item"
+      ></app-product-catalog>
+    </div>
+  </div>
+  <!-- <div class="row">
+    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-3">
+      <app-product-catalog
+        [type]="'residential'"
+        [list]="softSurfaceList"
+      ></app-product-catalog>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-3">
+      <app-product-catalog
+        [type]="'residential'"
+        [list]="hardSurfaceList"
+      ></app-product-catalog>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-3">
+      <app-product-catalog
+        [type]="'residential'"
+        [list]="accessoriesList"
+      ></app-product-catalog>
+    </div>
+<!-- 
+    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-3">
+      <app-product-catalog
+        [type]="'residential'"
+        [list]="walkOffList"
+      ></app-product-catalog>
+    </div> --
+
+    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-3">
+      <app-product-catalog
+        [type]="'residential'"
+        [list]="adhesivesList"
+      ></app-product-catalog>
+    </div>
+  </div> -->
+</div>

@@ -1,0 +1,133 @@
+<xchange-browser-alert></xchange-browser-alert>
+<owl-carousel-o
+  [options]="mainSliderOptions"
+  class="banner-height banner-index"
+>
+  <ng-template carouselSlide>
+    <img
+      [src]="
+        'https://s7d4.scene7.com/is/image/MohawkResidential/better_together?scl=1'
+      "
+      class="banner-image"
+      alt="flooring banner image"
+    />
+  </ng-template>
+</owl-carousel-o>
+<section class="dashboard-page-search-section" *ngIf="commercialSiteSelectorService?.selectedSite !== 'I' && commercialSiteSelectorService?.selectedSite !== 'H'">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 mx-auto my-3">
+        <xchange-home-search
+          label="Start a New Order"
+          [type]="'commercialNewOrder'"
+          (searchTextChanged)="onSearchTextEntered($event)"
+          [searchFlag] ="true"
+        ></xchange-home-search>
+      </div>
+      
+      <!-- <div class="col-md-6"> -->
+      <!-- <xchange-home-search
+          label="Search Invoices"
+          [type]="'commercialInvoices'"
+          (searchTextChanged)="onSearchTextEntered($event)"
+        ></xchange-home-search> -->
+      <!-- </div> -->
+    </div>
+  </div>
+</section>
+<ng-container *ngIf="!isProductManager">
+  <app-product-features [list]="productFeaturesList" *ngIf="productFeaturesList && productFeaturesList.length > 0"></app-product-features>
+  <section class="dashboard-page-search-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 mb-3" [ngClass]="{'mx-auto': commercialSiteSelectorService.selectedSite == 'I' || commercialSiteSelectorService.selectedSite == 'H'}" >
+          <xchange-home-search
+            label="Order Search"
+            [type]="'commercialOrder'"
+            (searchTextChanged)="onSearchTextEntered($event)"
+            [searchFlag] ="true"
+            ></xchange-home-search>
+        </div>
+        <div class="col-md-6" *ngIf="commercialSiteSelectorService?.selectedSite !== 'I' && commercialSiteSelectorService?.selectedSite !== 'H'">
+          <xchange-home-search
+            label="Invoice Search"
+            [type]="'commercialInvoices'"
+            (searchTextChanged)="onSearchTextEntered($event)"
+            [searchFlag] ="true"
+          ></xchange-home-search>
+        </div>
+      </div>
+    </div>
+  </section>
+</ng-container>
+<section class="bottom-banner my-3">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 position-relative" *ngIf="commercialSiteSelectorService?.selectedSite !== 'I' && commercialSiteSelectorService?.selectedSite !== 'H'">
+        <div class="bottom-banner-container">
+          <img
+            src="https://s7d4.scene7.com/is/image/MohawkResidential/homepage-asset-6?scl=1"
+            width="100%"
+            alt=""
+          />
+          <div class="bottom-banner-content">
+            <h2>Welcome to Commercial Xchange</h2>
+            <p>All Our Commercial Resources In One Place</p>
+            <button class="btn btn-primary" (click)="navigateToCatalog()">
+              Browse Our Catalog
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 position-relative" [ngClass]="{'mx-auto': commercialSiteSelectorService.selectedSite == 'I'  || commercialSiteSelectorService.selectedSite == 'H'}">
+        <div class="bottom-banner-container">
+          <img
+            src="https://s7d4.scene7.com/is/image/MohawkResidential/homepage-asset-7?scl=1"
+            width="100%"
+            alt=""
+          />
+          <div class="bottom-banner-content">
+            <h2>Ready to Ship</h2>
+            <p>
+              Everything in our Ready to Ship program ships within 24 hours of
+              credit approval. All you need is a Mohawk account.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="bottom-banner my-3">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 mb-2">
+        <a href="https://www.mohawkgroup.com/detail/HardSurface/35035/341147/Terrazzo" target="_blank">
+          <img
+            src="https://s7d4.scene7.com/is/image/MohawkResidential/64004_826_room_00?op_sharpen=1&wid=2000&$watermark$="
+            width="100%"
+            alt=""
+          />
+        </a>
+      </div>
+      <div class="col-md-4 mb-2">
+        <a href="https://www.mohawkgroup.com/detail/Carpet/33572/329396/restD-Tile-12BY36" target="_blank">
+          <img
+            src="https://s7d4.scene7.com/is/image/MohawkResidential/room_restD_967_FractalGround_949?op_sharpen=1&wid=2000&$watermark$="
+            width="100%"
+            alt=""
+          />
+        </a>
+      </div>
+      <div class="col-md-4 mb-2">
+        <a href="https://www.mohawkgroup.com/products/soft-surface/collections/running-line-collections/data-tide" target="_blank">
+          <img
+            src="https://s7d4.scene7.com/is/image/MohawkResidential/room_data_tide_02?scl=5&hei=800&wid=600&align=0,0&qual=60"
+            width="100%"
+            alt=""
+          />
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

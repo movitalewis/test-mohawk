@@ -1,0 +1,2415 @@
+<!-- <app-loader *ngIf="spinnerLoading"></app-loader>
+<app-loader *ngIf="loadAPIs.length != 5"></app-loader> -->
+<!-- <app-loader *ngIf="loadAPIs.length != 5"></app-loader> -->
+<div class="container" #scrollToTop id="top">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <div class="d-flex justify-content-between">
+    <xchange-icon-button
+      icon="back"
+      label="Back To Search Results"
+      (click)="returnPreviousUrl()"
+    >
+    </xchange-icon-button>
+    <div class="d-flex">
+      <a
+        (click)="openCrossModal(template3)"
+        *ngIf="storageService.userInfo?.isCustomer === false && crossOverCheck"
+        class="cross-over"
+        >Cross Over</a
+      >
+      <xchange-icon-button
+        icon="view-pdf"
+        label="View PDF"
+        (click)="openPDF()"
+      ></xchange-icon-button>
+      <xchange-icon-button
+        icon="share"
+        label="Share"
+        (click)="openShareViaEmailModal()"
+      ></xchange-icon-button>
+    </div>
+  </div>
+  <!-- <div *ngIf="addToCartFailed">
+    {{ this.errorMessage }} Failed to add product.Please try again
+  </div> -->
+  <div class="mb-3">
+    <alert
+    [type]="alertType"
+    type="danger"
+    class="dashboard-page-alert mb-3"
+    [dismissible]="true"
+    *ngIf="colorSelect || sizeSelect"
+  >
+  <div class="container">{{ errorMessage }}</div>
+</alert>
+  </div>
+  <alert
+    type="danger"
+    class="dashboard-page-alert"
+    [dismissible]="true"
+    *ngIf="addToCartFailed"
+  >
+    <div class="container">{{ errorMessage }}</div>
+  </alert>
+  <alert
+  type="danger"
+  class="dashboard-page-alert"
+  [dismissible]="true"
+  *ngIf="maxLengthErrorFlag"
+  >
+    <div class="container">Maximum length must be greater than or equal to minimum length. Please adjust the values.</div>
+  </alert>
+  <div class="mb-3" *ngIf="exceptionErrorMessage">
+    <alert [type]="alertType" class="dashboard-page-alert" [dismissible]="true">
+      <div class="container">
+        {{ exceptionErrorMessage }}
+      </div>
+    </alert>
+  </div>
+  <!-- <div
+    class="mb-3"
+    *ngIf="
+      showBlockedProductMsg &&
+      (csrSuperAdmin?.isCSR || csrSuperAdmin?.isSalesOps)
+    "
+  >
+    <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+      <div class="container">
+        Product is blocked by the salesperson from the Entitlement Manager. Customer must request entitlement from their salesperson.
+      </div>
+    </alert>
+  </div> -->
+  <div class="mb-3 sticky-alert-banner" *ngIf="userService.salesBlocked">
+    <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+      <div class="container">
+        {{ BANNER_MESSAGES.SALES_BLOCKED }}
+      </div>
+    </alert>
+  </div>
+  <div class="mb-3" *ngIf="specChangeSKUs.includes(pdbData?.styleId) && pdbData?.styleId !== 'SPL01' && productType == 'HARDSURFACE'">
+    <alert type="warning" class="dashboard-page-alert" [dismissible]="true">
+      <div class="container">
+        {{ BANNER_MESSAGES.SPEC_CHANGE_NOTIFICATION }}
+      </div>
+    </alert>
+  </div>
+  <div class="mb-3" *ngIf="specChangeSKUs.includes(pdbData?.styleId) && pdbData?.styleId === 'SPL01' && productType == 'HARDSURFACE'">
+    <alert type="warning" class="dashboard-page-alert" [dismissible]="true">
+      <div class="container">
+        {{ BANNER_MESSAGES.SPEC_CHANGE_NOTIFICATION_ELDERWOOD_SP }}
+      </div>
+    </alert>
+  </div>
+  <div class="mb-3" *ngIf="productType == 'MERCHANDISING'">
+    <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+      <div class="container">
+        Merchandising samples are not available for placing an order or creating a quote.
+      </div>
+    </alert>
+  </div>
+  <div class="mb-3" *ngIf="bundleProduct">
+    <alert type="warning" class="dashboard-page-alert" [dismissible]="true">
+      <div class="container">
+        Bundled Product
+      </div>
+    </alert>
+  </div>
+  <div class="pdp-container">
+    <!-- <h2>{{ pdbData?.productTypeDesc || "N/A" }} - {{ "PM395" }}</h2> -->
+    <!-- <xchange-product-image-view
+      [pdpDataOptions]="{
+        otherDetails: pdbData,
+        backingOptions: pdbData?.backingOptions,
+        sizeOptions: pdbData?.sizeOptions,
+        priceRange: pdbData?.priceRange
+      }"
+      [colorVariant]="pdbData?.productColorVariantOptions"
+    ></xchange-product-image-view> -->
+
+    <product-image-view
+      *ngIf="variantData"
+      [softSurfaceProduct]="
+        subProductType === 'BROADLOOM' || subProductType === 'CARPET_TILE'
+      "
+      [pdpDataOptions]="{
+        otherDetails: variantData,
+        backingOptions: variantData?.backingOptions,
+        sizeOptions: variantData?.sizeOptions,
+        priceDetails: productPriceDetails,
+        showOrderSample: enableOrderSample,
+        styleBlocked: styleBlocked
+      }"
+      [productImages]="productImages"
+      [colorVariant]="variantData?.productColorVariantOptions"
+      (selectedProduct)="setSelectedProductItem($event)"
+      [pdpData]="pdbData"
+      (orderSampleClick)="orderSampleHandler()"
+      [preOrderFlag]="uomDetails?.preOrderFlag"
+      [inHouseAccount]="inHouseAccount"
+      [availabilityForms]="availabilityForms"
+      [pdpPricingUOMValue]="pdpPricingUOMValue"
+      [pdpPricingUOMCode] = "pdpPricingUOMCode"
+      (colorSeletedCheck)="colorSeleted($event)"
+      (sizeSeletedCheck)="sizeSeleted($event)"
+    ></product-image-view>
+
+    <ng-template #availabilityForms>
+      <tabset
+        responsiveTabs
+        [justified]="true"
+        class="enter-quantity-tabs mt-4"
+        *ngIf="erpProductCategory === 'B'; else feetYardFormRef"
+      >
+        <tab
+          (selectTab)="resetEntires('feet')"
+          *ngIf="uomDetails?.rollOnly != 'true'"
+           [active]="uomDetails"
+        >
+          <ng-template tabHeading>Feet or Yards</ng-template>
+          <ng-container *ngTemplateOutlet="feetYardFormRef"></ng-container>
+        </tab>
+        <tab
+          (selectTab)="resetEntires('Roll')"
+          *ngIf="uomDetails?.rollOnly == 'true' || erpProductCategory === 'B'"
+          
+        >
+          <ng-template tabHeading>Rolls</ng-template>
+          <div
+            class="row mt-2"
+            *ngIf="tabFeildsErrMsg && selectedTab == 'Roll'"
+          >
+            <div class="col-12">
+              <alert type="danger" [dismissible]="false" class="mb-0">
+                <div class="container">{{ tabFeildsErrMsg }}</div>
+              </alert>
+            </div>
+          
+          </div>
+            <div class="col-12">
+                  <alert
+                    [type]="excessQntyErrType"
+                    class="dashboard-page-alert"
+                    [dismissible]="false"
+                    *ngIf="excessQntyErrMsg"
+                  >
+                    <div class="container mx-0">
+                      {{ excessQntyErrMsg }}
+                    </div>
+                  </alert>
+              </div>
+          <form [formGroup]="feetyardForm">
+            <div class="row mt-2">
+              <div class="col-lg-3 mb-3">
+                <label class="font-weight-600 mb-1 d-flex align-items-center"
+                  ># of Rolls</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Enter # of rolls"
+                  formControlName="quantity"
+                  (input)="
+                    restrictUptoTwoDecimal($event); checkExcessQuantity($event)
+                  "
+                  (keypress)="numberOnly($event)"
+                />
+              </div>
+              <!-- <div class="col-lg-3 mb-3" *ngIf="csrSuperAdmin?.isIsAdmin">
+                <label class="font-weight-600 mb-1 d-flex align-items-center"
+                  >Target Length</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  [placeholder]="rollsPlaceholder"
+                  formControlName="targetLength"
+                  (keypress)="numberOnly($event)"
+                  [readonly]="!csrSuperAdmin?.isCSRSuperAdmin"
+                />
+              </div> -->
+              <div class="col-lg-3 mb-3" *ngIf="selectedProduct.sellingBackingId != 'PB' && csrSuperAdmin?.isCSRSuperAdmin">
+                <label class="font-weight-600 mb-1 d-flex align-items-center"
+                  >Min Length</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="{{ minRollLength }}"
+                  formControlName="minLength"
+                  (input)="
+                    restrictUptoTwoDecimal($event);
+                    checkMinMaxValidation($event, 'rolls', 'min')
+                  "
+                  (keypress)="numberOnly($event, 'rolls')"
+                  [readonly]="!csrSuperAdmin?.isCSRSuperAdmin"
+                  [class.is-invalid]="rollsMinLength"
+                />
+              </div>
+              <div class="col-lg-3 mb-3" *ngIf="selectedProduct.sellingBackingId != 'PB' && csrSuperAdmin?.isCSRSuperAdmin">
+                <label class="font-weight-600 mb-1 d-flex align-items-center"
+                  >Max Length</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="{{ maxRollLength }}"
+                  formControlName="maxLength"
+                  (input)="
+                    restrictUptoTwoDecimal($event);
+                    checkMinMaxValidation($event, 'rolls', 'max')
+                  "
+                  (keypress)="numberOnly($event, 'rolls')"
+                  [readonly]="!csrSuperAdmin?.isCSRSuperAdmin"
+                  [class.is-invalid]="rollsMaxLength"
+                />
+              </div>
+
+              <div class="row mt-2">
+                <div class="col-lg-3 mb-3">
+                  <div
+                    class="specific-dye-lot"
+                    *ngIf="uomDetails?.displayDyeLot == true && (selectedProduct.sellingBackingId != 'PB' || pdbData?.productType != 'ACCESSORIES')"
+                  >
+                    <label
+                      class="font-weight-600 mb-1 d-flex align-items-center"
+                      >Specific Dye Lot</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Optional"
+                      maxlength="10"
+                      formControlName="dye"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="col-lg-6 d-flex align-items-center margin-top-3"
+                  *ngIf="uomDetails?.displayDyeLot == true && (selectedProduct.sellingBackingId != 'PB' || pdbData?.productType != 'ACCESSORIES')
+                  && !storageService.userInfo?.isCustomer"
+                >
+                  <!-- <h4>Builder Order?</h4> -->
+                  <xchange-custom-checkbox
+                    [label]="'Same Dye Lot'"
+                    [checked]="sameDyeLot"
+                    [disabled]="storageService.userInfo?.isCustomer"
+                    (model)="changeSameDyeLotEvent($event)"
+                  ></xchange-custom-checkbox>
+                </div>
+              </div>
+              <div class="row">
+                <div
+                  class="col-lg-3 mb-3"
+                  *ngIf="uomDetails?.standardRollLength && selectedProduct.sellingBackingId != 'PB'"
+                >
+                  <small class="mt-1 mb-0">
+                    Standard Roll Size –
+                    {{ uomDetails?.standardRollLength }}
+                  </small>
+                </div>
+                <div class="col-lg-6 mb-3" *ngIf="uomDetails?.patternRepeat && erpProductCategory === 'B'">
+                  <small class="mt-1 mb-0">
+                    Pattern Repeat – {{ uomDetails?.patternRepeat }}
+                  </small>
+                </div>
+                <div class="col-lg-6 mb-3" *ngIf="uomDetails?.yardPerRoll && selectedProduct.sellingBackingId == 'PB'">
+                  <small class="mt-1 mb-0">
+                    Yard Per Roll – {{ uomDetails?.yardPerRoll }}
+                  </small>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="alert alert-danger p-3" *ngIf="uomErrorMsg">
+                  {{ uomErrorMsg }}
+                </div>
+                <div class="d-flex justify-content-end mb-3 order-actions">
+                  <button
+                    class="btn btn-secondary request-quote-btn"
+                    [disabled]="
+                      userService.salesBlocked ||                    
+                      !(feetyardForm.valid && uomDetails?.enableRequestQuote)
+                    "
+                    (click)="this.checkAvailabilityCTA = false; createQuote()"
+                    *ngIf="!isSalesPerson && !isShipToUser"
+                  >
+                    Request Quote
+                  </button>
+                  <button
+                    class="btn btn-primary ms-3 place-order-btn"
+                    [disabled]="
+                      !(feetyardForm.valid && enableCheckAvailability) ||
+                      isProductManager ||
+                      rollsMaxLength ||
+                      rollsMinLength ||
+                      excessQntyErrType == 'danger' ||
+                      userService.salesBlocked
+                    "
+                    (click)="checkForItemAddedinCart('Roll')"
+                    *ngIf="
+                      !(isCheckAvailabilityAllowed)
+                    "
+                  >
+                    {{ feetyardSubmitButton }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </tab>
+        <tab (selectTab)="resetEntires('Inventory')" *ngIf="uomDetails && pdbData?.subProductType != 'CUSHION_PAD' && uomDetails?.erpProductCategory === 'B' && uomDetails?.classification === 'SoftSurface'">
+          <ng-template tabHeading>View Inventory</ng-template>
+          <div
+            class="row mt-2"
+            *ngIf="tabFeildsErrMsg && selectedTab == 'Inventory'"
+          >
+            <div class="col-12">
+              <alert type="danger" [dismissible]="false" class="mb-0">
+                <div class="container">{{ tabFeildsErrMsg }}</div>
+              </alert>
+            </div>
+          </div>
+          <form [formGroup]="feetyardForm" class="">
+            <div class="row mt-2">
+              <div class="col-lg-3 mb-3">
+                <label class="font-weight-600 mb-1 d-flex align-items-center"
+                  >Min. Length(ft)</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="ft"
+                  formControlName="minFeet"
+                  (keypress)="numberOnly($event)"
+                  (input)="checkMinMaxValidation($event, 'inventory', 'min')"
+                  [class.is-invalid]="inventoryMinFeet"
+                  (paste)="onPasteForFeet($event)"
+                />
+              </div>
+              <div class="col-lg-3 mb-3">
+                <label class="font-weight-600 d-none d-lg-inline-block"></label>
+                <input
+                  type="text"
+                  class="form-control mt-1"
+                  placeholder="in"
+                  formControlName="minInches"
+                  (keypress)="keyPressNumbers($event)"
+                  (input)="checkMinMaxValidation($event, 'inventory', 'min')"
+                  [class.is-invalid]="inventoryMinInches"
+                  (paste)="onPaste($event)"
+                />
+              </div>
+              <div class="col-lg-3 mb-3">
+                <label class="font-weight-600 mb-1 d-flex align-items-center"
+                  >Max. Length(ft)</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="ft"
+                  formControlName="maxFeet"
+                  (keypress)="numberOnly($event)"
+                  (input)="checkMinMaxValidation($event, 'inventory', 'max')"
+                  [class.is-invalid]="inventoryMaxFeet"
+                  (paste)="onPasteForFeet($event)"
+                />
+              </div>
+              <div class="col-lg-3 mb-3">
+                <label class="font-weight-600 d-none d-lg-inline-block"></label>
+                <input
+                  type="text"
+                  class="form-control mt-1"
+                  placeholder="in"
+                  formControlName="maxInches"
+                  (keypress)="keyPressNumbers($event)"
+                  (input)="checkMinMaxValidation($event, 'inventory', 'max')"
+                  [class.is-invalid]="inventoryMaxInches"
+                  (paste)="onPaste($event)"
+                />
+              </div>
+              <div class="row">
+                <div
+                  class="col-lg-6 col-md-6 mb-3"
+                  *ngIf="uomDetails?.standardRollLength"
+                >
+                  <small class="mt-1 mb-0">
+                    Standard Roll Size –
+                    {{ uomDetails?.standardRollLength }}
+                  </small>
+                </div>
+                <div
+                  class="col-lg-6 col-md-6 mb-3"
+                  *ngIf="uomDetails?.patternRepeat && erpProductCategory === 'B'"
+                >
+                  <small class="mt-1 mb-0">
+                    Pattern Repeat – {{ uomDetails?.patternRepeat }}
+                  </small>
+                </div>
+                <div class="col-lg-6 col-12 mb-3" *ngIf="uomDetails?.yardPerRoll">
+                  <small class="mt-1 mb-0">
+                    Yard Per Roll – {{ uomDetails?.yardPerRoll }}
+                  </small>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="alert alert-danger p-3" *ngIf="uomErrorMsg">
+                  {{ uomErrorMsg }}
+                </div>
+                <div class="d-flex justify-content-end mb-3 order-actions">
+                 
+                  <button
+                    id="InventoryFormBtn"
+                    class="btn btn-primary ms-3 place-order-btn"
+                    (click)="checkForItemAddedinCart('Inventory')"
+                    [disabled]="
+                      (multiCutFlag && enableCheckAvailability) ||
+                      isProductManager ||
+                      pdbData?.droppedFlag ||
+                      inventoryMinFeet ||
+                      inventoryMaxFeet ||
+                      inventoryMinInches ||
+                      inventoryMaxInches || 
+                      userService.salesBlocked
+                    "
+                    *ngIf="
+                      !(isCheckAvailabilityAllowed)
+                    "
+                  >
+                    Check Availability / Place Order
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </tab>
+        <!-- <tab (selectTab)="resetEntires(1)" *ngIf="uomDetails?.rollOnly != 'true'">
+          <ng-template tabHeading>Multi-Cuts</ng-template>
+          <form [formGroup]="multiCutsForm">
+            <div class="row mt-2">
+              <alert
+                type="danger"
+                class="Multi-cut-tab-alert pl-0"
+                [dismissible]="false"
+                *ngIf="multiCutFlag"
+              >
+                <div class="container">
+                  Cut lengths entered must be less than or equal to 50% of
+                  standard roll size. Please re-enter.
+                </div>
+              </alert>
+              <div class="col-lg-12 mb-2">
+                <h4>Quantity</h4>
+              </div>
+              <div class="col-lg-6 mb-3" formArrayName="multicuts">
+                <div
+                  class="row py-2"
+                  *ngFor="let item of formData!['controls']; let i = index"
+                  [formGroupName]="i"
+                >
+                  <div class="col-lg-6">
+                    <label class="font-weight-600 mb-1 d-flex align-items-center"
+                      >{{ i + 1 }}. Feet</label
+                    >
+                    <input
+                      type="number"
+                      step="1"
+                      class="form-control"
+                      placeholder="Ft."
+                      formControlName="feet"
+                      (keyup)="addFormRow($event, i)"
+                      (keypress)="numberOnly($event)"
+                      (keyup)="validateQuantity()"
+                      [ngClass]="{
+                        'invalid-input':
+                          item.value.feet >
+                          this.uomDetails?.standardRollLength - 25
+                      }"
+                      min="0"
+                    />
+                    <p
+                      class="mt-1 mb-0"
+                      *ngIf="
+                        i + 1 == formData!['controls'].length &&
+                        uomDetails?.standardRollLength
+                      "
+                    >
+                      Standard Roll Size – {{ uomDetails?.standardRollLength }}
+                    </p>
+                  </div>
+                  <div class="col-lg-6">
+                    <label class="font-weight-600 mb-1 d-flex align-items-center"
+                      >Inches</label
+                    >
+                    <input
+                      type="number"
+                      class="form-control mx-2"
+                      placeholder="in."
+                      formControlName="inches"
+                      maxlength="2"
+                      (keypress)="keyPressNumbers($event)"
+                      (keyup)="validateQuantity()"
+                      min="0"
+                    />
+                    <p
+                      class="mt-1 mb-0"
+                      *ngIf="
+                        i + 1 == formData!['controls'].length &&
+                        uomDetails?.patternRepeat
+                      "
+                    >
+                      Pattern Repeat – {{ uomDetails?.patternRepeat }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 mb-3 py-2">
+                <label class="font-weight-600 mb-1 d-flex align-items-center"
+                  >Specific Dye Lot</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Optional"
+                  formControlName="dye"
+                />
+              </div>
+              <div class="col-lg-12 mb-2">
+                <p>
+                  *Cut lengths entered must be less than or equal to 50% of
+                  standard roll size.
+                </p>
+              </div>
+              <div class="col-md-12">
+                <hr />
+                <div class="d-flex justify-content-end mb-3 order-actions">
+                  <button
+                    class="btn btn-secondary request-quote-btn"
+                    [disabled]="
+                      !(multiCutsForm.valid && uomDetails?.enableRequestQuote) ||
+                      multiCutFlag
+                    "
+                    (click)="createQuote()"
+                  >
+                    Request Quote
+                  </button>
+                  <button
+                    [disabled]="!(multiCutsForm.valid && enableCheckAvailability)"
+                    class="btn btn-primary ms-3 place-order-btn"
+                    (click)="getEntriesValueMultiCut(multiCutsForm.value)"
+                    id="multicutFormBtn"
+                  >
+                    {{ feetyardSubmitButton }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </tab> -->
+      </tabset>
+    </ng-template>
+    <!-- <div
+      class="alert alert-danger p-3"
+      *ngIf="
+        (inHouseAccount &&
+          (isCheckAvailabilityAllowed ||
+            (productType != 'SAMPLE' && productType != 'MERCHANDISING')))
+      "
+    >
+      {{ orderRestictContent }}
+    </div> -->
+
+    <ng-template #feetYardFormRef>
+      <div class="row my-2">
+        <alert
+          [type]="excessQntyErrType"
+          class="dashboard-page-alert"
+          [dismissible]="false"
+          *ngIf="excessQntyErrMsg"
+        >
+          <div class="container mx-0">
+            {{ excessQntyErrMsg }}
+          </div>
+        </alert>
+      </div>
+      <form [formGroup]="feetyardForm">
+        <div class="row mt-2">
+          <div class="{{ isAtpCheck ? 'col-lg-4' : 'col-lg-5' }} mb-3">
+            <label class="font-weight-600 mb-1 d-flex align-items-center"
+              >Unit of Measure</label
+            >
+            <ng-select
+              placeholder="Unit of Measure"
+              formControlName="unit"
+              (change)="unitChange($event)"
+            >
+              <ng-option *ngFor="let item of unitArray" [value]="item.type">{{
+                item.value | titlecase
+              }}</ng-option>
+            </ng-select>
+          </div>
+          <div class="{{ isAtpCheck ? 'col-lg-3' : 'col-lg-4' }} mb-3">
+            <!-- *ngIf="productType == 'CARPETPRODUCT'" -->
+            <label
+              class="font-weight-600 mb-1 d-flex align-items-center"
+              *ngIf="feetyardForm?.value?.unit !== 'LF'"
+              >Quantity*</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              formControlName="feet"
+              maxlength="20"
+              (input)="checkExcessQuantity($event)"
+              (keypress)="numberOnly($event, feetyardForm.value.unit)"
+              *ngIf="feetyardForm?.value?.unit !== 'LF'"
+            />
+            <label
+              class="font-weight-600 mb-1 d-flex align-items-center"
+              *ngIf="feetyardForm?.value?.unit == 'LF'"
+              >Feet*</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              formControlName="feet"
+              (change)="validateQuantity()"
+              placeholder="Ft."
+              (input)="
+                restrictUptoTwoDecimal($event); checkExcessQuantity($event)
+              "
+              (keypress)="numberOnly($event, feetyardForm.value.unit)"
+              *ngIf="feetyardForm?.value?.unit == 'LF'"
+            />
+          </div>
+          <!-- <div
+            *ngIf="
+              feetyardForm?.value?.unit !== 'LF' &&
+              feetyardForm.value.feet != '' &&
+              feetyardForm?.value?.unit !== pdpInventoryUom
+            "
+            class="col-lg-3 mb-3 d-flex align-items-center"
+          >
+            {{
+              feetyardForm.value.feet / pdpInventoryUomValue | number : "1.2-2"
+            }}
+            {{ pdpInventoryUom }}
+          </div> -->
+          <div *ngIf="feetyardForm?.value?.unit == 'LF'" class="col-lg-2 mb-3">
+            <label class="font-weight-600 mb-1 d-flex align-items-end"
+              >Inches</label
+            >
+            <input
+              type="text"
+              class="form-control mx-2"
+              placeholder="in."
+              (change)="validateQuantity()"
+              formControlName="inches"
+              maxlength="2"
+              (keypress)="keyPressNumbers($event)"
+            />
+
+          </div>
+          
+          <!-- Minimum order requirement warning -->
+          <div *ngIf="showFeetInchesWarning() || showMinimumOrderWarning()" class="col-lg-9 mb-2">
+            <div class="alert alert-danger p-2 mb-0">
+              <small>{{ getMinimumOrderText() }}</small>
+            </div>
+          </div>
+          
+       
+          <div
+            *ngIf="
+              (conversionFunction2() !== null ||
+                conversionFunction2() !== undefined ||
+                conversionFunction2() != '') &&
+              conversionFunction2() != '' &&
+              conversionFunction2() != '0' &&
+              conversionFunction2() != '0.00' &&
+              conversionFunction2() != '0.0' &&
+              inputUOM != 'ZSH' &&
+              inputUOM != 'ZCD' &&
+              inputUOM != 'EA' &&
+              inputUOM != 'BG' &&
+              inputUOM != 'PCE' &&
+              inputUOM != 'PK' &&
+              pdbData?.productType != 'ACCESSORIES'
+            "
+            class="col-lg-3 mb-3 d-flex align-items-center"
+          >
+          {{ conversionFunction2()}}
+         
+            {{
+              ((pdbData?.productType === "HARDSURFACE" &&
+                inputUOM != "RO" ) ||
+                (pdbData?.productType === "SOFTSURFACE" &&
+                  pdbData?.subProductType === "CARPET_TILE")) &&
+              inputUOM != "ZCT" &&
+              cartonToUOMConv != "LF" && pdpConvUnit
+                ? " ( " +  pdpConvUnit  + " )"
+                : ""
+            }}
+          </div>
+
+        </div>
+        <div class="row">
+            <!-- <input
+              type="text"
+              class="form-control"
+              placeholder="inches"
+              formControlName="inches"
+            />
+            <span *ngIf="feetyardForm?.value?.unit != 'LF'">
+              {{
+                convertvalue(slectedUnitVal?.value, feetyardForm.value.quantity)
+              }}
+            </span> -->
+
+          <!-- <div
+            *ngIf="
+              (feetInchCal() !== null ||
+                feetInchCal() !== undefined ||
+                feetInchCal() != '') &&
+              pdpInvUOMCode == 'LF'
+            "
+            class="col-lg-3 mb-3 d-flex align-items-end"
+          >
+            {{ feetInchCal() }}
+          </div> -->
+        </div>
+        <div class="row">
+          <!-- <div *ngIf="productType == 'WOOD'" class="col-lg-3 mb-3">
+            <label class="font-weight-600 mb-1 d-flex align-items-center"
+              >Quantity*</label
+            >
+            <input type="text" class="form-control" formControlName="feet" />
+            <p class="mt-1 mb-0">Pattern Repeat – NONE</p>
+          </div> -->
+          <div
+            class="{{ isAtpCheck ? 'col-lg-4' : 'col-lg-5' }} mb-3"
+            *ngIf="uomDetails?.displayDyeLot == true && pdbData?.productType != 'ACCESSORIES'"
+          >
+            <label class="font-weight-600 mb-1 d-flex align-items-center"
+              >Specific Dye Lot</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Optional"
+              maxlength="10"
+              formControlName="dye"
+            />
+          </div>
+          <div
+            class="col-lg-6 d-flex align-items-center margin-top-3"
+            *ngIf="uomDetails?.displayDyeLot == true && pdbData?.productType != 'ACCESSORIES'
+            && !storageService.userInfo?.isCustomer"
+          >
+            <!-- <h4>Builder Order?</h4> -->
+            <xchange-custom-checkbox
+              [label]="'Same Dye Lot'"
+              [checked]="sameDyeLot"
+              [disabled]="storageService.userInfo?.isCustomer"
+              (model)="changeSameDyeLotEvent($event)"
+            ></xchange-custom-checkbox>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-4 mb-3" *ngIf="uomDetails?.standardRollLength">
+            <small class="mt-1 mb-0">
+              Standard Roll Size – {{ uomDetails?.standardRollLength }}
+            </small>
+          </div>
+          <div class="col-lg-6 mb-3" *ngIf="uomDetails?.patternRepeat && erpProductCategory === 'B'">
+            <small class="mt-1 mb-0">
+              Pattern Repeat – {{ uomDetails?.patternRepeat }}
+            </small>
+          </div>
+          <div class="col-lg-6 col-12 mb-3" *ngIf="uomDetails?.yardPerRoll">
+            <small class="mt-1 mb-0">
+              Yard Per Roll – {{ uomDetails?.yardPerRoll }}
+            </small>
+          </div>
+        </div>
+        <div class="row">
+          <div
+            class="col-lg-5 col-12 mb-3"
+            *ngIf="uomDetails?.cartonsPerPallet && 
+              (pdbData?.productType === 'HARDSURFACE' &&
+                uomDetails?.erpProductCategory != 'B') ||
+              (pdbData?.productType === 'SOFTSURFACE' &&
+                pdbData?.subProductType === 'CARPET_TILE')
+            "
+          >
+            <p>1 Pallet = {{ uomDetails?.cartonsPerPallet }} Cartons</p>
+          </div>
+          <div
+            class="col-lg-5 col-12 mb-3"
+            *ngIf="conversationZctToLf && 
+              pdbData?.productType === 'ACCESSORIES' &&
+              pdbData?.subProductType === 'TRIM_AND_TRANSITION'
+            "
+          >
+            <p>1 Carton = {{ conversationZctToLf }} Linear FT</p>
+          </div>
+          <div
+            class="col-lg-5 col-12 mb-3"
+            *ngIf="uomDetails?.sqFtPerCarton &&
+              (pdbData?.productType === 'HARDSURFACE' &&
+                uomDetails?.erpProductCategory != 'B' && uomDetails?.inventoryUom?.code != 'PF') ||
+              (pdbData?.productType === 'SOFTSURFACE' &&
+                pdbData?.subProductType === 'CARPET_TILE')
+            "
+          >
+            <p>
+              1 Carton =
+              {{
+                zcttouomconv === "YDK"
+                  ? (uomDetails?.sqFtPerCarton / 9 | number : "1.2-2") +
+                    " Square Yard"
+                  : zcttouomconv === "FTK"
+                  ? (uomDetails?.sqFtPerCarton | number : "1.2-2") +
+                    " Square Foot"
+                  : (uomDetails?.sqFtPerCarton / 9 | number : "1.2-2") +
+                    " Square Yard"
+              }}
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div
+            class="col-lg-12 mb-2"
+            *ngIf="pdbData?.subProductType === 'RUBBER' && this.isPermissions"
+          >
+            <p>Cut charge of $25 flat fee per cut.</p>
+          </div>
+
+          <div class="col-md-12" *ngIf="uomDetails?.overages?.length > 0">
+            <div class="alert alert-info p-3">
+              Overages - Subject to overage (beyond order quantity) on
+              {{ pdbData?.brandName }} backorders:
+              <li *ngFor="let item of uomDetails?.overages; index as i">
+                {{ item?.overagePercentage }}% overage – orders from
+                {{ item?.minOrderQuantity }} to {{ item?.maxOrderQuantity }}
+                {{ item?.uom == "SY" ? "Sq Yds." : item?.uom }}
+                {{ i === uomDetails?.overages.length - 1 ? "above" : "" }}
+              </li>
+            </div>
+            <div class="alert alert-info p-3">
+              *Overage quantities are not guaranteed
+            </div>
+          </div>
+          <div class="alert alert-danger p-3" *ngIf="uomErrorMsg">
+            {{ uomErrorMsg }}
+          </div>
+          <div class="d-flex justify-content-end mb-3 order-actions">
+            <button
+              class="btn btn-secondary request-quote-btn"
+              [hidden]="productType == 'MERCHANDISING'"
+              [disabled]="
+                userService.salesBlocked ||               
+                !(feetyardForm.valid && uomDetails?.enableRequestQuote)
+              "
+              (click)="this.checkAvailabilityCTA = false; createQuote()"
+              *ngIf="!isSalesPerson && !isShipToUser"
+            >
+              Request Quote
+            </button>
+            <!-- <button class="btn btn-secondary ms-3 place-order-btn"
+                [disabled]="
+                  !(feetyardForm.valid && enableCheckAvailability) ||
+                  isProductManager ||
+                  pdbData?.droppedFlag ||
+                  excessQntyErrType == 'danger'
+                "
+                 *ngIf="erpProductCategory == 'S'" (click)="viewInventoryHS = true;checkForItemAddedinCart(null, null, replacementOrderModalRef)"> 
+                 View Inventory 
+            </button> -->
+            <ng-container
+              *ngIf="
+                !(isCheckAvailabilityAllowed)
+              "
+            >
+              <button
+                id="feetYardFormBtn"
+                class="btn btn-primary ms-3 place-order-btn"
+                [hidden]="productType == 'MERCHANDISING'"
+                [disabled]="
+                  !(feetyardForm.valid && enableCheckAvailability) ||
+                  isProductManager ||
+                  pdbData?.droppedFlag ||
+                  excessQntyErrType == 'danger' ||
+                  userService.salesBlocked
+                "
+                (click)="viewInventoryHS = false;
+                  checkForItemAddedinCart(null, null, replacementOrderModalRef)
+                "
+              >
+                {{ feetyardSubmitButton }}
+              </button>
+              <!-- <button
+                *ngIf="
+                  inHouseAccount &&
+                  productType !== 'SAMPLE' &&
+                  subProductType == 'SALES_TOOLS'
+                "
+                id="feetYardFormBtn"
+                class="btn btn-primary ms-3 place-order-btn"
+                [disabled]="!feetyardForm.valid || isProductManager"
+                (click)="
+                  checkForItemAddedinCart(null, null, replacementOrderModalRef)
+                "
+              >
+                {{
+                  !isAtpCheck && cartData?.totalItems > 0
+                    ? "Add to Cart"
+                    : feetyardSubmitButton
+                }}
+              </button> -->
+            </ng-container>
+          </div>
+          <!--    <alert [type]="'info'" class="alert-info-v1" [dismissible]="true">
+              <p class="mb-0">
+                Overages - Subject to overage (beyond order quantity) on
+                Mohawk Group backorders:
+              </p>
+
+              <p class="mb-0" *ngFor="let item of overAgesStringArray">
+                {{ item }}
+              </p>
+            </alert>
+            <alert [type]="'info'" class="alert-info-v1" [dismissible]="true">
+              <p class="mb-0">
+                This product is subject of up to 10% overage based on the
+                quantity
+              </p>
+            </alert> -->
+        </div>
+      </form>
+    </ng-template>
+
+    <div
+      class="card"
+      *ngIf="
+        pdbData?.productType != 'ACCESSORIES' &&
+        pdbData?.productType != 'MERCHANDISING'
+      "
+    >
+      <div class="card-header">RECOMMENDED ITEMS</div>
+      <div class="card-body">
+        <ul
+          class="recomonded-products"
+          *ngIf="productCodeTerm?.length != 0; else emptyCondition"
+        >
+          <li *ngFor="let item of productCodeTerm" let i="index">
+            <div class="p-image" (click)="addToCart(item)">
+              <img [src]="recommendedImages[item]" alt="" />
+            </div>
+            <p class="p-name">{{ item }}</p>
+          </li>
+          <!-- <li>
+                      <div class="p-image">
+                          <img src="assets/images/products/p7.svg" alt="">
+                      </div>
+                      <p class="p-name">Installation</p>
+                  </li>
+                  <li>
+                      <div class="p-image">
+                          <img src="assets/images/products/p7.svg" alt="">
+                      </div>
+                      <p class="p-name">Installation</p>
+                  </li> -->
+        </ul>
+        <ng-template #emptyCondition>
+          <h4>No Recommendation Available</h4>
+        </ng-template>
+      </div>
+    </div>
+    <tabset
+      *ngIf="pdbData?.productType != 'ACCESSORIES'"
+      responsiveTabs
+      [justified]="true"
+      class="enter-quantity-tabs mt-4"
+    >
+      <tab>
+        <ng-template tabHeading>
+          <span class="mohawak-icon specs-icon me-2"></span> Full Specifications
+        </ng-template>
+        <div class="row">
+          <div
+            class="col-md-6"
+            *ngIf="
+              fullSpecificationsConstWidgets.length > 0 ||
+              fullPerformanceSustainabilityConstWidgets.length > 0
+            "
+          >
+            <div
+              class="specification-container mt-2"
+              *ngIf="fullSpecificationsConstWidgets.length > 0"
+            >
+              <h4>Specifications</h4>
+              <xchange-specifications-widget
+                [specifications]="fullSpecificationsConstWidgets"
+              ></xchange-specifications-widget>
+              <!-- <xchange-specifications-widget
+                  [specifications]="[
+                    {
+                      name: 'Style Name',
+                      value: pdbData?.sellingStyleName
+                    },
+                    {
+                      name: 'Color',
+                      value: pdbData?.sellingColorName
+                    },
+                    {
+                      name: '# of Colors',
+                      value: pdbData?.sellingColorId
+                    },
+                    {
+                      name: 'Brand',
+                      value: pdbData?.brandName
+                    },
+                    {
+                      name: 'Product Type',
+                      value: pdbData?.productType
+                    },
+                    {
+                      name: 'Sub Product Type',
+                      value: pdbData?.subProductType
+                    },
+                    {
+                      name: 'Gauge',
+                      value: pdbData?.gauge
+                    }
+                  ]"
+                ></xchange-specifications-widget> -->
+            </div>
+
+            <div
+              class="specification-container"
+              *ngIf="fullPerformanceSustainabilityConstWidgets.length > 0"
+            >
+              <h4>Sustainability</h4>
+              <xchange-specifications-widget
+                [specifications]="fullPerformanceSustainabilityConstWidgets"
+              ></xchange-specifications-widget>
+              <!-- <xchange-specifications-widget
+                [specifications]="[
+                  {
+                    name: 'FHA Compliance',
+                    value: ''
+                  },
+                  {
+                    name: 'Durability Rating',
+                    value: pdbData?.durability
+                  },
+                  {
+                    name: 'Indoor Air Quality',
+                    value: pdbData?.indoorAirQuality
+                  },
+                  {
+                    name: 'Flammability',
+                    value: ''
+                  },
+                  {
+                    name: 'Recycled Content',
+                    value: ''
+                  },
+                  {
+                    name: 'Leed Certification',
+                    value: ''
+                  },
+                  {
+                    name: 'Country of Origin',
+                    value: ''
+                  }
+                ]"
+              >
+              </xchange-specifications-widget> -->
+            </div>
+
+            <div
+              class="specification-container"
+              *ngIf="fullWeighsMeasureConstWidgets.length > 0"
+            >
+              <h4>Weights & Measures</h4>
+              <xchange-specifications-widget
+                [specifications]="fullWeighsMeasureConstWidgets"
+              ></xchange-specifications-widget>
+              <!-- <xchange-specifications-widget
+                [specifications]="[
+                  {
+                    name: 'Standard Roll Size',
+                    value: uomDetails?.standardRollLength
+                      ? uomDetails?.standardRollLength
+                      : ''
+                  },
+                  {
+                    name: 'Pattern Repeat',
+                    value: uomDetails?.patternRepeat
+                      ? uomDetails?.patternRepeat
+                      : ''
+                  },
+                  {
+                    name: 'Roll Width',
+                    value: ''
+                  }
+                ]"
+              >
+              </xchange-specifications-widget> -->
+            </div>
+          </div>
+          <div
+            class="col-md-6"
+            *ngIf="
+              fullDesignConstWidgets.length > 0 ||
+              fullWeighsMeasureConstWidgets.length > 0
+            "
+          >
+            <div
+              class="specification-container mt-2"
+              *ngIf="fullDesignConstWidgets.length > 0"
+            >
+              <h4>Design & Performance</h4>
+              <xchange-specifications-widget
+                [specifications]="fullDesignConstWidgets"
+              ></xchange-specifications-widget>
+              <!-- <xchange-specifications-widget
+                [specifications]="[
+                  {
+                    name: 'Construction',
+                    value: pdbData?.construction
+                  },
+                  {
+                    name: 'Surface Appearance',
+                    value: ''
+                  },
+                  {
+                    name: 'Fiber Category',
+                    value: ''
+                  },
+                  {
+                    name: 'Fiber Description',
+                    value: ''
+                  },
+                  {
+                    name: 'Stain Resistance',
+                    value: ''
+                  },
+                  {
+                    name: 'Soil Resistance',
+                    value: ''
+                  },
+                  {
+                    name: 'Dye Method',
+                    value: ''
+                  },
+                  {
+                    name: 'Primary Backing',
+                    value: ''
+                  },
+                  {
+                    name: 'Secondary Backing',
+                    value: ''
+                  }
+                ]"
+              >
+              </xchange-specifications-widget> -->
+            </div>
+            <!-- <div class="specification-container">
+                            <h4>Downloads</h4>
+
+                            <div class="d-flex flex-wrap">
+                                <xchange-icon-button icon="view-pdf" label="Download Specsheet"></xchange-icon-button>
+                                <xchange-icon-button class="ms-sm-3" icon="view-pdf" label="Download Specsheet">
+                                </xchange-icon-button>
+                            </div>
+                        </div> -->
+          </div>
+        </div>
+      </tab>
+      <tab *ngIf="pdbData?.productType != 'MERCHANDISING' && installationInfo.length > 0">
+        <ng-template tabHeading
+          ><span class="mohawak-icon pdf-icon me-2"></span>
+          Installation</ng-template
+        >
+        <div class="container text-center">
+          <div class="row align-items-center">
+            <div
+              class="col col-md-3 text-center"
+              *ngFor="let installation of installationInfo; trackBy: trackByUrl"
+            >
+              <div class="tablist-icons">
+                <a href="{{ installation.url }}" target="_blank"
+                  ><img
+                    src="/assets/images/icons/pdf-icon-red.svg"
+                    alt="toggle menu"
+                /></a>
+                <p class="m-0 mt-2">{{ installation.assertName }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </tab>
+      <tab *ngIf="pdbData?.productType != 'MERCHANDISING' && warrantyInfo.length > 0">
+        <ng-template tabHeading
+          ><span class="mohawak-icon pdf-icon me-2"></span>
+          Warranty</ng-template
+        >
+        <div class="container text-center">
+          <div class="row align-items-center">
+            <div
+              class="col col-md-3 text-center"
+              *ngFor="let warranty of warrantyInfo; trackBy: trackByUrl"
+            >
+              <div class="tablist-icons">
+                <a href="{{ warranty.url }}" target="_blank"
+                  ><img
+                    src="/assets/images/icons/pdf-icon-red.svg"
+                    alt="toggle menu"
+                /></a>
+                <p class="m-0 mt-2">{{ warranty.assertName }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </tab>
+      <tab *ngIf="pdbData?.productType != 'MERCHANDISING' && careAndMaintenance.length > 0">
+        <ng-template tabHeading
+          ><span class="mohawak-icon care-icon me-2"></span> Care & Maintenance
+        </ng-template>
+        <div class="container text-center">
+          <div class="row align-items-center">
+            <div
+              class="col col-md-3 text-center"
+              *ngFor="let careInfo of careAndMaintenance; trackBy: trackByUrl"
+            >
+              <div class="tablist-icons">
+                <a href="{{ careInfo.url }}" target="_blank"
+                  ><img
+                    src="/assets/images/icons/pdf-icon-red.svg"
+                    alt="toggle menu"
+                /></a>
+                <p class="m-0 mt-2">{{ careInfo.assertName }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </tab>
+      <tab *ngIf="pdbData?.productType != 'MERCHANDISING' && mediaInfo.length > 0">
+        <ng-template tabHeading
+          ><span class="mohawak-icon pdf-icon me-2"></span> Media</ng-template
+        >
+        <div class="container text-center">
+          <div class="row align-items-center">
+            <div
+              class="col col-md-3 text-center"
+              *ngFor="let media of mediaInfo; trackBy: trackByUrl"
+            >
+              <div class="tablist-icons">
+                <a href="{{ media.url }}" target="_blank"
+                  ><img
+                    src="/assets/images/icons/icon-image-red.svg"
+                    alt="toggle menu"
+                /></a>
+                <p class="m-0 mt-2">{{ media.assertName }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </tab>
+    </tabset>
+  </div>
+
+  <div class="mt-4" *ngIf="pdbData?.productType != 'ACCESSORIES'">
+    <p class="mb-0">
+      All specifications are subject to normal manufacturing tolerances
+    </p>
+    <p>
+      For additional technical information, please contact Technical Services at
+      <span class="color-red"><a class="tel-link" href="tel:8008336954">800-833-6954</a></span>
+    </p>
+  </div>
+</div>
+
+<ng-template #replacementOrderModalRef>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w mx-auto">Replacement Order</h4>
+  </div>
+  <div class="modal-body p-20">
+    <form [formGroup]="replacementOrderModalForm">
+      <div class="text-center">
+        <div class="row">
+          <p class="mb-1">You have identified this order as a replacement.</p>
+          <p class="mb-1">Is this additional product also a replacement?</p>
+          <div class="d-flex justify-content-center">
+            <xchange-custom-radio
+              type="radio"
+              [id]="'c123'"
+              [name]="'replacementRadio'"
+              [checked]="
+                replacementOrderModalForm.value.replacementOrder == true
+              "
+              (model)="replacementRadioChange(true)"
+              label="Yes"
+              class="c-r"
+            >
+            </xchange-custom-radio>
+            <xchange-custom-radio
+              type="radio"
+              [id]="'d123'"
+              [checked]="
+                replacementOrderModalForm.value.replacementOrder == false
+              "
+              [name]="'replacementRadio'"
+              (model)="replacementRadioChange(false)"
+              label="No"
+              class="c-r"
+            >
+            </xchange-custom-radio>
+          </div>
+        </div>
+        <div
+          class="row mt-3"
+          *ngIf="replacementOrderModalForm?.value.replacementOrder == true"
+        >
+          <p class="mb-1">Has a claim been submitted?</p>
+          <div class="d-flex justify-content-center">
+            <xchange-custom-radio
+              type="radio"
+              [id]="'yes1'"
+              [name]="'replacementRadio1'"
+              [checked]="
+                replacementOrderModalForm.value.hasClaimSubmitted == true
+              "
+              (model)="hasClaimSubmittedRadioChange(true)"
+              label="Yes"
+              class="c-r"
+            >
+            </xchange-custom-radio>
+            <xchange-custom-radio
+              type="radio"
+              [id]="'no1'"
+              [checked]="
+                replacementOrderModalForm.value.hasClaimSubmitted == false
+              "
+              [name]="'replacementRadio1'"
+              (model)="hasClaimSubmittedRadioChange(false)"
+              label="No"
+              class="c-r"
+            >
+            </xchange-custom-radio>
+          </div>
+        </div>
+        <!-- Has a claim been submitted?  Yes -->
+        <div
+          class="row mb-2 p-3"
+          *ngIf="replacementOrderModalForm?.value.hasClaimSubmitted == true"
+        >
+          <div class="col-md-5 offset-md-1 col-xs-12">
+            <h4 class="text-start">Claim # *</h4>
+            <input
+              type="text"
+              placeholder="Empty Field"
+              class="form-control"
+              formControlName="Claim"
+              (keypress)="validateNo($event)"
+            />
+            <div
+              *ngIf="replacementOrderModalForm.controls['Claim'].errors"
+              class="invalid-feedback d-block"
+            >
+              <div
+                *ngIf="
+                  replacementOrderModalForm.controls['Claim'].errors['required']
+                "
+              >
+                Claim is Req.
+              </div>
+            </div>
+          </div>
+          <div class="col-md-5 col-xs-12">
+            <h4 class="text-start">Replacement Reason *</h4>
+            <ng-select
+              placeholder="Select"
+              formControlName="replacementReason"
+              onkeydown="return /[a-z]/i.test(event.key)"
+              [ngClass]="{
+                error:
+                  replacementOrderModalForm.controls['replacementReason']
+                    .errors &&
+                  replacementOrderModalForm.controls['replacementReason']
+                    .touched
+              }"
+            >
+              <ng-option value="ZE1">Wrong Product</ng-option>
+              <ng-option value="ZE2">Wrong Quantity</ng-option>
+              <ng-option value="ZE3">Damaged </ng-option>
+              <ng-option value="ZE4"
+                >Customer Choice / Accommodation Return</ng-option
+              >
+              <ng-option value="ZE5">Quality Concern </ng-option>
+            </ng-select>
+            <div
+              *ngIf="
+                replacementOrderModalForm.controls['replacementReason'].errors
+              "
+              class="invalid-feedback d-block"
+            >
+              <div
+                *ngIf="
+                  replacementOrderModalForm.controls['replacementReason']
+                    .errors['required']
+                "
+              >
+                Replacement Reason is Req.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Has a claim been submitted?  No -->
+        <div
+          class="row mb-2 p-3"
+          *ngIf="replacementOrderModalForm?.value.hasClaimSubmitted == false"
+        >
+          <div class="col-md-6 col-xs-12 mb-2">
+            <h4 class="text-start">Replacement Reason *</h4>
+            <ng-select
+              placeholder="Select"
+              formControlName="replacementReason"
+              [ngClass]="{
+                error:
+                  replacementOrderModalForm.controls['replacementReason']
+                    .errors &&
+                  replacementOrderModalForm.controls['replacementReason']
+                    .touched
+              }"
+              onkeydown="return /[a-z]/i.test(event.key)"
+            >
+              <ng-option value="ZE1">Wrong Product</ng-option>
+              <ng-option value="ZE2">Wrong Quantity</ng-option>
+              <ng-option value="ZE3">Damaged </ng-option>
+              <ng-option value="ZE4"
+                >Customer Choice / Accommodation Return</ng-option
+              >
+              <ng-option value="ZE5">Quality Concern </ng-option>
+            </ng-select>
+            <div
+              *ngIf="
+                replacementOrderModalForm.controls['replacementReason'].errors
+              "
+              class="invalid-feedback d-block"
+            >
+              <div
+                *ngIf="
+                  replacementOrderModalForm.controls['replacementReason']
+                    .errors['required']
+                "
+              >
+                Replacement Reason is Req.
+              </div>
+            </div>
+          </div>
+          <div class="row"></div>
+          <ng-container
+            *ngIf="
+              replacementOrderModalForm?.value?.replacementOrder &&
+              !replacementOrderModalForm.value.hasClaimSubmitted &&
+              replacementOrderModalForm.value.hasClaimSubmitted != null
+            "
+          >
+            <div class="col-md-4 col-xs-12 mt-2">
+              <h4 class="text-start">PO #</h4>
+              <input
+                type="text"
+                maxlength="15"
+                placeholder="Empty Field"
+                class="form-control"
+                formControlName="PO"
+                (keypress)="validatePO($event)"
+              />
+              <div
+                *ngIf="replacementOrderModalForm.controls['PO'].errors"
+                class="invalid-feedback d-block"
+              >
+                <div
+                  *ngIf="
+                    replacementOrderModalForm.controls['PO'].errors['required']
+                  "
+                >
+                  PO is Req.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-xs-12 mt-2">
+              <h4 class="text-start">Order #</h4>
+              <input
+                type="text"
+                placeholder="Empty Field"
+                class="form-control"
+                formControlName="Order"
+                (keypress)="validateNo($event)"
+              />
+
+              <div
+                *ngIf="replacementOrderModalForm.controls['Order'].errors"
+                class="invalid-feedback d-block"
+              >
+                <div
+                  *ngIf="
+                    replacementOrderModalForm.controls['Order'].errors[
+                      'required'
+                    ]
+                  "
+                >
+                  Order is Req.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-xs-12 mt-2">
+              <h4 class="text-start">Invoice #</h4>
+              <input
+                type="text"
+                placeholder="Empty Field"
+                class="form-control"
+                formControlName="Invoice"
+                (keypress)="validateNo($event)"
+              />
+
+              <div
+                *ngIf="replacementOrderModalForm.controls['Invoice'].errors"
+                class="invalid-feedback d-block"
+              >
+                <div
+                  *ngIf="
+                    replacementOrderModalForm.controls['Invoice'].errors[
+                      'required'
+                    ]
+                  "
+                >
+                  Invoice is Req.
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <div
+        class="row mx-1 mt-3"
+        *ngIf="replacementOrderModalForm?.value.replacementOrder == false"
+      >
+        <p class="m-0">
+          Please complete your replacement order and create a new order for
+          non-replacement products.
+        </p>
+      </div>
+      <div class="mt-4 mb-2 buttons d-flex justify-content-center">
+        <button
+          class="btn btn-secondary mx-3"
+          (click)="modalService.hide(); resetReplacementOrderModalForm()"
+        >
+          cancel
+        </button>
+        <button
+          class="btn btn-primary mx-3"
+          *ngIf="
+            replacementOrderModalForm?.value.replacementOrder == null ||
+            (replacementOrderModalForm?.value.replacementOrder == true &&
+              (replacementOrderModalForm.value.hasClaimSubmitted == null ||
+                replacementOrderModalForm.value.hasClaimSubmitted == true))
+          "
+          [disabled]="
+            replacementOrderModalForm.value.replacementReason == null ||
+            replacementOrderModalForm.value.Claim == '' ||
+            replacementOrderModalForm.value.Claim == null
+          "
+          (click)="modalService.hide(); checkForItemAddedinCart()"
+        >
+          Continue
+        </button>
+        <button
+          class="btn btn-primary mx-3"
+          *ngIf="
+            replacementOrderModalForm?.value.replacementOrder == true &&
+            replacementOrderModalForm.value.hasClaimSubmitted == false
+          "
+          [disabled]="
+            replacementOrderModalForm.value.replacementReason == null ||
+            (replacementOrderModalForm.value.Claim == '' &&
+              replacementOrderModalForm.value.PO == '' &&
+              replacementOrderModalForm.value.Order == '' &&
+              replacementOrderModalForm.value.Invoice == '')
+          "
+          (click)="modalService.hide(); checkForItemAddedinCart()"
+        >
+          Continue
+        </button>
+        <button
+          (click)="navigateToCart()"
+          class="btn btn-outline-primary me-2 btn-grid btn-align"
+          *ngIf="replacementOrderModalForm.value.replacementOrder == false"
+        >
+          Go To Cart
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<ng-template #orderRestrictionModal>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Order Restriction</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-10">
+    <div class="text-center mb-3">
+      {{ this.orderRestictContent }}
+    </div>
+  </div>
+</ng-template>
+
+<div id="print-area" class="print-element">
+  <table
+    width="100%"
+    cellpadding="0"
+    cellspacing="0"
+    style="text-align: center; width: 100%; height: 100%"
+  >
+    <tr>
+      <td>
+        <table width="800" style="width: 800px; margin: 0 auto 0 auto">
+          <tr>
+            <td
+              style="
+                padding-top: 20px;
+                margin-bottom: 15px;
+                border-bottom: 2px solid #000000;
+              "
+            >
+              <img
+                src="http://fcd360.com/images/mohawktest/logo-mohawk-xchange.png"
+                width="150"
+                style="margin: 10px 0px"
+              />
+            </td>
+            <td style="text-align: right; border-bottom: 2px solid #000000">
+              {{ variantData?.selected?.sellingStyleName }}
+            </td>
+          </tr>
+        </table>
+        <table width="800" style="width: 800px; text-align: left">
+          <tr>
+            <td>
+              <img
+                [src]="
+                  productImages[0]?.swatchImage
+                    ? productImages[0]?.swatchImage
+                    : 'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                "
+                width="300"
+                height="250"
+              />
+            </td>
+          </tr>
+        </table>
+        <table
+          width="800"
+          style="
+            margin-left: 0px;
+            width: 800px;
+            font-size: 16px;
+            line-height: 23px;
+          "
+        >
+          <tr>
+            <td>
+              <div
+                class="h5 heading"
+                style="
+                  margin: 0;
+                  margin-top: 10px;
+                  margin-right: 0px;
+                  margin-bottom: 20px;
+                  margin-left: 0px;
+                  padding-top: 20px;
+                  border-bottom: 2px solid #000000;
+                "
+              >
+                COMPLETE SPECS
+              </div>
+              <table style="text-align: left; font-size: 14px">
+                <tr *ngFor="let spec of fullSpecificationsConstWidgets; trackBy: trackByName">
+                  <th style="text-align: left; padding-right: 50">
+                    {{ spec?.name }}
+                  </th>
+                  <td>
+                    {{ spec?.value }}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <table
+          width="800"
+          style="
+            text-align: left;
+            width: 800px;
+            font-size: 16px;
+            line-height: 23px;
+          "
+        >
+          <tr>
+            <td>
+              <div
+                class="h5 heading"
+                style="
+                  margin: 0;
+                  margin-top: 30px;
+                  margin-right: 0px;
+                  margin-bottom: 20px;
+                  margin-left: 0px;
+                  padding-top: 20px;
+                  border-bottom: 2px solid #000000;
+                "
+              >
+                DESIGN
+              </div>
+              <table style="text-align: left; font-size: 14px">
+                <tr *ngFor="let spec of fullDesignConstWidgets; trackBy: trackByName">
+                  <th style="text-align: left; padding-right: 50">
+                    {{ spec?.name }}
+                  </th>
+                  <td>
+                    {{ spec?.value }}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <table
+          width="800"
+          style="
+            text-align: left;
+            width: 800px;
+            font-size: 16px;
+            line-height: 23px;
+          "
+        >
+          <tr>
+            <td>
+              <div
+                class="h5 heading"
+                style="
+                  margin: 0;
+                  margin-top: 30px;
+                  margin-right: 0px;
+                  margin-bottom: 20px;
+                  margin-left: 0px;
+                  padding-top: 20px;
+                  border-bottom: 2px solid #000000;
+                "
+              >
+                PERFORMANCE &amp; SUSTAINABILITY
+              </div>
+              <table style="text-align: left; font-size: 14px">
+                <tr
+                  *ngFor="let spec of fullPerformanceSustainabilityConstWidgets; trackBy: trackByName"
+                >
+                  <th style="text-align: left; padding-right: 50">
+                    {{ spec?.name }}
+                  </th>
+                  <td>
+                    {{ spec?.value }}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <table
+          width="800"
+          style="
+            text-align: left;
+            width: 800px;
+            font-size: 16px;
+            line-height: 23px;
+          "
+        >
+          <tr>
+            <td>
+              <div
+                class="h5 heading"
+                style="
+                  margin: 0;
+                  margin-top: 30px;
+                  margin-right: 0px;
+                  margin-bottom: 20px;
+                  margin-left: 0px;
+                  padding-top: 20px;
+                  border-bottom: 2px solid #000000;
+                "
+              >
+                WEIGHTS & MEASURES
+              </div>
+              <table style="text-align: left; font-size: 14px">
+                <tr *ngFor="let spec of fullWeighsMeasureConstWidgets; trackBy: trackByName">
+                  <th style="text-align: left; padding-right: 50">
+                    {{ spec?.name }}
+                  </th>
+                  <td>
+                    {{ spec?.value }}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <table
+          width="800"
+          border="0"
+          style="
+            width: 800px;
+            max-width: 800px !important;
+            margin: 0 auto 0 auto;
+            font-size: 16px;
+            line-height: 23px;
+          "
+        >
+          <tr>
+            <td>
+              <div
+                class="h5 heading"
+                style="
+                  margin: 0;
+                  margin-top: 30px;
+                  margin-right: 0px;
+                  margin-bottom: 20px;
+                  margin-left: 0px;
+                  padding-top: 20px;
+                  border-bottom: 2px solid #000000;
+                "
+              >
+                COLORS
+              </div>
+
+              <ng-container
+                *ngFor="
+                  let product of variantData?.productColorVariantOptions;
+                  let t = index;
+                  trackBy: trackByKey
+                "
+              >
+                <table
+                  align="left"
+                  width="150"
+                  border="0"
+                  style="display: inline-table; margin-bottom: 20px"
+                >
+                  <tbody>
+                    <tr>
+                      <td>
+                        <img
+                          width="100"
+                          height="100"
+                          [src]="
+                            product?.value?.productImageURL
+                              ? product?.value?.productImageURL
+                              : 'https://s7d4.scene7.com/is/image/MohawkResidential/O_28074_717' +
+                                product?.value?.image
+                          "
+                          alt="{{ product?.value?.name }}"
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="font-size: 10px">
+                        <span>
+                          {{ product?.value?.name }} <br />
+                          {{ product?.key }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </ng-container>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>
+<ng-template #template3>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w w-100">Cross Over Product Information</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef!.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <!-- Display all crossover products -->
+    <div *ngFor="let product of crossoverProducts; let i = index" class="crossover-product-item mb-4">
+      <div class="row crossover-product mb-3">
+        <div class="col-3 crossover-product-image">
+          <img
+            [src]="product?.productImage"
+            [alt]="product?.productImageAlt"
+          />
+        </div>
+        <div class="col-1"></div>
+        <div class="col-8 right-details">
+          <div class="row">
+            <div class="col-6">
+              <div class="row">
+                <label>Product</label>
+              </div>
+              <div class="row">{{ product?.productName }}</div>
+            </div>
+            <div class="col-6">
+              <div class="row">
+                <label>Color</label>
+              </div>
+              <div class="row">{{ product?.colorName }}</div>
+            </div>
+            <div class="col-6">
+              <div class="row">
+                <label>Brand</label>
+              </div>
+              <div class="row">{{ product?.brandDesc }}</div>
+            </div>
+            <div class="col-6">
+              <div class="row">
+                <label>Customer Group</label>
+              </div>
+              <div class="row">
+                {{
+                  product?.customerGroup == "000"
+                    ? "Open Line"
+                    : product?.customerGroup
+                }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center cross">
+        <table class="table specifications-table">
+          <tr>
+            <th>Style</th>
+            <th>Color</th>
+            <th>Brand</th>
+            <th>Customer Group</th>
+          </tr>
+          <tbody>
+            <tr>
+              <td
+                class="text-danger cursor-pointer"
+                (click)="crossOverItemClick()"
+              >
+                {{ product?.style }} - {{ product?.styleName }}
+              </td>
+              <td>{{ product?.colorName }}</td>
+              <td>{{ product?.brand }} - {{ product?.brandDesc }}</td>
+              <td>
+                {{
+                  product?.customerGroup == "000"
+                    ? "Open Line"
+                    : product?.customerGroup
+                }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Add separator between products if there are multiple -->
+      <hr *ngIf="i < crossoverProducts.length - 1" class="my-4">
+    </div>
+
+    <!-- Fallback message if no crossover products -->
+    <div *ngIf="!crossoverProducts || crossoverProducts.length === 0" class="text-center">
+      <p>No crossover products available.</p>
+    </div>
+
+    <div class="mt-4 text-center">
+      <button class="btn btn-secondary" (click)="modalRef.hide()">Close</button>
+    </div>
+  </div>
+</ng-template>
+<ng-template #shippingOption>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Shipping Options</h4>
+    <!-- <app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader> -->
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeShippingOptionsModalModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing">
+    <alert
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="showValidationError"
+    >
+      <div class="container">{{ validationErrorMessage }}</div>
+    </alert>
+    <div class="row p-3">
+      <div class="col-md-6 col-lg-6 col-sm-12 mt-2 left-details border-right">
+        <div class="w-100">
+          <h3 class="modal-title f-w">Shipping Method</h3>
+          <p class="mb-0 address-text">
+            {{ defaultShippingMethod }}
+            {{ defaultShippingConditionDesc ? "-" : "" }}
+            {{
+              defaultShippingConditionDesc ? defaultShippingConditionDesc : ""
+            }}
+          </p>
+        </div>
+        <div class="w-100 mt-2">
+          <h3 class="modal-title f-w">Shipping WareHouse</h3>
+          <p class="mb-0">
+            {{ defaultShippingWarehouse }}
+            {{ defaultShippingWarehouseDesc ? "-" : "" }}
+            {{
+              defaultShippingWarehouseDesc ? defaultShippingWarehouseDesc : ""
+            }}
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-6 col-sm-12 mt-2 left-details">
+        <div class="w-100">
+          <h3 class="modal-title f-w">Inco Terms</h3>
+          <p class="mb-0">
+            {{ defaultIncoTerms }}
+            {{ defaultIncoTermsDesc ? "-" : "" }}
+            {{ defaultIncoTermsDesc }}
+          </p>
+        </div>
+        <div class="w-100 mt-2">
+          <h3 class="modal-title f-w">Ship Via</h3>
+          <p class="mb-0">
+            {{ defaultShipVia }}
+          </p>
+        </div>
+      </div>
+      <!-- <div class="col-6 mt-2">
+            
+                   </div>
+          <div class="col-6 mt-2">
+            
+          
+          </div> -->
+    </div>
+    <!-- <div class="row mb-2 left-details">
+          <div class="col-6 mt-2">
+            
+          
+          </div>
+          <div class="col-6 mt-2">
+            
+           
+          </div>
+        </div> -->
+
+    <div class="row text-center">
+      <div class="col-12 mt-2">
+        <button
+          (click)="closeShippingOptionsModalModal()"
+          class="btn btn-secondary m-2 btn-w-100"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="shippingOptionsModal(shippingOptionTemplate)"
+          class="btn btn-outline-primary m-2 btn-w-100"
+        >
+          Change Shipping Options
+        </button>
+        <button
+          (click)="validateShippingOptions()"
+          class="btn btn-primary m-2 btn-w-100"
+          [disabled]="showValidationError"
+        >
+          Choose Solution / Add To Cart
+        </button>
+      </div>
+      <!-- <div class="col-4 mt-3">
+        
+      </div> 
+      <div class="col-4 mt-3">
+        
+      </div>  -->
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #shippingOptionTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Change Shipping Options</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeChangeShippingOptionModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing">
+    <alert
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="showValidationError"
+    >
+      <div class="container">{{ validationErrorMessage }}</div>
+    </alert>
+    <form #form="ngForm">
+      <div class="row">
+        <div class="col-md-6 col-sm-12">
+          <h4>Shipping Methods* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="
+              changeshipViaOptions($event); incoTermsSelectedOption = null
+            "
+            [(ngModel)]="shipViaSelectedOption"
+            [clearable]="false"
+            name="ShipVia"
+            required
+          >
+            <ng-option [value]="item?.value" *ngFor="let item of shipViaOptions"
+              >{{ item?.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <h4>Inco Terms* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="changeincoTermsOptions($event)"
+            [(ngModel)]="incoTermsSelectedOption"
+            name="IncoTerms"
+            [clearable]="false"
+            required
+            [disabled]="!shipViaSelectedOption || userInfo?.isCustomer || userInfo?.isSalesOps || userInfo?.isSalesPerson"
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of incoTermsOptions"
+              >{{ item?.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-6 col-sm-12 mt-3">
+          <h4>Shipping WareHouse* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="
+              changeShippingWareHouseOptions($event);
+              incoTermsLoc2SelectedOption = null
+            "
+            [(ngModel)]="shippingWareHouseSelectedOption"
+            name="shippingWareHouse"
+            [clearable]="false"
+            [disabled]="userInfo?.isCustomer || userInfo?.isSalesOps || userInfo?.isSalesPerson"
+            required
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of shippingWareHouseOptions"
+              >{{ item?.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-6 col-sm-12 mt-3 shipvia-change">
+          <h4>Ship Via* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            class="shipvia"
+            [(ngModel)]="incoTermsLoc2SelectedOption"
+            name="incoTermsLoc2"
+            [clearable]="false"
+            [required]="userInfo?.isCSR ? true : ((userInfo?.isCustomer || userInfo?.isSalesPerson || userInfo?.isSalesOps) && shipViaSelectedOption !='MA') ? false : true"
+            [disabled]="!shippingWareHouseSelectedOption || (disableShipVia())"
+            [addTag]="userInfo?.isCSR ? true : ((userInfo?.isCustomer || userInfo?.isSalesPerson || userInfo?.isSalesOps) && shipViaSelectedOption !='MA') ? true : false"
+            (ngModelChange)="validateShipVia($event)"
+          >
+            <ng-option
+              [value]="item?.label"
+              *ngFor="let item of incoTermsLoc2Options"
+              >{{ item?.label }} <span class="span-preferred" *ngIf="item?.preferred == true">(Preferred)</span> </ng-option
+            >
+          </ng-select>
+        </div>
+      </div>
+    </form>
+
+    <div class="row text-center">
+      <div class="col-12 mt-4">
+        <button
+          class="btn btn-outline-secondary m-2 btn-w-100"
+          (click)="closeChangeShippingOptionModal()"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary m-2 btn-w-100"
+          id="confirmShippingWareHouseChange"
+          (click)="validateShipViaAddress('changeShippingOption')"
+          [disabled]="!form.dirty || !form.valid || showValidationError"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #changeDeliveryType>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Shipping Options Confirmation</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeInfoChanges()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing text-center">
+    <div class="row">
+      <h4>Do you wish to Continue</h4>
+      <p>{{ this.shippingInfoMessage }}</p>
+    </div>
+
+    <div class="row text-center">
+      <div class="col-12">
+        <button
+          class="btn btn-outline-secondary m-2 btn-w-100"
+          (click)="closeInfoChanges()"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary m-2 btn-w-100"
+          id="confirmShippingWareHouseChange"
+          (click)="confirmChanges()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #inventoryStatusTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Inventory Status</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row inventory-status-details">
+      <!-- <div class="col-md-6 col-lg-6 col-sm-12 mt-2">
+        <label class="font-weight-600 mb-1 d-flex align-items-center ng-star-inserted">Style #: 
+          <p class="mb-0"> {{inventoryStatusDetails && inventoryStatusDetails[0]?.style_number}}</p></label>
+      </div>
+      <div class="col-md-6 col-lg-6 col-sm-12 mt-2">
+        <label class="font-weight-600 mb-1 d-flex align-items-center ng-star-inserted">Style: 
+          <p class="mb-0"> {{inventoryStatusDetails && inventoryStatusDetails[0]?.style_name}}</p></label>
+      </div>
+      <div class="col-md-6 col-lg-6 col-sm-12 mt-2">
+        <label class="font-weight-600 mb-1 d-flex align-items-center ng-star-inserted">Color #:
+          <p class="mb-0"> {{inventoryStatusDetails && inventoryStatusDetails[0]?.color_code}}</p></label>
+      </div> -->
+      
+      <div class="col-md-12" *ngIf="inventoryStatusDetails.length > 0">
+        <p class="instock text-center"> <label>In Stock:</label> 
+            {{ inventoryStock  ? (inventoryStock | number : "1.2-2"): inventoryStatusDetails[0]?.available_qty  }} {{ inventoryStock ? inventoryStatusDetails[0]?.uom_sysf: inventoryStatusDetails[0]?.uom_ctroll}} </p> 
+        <table class="inventory-status-table mt-4 mb-4 w-100">
+          <thead>
+            <th>Dye Lot</th>
+            <th>{{ inventoryStatusDetails[0]?.uom_ctroll == "CT" ? 'Cartons' : 'Rolls' }}</th>
+            <th *ngIf="inventoryStatusDetails[0]?.uom_sysf">{{ inventoryStatusDetails[0]?.uom_sysf }}</th>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of inventoryStatusDetails">
+              <td>{{ item?.dye_lot }}</td>
+              <td>{{ item?.uom_converted_ctroll }}</td>
+              <td *ngIf="inventoryStatusDetails[0]?.uom_sysf">{{ item?.uom_converted_sysf | number : "1.2-2" }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mb-4 text-center" *ngIf="!inventoryStatusDetails.length">Inventory Not Available</p>
+    </div>
+  </div>
+</ng-template>
+
+<!-- <ng-template #excessQuantityModal>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Excess Quantity</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeInfoChanges()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing">
+    <div class="row my-4">
+      <p>{{ this.shippingInfoMessage }}</p>
+    </div>
+
+    <div class="row text-center">
+      <div class="col-12 mt-4">
+        <button
+          class="btn btn-outline-secondary m-2 btn-w-100"
+          (click)="closeInfoChanges()"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary m-2 btn-w-100"
+          id="confirmShippingWareHouseChange"
+          (click)="submitInfoChanges()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template> -->

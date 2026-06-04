@@ -1,0 +1,114 @@
+<app-loader *ngIf="spinnerLoading"></app-loader>
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <h2 class="text-center mb-4">PRICE DOWNLOAD</h2>
+  <div class="_card-container p-50">
+    <div class="row mb-2 mt-4">
+      <div class="my-2" *ngIf="resultFlag">
+        <alert type="danger" [dismissible]="false">
+          <p class="mb-0">No result found.</p>
+        </alert>
+      </div>
+      <div class="">
+        <h4 class="mb-1">Pricing Download</h4>
+        <p>Export current pricing in Excel CSV format.</p>
+      </div>
+      <hr />
+    </div>
+    <div class="row mt-4">
+      <div class="">
+        <p>Export current pricing, based on your current settings.</p>
+      </div>
+    </div>
+    <form [formGroup]="priceSearchForm">
+      <div class="row mb-4 mt-2">
+        <div class="col-md-4 col-lg-4">
+          <h4>Product Category</h4>
+          <ng-select placeholder="All" formControlName="productCategory"
+          (change)="onProductCategoryChange($event)">
+            <ng-option [value]="'All'">All</ng-option>
+            <ng-option
+              *ngFor="let option of productCategory"
+              [value]="option?.name"
+              >{{ option.name }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div
+          class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 cust-col-md-4"
+        >
+          <h4>Selling Group (Brand)</h4>
+          <ng-select
+            class="mb-3"
+            placeholder="All"
+            formControlName="sellingGroup"
+          >
+            <ng-option [value]="''">All</ng-option>
+            <ng-option
+              *ngFor="let option of sellingGroup | keyvalue"
+              [value]="option.key"
+              >{{ option.value }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-4 col-lg-4">
+          <h4>Template Type</h4>
+          <ng-select placeholder="All" formControlName="templateType">
+            <ng-option
+              *ngFor="let option of templateType"
+              [value]="option?.value"
+              >{{ option.name }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div
+          class="col-md-4 col-lg-4 loading-input-wrapper"
+        >
+        <h4>ShipTo *</h4>
+        <ng-select
+        class="mb-3 hide-empty-msg"
+          placeholder="Select"
+          formControlName="shippingAddress"
+          (click)="!isShiptoUser && openChangeShippingAddress()"
+          [clearable]="false"
+          [class.errorBorder]="
+            priceSearchForm.controls['shippingAddress'].touched == true &&
+            priceSearchForm.controls['shippingAddress'].hasError('required')
+          "
+          [clearable]='isShiptoUser ? false : true'
+        >
+        </ng-select>
+        <div class="cssload-loading" *ngIf="isLoading"><i></i><i></i><i></i><i></i></div>
+     
+      </div>
+      </div>
+    </form>
+    <div class="row mt-4">
+      <div class="col-md-8 mb-1">
+        <div class="text-left">
+          <p class="p-2 fs-12">
+            Prices subject to all taxes, excise fees, and stewardship fees
+            appropriate for your jurisdiction.<br>
+            CALIFORNIA - CalRecycle has 
+            implemented a differential assessment structure for broadloom carpet 
+            and carpet tile shipped into California: Broadloom carpet = $1.05 Sy; 
+            Broadloom Carpet with =>10% Post Consumer Content = $0.96 Sy;
+            Carpet Tile = $1.49 Sy; Carpet Tile with => 10% Post Consumer 
+            Content = $1.40 Sy.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-4 mb-4 full-btns">
+      <div class="col-md-4">
+        <button
+        [disabled]="isLoading || this.priceSearchForm.invalid"
+          class="btn btn-primary mb-2"
+          (click)="onDownload(priceSearchForm.value)"
+        >
+          DOWNLOAD
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,226 @@
+@import "src/styles/mixins/breakpoints";
+@import "src/styles/_colors";
+
+.payment-details {
+  padding: 10px;
+
+  ul {
+    @include breakpoint-range($max: sm) {
+      display: block;
+    }
+
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+
+    li {
+      @include breakpoint-range($max: sm) {
+        width: 100%;
+        padding: 10px 0;
+      }
+
+      text-align: center;
+      width: 50%;
+
+      span {
+        color: #ce0e2d;
+        font-size: 12px;
+      }
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+}
+
+.mr-10 {
+  margin-right: 10px;
+}
+
+.mr-4 {
+  margin-right: 4px;
+}
+
+.text-bold {
+  font-weight: bolder;
+}
+
+.btn-full-width {
+  .btn {
+    @include breakpoint-range($max: sm) {
+      width: 100%;
+    }
+  }
+}
+
+.modal-header {
+  border: none;
+
+  h4 {
+    font-size: 20px;
+    text-align: center;
+    display: block;
+    width: 100%;
+  }
+}
+
+.table-data {
+  overflow: auto;
+  table {
+    width: 100%;
+    thead,
+    tbody {
+      tr {
+        label {
+          position: relative;
+          input {
+            clip: rect(0, 0, 0, 0);
+            height: 1px;
+            margin: -1px;
+            overflow: hidden;
+            position: absolute;
+            width: 1px;
+          }
+          input:checked + .checkbox {
+            background: #383838;
+          }
+          input:checked + .checkbox::before {
+            background-clip: padding-box;
+            border: 0.1rem solid $color-white;
+            border-left-width: 0;
+            border-top-width: 0;
+            content: "";
+            height: 12px;
+            left: 50%;
+            margin-left: -3px;
+            margin-top: -8px;
+            position: absolute;
+            top: 50%;
+            transform: rotate(45deg);
+            width: 6px;
+          }
+          .checkbox {
+            height: 20px;
+            width: 20px;
+            border: 1px solid $color-gray;
+            background: $color-white;
+            cursor: pointer;
+            border-radius: 2px;
+          }
+        }
+        th {
+          width: 11.1111%;
+          background: #e8e8e8;
+          padding: 6px 15px;
+          border-right: 0.5px solid $color-gray;
+          cursor: pointer;
+          &:last-child {
+            border-right: unset;
+          }
+          &:first-child {
+            width: 5.9%;
+          }
+          color: #383838;
+          font-size: 16px;
+          font-weight: 600;
+          img {
+            display: none;
+            &.active {
+              display: inline-block;
+            }
+            &.rotate {
+              transform: rotate(180deg);
+            }
+          }
+        }
+        td {
+          width: 11.1111%;
+          height: 63px;
+
+          padding: 6px 15px;
+          border-right: 0.5px solid $color-gray;
+
+          &:last-child {
+            border-right: unset;
+          }
+          &:first-child {
+            width: 5.9%;
+          }
+        }
+      }
+    }
+    tbody {
+      tr {
+        &:nth-child(odd) {
+          background: $color-white;
+        }
+        &:nth-child(even) {
+          background: $color-light-gray;
+        }
+        border-bottom: 1px solid #c2c7d1;
+        &:last-child {
+          border-bottom: unset;
+        }
+      }
+    }
+  }
+}
+
+.print-btn {
+  color: #{$color-red};
+}
+
+.print-only {
+  display: none;
+}
+
+/** ngx-pagination styling **/
+
+::ng-deep {
+  pagination-controls {
+    pagination-template {
+      ul {
+        border-radius: unset !important;
+        li {
+          border: none !important;
+          border-radius: 0 5px 5px 0;
+          box-shadow: inset 0px 5px 6px #00000014;
+          &:nth-child(3) {
+            &.current {
+              border-radius: 5px 0px 0px 5px;
+            }
+          }
+          &:nth-last-child(2) {
+            &.current {
+              border-radius: 0px 5px 5px 0px;
+            }
+          }
+          &.current {
+            display: flex !important;
+            box-shadow: unset;
+          }
+          a {
+            text-decoration: unset !important;
+            height: 100%;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+          }
+          &.pagination-next,
+          &.pagination-previous {
+            a {
+              color: #ce0e2d;
+              font-size: 24px;
+              &::after,
+              &::before {
+                margin-left: 0px !important;
+                margin-bottom: 3px !important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

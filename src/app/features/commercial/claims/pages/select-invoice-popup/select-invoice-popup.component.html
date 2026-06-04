@@ -1,0 +1,896 @@
+<div class="modal-header">
+  <h4 class="modal-title text-center w-100">{{isLaborClaim ? 'Select Line to Add Labor to An Existing Claim' : 'Select Invoice Line(s)'}}</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="onHideModal()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <alert type="danger"  [dismissible]="true" *ngIf="errorMessage != ''">
+    <div class="container">{{ errorMessage }}</div>
+  </alert>
+  <div class="row">
+    <div class="card checkout-card mt-2">
+      <div class="card-header checkout-card-header">
+        <div class="row">
+          <div class="col-12" [ngClass]="(isLaborClaim || addLaborLine) ?  'col-sm-12' : 'col-sm-10'">
+            <div class="row" *ngIf="!isLaborClaim">
+              <div class="col-md-3 col-sm-4 col-xs-12">
+                <h4 class="d-inline">Invoice #</h4>
+                <p>{{ initialData?.selectedInvoiceData?.invoiceNumber }}</p>
+              </div>
+              <div class="col-md-3 col-sm-4 col-xs-12">
+                <h4 class="d-inline">Invoice Date</h4>
+                <p>{{ data?.length  > 0 ? data[0]?.invoiceDate : '' }}</p>
+              </div>
+              <div class="col-md-3 col-sm-4 col-xs-12">
+                <h4 class="d-inline">Invoice Total</h4>
+                <p>{{ data?.length  > 0 ? data[0]?.invoiceTotal : '' }}</p>
+              </div>
+            </div>
+
+             <div class="row" *ngIf="isLaborClaim">
+              <div class="col-sm-4 col-xs-12"
+                [ngClass]="(isLaborClaim || addLaborLine) ?  'col-md-2' : 'col-md-3'"
+              >
+                <h4 class="d-inline">Claim #</h4>
+                <p>{{ claimData?.claimNumber }}</p>
+              </div>
+              <div class="col-md-3 col-sm-4 col-xs-12">
+                <h4 class="d-inline">Claim Submitted Date</h4>
+                <p>{{ claimData?.claimSubmitDate }}</p>
+              </div>
+              <div class="col-md-3 col-sm-4 col-xs-12">
+                <h4 class="d-inline">Claim Type</h4>
+                <p>{{ claimData?.claimType }}</p>
+              </div>
+              <div class="col-sm-4 col-xs-12"
+                [ngClass]="(isLaborClaim || addLaborLine) ?  'col-md-2' : 'col-md-3'"
+              >
+                <h4 class="d-inline">Claim Status</h4>
+                <p>{{ claimData?.claimStatus }}</p>
+              </div>
+              <div class="col-sm-4 col-xs-12"
+                [ngClass]="(isLaborClaim || addLaborLine) ?  'col-md-2' : 'col-md-3'"
+              >
+                <h4 class="d-inline">Invoice #</h4>
+                <p>{{ claimData?.invoiceNumber }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="col-12" class="table-data">
+          <!-- All Product Lines Table-->
+          <table *ngIf="showAllProductLines" id="allProducts">
+            <thead>
+              <tr>
+                <th>
+                  <label [for]="'globalSelect'" class="ngx-form-checkbox" *ngIf="!isLaborClaim && !addLaborLine">
+                    <input
+                      type="checkbox"
+                      [id]="'globalSelect'"
+                      [(ngModel)]="globalAllselect"
+                      (change)="globalSelect($event, 'allLines')"
+                      [disabled]="globalDiasbled"
+                    />
+                    <i class="ngx-form-icon custom-checkbox-color"></i>
+                  </label>
+                </th>
+                <th *ngIf="!isLaborClaim && !addLaborLine"></th>
+                <th *ngFor="let col of columns; let colIndex = index">
+                  {{ col.title }}
+                  {{
+                    colIndex == columns.length - 2 ||
+                    colIndex == columns.length - 1
+                      ? this.currencyForHeader
+                      : ""
+                  }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngIf="invoiceLines.length > 0">
+                <ng-container *ngFor="let line of data; let i = index">
+                  <ng-container
+                    *ngFor="let inv of line?.invoices; let j = index"
+                  >
+                    <tr
+                      class="product-line-bg"
+                      *ngIf="inv.component == 'PRODUCT' && inv.isRemovedLine == undefined"
+                      (click)="selectLineInvoices({ target: { checked: (isLaborClaim || addLaborLine) ? true : inv.selected } }, line)"
+                    >
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false
+                        }"
+                      >
+                      <ng-container *ngIf="!isLaborClaim && !addLaborLine">
+                        <label
+                          class="ngx-form-checkbox"
+                          [for]="'checkboxcustom1-' + i + j"
+                          [ngClass]="{
+                            'disabled-row': inv?.disabled == true ? true : false
+                          }"
+                          *ngIf="disabledCheckbox(inv)"
+                        >
+                          <input
+                            type="checkbox"
+                            [id]="'checkboxcustom1-' + i + j"
+                            (change)="selectLineInvoices($event, line)"
+                            [(ngModel)]="inv.selected"
+                            [disabled]="inv?.disabled == true ? true : false"
+                          />
+                          <i
+                            class="ngx-form-icon custom-checkbox-color"
+                            [ngClass]="{
+                              'disabled-row-checkbox':
+                                inv?.disabled == true ? true : false
+                            }"
+                          ></i>
+                        </label>
+                      </ng-container>
+                      <ng-container *ngIf="isLaborClaim || addLaborLine">
+                        <xchange-radio-button
+                          classNames="size-22"
+                          [name]="'name-' + i+j"
+                          [value]="'b-' +i+j"
+                          [id]="'radioId'+i+j"
+                          [checked]="inv.isSelected"
+                          (change)="selectLineInvoices($event, line)"
+                        ></xchange-radio-button>
+                      </ng-container>
+                      </td>
+                      <td
+                        *ngIf="!isLaborClaim && !addLaborLine"
+                        [attr.rowspan]="
+                          isCollapseArr[i] ? line?.invoices?.length : 1
+                        "
+                      >
+                        <span (click)="isCollapseArr[i] = !isCollapseArr[i]"
+                        *ngIf="nonProductlength(line, inv) > 0">
+                          <span
+                            *ngIf="!isCollapseArr[i]"
+                            class="mohawak-icon angle-left-icon up-icon mx-auto"
+                          ></span>
+                          <span
+                            *ngIf="isCollapseArr[i]"
+                            class="mohawak-icon angle-left-icon down-icon mx-auto"
+                          ></span>
+                        </span>
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'allProducts')
+                        "
+                      >
+                        {{ line?.invoiceSeq }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'allProducts')
+                        "
+                      >
+                        {{ inv?.component }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'allProducts')
+                        "
+                      >
+                        {{ inv?.styleNumber }}
+                        <span *ngIf="inv?.styleName">-</span>
+                        {{ inv?.styleName }}
+                      </td>
+
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'allProducts')
+                        "
+                      >
+                        {{ inv?.colorNumber }}
+                        <span *ngIf="inv?.colorName">-</span>
+                        {{ inv?.colorName }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'allProducts')
+                        "
+                      >
+                        {{ inv?.dyeLot }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'allProducts')
+                        "
+                      >
+                        {{ inv?.rollNumber }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'allProducts')
+                        "
+                      >
+                        {{ inv?.partNumber }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'allProducts')
+                        "
+                      >
+                        {{ inv?.shipQuantity }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'allProducts')
+                        "
+                        *ngIf="inv.component == 'PRODUCT'"
+                      >
+                        {{ inv?.pricePerUnit }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'allProducts')
+                        "
+                        *ngIf="inv.component == 'PRODUCT'"
+                      >
+                        {{ inv?.productPrice }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'allProducts')
+                        "
+                        *ngIf="inv.component == 'PRODUCT'"
+                        [attr.rowspan]="
+                          isCollapseArr[i] ? line?.invoices?.length : 1
+                        "
+                      >
+                        {{ inv?.invoiceSubTotal }}
+                      </td>
+                    </tr>
+                    <ng-container *ngIf="!isLaborClaim && !addLaborLine">
+                    <tr
+                      class="non-product-line-bg"
+                      *ngIf="inv.component != 'PRODUCT' && isCollapseArr[i]"
+                    >
+                      <ng-container>
+                        <td
+                          [ngClass]="{
+                            'disabled-row': inv?.disabled == true ? true : false
+                          }"
+                          [style.display]="j == 1 ? 'table-cell' : 'none'"
+                          [attr.rowspan]="line?.invoices?.length - 1"
+                        >
+                        <ng-container *ngIf="inv?.standaloneLine === true">
+                          <label
+                          class="ngx-form-checkbox"
+                          [for]="'checkboxcustom1-' + i + j"
+                          [ngClass]="{
+                            'disabled-row': inv?.disabled == true ? true : false
+                          }"
+                        >
+                          <input
+                            type="checkbox"
+                            [id]="'checkboxcustom1-' + i + j"
+                            (change)="selectLineInvoices($event, line)"
+                            [(ngModel)]="inv.selected"
+                            [disabled]="inv?.disabled == true ? true : false"
+                          />
+                          <i
+                            class="ngx-form-icon custom-checkbox-color"
+                            [ngClass]="{
+                              'disabled-row-checkbox':
+                                inv?.disabled == true ? true : false
+                            }"
+                          ></i>
+                        </label>
+                        </ng-container>
+                        </td>
+                        <td
+                          [style.display]="j == 1 ? 'table-cell' : 'none'"
+                          [attr.rowspan]="line?.invoices?.length - 1"
+                        ></td>
+                        <td *ngIf="inv?.isRemovedLine === true">
+                          {{inv?.invoiceSeq || "NA"}}
+                        </td>
+                        <td
+                          [ngClass]="{
+                            'disabled-row': inv?.disabled == true ? true : false
+                          }"
+                        >
+                          {{ inv.component }}
+                        </td>
+                        <td
+                          class="non-product-lines"
+                          [style.display]="j == 1 ? 'table-cell' : 'none'"
+                          [attr.colspan]="7"
+                          [attr.rowspan]="line?.invoices?.length - 1"
+                        >
+                          Non Product Lines
+                        </td>
+                        <td
+                          *ngIf="claimTypeMap[inv.component] !== undefined && claimTypeMap[inv.component] != ''"
+                          [ngClass]="{
+                            'disabled-row': inv?.disabled == true ? true : false
+                          }"
+                        >
+                          {{ inv[claimTypeMap[inv.component]]}} {{claimTypeDesc[inv.component] || ''}}
+                        </td>
+                        <td
+                        *ngIf="
+                        inv?.standaloneLine == true"
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false
+                        }"
+                        >
+                          {{ inv?.invoiceSubTotal }}
+                        </td>
+                      </ng-container>
+                    </tr>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+            </tbody>
+          </table>
+          <!-- Only Product Lines Table-->
+          <table *ngIf="showProductLines">
+            <thead>
+              <tr>
+                <th>
+                  <label [for]="'globalSelect'" class="ngx-form-checkbox" *ngIf="!isLaborClaim">
+                    <input
+                      type="checkbox"
+                      [id]="'globalSelect'"
+                      [(ngModel)]="globalAllselect"
+                      (change)="globalSelect($event, 'productLines')"
+                      [disabled]="globalDiasbled"
+                    />
+                    <i class="ngx-form-icon custom-checkbox-color"></i>
+                  </label>
+                </th>
+                <th *ngFor="let col of columns; let colIndex = index">
+                  {{ col.title }}
+                  {{
+                    colIndex == columns.length - 2 ||
+                    colIndex == columns.length - 1
+                      ? this.currencyForHeader
+                      : ""
+                  }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngIf="invoiceLines.length > 0">
+                <ng-container *ngFor="let line of data; let i = index">
+                  <ng-container
+                    *ngFor="let inv of line?.invoices; let j = index"
+                  >
+                    <tr *ngIf="disabledCheckbox(inv)">
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false
+                        }"
+                      >
+                        <label
+                          class="ngx-form-checkbox"
+                          [for]="'checkboxcustom1-' + i + j"
+                          [ngClass]="{
+                            'disabled-row': inv?.disabled == true ? true : false
+                          }"
+                        >
+                          <input
+                            type="checkbox"
+                            [id]="'checkboxcustom1-' + i + j"
+                            (change)="setSelectedRecords('productLines')"
+                            [(ngModel)]="inv.selected"
+                            [disabled]="inv?.disabled == true ? true : false"
+                          />
+                          <i
+                            class="ngx-form-icon custom-checkbox-color"
+                            [ngClass]="{
+                              'disabled-row-checkbox':
+                                inv?.disabled == true ? true : false
+                            }"
+                          ></i>
+                        </label>
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'productLine')
+                        "
+                      >
+                        {{ line?.invoiceSeq }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'productLine')
+                        "
+                      >
+                        {{ inv?.component }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'productLine')
+                        "
+                      >
+                        {{ inv?.styleNumber }}
+                        <span *ngIf="inv?.styleName">-</span>
+                        {{ inv?.styleName }}
+                      </td>
+
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'productLine')
+                        "
+                      >
+                        {{ inv?.colorNumber }}
+                        <span *ngIf="inv?.colorName">-</span>
+                        {{ inv?.colorName }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'productLine')
+                        "
+                      >
+                        {{ inv?.dyeLot }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'productLine')
+                        "
+                      >
+                        {{ inv?.rollNumber }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'productLine')
+                        "
+                      >
+                        {{ inv?.partNumber }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'productLine')
+                        "
+                      >
+                        {{ inv?.shipQuantity }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'productLine')
+                        "
+                        *ngIf="inv.component == 'PRODUCT'"
+                      >
+                        {{ inv?.pricePerUnit }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'productLine')
+                        "
+                        *ngIf="inv.component == 'PRODUCT'"
+                      >
+                        {{ inv?.productPrice }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'productLine')
+                        "
+                      >
+                        {{ inv?.invoiceSubTotal }}
+                      </td>
+                    </tr>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+            </tbody>
+          </table>
+
+          <!-- Only Non-product Lines Table-->
+          <table *ngIf="showNonProductLines">
+            <thead>
+              <tr>
+                <th class="text-center">
+                  <label [for]="'globalSelect'" class="ngx-form-checkbox">
+                    <input
+                      type="checkbox"
+                      [id]="'globalSelect'"
+                      [(ngModel)]="globalAllselect"
+                      (change)="globalSelect($event, 'nonProductLines')"
+                      [disabled]="globalDiasbled"
+                    />
+                    <i class="ngx-form-icon custom-checkbox-color"></i>
+                  </label>
+                </th>
+                <th *ngFor="let col of columns1; let colIndex = index">
+                  {{ col.title }}
+                </th>
+                <th
+                  *ngIf="
+                    claimType == claimTypes.FREIGHT ||
+                    claimType == claimTypes.CANCELLATION_FEE
+                  "
+                >
+                  Charge
+                  {{
+                    data?.length > 0 ? " (" + data[0]?.currency + ")" : " (USD)"
+                  }}
+                </th>
+                <th *ngIf="claimType == claimTypes.TAX">
+                  Tax Amount
+                  {{
+                    data?.length > 0 ? " (" + data[0]?.currency + ")" : " (USD)"
+                  }}
+                </th>
+                <th *ngIf="claimType == claimTypes.CANCELLATION_FEE">
+                  Misc Charge
+                  {{
+                    data?.length > 0 ? " (" + data[0]?.currency + ")" : " (USD)"
+                  }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngIf="invoiceLines.length > 0">
+                <ng-container *ngFor="let line of data; let i = index">
+                  <ng-container
+                    *ngFor="let inv of line?.invoices; let j = index"
+                  >
+                    <tr *ngIf="disabledCheckbox(inv)">
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false
+                        }"
+                      >
+                        <label
+                          class="ngx-form-checkbox"
+                          [for]="'checkboxcustom1-' + i + j"
+                          [ngClass]="{
+                            'disabled-row': inv?.disabled == true ? true : false
+                          }"
+                        >
+                          <input
+                            type="checkbox"
+                            [id]="'checkboxcustom1-' + i + j"
+                            (change)="setSelectedRecords('nonProductLines')"
+                            [(ngModel)]="inv.selected"
+                            [disabled]="inv?.disabled == true ? true : false"
+                          />
+                          <i
+                            class="ngx-form-icon custom-checkbox-color"
+                            [ngClass]="{
+                              'disabled-row-checkbox':
+                                inv?.disabled == true ? true : false
+                            }"
+                          ></i>
+                        </label>
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'nonProductLine')
+                        "
+                      >
+                        {{ line?.invoiceSeq }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'nonProductLine')
+                        "
+                      >
+                        {{ inv?.component }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'nonProductLine')
+                        "
+                      >
+                        {{ inv?.styleNumber }}
+                        <span *ngIf="inv?.styleName">-</span>
+                        {{ inv?.styleName }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'nonProductLine')
+                        "
+                      >
+                        {{ inv?.colorNumber }}
+                        <span *ngIf="inv?.colorName">-</span>
+                        {{ inv?.colorName }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'nonProductLine')
+                        "
+                      >
+                        {{ inv?.shipQuantity }} {{ inv?.uomDesc }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'nonProductLine')
+                        "
+                        *ngIf="
+                          claimType == claimTypes.FREIGHT
+                        "
+                      >
+                        {{ inv?.fuelSurcharge || inv?.freightCharge || inv?.jobSiteDelivery || inv?.liftGateCharge || inv?.palletJackCharge || "NA" }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'nonProductLine')
+                        "
+                        *ngIf="
+                          claimType == claimTypes.CANCELLATION_FEE
+                        "
+                      >
+                        {{ inv?.californiaCareFee || "NA" }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'nonProductLine')
+                        "
+                        *ngIf="inv.component == 'TAX'"
+                      >
+                        {{ inv?.taxAmount ? inv?.taxAmount : "NA" }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'nonProductLine')
+                        "
+                        *ngIf="
+                          inv.component == 'CANCELLATION_FEE' ||
+                          claimType == claimTypes.CANCELLATION_FEE
+                        "
+                      >
+                        {{ inv?.miscCharge ? inv?.miscCharge : "NA" }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'disabled-row': inv?.disabled == true ? true : false,
+                          'enabled-row': inv?.disabled == false ? true : false
+                        }"
+                        (click)="
+                          inv?.disabled == true
+                            ? ''
+                            : selectRecord(inv, 'nonProductLine')
+                        "
+                        *ngIf="inv.component == 'PRODUCT'"
+                        [attr.rowspan]="
+                          isCollapseArr[i] ? line?.invoices?.length : 1
+                        "
+                      >
+                        {{ line?.invoiceSubTotal }}
+                      </td>
+                    </tr>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+            </tbody>
+          </table>
+          <ng-container *ngIf="invoiceLines.length == 0">
+            <div class="pt-3 pb-3 text-center">No Invoice Result</div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center full-btns mt-4">
+    <div class="col-md-3 btn-grid">
+      <button
+        class="btn btn-outline-secondary mb-3"
+        (click)="onHideModal()"
+      >
+        CANCEL
+      </button>
+    </div>
+    <div class="col-md-3 btn-grid">
+      <button
+        *ngIf="!isLaborClaim && !addLaborLine"
+        class="btn btn-primary mb-3"
+        (click)="addToClaim()"
+        [disabled]="selectedLine.length == 0 || checkStandaloneWithProduct()"
+      >
+        ADD TO CLAIM
+      </button>
+      <button
+      *ngIf="isLaborClaim || addLaborLine"
+        class="btn btn-primary mb-3"
+        (click)="addLaborToClaim()"
+        [disabled]="selectedLine.length == 0 || checkStandaloneWithProduct() || checkLineAlreadySelected() || (initialData.alreadySelectedLaborLine?.length == 0 && !this.initialData.currentSelectedLine)"
+      >
+        Continue
+      </button>
+      <!-- checkLineAlreadySelected() -->
+    </div>
+  </div>
+</div>

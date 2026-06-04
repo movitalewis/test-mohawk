@@ -1,0 +1,119 @@
+<div class="modal-header text-center">
+  <h4 class="modal-title w-100">Create New Contact</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="onHideModal()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body p-20">
+  <div class="p-30">
+    <alert
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="errorMessage != ''"
+    >
+      <div class="container">
+        {{ errorMessage }}
+      </div>
+    </alert>
+    <form [formGroup]="userFrom">
+      <div class="row">
+        <div class="col-md-12">
+          <p>*indicates a required field</p>
+        </div>
+        <div class="col-md-4 mt-3">
+          <div class="">
+            <h4>First Name* Req</h4>
+            <input
+              type="text"
+              placeholder="First Name"
+              class="form-control"
+              formControlName="firstName"
+              oninput="this.value = this.value.replace(/[^a-z,A-Z]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^a-z,A-Z, ' ']/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+            />
+          </div>
+        </div>
+        <div class="col-md-4 mt-3">
+          <div class="">
+            <h4>Last Name* Req</h4>
+            <input
+              type="text"
+              placeholder="Last Name"
+              class="form-control"
+              formControlName="lastName"
+              oninput="this.value = this.value.replace(/[^a-z,A-Z]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^a-z,A-Z, ' ']/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+            />
+          </div>
+        </div>
+        <div class="row"></div>
+        <div class="col-md-4 mt-3">
+          <div>
+            <h4>Mobile Phone</h4>
+            <input
+              type="text"
+              placeholder="Mobile Phone"
+              class="form-control"
+              formControlName="mobilePhone"
+              (input)="checkPhoneValidation($event, 'mobilePhone')"
+              (keypress)="validateNo($event)"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+            />
+          </div>
+        </div>
+        <div class="col-md-4 mt-3">
+          <div>
+            <h4>Work Phone* Req</h4>
+            <input
+              type="text"
+              placeholder="Work Phone"
+              class="form-control"
+              formControlName="workPhone"
+              (input)="checkPhoneValidation($event, 'workPhone')"
+              (keypress)="validateNo($event)"
+              maxlength="10"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+            />
+          </div>
+        </div>
+        <div class="col-md-2 mt-3">
+          <div>
+            <h4>Ext</h4>
+            <input
+              type="text"
+              placeholder="Ext"
+              class="form-control"
+              formControlName="extension"
+            />
+          </div>
+        </div>
+        <div class="col-md-6 mt-3">
+          <div>
+            <h4>Email Address* Req</h4>
+            <input
+              type="text"
+              placeholder="Email Address"
+              class="form-control"
+              formControlName="email"
+            />
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="footer mb-3 d-flex justify-content-end mt-4">
+    <button class="btn btn-secondary" (click)="onHideModal()">CANCEL</button>
+    <button
+      class="btn btn-primary"
+      [disabled]="!hasFormValid"
+      (click)="submit()"
+    >
+      Create User
+    </button>
+  </div>
+</div>

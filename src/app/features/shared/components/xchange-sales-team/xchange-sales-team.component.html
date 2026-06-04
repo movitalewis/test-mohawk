@@ -1,0 +1,72 @@
+<app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+<div class="modal-header text-center">
+  <h4 class="modal-title f-w w-100">Mohawk Sales Team</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="bsModalRef.hide()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body p-20" *ngIf="salesTeamData?.length > 0">
+  <ul class="sales-team-list">
+    <li *ngFor="let item of salesTeamData">
+      <div class="team-member-container">
+        <div class="image-container">
+          <img
+            src="https://s7d4.scene7.com/is/image/MohawkResidential/missing?$xchangeThumb$"
+            width="100%"
+            alt=""
+          />
+        </div>
+        <div class="team-content">
+          <header>
+            <h3>{{ item?.name }}</h3>
+          </header>
+          <div class="body" *ngIf="isCommercial">
+            <p>
+              {{ item?.customerSegment }}
+            </p>
+          </div>
+          <div class="body" *ngIf="!isCommercial">
+            <span *ngFor="let brand of item?.custBrandList; let i = index">
+              {{ brand }}
+              <span *ngIf="i !== item?.custBrandList.length - 1">, </span>
+            </span>
+          </div>
+          <footer>
+            <p>
+              Mobile:
+              <span class="color-red">{{ item?.mobilePhone }}</span>
+            </p>
+            <p>
+              Email: <span class="color-red">{{ item?.email }}</span>
+            </p>
+          </footer>
+        </div>
+      </div>
+    </li>
+  </ul>
+
+  <div class="text-center">
+    <button class="btn btn-secondary mb-2" (click)="bsModalRef.hide()">
+      CLOSE
+    </button>
+  </div>
+</div>
+<div
+  class="modal-body p-20"
+  *ngIf="salesTeamData?.length == 0 || salesTeamData === undefined"
+>
+  <h3 class="f-w w-100 mb-4 text-center">
+    No Account Executives / Sales Team associations available for this account.
+  </h3>
+
+  <div class="text-center">
+    <button class="btn btn-secondary mb-2" (click)="bsModalRef.hide()">
+      CLOSE
+    </button>
+  </div>
+</div>

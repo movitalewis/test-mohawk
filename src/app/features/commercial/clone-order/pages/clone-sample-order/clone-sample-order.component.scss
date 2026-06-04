@@ -1,0 +1,22 @@
+@import "src/styles/mixins/breakpoints";
+.show {
+  float: right;
+  @include breakpoint-range($max: sm) {
+    width: 100% !important;
+    margin: 0px;
+  }
+}
+.show-sub {
+  display: inline-flex;
+  @include breakpoint-range($max: sm) {
+    display: block !important;
+    padding: 0px;
+  }
+  h4 {
+    padding-top: 10px;
+    padding-right: 5px;
+  }
+}
+.clone-btn {
+  margin: 0 auto;
+}

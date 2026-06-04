@@ -1,0 +1,20 @@
+<div class="toggle-switch">
+  <input
+    type="checkbox"
+    class="input"
+    [id]="config.id"
+  />
+  <label
+    class="label"
+    [for]="config.id"
+    [style.pointerEvents]="config.rightLabel === '' ? 'none' : null"
+  >
+    <div class="activeTab" [ngClass]="{'active': isToggleActive}"></div>
+    <div class="unchecked" (click)="onChange(false)">
+      <span>{{ config.leftLabel }}</span>
+    </div>
+    <div class="checked" (click)="onChange(true)" *ngIf="config?.rightLabel != ''">
+      <span>{{ config.rightLabel }}</span>
+    </div>
+  </label>
+</div>

@@ -1,0 +1,78 @@
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <h2 class="text-center mb-4">Custom Orders</h2>
+  <div class="mb-3">
+    <alert
+      [type]="alertType"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="showAlertMessage"
+    >
+      <div class="container">
+        {{ successMessage }}
+      </div>
+    </alert>
+  </div>
+  <div class="_card-container">
+    <div class="col-12 mt-4">
+      <ngx-table
+        [configuration]="configuration"
+        [columns]="columns"
+        [data]="
+          orderData
+            | paginate
+              : {
+                  itemsPerPage: tableItemsSize,
+                  currentPage: pageIndex,
+                  id: 'customOrderPagination',
+                  totalItems: totalResults
+                }
+        "
+      >
+        <ng-template let-row>
+          <td>
+            {{ row?.hybrisOrderNumber }}
+          </td>
+          <td>
+            {{ row?.camsOrderNumber }}
+          </td>
+          <td>
+            {{ row?.statusDescription }}
+          </td>
+          <td>
+            <ng-container
+              *ngIf="
+                row?.statusDescription == 'Retry Request Received' ||
+                row?.statusDescription ==
+                  'Failure in Cart Creation / SA Creation' ||
+                row?.statusDescription == 'Failed in Order Creation'; 
+                else showNA
+              "
+            >
+              <a (click)="retryCustomOrder(row)" href="javascript:void(0)">
+                Reprocess Order</a
+              >
+            </ng-container>
+            <ng-template #showNA>
+              NA
+            </ng-template>
+          </td>
+        </ng-template>
+      </ngx-table>
+    </div>
+  </div>
+
+  <div class="row mb-4 mt-4">
+    <div class="d-flex justify-content-center" *ngIf="totalResults > 10">
+      <pagination-controls
+        id="customOrderPagination"
+        [maxSize]="5"
+        [responsive]="true"
+        [nextLabel]="''"
+        [previousLabel]="''"
+        (pageChange)="onTableDataChange($event)"
+      >
+      </pagination-controls>
+    </div>
+  </div>
+</div>

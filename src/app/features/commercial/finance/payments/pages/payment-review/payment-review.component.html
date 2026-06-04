@@ -1,0 +1,233 @@
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <div class="row mt-4">
+    <div class="col-md-12 col-xs-12">
+      <h2 class="text-center mb-4">PAYMENTS REVIEW</h2>
+    </div>
+  </div>
+
+  <div class="_card-container">
+    <div class="row mb-4">
+      <div class="col-md-4 offset-md-4 col-sm-8 offset-sm-2 col-xs-12">
+        <div class="payment-details">
+          <ul>
+            <li>
+              <span>Bank Account #</span>
+              <p>{{ accountDetails.accountNumber }}</p>
+            </li>
+            <li>
+              <span>Total Selected Amount</span>
+              <p>
+                {{ totalAmount | currency : priceLabel : "symbol" : "1.2-2" }}
+              </p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div
+      class="table-data"
+      *ngIf="{
+        content: data$ | async
+      } as data"
+    >
+      <table>
+        <thead>
+          <tr>
+            <th *ngFor="let item of columns">
+              {{ item?.title }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="
+              let item of data?.content
+                | paginate
+                  : {
+                      itemsPerPage: tableItemsSize,
+                      currentPage: pageIndex1
+                    }
+            "
+          >
+            <td>
+              {{ item?.type }}
+            </td>
+            <td>In Process</td>
+            <td>
+              {{ item?.documentNumber }}
+            </td>
+            <td>
+              {{ item?.poNumber }}
+            </td>
+            <td>
+              {{ item?.documentDate | date : "MM/dd/yyyy" }}
+            </td>
+            <td>
+              {{
+                item?.openAmount | currency : priceLabel : "symbol" : "1.2-2"
+              }}
+            </td>
+            <td>
+              {{
+                item?.scheduledAmount
+                  | currency : priceLabel : "symbol" : "1.2-2"
+              }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="text-center mt-4">
+      <p class="m-0">
+        Payments after 9 PM ET will be processed on the following business day.
+      </p>
+    </div>
+  </div>
+  <div class="row mb-4 mt-4">
+    <div class="d-flex justify-content-center" *ngIf="totalLength > 10">
+      <pagination-controls
+        [maxSize]="maxSize"
+        [responsive]="true"
+        [nextLabel]="''"
+        [previousLabel]="''"
+        (pageChange)="onTableDataChange($event)"
+      >
+      </pagination-controls>
+    </div>
+    <div class="col-md-12">
+      <p class="text-center mb-4">
+        {{ startValue > 0 ? startValue : 0 }} -
+        {{ lastValue > 0 ? startValue : 0 }} OF
+        {{ totalLength > 0 ? totalLength : 0 }}
+      </p>
+    </div>
+    <div class="col-md-12 text-center mb-4 btn-full-width">
+      <button
+        class="btn btn-outline-secondary mr-10"
+        (click)="suspendPaymentModal(template2)"
+      >
+        Suspend Payment
+      </button>
+      <button class="btn btn-outline-secondary mr-10" (click)="editPayment()">
+        Edit Payment
+      </button>
+      <button
+        class="btn btn-outline-secondary mr-10"
+        (click)="cancelPaymentModal(template3)"
+      >
+        Cancel Payment
+      </button>
+      <button
+        class="btn btn-primary mr-10"
+        (click)="schedulePaymentModal(template1)"
+        [disabled]="totalAmount <= 0"
+      >
+        Schedule Payment
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Schedule Payment Popup -->
+<ng-template #template1 class="modal-dialog-centered">
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w">Schedule Payment?</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>Payments after 9 PM ET will be processed the next business day.</p>
+      <div class="mt-4 mb-4">
+        <button
+          class="btn btn-outline-secondary mr-10"
+          (click)="modalRef?.hide()"
+        >
+          No
+        </button>
+        <button
+          class="btn btn-primary"
+          (click)="createSchedulePayment(); modalRef?.hide()"
+        >
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Suspend Payment Popup -->
+<ng-template #template2>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w">Suspend Payment?</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>Are you sure you want to suspend this scheduled payment?</p>
+      <div class="mt-4 mb-4">
+        <button
+          class="btn btn-outline-secondary mr-10"
+          (click)="modalRef?.hide()"
+        >
+          No
+        </button>
+        <button
+          class="btn btn-primary"
+          (click)="createSuspendPayment(); modalRef?.hide()"
+        >
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Cancel Payment Popup -->
+<ng-template #template3>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w">Cancel Payment?</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>Are you sure you want to cancel this schedule payment?</p>
+      <div class="mt-4 mb-4">
+        <button
+          class="btn btn-outline-secondary mr-10"
+          (click)="modalRef?.hide()"
+        >
+          No
+        </button>
+        <button
+          class="btn btn-primary"
+          (click)="cancelPayment()"
+          (click)="modalRef?.hide()"
+        >
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,15 @@
+<div class="modal-header text-center">
+    <h4 class="modal-title f-w w-100 text-uppercase">{{modalHeaderText}}</h4>
+  </div>
+  <div class="modal-body p-20">
+    <div class="_card white-bg">
+        <div class="row mx-2 mb-3">
+            <div class="col-md-12 mb-3">
+              <h3>{{progressText}}</h3>
+              <div class="my-6">
+                <progressbar [striped]="true" [animate]="true" class="progress-striped active" [value]="100" type="info"><i>{{progressBarText }}</i></progressbar>
+              </div>  
+            </div>
+        </div>
+    </div>
+  </div>

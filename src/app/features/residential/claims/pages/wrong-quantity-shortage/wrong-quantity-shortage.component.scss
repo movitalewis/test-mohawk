@@ -1,0 +1,168 @@
+@import "src/styles/mixins/box-shadow.mixin";
+@import "src/styles/mixins/breakpoints";
+
+@include breakpoint-range($max: sm) {
+  .btn {
+    width: 100%;
+  }
+
+  .right {
+    text-align: left !important;
+  }
+}
+.errorBorder {
+  border: 0.5px solid #ce0e2d;
+  border-radius: 5px;
+}
+textarea {
+  border: 1px solid #b1b1b1;
+  border-radius: 5px;
+  opacity: 1;
+  width: 100%;
+  height: 145px;
+}
+
+.mr-15 {
+  margin-right: 15px;
+}
+
+.clr-red {
+  color: #{$color-red};
+}
+
+.right {
+  text-align: right;
+}
+
+.align-center {
+  justify-content: center;
+}
+
+.align-item {
+  align-items: center;
+}
+
+.btn-grid {
+  display: grid;
+}
+
+input::file-selector-button {
+  font-weight: bold;
+  color: #ffffff;
+  border: thin solid #{$color-red};
+  border-radius: 5px;
+  background: #{$color-red};
+  margin-right: 10px;
+  padding: 5px 10px;
+}
+.claim-added {
+  margin: 10px 0;
+
+  ul {
+    list-style-type: disc;
+
+    padding-left: 15px;
+
+    li {
+      span {
+        text-decoration: underline;
+      }
+
+      .btn-close {
+        width: 6px;
+
+        height: 6px;
+
+        position: relative;
+
+        top: -5px;
+
+        left: 10px;
+      }
+    }
+  }
+}
+
+.form-control.ng-invalid:focus {
+  border: 1px solid $color-gray;
+  color: $color-light-black;
+}
+.form-control.ng-invalid.ng-touched:blur {
+  border: 1px solid $color-red;
+  color: $color-red;
+}
+.invoice-list-card {
+  .card-header {
+    padding: 0px 15px 0px 10px;
+    .column {
+      padding: 10px;
+      &:first-child {
+        background: #202020;
+        border-radius: 5px 0 0 0px;
+        p,
+        h4 {
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+
+.down-icon {
+  transform: rotate(-90deg);
+  display: inline-flex;
+  font-size: 0.625rem;
+  margin-left: 0.313rem;
+  color: $color-red;
+}
+.up-icon {
+  transform: rotate(-270deg);
+  display: inline-flex;
+  font-size: 0.625rem;
+  margin-left: 0.625rem;
+  color: $color-red;
+}
+.btn.btn1{
+  text-decoration: none;
+  text-transform: capitalize;
+  border: none !important;
+  padding-top: 0.75rem;
+  margin: auto;
+  min-width: 45px;
+}
+
+  .info-header{
+    background-color: #f4f4f4;
+    div{
+      .status-complete{
+              color: green;
+              padding: 0px 16px;
+              background-color: #d6ffd6;
+      }
+      .status-incomplete{
+        color: rgb(128, 0, 0);
+        padding: 0px 16px;
+        background-color: #ffd6d6;
+      }
+      .btn1{
+        h6{
+          span{
+            font-size: 20px;
+          }
+        }
+      }
+    }
+  }
+
+  .acco-content{
+    padding: 10px 0px;
+  }
+
+  .disabled-input {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+.h2-title{
+  line-height: 45px;
+}

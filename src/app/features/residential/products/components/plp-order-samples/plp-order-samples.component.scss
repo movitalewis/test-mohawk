@@ -1,0 +1,220 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+@import "src/styles/mixins/box-shadow.mixin";
+
+.p-50 {
+  padding: 0 50px;
+
+  @include breakpoint-range($max: sm) {
+    padding: 0 10px;
+  }
+}
+
+.full-btns {
+  .btn {
+    width: 100%;
+  }
+}
+
+.samples-grid {
+  ul {
+    display: flex;
+
+    @include breakpoint-range($max: sm) {
+      flex-wrap: wrap;
+    }
+
+    li {
+      width: auto;
+      text-align: center;
+
+      @include breakpoint-range($max: sm) {
+        width: 33.33%;
+        margin-bottom: 20px;
+      }
+
+      .sample-img {
+        width: 100%;
+        padding: 10px;
+
+        img {
+          width: 100%;
+          height: 100%;
+          max-width: 106px;
+        }
+      }
+
+      .sample-img.selected {
+        img {
+          border: 1px solid $color-red;
+          padding: 3px;
+          border-radius: 5px;
+        }
+      }
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+}
+
+.selected-sample {
+  background-color: #f8f8f8;
+  padding: 20px;
+  border-radius: 5px;
+  position: relative;
+  margin-bottom: 20px;
+
+  .close {
+    color: #b1b1b1;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    text-decoration: none;
+    font-size: 24px;
+    line-height: 24px;
+    cursor: pointer;
+  }
+
+  .d-flex {
+    margin-top: 20px;
+
+    .size {
+      width: 65%;
+      margin-right: 20px;
+
+      @include breakpoint-range($max: sm) {
+        width: 50%;
+        margin-right: 15px;
+      }
+    }
+
+    .qty {
+    }
+  }
+}
+.no-detail{
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+}
+.form-control {
+  height: 45px;
+  border: 1px solid #b1b1b1;
+  border-radius: 5px;
+  color: #4c4d4b;
+  padding: 0 17px;
+}
+
+::ng-deep {
+  .order-tabs {
+    .nav-tabs {
+      display: inline-flex;
+      flex-basis: content;
+    }
+
+    .nav-item {
+      flex-basis: content !important;
+    }
+  }
+}
+.product-varient-carousel {
+  ::ng-deep {
+    .owl-item {
+      // padding: 3px;
+      cursor: pointer;
+      // max-width: 100px;
+      max-width: 163px;
+    }
+    .owl-dots {
+      height: 100%;
+      position: relative;
+      transform: none;
+      left: 0px;
+      bottom: 0px;
+      // bottom: -35px;
+      .owl-dot {
+        &.active {
+          span {
+            background: #ce0e2d;
+          }
+        }
+        span {
+          background: grey;
+        }
+      }
+    }
+  }
+  .product-image {
+    position: relative;
+  }
+  .product-image-modal {
+    position: absolute;
+    height: 25px;
+    width: 25px;
+    bottom: 0px;
+    right: 0px;
+    cursor: zoom-in;
+  }
+}
+.activeSlide {
+  border: 3px solid $color-red;
+  padding: 3px;
+}
+.product-varient-carousel.architect-tab-image {
+  ::ng-deep {
+    .owl-item {
+      cursor: initial;
+      max-width: 392px;
+      margin-right: 0;
+    }
+  }
+}
+
+.cssload-container {
+  display: block;
+  width: auto;
+  text-align: center;
+}
+
+.cssload-loading i {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border-radius: 50%;
+  background: #b7b7b7;
+}
+.cssload-loading i:first-child {
+  opacity: 0;
+  animation: cssload-loading-ani2 0.5s linear infinite;
+  -o-animation: cssload-loading-ani2 0.5s linear infinite;
+  -ms-animation: cssload-loading-ani2 0.5s linear infinite;
+  -webkit-animation: cssload-loading-ani2 0.5s linear infinite;
+  -moz-animation: cssload-loading-ani2 0.5s linear infinite;
+  transform: translate(-8px);
+  -o-transform: translate(-8px);
+  -ms-transform: translate(-8px);
+  -webkit-transform: translate(-8px);
+  -moz-transform: translate(-8px);
+}
+.cssload-loading i:nth-child(2),
+.cssload-loading i:nth-child(3) {
+  animation: cssload-loading-ani3 0.5s linear infinite;
+  -o-animation: cssload-loading-ani3 0.5s linear infinite;
+  -ms-animation: cssload-loading-ani3 0.5s linear infinite;
+  -webkit-animation: cssload-loading-ani3 0.5s linear infinite;
+  -moz-animation: cssload-loading-ani3 0.5s linear infinite;
+}
+.cssload-loading i:last-child {
+  animation: cssload-loading-ani1 0.5s linear infinite;
+  -o-animation: cssload-loading-ani1 0.5s linear infinite;
+  -ms-animation: cssload-loading-ani1 0.5s linear infinite;
+  -webkit-animation: cssload-loading-ani1 0.5s linear infinite;
+  -moz-animation: cssload-loading-ani1 0.5s linear infinite;
+}
+
+.searchspinner {
+  color: #ce0e2d;
+  opacity: 0.8;
+}

@@ -1,0 +1,16 @@
+@import "src/styles/colors";
+@import 'src/styles/mixins/breakpoints';
+
+.m-btn-0{
+    margin-bottom: 0.5rem ;
+
+    @include breakpoint-range($max : xs){
+        margin-bottom: 0px!important;
+        margin-top: 5px!important
+    }
+}
+.pd-l-0{
+    @include breakpoint-range($max : xs){
+        padding-left: 0px!important;
+    }
+}

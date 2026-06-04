@@ -1,0 +1,35 @@
+@import 'src/styles/mixins/breakpoints';
+
+.full-width {
+    width: 100%;
+}
+
+.mt-6 {
+    margin-top: 30px;
+}
+.statements_btn{
+    text-align: right;
+    .btn{
+        @include breakpoint-range($max : sm) {
+            width: 100% !important;
+        }
+    }
+}
+.offset-3 {
+    @include breakpoint-range($max : sm) {
+        margin-left: 0px;
+    }
+}
+.mt-4 {
+        @include breakpoint-range($max : sm) {
+            margin-top: 0px !important;
+        }
+}
+.text-right{
+    text-align: right;
+}
+.angle-right-icon{
+    color: var(--mx-link-color);
+    font-size: 10px;
+    padding-left: 5px;
+}

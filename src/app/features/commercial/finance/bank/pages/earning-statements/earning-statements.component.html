@@ -1,0 +1,47 @@
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <h2 class="text-center mb-4">Earning Statements</h2>
+  <div class="mb-3">
+    <alert type="danger" class="dashboard-page-alert" [dismissible]="true" *ngIf="showErrorMessage">
+      <div class="container">
+        {{ errorMessage }}
+      </div>
+    </alert>
+  </div>
+    <div class="_card-container">
+      <form [formGroup]="earningStatementForm" (ngSubmit)="viewStatement()">
+        <div class="row mb-4 mt-4">
+          <div class="col-md-7">
+            <div class="row">
+              <div class="col-md-6">
+                <h4>Year</h4>
+                <ng-select formControlName="year"
+                  [ngClass]="{ 'is-invalid': submitted && earningStatementForm.controls['year'].errors }"
+                  placeholder="Select Year" (change)="selectYear($event)">
+                  <ng-option *ngFor="let year of years" [value]="year">{{year}}</ng-option>
+                </ng-select>
+                <div *ngIf="submitted && earningStatementForm.controls['year'].errors" class="invalid-feedback">
+                  <div *ngIf="earningStatementForm.controls['year'].errors['required']">Year is required</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <h4>Quarter</h4>
+                <ng-select formControlName="quarter"
+                  [ngClass]="{ 'is-invalid': submitted && earningStatementForm.controls['quarter'].errors }"
+                  placeholder="Select Quarter" (change)="selectQuarter($event)">
+                  <ng-option *ngFor="let quarter of quarters" [value]="quarter">{{quarter}}</ng-option>
+                </ng-select>
+                <div *ngIf="submitted && earningStatementForm.controls['quarter'].errors" class="invalid-feedback">
+                  <div *ngIf="earningStatementForm.controls['quarter'].errors['required']">Quarter is required</div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-md-5 d-flex align-end mt-4">
+            <button class="btn btn-primary" [disabled]="earningStatementForm.invalid">View Statement</button>
+          </div>
+        </div>
+      </form>
+    </div>
+</div>

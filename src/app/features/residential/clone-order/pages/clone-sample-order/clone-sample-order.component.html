@@ -1,0 +1,56 @@
+<div class="container">
+    <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>   
+    <h2 class="text-center mb-4">Clone A Sample Order</h2>
+    <div class="_card-container">
+        <div class="row">
+            
+            <div class="col-md-3 col-sm-6">   
+                <h4>Sample Order #</h4>             
+                <input type="text" placeholder="Type Here" class="form-control">
+            </div>
+            
+            <div class="col-md-3 col-sm-6">  
+                <h4>Territory Manager</h4>              
+                <ng-select placeholder="Select" class="mb-3">
+                    <ng-option>Jason D - 02 - A80</ng-option>
+                    <ng-option>Steven J - 01 - A80</ng-option>
+                    <ng-option>Thomas F - 03 - A80</ng-option>
+                </ng-select>
+            </div>
+            <div class="col-md-3 col-lg-3">
+                <h4>Account #</h4>
+                <input type="text" placeholder="Type Here" class="form-control">
+            </div>
+            <div class="col-md-3 col-lg-3 d-grid align-items-end mb-3">
+                <button class="btn btn-primary w-100 " routerLink="">Search
+                </button>
+            </div>
+        </div>
+        <div class="row show">
+            <div class="col-md-3 col-sm-6 col-xs-6 w-100 show-sub">  
+                <h4>Show</h4>     
+                <ng-select placeholder="Select" class="mb-3 new-claim">
+                    <ng-option>10</ng-option>
+                    <ng-option>15</ng-option>
+                    <ng-option>20</ng-option>
+                </ng-select>
+            </div>
+            
+        </div>
+            <div class="margin-top">
+                <ngx-table [configuration]="configuration" [data]="data" [columns]="columns">
+                    <div class="col-md-3 col-lg-3 d-grid align-items-end mb-3">
+                        <button class="btn btn-primary w-100 new-claim" routerLink="">Search
+                        </button>
+                    </div>
+                </ngx-table>
+                <div class="col-md-3 col-lg-3 d-grid align-items-end mb-3 mt-4 clone-btn">
+                    <button class="btn btn-primary w-100 " routerLink="">CLONE ORDER(S)
+                    </button>
+                </div>
+                <h3 class="text-center mt-4">1-6 OF 6 ORDERS</h3>
+            </div>
+        
+    </div>
+</div>
+

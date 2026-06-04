@@ -1,0 +1,175 @@
+<ng-container *ngIf="type == 'residential'">
+  <div class="card mb-3 shadow border-0" *ngFor="let item of list">
+    <div class="row g-0">
+      <div class="col-6">
+        <img [src]="item.icon" (click)="navigateToProductPage(item.viewLink)"
+       class="img-fluid rounded-start" />
+
+        <div class="card-img-overlay col-6 d-flex align-items-end overlay-text" *ngIf="item?.learnMore != ''">
+          <a href="{{ item.learnMore}}" target="_blank"
+          >
+          Learn More</a>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="card-body">
+          <h5 class="card-title mb-3">{{ item.title }}</h5>
+          <p class="card-text product-List-txt fw-light">
+            <a (click)="routeToPage(item.titleList1Link)" href="javascript:void(0)">{{ item.titleList1 }}</a>
+            <a (click)="routeToPage(item.titleList2Link)" href="javascript:void(0)">{{ item.titleList2 }}</a>
+            <a (click)="routeToPage(item.titleList3Link)" href="javascript:void(0)">{{ item.titleList3 }}</a>
+            <a (click)="routeToPage(item.titleList4Link)" href="javascript:void(0)">{{ item.titleList4 }}</a>
+            <a (click)="routeToPage(item.titleList5Link)" href="javascript:void(0)">{{ item.titleList5 }}</a>
+            <a (click)="routeToPage(item.titleList6Link)" href="javascript:void(0)">{{ item.titleList6 }}</a>
+            <a (click)="routeToPage(item.titleList7Link)" href="javascript:void(0)">{{ item.titleList7 }}</a>
+          </p>
+          <div class="d-flex align-items-end">
+            <a (click)="routeToPage(item.viewLink)" class="back-to"
+              >View All
+              <span class="mohawak-icon angle-right-icon back-i"></span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="type == 'residential_order_detail'">
+  <div class="card mb-3 shadow border-0">
+    <div class="row g-0">
+      <div class="col-6">
+        <img [src]="list?.imgUrl"  class="img-fluid rounded-start" />
+
+        <div class="card-img-overlay col-6 d-flex align-items-end overlay-text">
+          <a href="">Learn More</a>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="card-body">
+          <h5 class="card-title mb-3">{{ list?.name }}</h5>
+          <p class="card-text product-List-txt fw-light">
+            <ng-container  *ngFor="let item of list?.subNav ; let  i =index">
+              <a (click)="routeToPage(item?.pathForOrder)" *ngIf="i != (list.subNav.length -1)">{{ item.name }}</a>
+            </ng-container>
+           
+           
+           
+          </p>
+          <div class="d-flex align-items-end">
+            <a (click)="routeToPage(list.subNav[list.subNav.length -1].pathForOrder)" class="back-to"
+              >View All
+              <span class="mohawak-icon angle-right-icon back-i"></span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="type == 'commercial'">
+
+  <div class="card mb-3 shadow border-0" *ngFor="let item of list">
+    <div class="row g-0">
+      <div class="col-6">
+        <img [src]="item.icon" (click)="navigateToProductPage(item.viewLink)"
+       class="img-fluid rounded-start" />
+
+        <div class="card-img-overlay col-6 d-flex align-items-end overlay-text" *ngIf="item?.learnMore != ''">
+          <a href="{{ item.learnMore}}" target="_blank"
+          >
+          Learn More</a>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="card-body">
+          <h5 class="card-title mb-3">{{ item.title }}</h5>
+          <p class="card-text product-List-txt fw-light">
+            <a (click)="routeToPage(item.titleList1Link)">{{ item.titleList1 }}</a>
+            <a (click)="routeToPage(item.titleList2Link)">{{ item.titleList2 }}</a>
+            <a (click)="routeToPage(item.titleList3Link)">{{ item.titleList3 }}</a>
+            <a (click)="routeToPage(item.titleList4Link)">{{ item.titleList4 }}</a>
+            <a (click)="routeToPage(item.titleList5Link)">{{ item.titleList5 }}</a>
+            <a (click)="routeToPage(item.titleList6Link)">{{ item.titleList6 }}</a>
+            <a (click)="routeToPage(item.titleList7Link)">{{ item.titleList7 }}</a>
+          </p>
+          <div class="d-flex align-items-end">
+            <a (click)="routeToPage(item.viewLink)" class="back-to"
+              >View All
+              <span class="mohawak-icon angle-right-icon back-i"></span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- <table >
+    <tr>
+      <th class="text-center w-100">{{ list?.title }}</th>
+    </tr>
+    <tr *ngFor="let item of list?.subitems">
+      <td>
+        <a
+        (click)="routeToPage(item?.path)"
+          [ngStyle]="{ 'font-weight': 'bold' }"
+          
+          >{{ item?.name }}</a
+        ><br />
+       
+      </td>
+    </tr>
+  </table> -->
+</ng-container>
+<!-- <ng-container *ngIf="type == 'commercial_order_detail'">
+  <table >
+    <tr>
+      <th class="text-center w-100">{{ list?.name }}</th>
+    </tr>
+    <tr *ngFor="let item of list?.subNav">
+      <td>
+        <a
+        (click)="routeToPage(item?.pathForOrder)"
+          [ngStyle]="{ 'font-weight': 'bold' }"
+          
+          >{{ item?.name }}</a
+        ><br />
+       
+      </td>
+    </tr>
+  </table>
+</ng-container> -->
+<ng-container *ngIf="type == 'commercial_order_detail'">
+  <div class="card mb-3 shadow border-0">
+    <div class="row g-0">
+      <div class="col-6">
+        <img [src]="list?.imgUrl"  class="img-fluid rounded-start" />
+
+        <div class="card-img-overlay col-6 d-flex align-items-end overlay-text">
+          <a href="">Learn More</a>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="card-body">
+          <h5 class="card-title mb-3">{{ list?.name }}</h5>
+          <p class="card-text product-List-txt fw-light">
+            <ng-container  *ngFor="let item of list?.subNav ; let  i =index">
+              <a (click)="routeToPage(item?.pathForOrder)" *ngIf="i != (list.subNav.length -1)">{{ item.name }}</a>
+            </ng-container>
+           
+           
+           
+          </p>
+          <div class="d-flex align-items-end">
+            <a (click)="routeToPage(list.subNav[list.subNav.length -1].pathForOrder)" class="back-to"
+              >View All
+              <span class="mohawak-icon angle-right-icon back-i"></span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

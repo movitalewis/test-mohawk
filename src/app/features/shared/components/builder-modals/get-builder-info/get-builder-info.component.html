@@ -1,0 +1,143 @@
+<app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+
+<div class="modal-header text-center">
+  <div class="w-100">
+    <h4 class="modal-title">Builder</h4>
+    <p class="m-0 text-white-50">Step 1 of 4</p>
+  </div>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="closePopupUsingService('builder-info')"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <ng-container *ngIf="showErrorMessage">
+    <div class="mb-3" *ngFor="let item of errorMessage">
+      <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+        <div class="container">
+          {{ item?.message }}
+        </div>
+      </alert>
+    </div>
+  </ng-container>
+  <div class="text-center">
+    <div class="mt-0 mb-4">
+      <div class="row mb-2 full-btns p-50">
+        <div class="col-lg-5 col-md-8">
+          <xchange-search-control
+            #builderSearchRef
+            [isGlobalSearchEnabled]="false"
+            placeholder="Search Builder"
+            [searchKey]="searchText"
+            (input)="onSearch($event)"
+          ></xchange-search-control>
+        </div>
+      </div>
+      <div class="overflow-auto">
+      <ngx-table
+        [configuration]="configuration"
+        [data]="
+        builderOrderDetails
+          | paginate
+            : {
+                id: 'pg1',
+                itemsPerPage: tableItemsSize,
+                currentPage: pageIndex,
+                totalItems: totalBuildersLength
+              }
+      "
+        [columns]="builderColumns"
+        [noResultsTemplate]="noResultsTemplate"
+        [loadingTemplate]="tableLoader"
+      >
+        <ng-template let-row let-index="index">
+          <td>
+            <xchange-custom-radio
+              [type]="'radio'"
+              [id]="'builder-' + index"
+              [checked]="selectedBuilder?.builderNumber == row?.builderNumber"
+              [value]="row"
+              (change)="getSelctedVal($event, row)"
+            ></xchange-custom-radio>
+          </td>
+          <td>
+            <p>
+              {{ row?.builderName | titlecase }}
+            </p>
+          </td>
+          <td>
+            <p>{{ row?.builderCity | titlecase }}</p>
+          </td>
+          <td>
+            <p>{{ row?.builderState | titlecase }}</p>
+          </td>
+        </ng-template>
+      </ngx-table>
+      </div>
+      <div class="mb-3 mt-3" *ngIf="builderMigrated && ! isSampleOrder">
+        <alert type="danger" class="dashboard-page-alert" >
+          <div class="container">
+            The selected Builder is Already Migrated, Please login to Builder Xchange.
+          </div>
+        </alert>
+      </div>
+      <div class="row my-3">
+        <div class="d-flex justify-content-center" *ngIf="builderOrderDetails.length > 0">
+          <pagination-controls
+            id="pg1"
+            [maxSize]="5"
+            [responsive]="true"
+            [nextLabel]="''"
+            [previousLabel]="''"
+            (pageChange)="onTableDataChange($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div class="col-md-12">
+          <p class="text-center mb-0">
+            {{ totalBuildersLength > 0 ? (startValue > totalBuildersLength ? 1 : startValue) : 0 }} -
+            {{ lastValue > totalBuildersLength ? totalBuildersLength : lastValue }}
+            OF {{ totalBuildersLength > 0 ? totalBuildersLength : 0 }} Builders
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center mt-3">
+    <div class="col-md-3">
+      <button
+        class="btn btn-outline-secondary w-100 mb-3"
+        (click)="closePopupUsingService('builder-info')"
+      >
+        BACK
+      </button>
+    </div>
+    <!--  -->
+    
+    <div class="col-md-3">
+      <button
+        class="btn btn-primary w-100 mb-3"
+        (click)="openBuilderDivision()"
+        [disabled]=" (isSampleOrder ? !selectedBuilder : !(selectedBuilder && !builderMigrated)) || disabledContinueBtn || totalBuildersLength == 0"
+      >
+        CONTINUE
+      </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #noResultsTemplate>
+  <td *ngIf="configuration?.isLoading == false" [attr.colspan]="builderColumns?.length" class="text-center">
+    No Result
+  </td>
+</ng-template>
+
+<ng-template #tableLoader>
+  <td *ngIf="configuration?.isLoading == true" [attr.colspan]="builderColumns.length" class="no-results text-center">
+    <div class="loader">Loading...</div>
+  </td>
+</ng-template>

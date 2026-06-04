@@ -1,0 +1,102 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+@import 'src/styles/mixins/box-shadow.mixin';
+
+.p-50{
+    padding: 0 30px;
+    @include breakpoint-range($max: sm) {
+        padding: 0 10px;
+    }
+}
+.modal-hide {
+  display: none !important;
+}
+.fs-12{
+    font-size: 12px;
+}
+.btn{
+    margin: 0 10px;
+    @include breakpoint-range($max: xs) {
+        margin: 0 10px;
+    }
+}
+::ng-deep {
+    .sorting-arrow {
+      .pointer {
+        position: relative;
+        display: block !important;
+        &::after {
+          content: "";
+          width: 22px;
+          height: 22px;
+          background: url("../../../../../../assets/icons/sort.png") no-repeat;
+          top: 14px;
+          bottom: 0px;
+          right: 0px;
+          position: absolute;
+          display: inline-block;
+        }
+        .ngx-table__header-title {
+          .ngx-icon {
+            display: none;
+          }
+        }
+      }
+    }
+    .sorting-arrow-active {
+      .pointer {
+        position: relative;
+        display: block !important;
+        &::after {
+          content: "";
+          width: 22px;
+          height: 22px;
+          background: url("../../../../../../assets/icons/sort-ascending-icon.svg")
+            no-repeat;
+          top: 8px;
+          bottom: 0px;
+          right: 0px;
+          position: absolute;
+          display: inline-block;
+          -webkit-transform: scaleY(-1);
+          transform: scaleY(-1);
+        }
+        .ngx-table__header-title {
+          .ngx-icon {
+            display: none;
+          }
+        }
+      }
+    }
+    .sorting-arrow-down-icon {
+      .pointer {
+        position: relative;
+        display: block !important;
+        &::after {
+          content: "";
+          width: 22px;
+          height: 22px;
+          background: url("../../../../../../assets/icons/sort-descending-icon.svg")
+            no-repeat;
+          top: 14px;
+          bottom: 0px;
+          right: 0px;
+          position: absolute;
+          display: inline-block;
+          // -webkit-transform: scaleY(-1);
+          // transform: scaleY(-1);
+        }
+        .ngx-table__header-title {
+          .ngx-icon {
+            display: none;
+          }
+        }
+      }
+    }
+    .ngx-table__header-title {
+      padding: 10px 25px 10px 10px;
+    }
+    .ngx-table__table--normal > thead > tr > th {
+      vertical-align: top;
+    }
+  }

@@ -1,0 +1,561 @@
+<!-- Modal Header -->
+<div class="modal-header text-center">
+  <h4 class="modal-title f-w">MANAGE DEDUCTIONS</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="closeModal()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<!-- Modal Body -->
+<div class="modal-body p-20">
+  <!-- Receivable Values -->
+   <div class="mb-2">
+    <app-alerts
+    class="mb-2"
+    [alertData]="alertData"
+    [alertType]="alertType"
+    *ngIf="showAlert"
+  ></app-alerts>
+   </div>
+ 
+  <div class="payment-details mb-3">
+    <ul>
+      <li>
+        <span>Document Id</span>
+        <p>{{ receivableData.documentNumber }}</p>
+      </li>
+      <li>
+        <span>Document Date</span>
+        <p>{{ receivableData.documentDate | date : "MM/dd/yyyy" }}</p>
+      </li>
+      <li>
+        <span>Open Amount ({{ priceLabel }})</span>
+        <!-- <p>{{receivableData.openAmount | currency: priceLabel :'symbol':'1.2-2'}}</p> -->
+        <p>
+          {{
+            receivableData.openAmount
+              | currency : priceLabel : "symbol" : "1.2-2"
+          }}
+        </p>
+      </li>
+      <li>
+        <span>Discounted ({{ priceLabel }})</span>
+        <p>
+          {{
+            receivableTotalDiscounted
+              | currency : priceLabel : "symbol" : "1.2-2"
+          }}
+        </p>
+      </li>
+      <li>
+        <span>Net Amount ({{ priceLabel }})</span>
+        <p>
+          <b>{{
+            receivableNetAmount | currency : priceLabel : "symbol" : "1.2-2"
+          }}</b>
+        </p>
+      </li>
+    </ul>
+  </div>
+  <!-- View / Edit Deductions -->
+  <div
+    class="add-deduction mb-4"
+    *ngFor="let deduction of receivableData.deductionEntries; let i = index"
+  >
+    <p>Deduction {{ i + 1 }}</p>
+    <!-- Desktop View -->
+    <div class="desk-view overflow-auto" *ngIf="editIndex !== i">
+      <ngx-table
+        [configuration]="tableConfig"
+        [data]="[deduction]"
+        [columns]="viewDeductionColumns"
+      >
+        <ng-template let-row>
+          <td>
+            <p>
+              {{ row.openAmount | currency : priceLabel : "symbol" : "1.2-2" }}
+            </p>
+          </td>
+          <td>
+            <p>
+              {{
+                row.deductionAmount | currency : priceLabel : "symbol" : "1.2-2"
+              }}
+            </p>
+          </td>
+          <td>
+            <p>
+              {{
+                row.netChargeAmount | currency : priceLabel : "symbol" : "1.2-2"
+              }}
+            </p>
+          </td>
+          <td>
+            <p>{{ expandDescription(row.deductionDescription) }}</p>
+          </td>
+          <td>
+            <p>{{ row.comments }}</p>
+          </td>
+          <td class="d-flex justify-content-between">
+            <button
+              class="btn btn-tbl-outline-secondary m-2"
+              (click)="setEditIndex(i)"
+            >
+              Edit
+            </button>
+            <button
+              class="btn btn-tbl-outline-primary m-2"
+              (click)="deleteDeduction(i)"
+            >
+              Delete
+            </button>
+          </td>
+        </ng-template>
+      </ngx-table>
+    </div>
+    <!-- Desktop Edit -->
+    <div class="desk-view" *ngIf="editIndex === i">
+      <form [formGroup]="editDeductionForm">
+        <ngx-table
+          [configuration]="tableConfig"
+          [data]="[deduction]"
+          [columns]="addDeductionColumns"
+        >
+          <ng-template let-row>
+            <td>
+              <b class="text-red">{{
+                row.openAmount | currency : priceLabel : "symbol" : "1.2-2"
+              }}</b>
+            </td>
+            <td>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="deductionAmount"
+                  (keypress)="deductionAmountKey($event)"
+                  (input)="updateNetCharge($event, row.openAmount, true)"
+                  step="0.01"
+                  [min]="0"
+                  [max]="row.openAmount - 0.01"
+                (blur)="checkDeductionAmount($event, row.openAmount)"
+                 required
+                />
+              </div>
+            </td>
+            <td>
+              {{
+                row.netChargeAmount
+                  | currency : priceLabel : "symbol" : "1.2-2" || "N/A"
+              }}
+            </td>
+            <td>
+              <ng-select
+                placeholder="Select a Deduction"
+                formControlName="deductionDescription"
+              >
+                <ng-option *ngFor="let d of descriptionList" [value]="d.value"
+                  >{{ d.label }}
+                </ng-option>
+              </ng-select>
+            </td>
+            <td>
+              <!-- <textarea type="text" placeholder="Enter Comments" rows="" cols=""></textarea> -->
+              <input
+                type="text"
+                placeholder="Enter Comments"
+                class="form-control"
+                formControlName="comments"
+                (keypress)="avoidSpaces($event)"
+                (paste)="handlePaste($event)"
+                maxlength="50"
+              />
+            </td>
+            <td class="d-flex justify-content-between">
+              <button
+                class="btn btn-tbl-outline-secondary m-2"
+                (click)="editIndex = undefined"
+                [disabled]="false"
+              >
+                Cancel
+              </button>
+              <button
+                class="btn btn-tbl-primary m-2"
+                (click)="editDeduction(i)"
+                [disabled]="isEditApplyButtonDisabled"
+              >
+                Apply
+              </button>
+            </td>
+          </ng-template>
+        </ngx-table>
+      </form>
+    </div>
+
+    <!-- Mobile View -->
+    <div class="add-deduction-mobile m-view mb-3" *ngIf="editIndex !== i">
+      <ul class="flex-direction-column">
+        <li>
+          <span>Open</span>
+          <div class="">
+            <p>
+              {{
+                deduction.openAmount
+                  | currency : priceLabel : "symbol" : "1.2-2"
+              }}
+            </p>
+          </div>
+        </li>
+        <li>
+          <span>Deduction</span>
+          <div class="">
+            <p>
+              {{
+                deduction.deductionAmount
+                  | currency : priceLabel : "symbol" : "1.2-2"
+              }}
+            </p>
+          </div>
+        </li>
+        <li>
+          <span>Net Charge</span>
+          <p>
+            {{
+              deduction.netChargeAmount
+                | currency : priceLabel : "symbol" : "1.2-2"
+            }}
+          </p>
+        </li>
+        <li>
+          <span>Description</span>
+          <div class="">
+            <p>{{ expandDescription(deduction.deductionDescription) }}</p>
+          </div>
+        </li>
+        <li>
+          <span>Comments</span>
+          <div class="">
+            <p>{{ deduction.comments }}</p>
+          </div>
+        </li>
+        <li>
+          <div class="btn-50">
+            <button
+              class="btn btn-tbl-outline-secondary"
+              (click)="setEditIndex(i)"
+            >
+              Edit
+            </button>
+            <button
+              class="btn btn-tbl-outline-primary me-2"
+              (click)="deleteDeduction(i)"
+            >
+              Delete
+            </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <!-- Mobile Edit -->
+    <div class="add-deduction-mobile m-view mb-3" *ngIf="editIndex === i">
+      <form [formGroup]="editDeductionForm">
+        <ul class="flex-direction-column">
+          <li>
+            <span>Open</span>
+            <div>
+              <b class="text-red">{{
+                deduction.openAmount
+                  | currency : priceLabel : "symbol" : "1.2-2"
+              }}</b>
+            </div>
+          </li>
+          <li class="d-flex flex-direction-row">
+            <div class="mr-10">
+              <span>Deduction</span>
+              <div>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    formControlName="deductionAmount"
+                    (keypress)="deductionAmountKey($event)"
+                    (input)="
+                      updateNetCharge($event, deduction.openAmount, false)
+                    "
+                    step="0.01"
+                    [max]="deduction.openAmount - 0.01"
+                    (blur)="checkDeductionAmount($event, deduction.openAmount)"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            <div>
+              <span>Net Charge</span>
+              <div>
+                <p>
+                  {{
+                    deduction.netChargeAmount
+                      | currency : priceLabel : "symbol" : "1.2-2" || "N/A"
+                  }}
+                </p>
+              </div>
+            </div>
+          </li>
+          <li>
+            <span>Description</span>
+            <div>
+              <ng-select
+                placeholder="Select a Deduction"
+                formControlName="deductionDescription"
+              >
+                <ng-option *ngFor="let d of descriptionList" [value]="d.value"
+                  >{{ d.label }}
+                </ng-option>
+              </ng-select>
+            </div>
+          </li>
+          <li>
+            <span>Comments</span>
+            <div>
+              <input
+                type="text"
+                placeholder="Enter Comments"
+                class="form-control"
+                formControlName="comments"
+                (keypress)="avoidSpaces($event)"
+                (paste)="handlePaste($event)"
+                maxlength="50"
+              />
+            </div>
+          </li>
+          <li>
+            <div class="text-center">
+              <button
+                class="btn btn-tbl-outline-secondary m-2"
+                (click)="editIndex = undefined"
+                [disabled]="false"
+              >
+                Cancel
+              </button>
+              <button
+                class="btn btn-tbl-primary m-2"
+                (click)="editDeduction(i)"
+                [disabled]="isEditApplyButtonDisabled"
+              >
+                Apply
+              </button>
+            </div>
+          </li>
+        </ul>
+      </form>
+    </div>
+  </div>
+  <!-- Add Deduction Form -->
+  <div class="add-deduction mb-2" *ngIf="showAddDeduction">
+    <p>Deduction {{ receivableData?.deductionEntries?.length + 1 || 1 }}</p>
+    <!-- Desktop Add Deduction Form -->
+    <div class="desk-view">
+      <form [formGroup]="addDeductionForm">
+        <ngx-table
+          [configuration]="tableConfig"
+          [data]="[addDeductionData]"
+          [columns]="addDeductionColumns"
+        >
+          <ng-template let-row>
+            <td>
+              <b class="text-red">{{
+                row.openAmount | currency : priceLabel : "symbol" : "1.2-2"
+              }}</b>
+            </td>
+            <td>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="deductionAmount"
+                  (keypress)="deductionAmountKey($event)"
+                  (input)="updateNetCharge($event, row.openAmount, false)"
+                  step="0.01"
+                  [min]="0"
+                  [max]="row.openAmount - 0.01"
+                (blur)="checkDeductionAmount($event, row.openAmount)"
+                  required
+                />
+              </div>
+            </td>
+            <td>
+              {{
+                addDeductionData.netChargeAmount
+                  | currency : priceLabel : "symbol" : "1.2-2" || "N/A"
+              }}
+            </td>
+            <td>
+              <ng-select
+                placeholder="Select a Deduction"
+                formControlName="deductionDescription"
+              >
+                <ng-option *ngFor="let d of descriptionList" [value]="d.value"
+                  >{{ d.label }}
+                </ng-option>
+              </ng-select>
+            </td>
+            <td>
+              <!-- <textarea type="text" placeholder="Enter Comments" rows="" cols=""></textarea> -->
+              <input
+                type="text"
+                placeholder="Enter Comments"
+                class="form-control"
+                formControlName="comments"
+                (keypress)="avoidSpaces($event)"
+                (paste)="handlePaste($event)"
+                maxlength="50"
+              />
+            </td>
+            <td>
+              <button
+                class="btn btn-tbl-primary"
+                (click)="addDeduction()"
+                [disabled]="isApplyButtonDisabled"
+              >
+                Apply
+              </button>
+            </td>
+          </ng-template>
+        </ngx-table>
+      </form>
+    </div>
+    <!-- Mobile Add Deduction Form -->
+    <div class="add-deduction-mobile m-view mb-3">
+      <form [formGroup]="addDeductionForm">
+        <ul class="flex-direction-column">
+          <li>
+            <span>Open</span>
+            <div>
+              <b class="text-red">{{
+                addDeductionData.openAmount
+                  | currency : priceLabel : "symbol" : "1.2-2"
+              }}</b>
+            </div>
+          </li>
+          <li class="d-flex flex-direction-row">
+            <div class="mr-10">
+              <span>Deduction</span>
+              <div>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    formControlName="deductionAmount"
+                    (keypress)="deductionAmountKey($event)"
+                    (input)="
+                      updateNetCharge(
+                        $event,
+                        addDeductionData.openAmount,
+                        false
+                      )
+                    "
+                    style="width: 150px"
+                    step="0.01"
+                    [min]="0"
+                    [max]="addDeductionData.openAmount - 0.01"
+                (blur)="checkDeductionAmount($event, addDeductionData.openAmount)"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            <div>
+              <span>Net Charge</span>
+              <div class="d-flex flex-direction-column justify-content-center">
+                <p class="mt-2">
+                  {{
+                    addDeductionData.netChargeAmount
+                      | currency : priceLabel : "symbol" : "1.2-2" || "N/A"
+                  }}
+                </p>
+              </div>
+            </div>
+          </li>
+          <li>
+            <span>Description</span>
+            <div>
+              <ng-select
+                placeholder="Select a Deduction"
+                formControlName="deductionDescription"
+              >
+                <ng-option *ngFor="let d of descriptionList" [value]="d.value"
+                  >{{ d.label }}
+                </ng-option>
+              </ng-select>
+            </div>
+          </li>
+          <li>
+            <span>Comments</span>
+            <div>
+              <input
+                type="text"
+                placeholder="Enter Comments"
+                class="form-control"
+                formControlName="comments"
+                (keypress)="avoidSpaces($event)"
+                (paste)="handlePaste($event)"
+                maxlength="50"
+              />
+            </div>
+          </li>
+          <li>
+            <div class="text-center">
+              <button
+                class="btn btn-primary m-2"
+                (click)="addDeduction()"
+                [disabled]="isApplyButtonDisabled"
+              >
+                Apply
+              </button>
+            </div>
+          </li>
+        </ul>
+      </form>
+    </div>
+  </div>
+  <!-- Bottom Buttons -->
+  <div class="p-20 mt-4 mb-4">
+    <div class="d-flex justify-content-center btn-full-width">
+      <button
+        class="btn btn-primary mr-10"
+        (click)="showAddDeduction = true"
+        [disabled]="isAddNewDeductionDisabled || showAddDeduction"
+      >
+        <div class="d-flex">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 31.5 31.5"
+          >
+            <path
+              id="Icon_awesome-plus"
+              data-name="Icon awesome-plus"
+              d="M29.25,14.625H19.125V4.5a2.25,2.25,0,0,0-2.25-2.25h-2.25a2.25,2.25,0,0,0-2.25,2.25V14.625H2.25A2.25,2.25,0,0,0,0,16.875v2.25a2.25,2.25,0,0,0,2.25,2.25H12.375V31.5a2.25,2.25,0,0,0,2.25,2.25h2.25a2.25,2.25,0,0,0,2.25-2.25V21.375H29.25a2.25,2.25,0,0,0,2.25-2.25v-2.25A2.25,2.25,0,0,0,29.25,14.625Z"
+              transform="translate(0 -2.25)"
+            />
+          </svg>
+          <p class="m-0">Add New Deduction</p>
+        </div>
+      </button>
+      <div class="vr desk-view mr-10"></div>
+      <button class="btn btn-secondary" (click)="closeModal()">
+        Back to Payments
+      </button>
+    </div>
+  </div>
+</div>

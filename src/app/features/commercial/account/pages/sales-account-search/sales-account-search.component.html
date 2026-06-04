@@ -1,0 +1,262 @@
+<app-loader *ngIf="spinnerLoading"></app-loader>
+<div class="container" #scrollToTop>
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <h2 class="text-center mb-4">ACCOUNTS</h2>
+  <div class="_card-container mt-5">
+    <!-- Filter By Section -->
+    <div class="row">
+      <h2 class="filter-by-widget-text">Filter By</h2>
+      <ng-container *ngIf="!CamCustomer">
+        <div
+          class="col-md-4 mt-3 mb-4 m-btn-0"
+          *ngFor="let account of salesHierarchyList; let index = index"
+        >
+        <h4>
+          <!-- [class.disabledRole] ="isSalesOps ? false : (index != 0 && !selectedFilter[salesHierarchyList[index-1]?.key]) " -->
+          {{
+            account?.key == "TM"
+              ? "Territory Manager"
+              : account?.key == "DM"
+              ? "District Manager"
+              : account?.key == "SVP"
+              ? "Senior Vice President"
+              : "Regional Vice President"
+          }}
+        </h4>
+        <div class="col-12">
+          <ng-select
+            (change)="getSalesList($event, account?.key)"
+            [(ngModel)]="selectedFilter[account?.key]"
+            placeholder="Select Option"
+            [clearable]="false"
+          >
+          <!-- [disabled]="isSalesOps ? false : (index != 0 && !selectedFilter[salesHierarchyList[index-1]?.key])" -->
+          <!-- [class.disabledRole] =" isSalesOps ? false : (index != 0 && !selectedFilter[salesHierarchyList[index-1]?.key]) "           -->
+          <!-- (change)="$event ? getSalesList($event, account?.key) : ''" -->
+          <!-- [clearable]="isSalesOps ? true : (index == 0 && (account?.key == 'SVP' || account?.key == 'RVP' || account?.key == 'DM' || account?.key == 'TM')) ? false : true" -->
+          <!-- placeholder="{{
+            isSalesOps ? 
+            (account?.key == 'TM' ? ( (selectedFilter['SVP'] || selectedFilter['RVP'] || selectedFilter['DM']) ? 'All Territory Manager' : 'Select Territory Manager')
+              : (account?.key == 'DM'
+              ? ( (selectedFilter['SVP'] || selectedFilter['RVP']) ? 'All District Manager' : 'Select District Manager')
+              : (account?.key == 'RVP'
+              ? (selectedFilter['SVP'] ?'All RVP Manager': 'Select RVP Manager')
+              : 'Select SVP Manager'))) :
+            (account?.key == 'TM'
+              ? 'All Territory Manager'
+              : account?.key == 'DM'
+              ? 'All District Manager'
+              : account?.key == 'SVP'
+              ? 'All SVP Manager'
+              : 'All RVP Manager')
+          }}" -->
+            <ng-option value="All"> {{account?.key == 'TM'
+              ? "Select All TM's"
+              : account?.key == 'DM'
+              ? "Select All DM's"
+              : account?.key == 'SVP'
+              ? "Select All SVP's"
+              : "Select All RVP's"}}</ng-option>
+              <ng-option
+                [value]="salesHierchy?.salesHierarchyCode"
+                *ngFor="
+                  let salesHierchy of account.value
+                    .salesHierarchyUserAssignmentList
+                "
+                >{{ salesHierchy?.salesManDescription }} -
+                {{ salesHierchy?.salesHierarchyCode }}</ng-option
+              >
+            </ng-select>
+          </div>
+        </div>
+        <div class="col-md-4 mt-3 mb-4 m-btn-0" *ngFor="let account of salesHierarchyListMGR; let index = index">
+          <h4> Sales Manager </h4>
+          <div class="col-12">
+            <ng-select
+              (change)="getSalesList($event, account?.key)"
+              [(ngModel)]="selectedFilter[account?.key]"
+              placeholder="Select Option"
+              [clearable]="false"
+            >
+              <ng-option value="All"> Select All Sales Manager</ng-option>
+              <ng-option
+                [value]="salesHierchy?.salesHierarchyCode"
+                *ngFor="
+                  let salesHierchy of account.value
+                    .salesHierarchyUserAssignmentList
+                "
+                >{{ salesHierchy?.salesManDescription }} -
+                {{ salesHierchy?.salesHierarchyCode }}</ng-option
+              >
+            </ng-select>
+          </div>
+        </div>
+      </ng-container>
+      <div class="col-md-4 mt-3 mb-3 m-btn-0">
+        <h4>Account Search</h4>
+        <xchange-search-control
+          [isGlobalSearchEnabled]="false"
+          (input)="onSearchAccount($event)"
+          placeholder="Account Name or #"
+          [searchKey]="searchText"
+        >
+        </xchange-search-control>
+      </div>
+
+      <div class="col-12">
+        <app-loader *ngIf="spinnerLoading"></app-loader>
+        <div class="row overflow-auto" *ngIf="!CamCustomer">
+          <div class="page-size-container col-md-12 text-end mb-3">
+            <label for="pageSize" class="page-size-label">Show</label>
+            <select
+              id="pageSize"
+              class="page-size-dropdown"
+              [ngModel]="tableItemsSize"
+              (change)="onPageSizeChange($event.target)"
+            >
+              <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+            </select>
+          </div>
+          <ngx-table
+            [configuration]="configuration"
+            [data]="
+              data
+                | paginate
+                  : {
+                      id: 'accountListPagination',
+                      itemsPerPage: tableItemsSize,
+                      currentPage: currentPage,
+                      totalItems: totalRecords
+                    }
+            "
+            [columns]="columns"
+            [noResultsTemplate]="noResultsTemplate1"
+            [loadingTemplate]="tableLoader"
+            (event)="onsort($event)"
+          >
+            <ng-template let-row>
+              <td>
+                <a (click)="selectCamCustomerClick(row)">
+                  {{ formatAccount(row.uid) }}
+                </a>
+              </td>
+              <td>
+                {{ row.camsAccountNumber }} 
+              </td>
+              <td>
+                {{ row.customerName }}
+              </td>
+              <td>
+                {{ row.formattedAddress }}
+              </td>
+              <td>{{ row.phoneNumber }}</td>
+            </ng-template>
+          </ngx-table>
+          <div class="row mb-4 mt-4" *ngIf="data.length > 0  && !configuration.isLoading">
+            <div class="d-flex justify-content-center">
+              <pagination-controls
+              id="accountListPagination"
+              [responsive]="true"
+              [currentPage]="currentPage"
+              [nextLabel]="''"
+              [previousLabel]="''"
+              (pageChange)="onTableDataChange(searchRequestPayload, $event)"
+            ></pagination-controls>
+            </div>
+          </div>
+        </div>
+        <ng-container *ngIf="CamCustomer">
+          <div class="overflow-auto mt-0">
+            <div class="page-size-container col-md-12 text-end mb-3">
+              <label for="pageSize" class="page-size-label">Show</label>
+              <select
+                id="pageSize"
+                class="page-size-dropdown"
+                [ngModel]="camsPageSize"
+                (change)="onCamsPageSizeChange($event.target)"
+              >
+                <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+              </select>
+            </div>
+            <ngx-table
+              [configuration]="configuration"
+              [data]="
+                customerBaseData
+                  | paginate
+                    : {
+                        id: 'pg1',
+                        itemsPerPage: camsPageSize,
+                        currentPage: pageIndex1,
+                        totalItems: customerBaseLength
+                      }
+              "
+              [columns]="legacycolumns"
+            >
+              <ng-template let-row>
+                <td>
+                  <a (click)="checkForPassKeyRequired(row)">
+                    {{formatAccount(row.customerNumber) }}
+                  </a>
+                </td>
+                <!-- <td>
+                  {{ row.companyCode }}
+                </td> -->
+                  <td>
+                    {{ row.accountNumber }}.{{ row.suffix }}
+                </td>
+                <!-- <td>
+                  {{ row.storeNumber }}
+                </td> -->
+                <td>
+                  {{ row.accountName }} <br />{{
+                    row.addressLine2 ? row.addressLine2 : ""
+                  }}
+                  {{ row.addressLine1 }}
+                </td>
+                <td>
+                  {{ row.city }}, {{ row.state }}, {{ row.zip }}.
+                  <a href="tel:{{ row.phone }}">
+                    <p>
+                      {{ row.phone | slice : 0 : 3 }}-{{
+                        row.phone | slice : 3 : 6
+                      }}-{{ row.phone | slice : 6 : 10 }}
+                    </p>
+                  </a>
+                </td>
+              </ng-template>
+            </ngx-table>
+          </div>
+        
+        <div class="row mb-4 mt-4" *ngIf="customerBaseLength > 0">
+          <div class="d-flex justify-content-center mx-auto">
+            <pagination-controls
+              id="pg1"
+              [responsive]="true"
+              [nextLabel]="''"
+              [previousLabel]="''"            
+              (pageChange)="onPageChangeEvent($event)"
+            >
+            </pagination-controls>
+          </div>
+        </div>
+      </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #noResultsTemplate1>
+  <td
+    *ngIf="configuration.isLoading == false"
+    [attr.colspan]="columns.length"
+    class="no-results text-center"
+  >
+    No Result
+  </td>
+</ng-template>
+
+<ng-template #tableLoader>
+  <td *ngIf="configuration.isLoading==true" [attr.colspan]="columns.length" class="no-results text-center">
+    <div class="loader">Loading...</div>
+  </td>
+</ng-template>

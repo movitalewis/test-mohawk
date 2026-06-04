@@ -1,0 +1,177 @@
+<div class="modal-header text-center">
+    <h4 class="modal-title f-w">MANAGE DEDUCTIONS</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="onHideModal()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+</div>
+<div class="modal-body p-20">
+    <div class="payment-details mb-3">
+        <ul>
+            <li>
+                <span>Document Id</span>
+                <p>C109232123</p>
+            </li>
+            <li>
+                <span>Document Date</span>
+                <p>08/02/2022</p>
+            </li>
+            <li>
+                <span>Open Amount (USD)</span>
+                <p>$98.12</p>
+            </li>
+            <li>
+                <span>Discounted (USD</span>
+                <p>$0.00</p>
+            </li>
+            <li>
+                <span>Net Amount (USD)</span>
+                <p><b>$83.12</b></p>
+            </li>
+        </ul>
+    </div>
+    <div class="add-deduction mb-4">
+        <p>Deduction 1</p>
+        <div class="desk-view">
+            <ngx-table [configuration]="configuration2" [data]="data2" [columns]="col2">
+                <ng-template let-row>
+                    <td>
+                        <p>{{ row.open1 }}</p>
+                    </td>
+                    <td>
+                        <p>{{ row.deduction1 }}</p>
+
+                    </td>
+                    <td>
+                        <p>{{ row.netCharge1 }}</p>
+                    </td>
+                    <td>
+                        <p>{{row.description1 }}</p>
+                    </td>
+                    <td>
+                        <p>{{ row.comments1 }}</p>
+                    </td>
+                    <td>
+                        {{ row.action }}
+                        <button class="btn btn-tbl-outline-secondary mb-2">Edit</button>
+                        <button class="btn btn-tbl-outline-primary me-2">Delete</button>
+                    </td>
+                </ng-template>
+            </ngx-table>
+        </div>
+
+        <div class="add-deduction-mobile m-view mb-3">
+            <ul>
+                <li>
+                    <span>Open</span>
+                    <div class="">
+                        <p>$83.12</p>
+                    </div>
+
+                </li>
+                <li>
+                    <span>Deduction</span>
+                    <div class="">
+                        <p>$15.00</p>
+                    </div>
+                </li>
+                <li>
+                    <span>Net Charge</span>
+                    <p>N/A</p>
+                </li>
+                <li>
+                    <span>Description</span>
+                    <div class="">
+                        <p>Fuel Surcharge</p>
+                    </div>
+                </li>
+                <li>
+                    <span>Comments</span>
+                    <div class="">
+                        <p>Freight fuel difference</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="btn-50">
+                        <button class="btn btn-tbl-outline-secondary">Edit</button>
+                        <button class="btn btn-tbl-outline-primary me-2">Delete</button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="add-deduction mb-2">
+        <p>Add New Deduction</p>
+        <div class="desk-view">
+            <ngx-table [configuration]="configuration2" [data]="data1" [columns]="col1">
+                <ng-template let-row>
+
+                    <td>
+                        <b class="text-red">{{ row.open }}</b>
+                    </td>
+                    <td>
+                        {{ row.deduction }}
+                        <input type='text' placeholder='Enter Amount' class='form-control'>
+                    </td>
+                    <td>
+                        {{ row.netCharge }}
+                    </td>
+                    <td>
+                        <ng-select placeholder="Fuel surchange">
+                            <ng-option>{{ row.description }} </ng-option>
+                        </ng-select>
+                    </td>
+                    <td>
+                        {{ row.comments }}
+                        <input type='text' placeholder='Enter Comments' class='form-control'>
+                    </td>
+
+                </ng-template>
+
+            </ngx-table>
+        </div>
+        <div class="add-deduction-mobile m-view mb-3">
+            <ul>
+                <li>
+                    <span>Open</span>
+                    <div class="">
+                        <b class="text-red">$83.12</b>
+                    </div>
+
+                </li>
+                <li>
+                    <span>Deduction</span>
+                    <div class="">
+                        <input type='text' placeholder='Enter Amount' class='form-control'>
+                    </div>
+                </li>
+                <li>
+                    <span>Net Charge</span>
+                    <p>N/A</p>
+                </li>
+                <li>
+                    <span>Description</span>
+                    <div class="">
+                        <ng-select placeholder="Fuel surchange">
+                            <ng-option></ng-option>
+                        </ng-select>
+                    </div>
+                </li>
+                <li>
+                    <span>Comments</span>
+                    <div class="">
+                        <input type='text' placeholder='Enter Comments' class='form-control'>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+
+    <div class="p-20 mt-4 mb-4">
+        <div class="text-center btn-full-width">
+            <button class="btn btn-outline-secondary mr-10">Back to Payments</button>
+            <button class="btn btn-primary ">Save/Add Additional Deductions</button>
+        </div>
+    </div>
+</div>

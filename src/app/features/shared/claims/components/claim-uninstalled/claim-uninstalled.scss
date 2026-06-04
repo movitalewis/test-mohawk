@@ -1,0 +1,17 @@
+.invoice-list-card {
+  .card-header {
+    padding: 0px 15px 0px 10px;
+    .column {
+      padding: 10px;
+      &:first-child {
+        background: #202020;
+        border-radius: 5px 0 0 0px;
+        p,
+        h4 {
+          color: white;
+        }
+      }
+    }
+  }
+}
+

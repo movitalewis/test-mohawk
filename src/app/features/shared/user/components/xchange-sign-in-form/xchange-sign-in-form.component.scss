@@ -1,0 +1,78 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+
+.sign-in-form {
+  width: 440px;
+  max-width: 100%;
+
+  @include breakpoint-range($max: lg) {
+    width: 100%;
+  }
+}
+
+.sign-up-link {
+  font-size: 14px;
+
+  span {
+    font-weight: 700;
+    color: $color-red;
+  }
+}
+
+@include breakpoint-range($max: lg) {
+  .submit-btn {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .form-fields-container {
+    background: $color-white;
+    padding: 20px;
+    border: 1px solid $color-gray;
+    margin-bottom: 20px;
+  }
+}
+
+.form-control.error,
+.form-control:invalid,
+.form-control.ng-invalid.ng-pristine,
+.form-control.ng-invalid:focus {
+  border: 1px solid $color-gray;
+  color: $color-light-black;
+}
+.form-control.ng-invalid.ng-touched:blur,
+.form-control.is-invalid {
+  border: 1px solid $color-red;
+  color: $color-red;
+}
+.footer-menu {
+  flex-wrap: wrap;
+
+  li {
+      a {
+          font-size: 16px;
+      }
+  }
+
+  @include breakpoint-range($max : xl) {
+      &>li {
+          margin-bottom: 5px;
+          width: 100%;
+
+          &>a {
+              border-right: none;
+          }
+      }
+  }
+}
+@include breakpoint-range($max : md) {
+  .registration-banner-footer {
+      display: none;
+  }
+}
+
+  .top-bar-menu-right > li > a
+  {
+      border-right: $color-dark-gray solid 1px;
+  }
+

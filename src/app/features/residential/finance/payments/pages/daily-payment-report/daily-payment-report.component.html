@@ -1,0 +1,101 @@
+<div class="container">
+    <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+    <h2 class="text-center mb-4">Daily Payment Report</h2>
+    <div class="row mb-4 mt-4 justify-content-center">
+        <div class="_card-container">
+            <div class="row mb-1 mt-1">
+                <div class="col-md-4">
+                    <h4>Schedule Date</h4>
+                    <input type="text" placeholder="Date" [bsConfig]="{ containerClass: 'theme-red' }"
+                        class="form-control" [formControl]="dateSelected" bsDatepicker />
+                </div>
+                <div class="col-md-8 align-end mt-4 statements_btn">
+                    <button class="btn btn-primary" (click)="viewReports()" [disabled]="!dateSelected.value">View
+                        Report</button>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <app-loader *ngIf="tableLoading"></app-loader>
+                <div class="col-md-12 col-lg-12">
+                    <ul class="table-ul">
+                        <li *ngFor="let payment of paymentsData; let i=index">
+                            <div class="list-header mb-4">
+                                <div class="d-flex">
+                                    <div class="b-t">
+                                        <div class="info-text">
+                                            <span>Date Scheduled</span>
+                                            <p>{{ payment.scheduledDate | date : 'MM/dd/yyyy, h:mm a' }}</p>
+                                        </div>
+                                        <div class="info-text">
+                                            <span>Mohawk Control Number</span>
+                                            <p>{{ payment.controlNumber }}</p>
+                                        </div>
+                                        <div class="info-text">
+                                            <span>Payment Total</span>
+                                            <p>{{ payment.total | currency:'USD' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="action">
+                                    <button type="button" class="btn" (click)="isCollapsed[i] = !isCollapsed[i]"
+                                        [disabled]="isDisabled(paymentsData)" [attr.aria-expanded]="!isCollapsed[i]">
+                                        <h4 *ngIf="!isCollapsed[i]"> Show Details <span
+                                                class="mohawak-icon angle-left-icon down-icon"></span></h4>
+                                        <h4 *ngIf="isCollapsed[i]"> Hide Details<span
+                                                class="mohawak-icon angle-left-icon up-icon"></span></h4>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="collapseBasic1-{{i}}" [collapse]="!isCollapsed[i]" [isAnimated]="true">
+                                <ngx-table [configuration]="configuration" [data]="[payment]" [columns]="columns">
+                                    <ng-template let-row>
+                                        <td>
+                                            {{ row.account?.length > 6 ? row.account?.substring(4) : row.account }}
+                                        </td>
+                                        <td>
+                                            {{ row.oblicationID }}
+                                        </td>
+                                        <td>
+                                            {{ row.openAmount | currency:'USD' }}
+                                        </td>
+                                        <td>
+                                            {{ setPositive(row.discountAmount) | currency:'USD' }}
+                                        </td>
+                                        <td>
+                                            {{ row.netAmount | currency:'USD' }}
+                                        </td>
+                                        <td>
+                                            {{ row.createdBy }}
+                                        </td>
+                                        <td>
+                                            {{ setDateFormat(row.createdDate) }}
+                                        </td>
+                                        <td>
+                                            {{ row.changedBy }}
+                                        </td>
+                                        <td>
+                                            {{ row.currency }}
+                                        </td>
+                                        <td class="text-danger" *ngIf="row?.deductions?.length===0 || !row?.deductions?.length">
+                                            No Deductions
+                                        </td>
+                                        <td class="text-danger" *ngIf="row?.deductions?.length>=1">
+                                            <a (click)="viewDeductions(viewDeductionsTemplate, row.deductions)" style="cursor: pointer;">
+                                                View Deductions
+                                            </a>
+                                        </td>
+                                    </ng-template>
+                                </ngx-table>
+                            </div>
+                        </li>
+                    </ul>
+                    <p class="text-center" *ngIf="paymentsData?.length===0">No Results Found</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- View Deductions Modal -->
+<ng-template #viewDeductionsTemplate>
+    <xchange-view-deductions [deductions]="selectedDeductions"></xchange-view-deductions>
+</ng-template>

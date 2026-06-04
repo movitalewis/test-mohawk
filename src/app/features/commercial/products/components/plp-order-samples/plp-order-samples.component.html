@@ -1,0 +1,742 @@
+<app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+<div [ngStyle]="spinnerLoading ? { display: 'none' } : {}">
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w text-center w-100">
+      Order Samples {{ initialState?.productCode }}
+    </h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="onHideModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-50">
+    <!-- <app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader> -->
+    <alert
+      type="{{ alert.type }}"
+      class="mb-3"
+      [dismissible]="true"
+      *ngIf="alert?.show"
+    >
+      <div class="container">{{ alert.message }}</div>
+    </alert>
+    <h4
+      class="text-center mb-4"
+      *ngIf="orderSamplesData.length == 0 && !spinnerLoading"
+    >
+      No data available
+    </h4>
+    <tabset
+      responsiveTabs
+      [justified]="true"
+      *ngIf="orderSamplesData.length > 0"
+    >
+    <div class="row col-md-10 col-xs-12 offset-md-1 offset-xs-0" *ngIf="this.orderSamplesData[tabId]?.key == 'Piece Samples'">
+      <div class="col-12 col-md-4 mt-3">
+        <ng-select
+          [(ngModel)]="searchBy"
+          (change)="onSearchBy($event)"
+          [clearable]="false"
+        >
+          <ng-option
+            [value]="value"
+            *ngFor="let value of searchByList"
+            >{{ value }}</ng-option
+          >
+        </ng-select>
+      </div>
+      <div class="col-12 col-md-8 mt-3">
+        <xchange-search-control 
+          [isGlobalSearchEnabled]="false"  
+          (input)="onSearch($event)"
+          [placeholder]="placeholder"
+          [searchKey]="searchkey"
+        ></xchange-search-control>
+      </div>
+      <div class="no-detail" *ngIf="orderSamplesData[tabId]?.value?.products?.length === 0">
+        <p>No results found for your search </p>
+        <h4>"{{searchkey}}"</h4>
+      </div>
+    </div>
+      <ng-container >
+        <tab
+        *ngFor="let item of orderSamplesData; let i = index"
+          class="tab-content"
+          (selectTab)="selectTab(i, item?.key)"
+           >
+          <ng-template tabHeading>{{ item?.key }}</ng-template>
+          <ng-container *ngIf="item?.key !== 'Architect Folders'">
+            <!-- <div class="row">
+        <div class="col-md-4">
+          <button _ngcontent-nke-c166="" class="btn btn-primary mb-2">
+            {{ item?.key }}
+          </button>
+        </div>
+      </div> -->
+            <div class="row pt-2"  *ngIf="item?.value?.products?.length > 0">
+              <div class="col-md-12">
+                <div class="samples-grid">
+                  <!-- <ul>
+              <li
+                *ngFor="let product of item?.value?.products"
+                (click)="
+                  selectedItemsCount(item?.value?.products) < 6
+                    ? onSelectItem(product)
+                    : (showSelectedItemsAlert = true)
+                "
+              >
+                <div class="sample-img" [class.selected]="product?.selected">
+                  <img
+                    [src]="
+                      item?.src ||
+                      'https://s7d4.scene7.com/is/image/Mohawkcommercial/missing'
+                    "
+                    alt=""
+                    class=""
+                  />
+                </div>
+                <h4>{{ product.sellingColorName || "NA" }}</h4>
+                <p>{{ product.sellingStyleId || "NA" }}</p>
+              </li>
+            </ul> -->
+                  <div class="product-varient-carousel mt-2">
+                    <owl-carousel-o
+                      [options]="customOptionsProducts"
+                      #owlCarNew
+                    >
+                      <ng-container
+                        *ngFor="
+                          let product of item?.value?.products;
+                          let t = index
+                        "
+                      >
+                        <ng-template carouselSlide [id]="'slide' + t">
+                          <div
+                            (click)="onSelectItem(product, item?.key)"
+                          >
+                            <div
+                              class="product-image"
+                              [class.activeSlide]="product?.selected"
+                            >
+                              <img
+                                [src]="
+                                product?.productImageURL && product?.productImageURL != '' && product?.productImageURL !='image/jpeg' 
+                                    ? getProductImage(product?.productImageURL) 
+                                    : 'https://s7d4.scene7.com/is/image/MohawkResidential/missing?$xchangeThumb$'
+                                "
+                                alt=""
+                                class=""
+                              />
+                              <img
+                                class="product-image-modal"
+                                (click)="
+                                  openLightBoxModal(
+                                    $event,
+                                    product?.productImageURL && product?.productImageURL != '' && product?.productImageURL !='image/jpeg' 
+                                      ? product?.productImageURL +
+                                          '?$xchangeThumb$'
+                                      : 'https://s7d4.scene7.com/is/image/MohawkResidential/missing?$xchangeThumb$'
+                                  )
+                                "
+                                src="/assets/images/icons/expand-icon-white.svg"
+                              />
+                            </div>
+                          </div>
+                          <div class="text-center">
+                            <span class="color-name">
+                              {{ product.sellingColorName || "NA" }} <br />
+                            </span>
+                            <span class="w-100 text-center d-block color-code">
+                              {{ product.sellingColorId || "NA" }}
+                            </span>
+                          </div>
+                        </ng-template>
+                      </ng-container>
+                    </owl-carousel-o>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <hr />
+            <alert
+              type="danger"
+              class="mb-3"
+              [dismissible]="true"
+              *ngIf="showSelectedItemsAlert"
+            >
+              <div class="container">You can select only 6 color boxes.</div>
+            </alert>
+            <div class="row mx-auto pt-2">
+              <div class="col-md-12 mb-2">
+                <h3>Selected Samples</h3>
+              </div>
+              <div class="row my-2" *ngIf="avilableMessage">
+                <alert type="danger" class="my-1" [dismissible]="true">
+                  <div class="container">{{ avilableMessage }}</div>
+                </alert>
+              </div>
+              <form class="row mx-auto" [formGroup]="reactiveForm">
+                <ng-container *ngFor="let product of item?.value?.products">
+                  <ng-container *ngIf="product?.selected == true">
+                    <div class="col-md-6">
+                      <div class="selected-sample">
+                        <!-- <app-loader
+                          [fullScreen]="true"
+                          *ngIf="product?.spinnerLoading"
+                        ></app-loader> -->
+                        <a
+                          class="close"
+                          (click)="onSelectItem(product, item?.key)"
+                          >x</a
+                        >
+                        <ng-container *ngIf="product?.spinnerLoading">
+                          <div
+                            class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-8 my-4 mx-auto"
+                          >
+                            <div
+                              class="spinner-border mx-auto d-flex align-items-center searchspinner"
+                              role="searchstatus"
+                              aria-hidden="true"
+                            ></div>
+                          </div>
+                        </ng-container>
+                        <ng-container *ngIf="!product?.spinnerLoading">
+                          <p *ngIf="">
+                            This product may be available in multiple architect
+                            folders, please select one from below.
+                          </p>
+                          <div
+                            class=""
+                            *ngIf="
+                              selectedItemsCount(item?.value?.products) > 0 &&
+                              item.key == 'Architect Folders'
+                            "
+                          >
+                            <h4>
+                              This product may be available in multiple
+                              architect folders, please select one from below.
+                            </h4>
+                            <p>{{ styleName || "NA" }}-{{ styleId || "NA" }}</p>
+                          </div>
+                          <div class="">
+                            <h4>Color</h4>
+                            <p>
+                              {{ product?.sellingColorName || "NA" }}-{{
+                                product.sellingColorId || "NA"
+                              }}
+                            </p>
+                          </div>
+                          <div *ngIf="item?.key != 'Piece Samples' && !product?.noCharge">
+                            <div
+                              class=""
+                              *ngFor="
+                                let item of pdpPfxPriceFields['SAMPLES'] || []
+                              "
+                            >
+                              <label class="font-weight-600">{{
+                                item?.fieldName.replace(
+                                  "USD",
+                                  storageService.userPriceLabel
+                                )
+                              }}</label>
+                              <p class="">
+                                <strong
+                                  >${{
+                                    product.productPriceData &&
+                                    product?.productPriceData[item?.key]
+                                      ? product?.productPriceData[item?.key]
+                                      : "0"
+                                  }}</strong
+                                >
+                                / each
+                              </p>
+                              <!-- <p *ngIf="product?.noCharge">
+                                <strong>No Charge</strong>
+                              </p> -->
+                            </div>
+                          </div>
+                          <div *ngIf="item?.key != 'Piece Samples' && product?.noCharge">
+                            <div
+                              *ngFor="
+                                let item of pdpPfxPriceFields['SAMPLES'] || []
+                              "
+                            >
+                              <label class="font-weight-600"
+                                >No Charge
+                              </label>
+                            </div>
+                          </div>
+                          <div
+                            class="d-flex"
+                            *ngIf="item?.key != 'Piece Samples'"
+                          >
+                            <div class="size">
+                              <h4>Styles In Collection</h4>
+                              <ul
+                                *ngFor="
+                                  let style of product?.stylesListInCollection
+                                    ?.stylesInCollection
+                                "
+                              >
+                                <li>
+                                  {{ style.styleId }} - {{ style.description }}
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                          <div class="d-flex">
+                            <div class="size" *ngIf="item?.key != 'Deckboards'">
+                              <h4>Size*</h4>
+                              <ng-select
+                                *ngIf="product?.sizeOptions"
+                                placeholder="Select"
+                                [(ngModel)]="product.size"
+                                [ngModelOptions]="{ standalone: true }"
+                                (keypress)="validateNo($event)"
+                                (input)="product.size = $event"
+                                [clearable]="false"
+                              >
+                                <ng-option
+                                  [value]="size?.value?.sellingSizeDescription"
+                                  *ngFor="let size of product.sizeOptions"
+                                  >{{ size?.value?.sellingSizeDescription }}
+                                  {{
+                                    size?.value?.noCharge
+                                      ? " (No Charge)"
+                                      : size?.productPriceData?.priceEach
+                                      ? "(" +
+                                        storageService.userInfo?.priceLabel +
+                                        " " +
+                                        size?.productPriceData?.priceEach +
+                                        "/each)"
+                                      : ""
+                                  }}
+                                </ng-option>
+                              </ng-select>
+                              <p *ngIf="!product?.sizeOptions">
+                                {{ product?.sellingSizeDescription }}
+                              </p>
+                              <!-- <ng-select
+                                placeholder="Select"
+                                [(ngModel)]="product.size"
+                                [ngModelOptions]="{ standalone: true }"
+                                (keypress)="validateNo($event)"
+                                (input)="product.size = $event"
+                                *ngIf="!product?.sizeOptions"
+                              >
+                                <ng-option
+                                  [value]="product?.sellingSizeDescription"
+                                  >{{ product?.sellingSizeDescription }}
+                                  <span *ngIf="item?.key != 'Piece Samples'">{{
+                                    product.noCharge
+                                      ? " (No Charge)"
+                                      : product?.priceDetails?.priceEach
+                                      ? "(" +
+                                        storageService.userInfo?.priceLabel +
+                                        " " +
+                                        product?.priceDetails?.priceEach +
+                                        "/each)"
+                                      : ""
+                                  }}</span></ng-option
+                                >
+                              </ng-select> -->
+                              <div
+                                *ngIf="f['Adobe'].errors && submitted"
+                                class="invalid-feedback d-block"
+                              >
+                                <div *ngIf="f['Adobe'].errors['required']">
+                                  Size is Req.
+                                </div>
+                              </div>
+                            </div>
+                            <div class="qty">
+                              <h4>Quantity*</h4>
+                              <ng-container
+                                *ngIf="item?.key != 'Piece Samples'"
+                              >
+                                <input
+                                  type="text"
+                                  placeholder="Quantity"
+                                  class="form-control"
+                                  [ngModelOptions]="{ standalone: true }"
+                                  [(ngModel)]="product.quantity"
+                                  (keypress)="validateNo($event)"
+                                  (change)="quantityChange($event, product)"
+                                  name="AdobeQuantity"
+                                  required
+                                />
+                              </ng-container>
+                              <ng-container
+                                *ngIf="item?.key == 'Piece Samples'"
+                              >
+                                <ng-select
+                                  placeholder="Select"
+                                  [(ngModel)]="product.quantity"
+                                  [ngModelOptions]="{ standalone: true }"
+                                  (keypress)="validateNo($event)"
+                                  (input)="inputEvent($event, product)"
+                                  (change)="
+                                    item?.key != 'Piece Samples'
+                                      ? quantityChange($event, product)
+                                      : ''
+                                  "
+                                  [clearable]="false"
+                                >
+                                  <ng-option
+                                    value="{{ q.value }}"
+                                    *ngFor="let q of product?.quantityOptions"
+                                    >{{ q.label }}</ng-option
+                                  >
+                                </ng-select>
+                              </ng-container>
+                              <div
+                                *ngIf="f['AdobeQuantity'].errors && submitted"
+                                class="invalid-feedback d-block"
+                              >
+                                <div
+                                  *ngIf="f['AdobeQuantity'].errors['required']"
+                                >
+                                  Quantity is Req.
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="mt-4"
+                            *ngIf="item?.key != 'Piece Samples'"
+                          >
+                            <h4>Availability</h4>
+                            <label
+                              [class.text-danger]="
+                                product?.availableQuantity < product.quantity
+                              "
+                              [class.text-success]="
+                                product?.availableQuantity >= product.quantity
+                              "
+                              [innerText]="
+                                product?.availableQuantity < product.quantity
+                                  ? 'Out of stock'
+                                  : 'In stock'
+                              "
+                            >
+                            </label>
+                            <!-- <label *ngIf="product?.avilableMessage != ''">
+                          {{ product?.avilableMessage }}
+                        </label> -->
+                          </div>
+                        </ng-container>
+                      </div>
+                      <!-- <p>Additional freight charges may apply.</p>
+                      <h4 class="mb-1">Products included in this Sample</h4>
+                      <p>
+                        {{ product?.sellingStyleName || "NA" }} -
+                        {{ product?.sellingStyleId || "NA" }}.
+                      </p> -->
+                    </div>
+                  </ng-container>
+                </ng-container>
+              </form>
+            </div>
+            <div>Additional freight charges may apply.</div>
+          </ng-container>
+          <!-- Architect Folders Tab-->
+          <ng-container *ngIf="item?.key == 'Architect Folders'">
+            <div class="row pt-2">
+              <div class="col-lg-5 col-sm-12">
+                <div class="row pt-2">
+                  <div class="col-md-12">
+                    <div class="samples-grid">
+                      <div
+                        class="plp-order-omage product-varient-carousel architect-tab-image mt-2"
+                      >
+                        <owl-carousel-o
+                          [options]="customOptionsProducts"
+                          #owlCarNew
+                        >
+                          <ng-template carouselSlide [id]="'architect-folders'">
+                            <div class="p-image">
+                              <img
+                                [src]="
+                                  selectedArchProd?.productImageURL != '' && selectedArchProd?.productImageURL !='image/jpeg' 
+                                   ? selectedArchProd?.src ||
+                                      'https://s7d4.scene7.com/is/image/MohawkResidential/missing' 
+                                      : 'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                                "
+                                alt=""
+                                class=""
+                              />
+                              <img
+                                class="product-image-modal"
+                                (click)="
+                                  openLightBoxModal(
+                                    $event,
+                                    selectedArchProd?.productImageURL != '' && selectedArchProd?.productImageURL !='image/jpeg' 
+                                   ? selectedArchProd?.src ||
+                                      'https://s7d4.scene7.com/is/image/MohawkResidential/missing' 
+                                      : 'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                                  )
+                                "
+                                src="/assets/images/icons/expand-icon-white.svg"
+                              />
+                            </div>
+                          </ng-template>
+                        </owl-carousel-o>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-7 col-sm-12">
+                <div class="row mx-auto pt-2">
+                  <div class="col-md-12 mb-2">
+                    <p class="mb-0">
+                      This product may be available in multiple architect
+                      folders, please select one from below.
+                    </p>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <ng-select
+                      placeholder="Select Product"
+                      [(ngModel)]="item.selectedItem"
+                      (change)="selectArcProduct($event, item)"
+                      [clearable]="false"
+                    >
+                      <ng-option
+                        [value]="product.code"
+                        *ngFor="let product of item?.value?.products"
+                        >{{ product.sellingStyleId }} -
+                        {{ product.sellingColorName }}</ng-option
+                      >
+                    </ng-select>
+                  </div>
+                  <!-- <div class="row my-2" *ngIf="avilableMessage">
+                <alert type="danger" class="my-1" [dismissible]="true">
+                  <div class="container">{{ avilableMessage }}</div>
+                </alert>
+              </div> -->
+                  <div class="col-md-12 mb-3">
+                    <h4 class="mb-0">Color</h4>
+                    <p class="mb-0">
+                      {{ selectedArchProd?.sellingColorName || "NA" }}-{{
+                        selectedArchProd?.sellingColorId || "NA"
+                      }}
+                    </p>
+                  </div>
+                  <div
+                    class="col-md-12 mb-3"
+                    *ngFor="let item of pdpPfxPriceFields['SAMPLES'] || []"
+                  >
+                    <label class="font-weight-600">{{
+                      item?.fieldName.replace(
+                        "USD",
+                        storageService.userPriceLabel
+                      )
+                    }}</label>
+                    <p
+                      class="mb-0"
+                      *ngIf="
+                        !selectedArchProd?.spinnerLoading &&
+                        selectedArchProd?.productPriceData &&
+                        !selectedArchProd?.noCharge
+                      "
+                    >
+                      <strong
+                        >${{
+                          selectedArchProd?.productPriceData?.hasOwnProperty(
+                            item?.key
+                          )
+                            ? selectedArchProd?.productPriceData[item?.key]
+                            : "N/A"
+                        }}</strong
+                      >
+                      / each
+                    </p>
+                    <p *ngIf="selectedArchProd?.noCharge">
+                      <strong>No Charge</strong>
+                    </p>
+                  </div>
+                  <div class="col-md-12 my-1 mb-3">
+                    <h4 class="mb-0">Style In Collection</h4>
+                    <p
+                      class="mb-0"
+                      *ngFor="
+                        let style of selectedArchProd?.stylesListInCollection
+                          ?.stylesInCollection;
+                        let i = index
+                      "
+                    >
+                      {{ style.styleId }} - {{ style.description }}
+                    </p>
+                  </div>
+                </div>
+                <form class="row mx-auto" [formGroup]="reactiveForm">
+                  <ng-container>
+                    <div class="col-md-12">
+                      <div class="d-flex">
+                        <!-- <div class="col-md-6 mx-1">
+                          <h4>Size*</h4>
+                          <ng-select
+                            *ngIf="selectedArchProd?.sizeOptions"
+                            placeholder="Select"
+                            [(ngModel)]="selectedArchProd.size"
+                            [ngModelOptions]="{ standalone: true }"
+                            (keypress)="validateNo($event)"
+                            (input)="selectedArchProd.size = $event"
+                          >
+                            <ng-option
+                              [value]="size?.sellingSizeId"
+                              *ngFor="let size of selectedArchProd?.sizeOptions"
+                              >{{ size?.value?.sellingSizeId }}</ng-option
+                            >
+                          </ng-select>
+                          <ng-select
+                            *ngIf="!selectedArchProd?.sizeOptions"
+                            placeholder="Select"
+                            [(ngModel)]="selectedArchProd.size"
+                            [ngModelOptions]="{ standalone: true }"
+                            (keypress)="validateNo($event)"
+                            (input)="selectedArchProd.size = $event"
+                          >
+                            <ng-option
+                              [value]="selectedArchProd?.sellingSizeId"
+                            >
+                              {{ selectedArchProd?.sellingSizeId }}</ng-option
+                            >
+                          </ng-select>
+
+                          <div
+                            *ngIf="f['Adobe'].errors && submitted"
+                            class="invalid-feedback d-block"
+                          >
+                            <div *ngIf="f['Adobe'].errors['required']">
+                              Size is Req.
+                            </div>
+                          </div>
+                        </div> -->
+                        <div class="qty col-md-6 mx-1">
+                          <h4>Quantity*</h4>
+                          <ng-select
+                            placeholder="Select"
+                            [(ngModel)]="selectedArchProd.quantity"
+                            [ngModelOptions]="{ standalone: true }"
+                            (keypress)="validateNo($event)"
+                            (input)="inputEvent($event, selectedArchProd)"
+                            (change)="quantityChange($event, selectedArchProd)"
+                            [clearable]="false"
+                          >
+                            <ng-option
+                              [value]="q.value"
+                              *ngFor="
+                                let q of selectedArchProd?.quantityOptions
+                              "
+                              >{{ q.label }}</ng-option
+                            >
+                          </ng-select>
+                          <div
+                            *ngIf="f['AdobeQuantity'].errors && submitted"
+                            class="invalid-feedback d-block"
+                          >
+                            <div *ngIf="f['AdobeQuantity'].errors['required']">
+                              Quantity is Req.
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+
+                  <div class="mt-4 mb-3" *ngIf="item?.key != 'Piece Samples'">
+                    <h4>Availability</h4>
+                    <label
+                      class="text-danger"
+                      *ngIf="
+                        selectedArchProd?.availableQuantity <
+                        selectedArchProd.quantity
+                      "
+                      >Out of stock</label
+                    >
+                    <label
+                      class="text-success"
+                      *ngIf="
+                        selectedArchProd?.availableQuantity >
+                        selectedArchProd.quantity
+                      "
+                      >In stock</label
+                    >
+                    <!-- <label *ngIf="product?.avilableMessage != ''">
+                    {{ product?.avilableMessage }}
+                  </label> -->
+                  </div>
+                  <!-- <p class="mb-2">Additional freight charges may apply.</p>
+                  <h4 class="mb-1">Products included in this Sample</h4>
+                  <p>
+                    {{ selectedArchProd?.sellingStyleName || "NA" }} -
+                    {{ selectedArchProd?.sellingStyleId || "NA" }}.
+                  </p> -->
+                </form>
+              </div>
+            </div>
+          </ng-container>
+          <div class="row my-4 full-btns justify-content-center">
+            <!-- <div class="col-md-3">
+          <button
+            class="btn btn-secondary mb-2"
+            [disabled]="showGotoCartBtn || checkCartAdded() || !enableButton"
+            (click)="addToCartClick()"
+          >
+            ADD TO CART
+          </button>
+        </div> -->
+            <div class="col-md-4 col-lg-3" *ngIf="showGotoCartBtn">
+              <button class="btn btn-secondary mb-3" (click)="checkoutPage()">
+                <span class="cart-icon"></span>GO TO CART
+              </button>
+            </div>
+            <div class="col-md-4 col-lg-3" *ngIf="isPostModificationOrder">
+              <button
+                class="btn btn-secondary mb-3"
+                (click)="backToOrderDetails()"
+              >
+                <span class="cart-icon"></span>Back to Order Details
+              </button>
+            </div>
+            <div class="col-md-4 col-lg-3">
+              <button class="btn btn-secondary mb-3" (click)="onHideModal()">
+                CANCEL
+              </button>
+            </div>
+            <div class="col-md-4 col-lg-3" *ngIf="showGotoCartBtn">
+              <button
+                class="btn btn-outline-secondary mb-3"
+                (click)="continueShopping()"
+              >
+                CONTINUE SHOPPING
+              </button>
+            </div>
+            <div class="col-md-4 col-lg-3" *ngIf="!isPostModificationOrder">
+              <button
+                class="btn btn-primary mb-3"
+                [disabled]="disableAddtoCart(item?.value?.products, item?.key)"
+                (click)="addtoCartHandler(item?.value?.products)"
+              >
+                ADD TO CART
+              </button>
+            </div>
+            <div class="col-md-4 col-lg-3" *ngIf="isPostModificationOrder">
+              <button
+                class="btn btn-primary mb-3"
+                [disabled]="disableAddtoCart(item?.value?.products, item?.key)"
+                (click)="addtoLineHandler(item?.value?.products)"
+              >
+                ADD TO Line
+              </button>
+            </div>
+          </div>
+        </tab>
+      </ng-container>
+    </tabset>
+  </div>
+</div>

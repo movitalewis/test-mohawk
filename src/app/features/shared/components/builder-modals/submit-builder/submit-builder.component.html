@@ -1,0 +1,131 @@
+<div class="modal-header text-center">
+  <div class="w-100">
+    <h4 class="modal-title">Builder Details</h4>
+    <p class="m-0 text-white-50">Step 4 of 4</p>
+  </div>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="closePopupUsingService('submit-builder')"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="mb-4">
+    <form #form="ngForm">
+      <div class="text-start mt-4 mb-4">
+        <div class="row mb-4 mt-2">
+          <div class="col-md-4">
+            <h4>Builder</h4>
+            <p class="mb-0">
+              {{ ( initialState?.selectedBuilder?.builderName | titlecase ) || "NA" }}
+            </p>
+            <p class="mb-0">
+              {{ ( initialState?.selectedBuilder?.builderCity | titlecase ) || "NA" }},
+              {{ ( initialState?.selectedBuilder?.builderState | titlecase ) || "NA" }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <h4>Division</h4>
+            <p class="mb-0">
+              {{ ( initialState?.selectedDivision?.divName | titlecase ) || "NA" }}
+            </p>
+            <p class="mb-0">
+              {{ ( initialState?.selectedDivision?.divCity | titlecase ) || "NA" }},
+              {{ ( initialState?.selectedDivision?.divState | titlecase ) || "NA" }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <h4>SubDivision</h4>
+            <p class="mb-0">
+              {{ ( initialState?.subDivision?.subDivName | titlecase ) || "NA" }}
+              {{ initialState?.subDivision?.subDivName?.toLowerCase() === 'other' ? ' - ' + ( initialState?.subDivision?.subDivisionFreeText | titlecase ) : '' }}
+            </p>
+            <p class="mb-0">
+              {{ ( initialState?.subDivision?.subDivCity | titlecase ) || "NA" }},
+              {{ ( initialState?.subDivision?.subDivState | titlecase ) || "NA" }}
+            </p>
+          </div>
+        </div>
+        <div class="row mt-4 mb-2">
+          <div class="col-md-4">
+            <h4>Lot</h4>
+            <input
+              type="text"
+              placeholder=""
+              class="form-control"
+              [(ngModel)]="submitBuilderPayload.lotNum"
+              name="lotNum"
+            />
+          </div>
+          <div class="col-md-4">
+            <h4>Block</h4>
+            <input
+              type="text"
+              placeholder=""
+              class="form-control"
+              [(ngModel)]="submitBuilderPayload.blockNum"
+              name="blockNum"
+            />
+          </div>
+          <div class="col-md-4" *ngIf="customerFlag == false">
+            <xchange-custom-checkbox
+              #checkRef
+              [label]="'Model Home'"
+              (model)="changeEvent($event, checkRef)"
+              [checked]="submitBuilderPayload.modelHome"
+            ></xchange-custom-checkbox>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="row mt-3 justify-content-center">
+    <div class="col-md-3">
+      <button
+        class="btn btn-outline-secondary w-100 mb-3"
+        (click)="closePopupUsingService('submit-builder')"
+      >
+        BACK
+      </button>
+    </div>
+    <div class="col-md-3">
+      <button class="btn btn-secondary w-100 mb-3" (click)="onClose(); modalService.hide()">
+        CANCEL
+      </button>
+    </div>
+    <div class="col-md-3"
+      *ngIf="
+        selectionChanged ||
+        !(
+          tempData.lotNum == submitBuilderPayload.lotNum &&
+          tempData.blockNum == submitBuilderPayload.blockNum &&
+          tempData.modelHome == submitBuilderPayload.modelHome
+        )
+      "
+    >
+      <button
+        class="btn btn-primary w-100 mb-3"
+        (click)="submitBuilder()"
+      >
+        SUBMIT
+      </button>
+    </div>
+    <div class="col-md-3" 
+      *ngIf="
+      !selectionChanged &&
+      tempData.lotNum == submitBuilderPayload.lotNum &&
+      tempData.blockNum == submitBuilderPayload.blockNum &&
+      tempData.modelHome == submitBuilderPayload.modelHome
+    ">
+      <button
+        class="btn btn-primary w-100 mb-3"
+        (click)="doneClick()"
+      >
+        Done
+      </button>
+    </div>
+  </div>
+</div>

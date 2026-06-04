@@ -1,0 +1,66 @@
+<div class="profile-section">
+  <section
+    *ngIf="!hasOnlyResidential && !hasOnlyCommercial; else singleStorefront"
+  >
+    <header class="page-header w-100">
+      <h2>Default Storefront</h2>
+    </header>
+    <app-alerts
+      [alertData]="alertData"
+      [alertType]="alertType"
+      *ngIf="alertTrigger"
+    >
+    </app-alerts>
+    <p class="mt-4 w-100">Choose a default storefront.</p>
+    <ul class="subscribe-list w-100">
+      <li>
+        <xchange-custom-radio
+          type="radio"
+          [id]="'MohawkGroup'"
+          [name]="'Storefront-C'"
+          label="Mohawk Group"
+          [group]="'Commercial'"
+          [value]="'C'"
+          (model)="changeStorefront($event)"
+          [checked]="selectCommercial"
+        >
+        </xchange-custom-radio>
+      </li>
+      <li>
+        <xchange-custom-radio
+          type="radio"
+          [id]="'MohawkResidentialFlooring'"
+          [name]="'Storefront-R'"
+          label="Mohawk Residential Flooring"
+          [group]="'Residential'"
+          [value]="'R'"
+          (model)="changeStorefront($event)"
+          [checked]="selectResidential"
+        >
+        </xchange-custom-radio>
+      </li>
+    </ul>
+
+    <button
+      class="btn btn-primary align-self-end save-btn mt-4"
+      (click)="onSave()"
+    >
+      SAVE CHANGES
+    </button>
+  </section>
+  <ng-template #singleStorefront>
+    <section class="w-100">
+      <header class="page-header w-100">
+        <h2>Default Storefront</h2>
+      </header>
+
+      <p class="mt-4 w-100">
+        {{
+          hasOnlyResidential
+            ? "Mohawk Residential Flooring"
+            : "Mohawk Group (Commercial)"
+        }}
+      </p>
+    </section>
+  </ng-template>
+</div>

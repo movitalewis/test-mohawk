@@ -1,0 +1,44 @@
+<div class="modal-header text-center">
+  <h4 class="modal-title f-w w-100">REQUEST NEW PRICING</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="bsModalRef.hide()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body p-20">
+  <div>
+    <p class="text-center">Price Per Unit <br />$8.28 / SQUARE YARDS</p>
+    <div class="row mb-4 mt-4 p-50">
+      <div class="col-md-10 col-lg-8">
+        <h4>Requested Pricing</h4>
+        <input type="text" placeholder="Type Here" class="form-control" />
+      </div>
+      <div class="col-md-2 col-lg-4">
+        <p class="mt-4 pt-2">/ square yards</p>
+      </div>
+    </div>
+    <div class="row mb-4 mt-4 p-50">
+      <div class="col-md-12 col-lg-12">
+        <h4>Comments * Required</h4>
+        <input type="text" placeholder="Type Here" class="form-control" />
+        <p>
+          All pricing changes/requests are reviewed and subject to approval
+          prior to shipment
+        </p>
+      </div>
+    </div>
+    <div class="mt-4 mb-4 text-center">
+      <button
+        class="btn btn-outline-secondary me-2"
+        (click)="bsModalRef.hide()"
+      >
+        CANCEL
+      </button>
+      <button class="btn btn-primary">SEND</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,122 @@
+<app-loader *ngIf="loadingFlag"></app-loader>
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <h2 class="text-center mb-4">BANK ACCOUNTS</h2>
+  <div class="mb-3">
+    <alert
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="showErrorMessage"
+    >
+      <div class="container">
+        {{ errorMessage }}
+      </div>
+    </alert>
+  </div>
+  <div class="mb-3">
+    <alert
+      type="success"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="showSuccessMessage"
+    >
+      <div class="container">
+        {{ successMessage }}
+      </div>
+    </alert>
+  </div>
+  <div class="_card-container">
+    <div class="col-md-2 col-xs-12 mb-3">
+      <button
+        class="btn btn-primary w-100"
+        routerLink="/commercial/finance/bank/add-account"
+        [disabled]="!isAdmin"
+      >
+        Add Account
+      </button>
+    </div>
+    <div class="overflow-auto">
+      <ngx-table
+        [configuration]="configuration"
+        [data]="data"
+        [columns]="columns"
+        [noResultsTemplate]="noResultsTemplate"
+        (event)="selectedValues($event)"
+      >
+        <ng-template let-row>
+          <td>
+            {{ row.accountName }}
+          </td>
+          <td>
+            {{ row.accountAlias }}
+          </td>
+          <td>
+            {{ row.accountType }}
+          </td>
+          <td>
+            {{ row.currency }}
+          </td>
+          <td>
+            {{ row.bankRoutingNumber }}
+          </td>
+          <td>
+            <a href="javascript:void(0)" (click)="bankAccountClick(row)" *ngIf="isAdmin"> {{ row.accountNumber }}</a>
+            <span *ngIf="!isAdmin">{{ row.accountNumber }}</span>
+          </td>
+          <td class="align-center" *ngIf="isAdmin">
+              <a href="javascript:void(0)" 
+              (click)="showDeleteAccModal(deleteAccTemplate, row, unsettledPaymentModal)"
+              *ngIf="isAdmin"
+            >
+              Delete
+            </a>
+          </td>
+        </ng-template>
+      </ngx-table>
+    </div>
+    <ng-template #noResultsTemplate>
+      <td [attr.colspan]="columns.length" class="no-results">
+        Account Not Found
+      </td>
+    </ng-template>
+  </div>
+</div>
+<ng-template #deleteAccTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w">Delete Bank Account?</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>Are you sure you want to delete this bank account?</p>
+      <div class="mt-4 mb-4">
+        <button class="btn btn-outline-secondary me-2" (click)="modalRef?.hide()">No</button>
+        <button class="btn btn-primary" (click)="deleteBankAccount(rowToDelete)">Yes</button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #unsettledPaymentModal>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Delete</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>Accounts with unsettled payments cannot be deleted.</p>
+      <div class="mt-4 mb-3">
+        <button class="btn btn-primary" (click)="modalRef?.hide()">Ok</button>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,58 @@
+@import "src/styles/colors";
+@import "/src/styles/mixins/breakpoints";
+
+.filters-list {
+  width: 100%;
+  max-height: 150px;
+  overflow-y: scroll;
+  overflow-x: auto;
+  white-space: nowrap;
+  & > li {
+    margin-bottom: 10px;
+  }
+}
+
+.product-filters-container {
+  display: flex;
+  flex-wrap: wrap;
+
+  @include breakpoint-range($max: lg) {
+    flex-direction: column-reverse;
+  }
+}
+
+.filter-btn {
+  text-align: left;
+  border-radius: 5px 5px 0 0;
+  font-size: 18px;
+  font-weight: 500;
+  text-transform: capitalize;
+  span {
+    margin-right: 6px;
+    font-size: 12px;
+  }
+  &:hover,
+  &:focus {
+    background: $color-dark-gray;
+    color: $color-white;
+  }
+  @include breakpoint-range($max: lg) {
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+}
+
+.filters-popup {
+  background: $color-white;
+  padding: 20px;
+  height: 100%;
+}
+.filter-modal-header {
+  display: flex;
+  font-size: 22px;
+  font-weight: 700;
+  svg {
+    margin-right: 10px;
+    cursor: pointer;
+  }
+}

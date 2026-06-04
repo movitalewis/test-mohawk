@@ -1,0 +1,292 @@
+.container{
+  h2,h4{
+      color: #383838;
+      margin-bottom: 0;
+  }
+  h2{
+      font-size: 18px;
+  }
+}
+p{ 
+  font-size: 14px;
+}
+
+.form-control{
+    min-height: 20px;
+    border: unset;
+    animation: none;
+    padding: none;
+    box-shadow: none;
+    background: transparent;
+}
+.form-control:disabled {
+    background:transparent;
+ }
+
+ img.card-img-top.img {
+  width: 150px;
+}
+.help-info {
+  color: #ce0e2d;
+}
+
+.m-top {
+  margin-top: 1.25rem;
+}
+.xchange-icon-btn{
+  justify-content: start !important;
+}
+.img {
+  height: 9.125rem;
+  object-fit: cover;
+  border-radius: 5px;
+}
+.col-lg-12.mt-4 .card{
+    margin-left: -14px;
+    margin-right: -35px;
+}
+
+.header-logo{
+    display: flex;
+    justify-content: space-between;
+}
+.background-yellow {
+  background-color: #fffdeb !important;
+  border: 1px solid #d9c400 !important;
+  border-radius: 6px !important;
+  padding: 15px !important;
+  page-break-inside: avoid !important;
+  width: 50%;
+  margin-top: 10px !important;
+}
+.card-header {
+  background-color: #383838;
+  h4{
+    float: start;
+    float: left;
+    text-align: left;
+  }
+  .mohawk-logo{
+    float: end;
+    text-align: end;
+  }
+}
+.card-body{
+    flex: 1 1 auto;
+    padding: var(--mx-card-spacer-y) var(--mx-card-spacer-x);
+    color: var(--mx-card-color);
+    .row{
+        display: flex;
+        flex-wrap: wrap;
+        /* margin-top: 2rem; */
+        .col-lg-7{    
+            flex: 0 0 auto;
+            width: 100%;
+            .row{
+                display: flex;
+                align-items: flex-start;
+            }
+        }
+    }
+} 
+
+.acco-content{
+  border: 1px solid #b1b1b1;
+  border-radius: 5px;
+  margin: 0px;
+  padding-left: 0px;
+  margin-left: -15px;
+  .info-header{
+    background-color: #b1b1b1;
+    padding: 4px;
+  }
+}
+.collapse{
+    display: block;
+    margin: auto;
+    padding: 4px;
+    text-align: center;
+}
+
+div.row.div-p{
+    display: flex;
+    .e-print{    
+    flex: 0 0 auto;
+    width: 33%;
+    }
+}
+.p-info{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.btnGroup-print{
+  display: none !important;
+}
+.print-content{
+    width: 100%;
+    padding: 0px;
+}
+.esti-div{
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    float: inline-end;    
+	.esti-row{
+        width: 100%;
+		.esti-part{
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+		}
+	}
+}
+.bg1-parent{
+   /* // margin-top: 120px; */
+    display: block;
+    width: 100%;
+}
+.bg-1 {
+    background-color: #f8f8f8;
+    padding: 10px 25px;
+    border-radius: 8px;
+}
+.bg-0 {
+  background-color: #f8f8f8;
+  text-align: center;
+  padding: 10px 25px;
+  border-radius: 8px;
+}
+h5{
+    font-size: 18px;
+  }
+  h4{
+    font-size: 15px;
+  }
+  p{
+    font-size: 14px;
+  }
+  .print-show{
+    display: block;
+  }
+  .print-hide{
+    display: none;
+  }
+  .print-logo {
+    & xchange-logo-pdp {
+        img {
+            width: 150px !important;
+        }
+    }
+}
+.p-none{
+  display: none;
+}
+.p-row{
+  display: flex !important;
+  flex-wrap: wrap !important;
+}
+.p-col-12 {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+}
+.p-col-6 {
+  flex: 0 0 auto !important;
+  width: 50% !important;
+}
+.p-col-3 {
+  flex: 0 0 auto !important;
+  width:25% !important;
+}
+
+.p-col-5 {
+  flex: 0 0 auto !important;
+  width: 41.66666667% !important;
+}
+
+.p-col-9 {
+  flex: 0 0 auto !important;
+  width: 75% !important;
+}
+.p-col-4{
+  flex: 0 0 auto !important;
+  width: 33.3333333% !important;
+}
+
+.p-col-8 {
+  flex: 0 0 auto !important;
+  width: 66.66666667% !important;
+}
+.p-col-7 {
+  flex: 0 0 auto !important;
+  width: 58.33333333% !important;
+}
+.col-xl-5{
+  max-width: unset !important;
+}
+.col-sm-4{
+  max-width: unset !important;
+}
+.no-page-break{
+  page-break-inside: avoid;
+}
+.text-end{
+ label{
+  float: right !important; 
+}
+}
+.est-container{
+  padding:0px 53px !important;
+}
+.quotes-number{
+  h2.title{
+    font-size: 18px;
+  }
+}
+.text-end{
+  text-align: right;
+}
+.fw-bold {
+  font-weight: 700 !important;
+}
+.table td, .table th {
+
+   border-top: unset !important;
+}
+.bg-0 {
+  text-align: center;
+}
+.black-header-table-one {
+  width: 100%;
+}
+
+.black-header-table-one thead tr th {
+  background: #2e2e2e; 
+  color: #ffffff;      
+  font-size: 16px;
+  font-weight: 500;
+  padding: 5px 20px;
+  border-left: 0.2px solid #b1b1b1; 
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.black-header-table-one thead tr th.mw460p {
+  min-width: 460px;
+}
+
+.black-header-table-one thead tr th.mw100p {
+  min-width: 100px;
+}
+
+
+.black-header-table-one tbody tr td {
+  padding: 10px 20px;
+  border: 1px solid #aeaeae;
+  font-size: 16px;
+  color: #231f20;
+  text-align: center;
+}
+
+.text-decoration-none{
+  text-decoration: none !important;
+}

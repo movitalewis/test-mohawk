@@ -1,0 +1,64 @@
+<form [formGroup]="toemailForm">
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w text-center w-100">Share via Email</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="onHideModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-50">
+    <div class="row">
+      <div class="col-md-12">
+        <h4>From:</h4>
+        <p>XChange Support (Xchange_Support&#64;mohawkind.com)</p>
+      </div>
+      <div class="col-md-12">
+        <h4>To:</h4>
+        <input
+          type="text"
+          placeholder="Type Here"
+          class="form-control"
+          maxlength="255"
+          formControlName="senderEmail"
+          (keypress)="avoidSpace($event)"
+          [class.is-invalid]="
+            toemailForm.controls['senderEmail'].touched == true &&
+            toemailForm.controls['senderEmail'].hasError('pattern')
+          "
+        />
+        <div class="invalid-feedback">Please enter a valid Email</div>
+        <p class="fs-12 mt-2">Place a comma after each email address.</p>
+      </div>
+      <div class="col-md-12">
+        <h4>Subject:</h4>
+        <input
+          type="text"
+          placeholder="Type Here"
+          class="form-control"
+          maxlength="500"
+          formControlName="subject"
+          (keypress)="avoidSpace($event)"
+          [class.is-invalid]="
+            toemailForm.controls['subject'].touched == true &&
+            toemailForm.controls['subject'].hasError('pattern')
+          "
+        />
+        <div class="invalid-feedback">Please enter subject</div>
+      </div>
+    </div>
+    <div class="row mt-4 mb-4 p-50">
+      <div class="col-md-12 text-center">
+        <button class="btn btn-outline-secondary mb-2" (click)="onHideModal()">
+          CLOSE
+        </button>
+        <button class="btn btn-primary mb-2" [disabled]="!toemailForm.valid">
+          SEND
+        </button>
+      </div>
+    </div>
+  </div>
+</form>

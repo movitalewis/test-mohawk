@@ -1,0 +1,36 @@
+<div class="profile-section">
+    <section>
+        <header class="page-header w-100">
+            <h2>Billing Address</h2>
+        </header>
+
+        <ul class="address-list" *ngFor="let address of addresses">
+      <li>
+        <div class="address-container">
+          <h3>{{ address.companyName }}</h3>
+          <p>
+            {{ address?.line2 }} {{ address?.line1 }}
+            {{ address?.building ? ", "+address.building+" " : "" }}<br />
+            {{ address?.town }}, {{ address?.region?.isocodeShort }} {{ address?.postalCode }}
+          </p>
+          <p>SHIPPING METHOD({{ address.defaultShippingMethod }})</p>
+          <!-- <div class="mt-2">
+            <xchange-custom-radio
+              type="radio"
+              [className]="'strong-500'"
+              [id]="'xyz'"
+              [name]="'123'"
+              label="{{ address.defaultIncoTerms }} - {{
+                address.defaultShippingConditionDesc
+              }}"
+            >
+            </xchange-custom-radio>
+          </div> -->
+        </div>
+      </li>
+    </ul>
+    </section>
+    <!-- <p class="w-100 align-self-end">Please contact a Mohawk representative to modify your billing address.</p> -->
+    <p class="w-100 align-self-end">Please <a href="https://mohawk.jotform.com/200233364560041" target="_blank">click here</a> to modify your billing address. </p>
+
+</div>

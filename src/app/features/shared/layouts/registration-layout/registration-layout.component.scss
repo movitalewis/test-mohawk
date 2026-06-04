@@ -1,0 +1,14 @@
+@import "src/styles/mixins/breakpoints";
+
+.register-layout {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+@include breakpoint-range($min : md) {
+    app-site-footer {
+        display: none;
+    }
+}

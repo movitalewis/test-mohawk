@@ -1,0 +1,57 @@
+<div class="modal-header text-center">
+    <h4 class="modal-title f-w">VIEW DEDUCTIONS</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="closeModal()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+</div>
+<div class="modal-body p-20">
+    <div class="add-deduction mb-4" *ngFor="let deduction of deductions; let i = index">
+        <p>Deduction {{ i + 1 }}</p>
+        <div class="desk-view">
+            <ngx-table [configuration]="configuration" [data]="[deduction]" [columns]="columns">
+                <ng-template let-row>
+                    <td>
+                        <p>{{priceLabel}}{{ row.amount | currency:'USD':'symbol':'1.2-2' }}</p>
+
+                    </td>
+                    <td>
+                        <p>{{ row.description }}</p>
+                    </td>
+                    <td>
+                        <p>{{ row.comments }}</p>
+                    </td>
+                </ng-template>
+            </ngx-table>
+        </div>
+
+        <!-- mobile view -->
+        <div class="add-deduction-mobile m-view mb-3">
+            <ul>
+                <li>
+                    <span>Deduction</span>
+                    <div class="">
+                        <p>{{priceLabel}}{{ deduction.amount | currency:'USD':'symbol':'1.2-2' }}</p>
+                    </div>
+                </li>
+                <li>
+                    <span>Description</span>
+                    <div class="">
+                        <p>{{ deduction.description }}</p>
+                    </div>
+                </li>
+                <li>
+                    <span>Comments</span>
+                    <div class="">
+                        <p>{{ deduction.comments }}</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="p-20 mt-4 mb-4">
+        <div class="text-center btn-full-width">
+            <button class="btn btn-primary" (click)="closeModal()">OK</button>
+        </div>
+    </div>
+</div>

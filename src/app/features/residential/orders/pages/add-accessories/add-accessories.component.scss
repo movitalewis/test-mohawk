@@ -1,0 +1,245 @@
+@import "src/styles/colors";
+@import 'src/styles/mixins/breakpoints';
+
+.align-center {
+    justify-content: center;
+    text-align: center;
+  }
+  
+img {
+  max-width: 80px;
+}
+.full-btns{
+    justify-items: center;
+    justify-content: center;
+    width: 100%;
+    .btn{
+        width: 100%;
+    }
+}
+img{
+    max-width: 80px;
+}
+
+::ng-deep .ref-div-table{
+    .d-inline-table.ref-table{
+        .ngx-container {
+            overflow-x: unset;
+        } 
+    }
+}
+
+::ng-deep .tab-container.changeCursor {
+	.nav.nav-justified.nav-tabs{
+		.active.nav-item{
+		    cursor:default;
+			.nav-link.active,.nav-link.active:hover{
+			    cursor:default;
+			}
+		}
+	}
+}
+.cssload-container {
+    display: block;
+    width: auto;
+    text-align: center;
+  }
+  
+  .cssload-loading i {
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+    border-radius: 50%;
+    background: #b7b7b7;
+  }
+  .cssload-loading i:first-child {
+    opacity: 0;
+    animation: cssload-loading-ani2 0.5s linear infinite;
+    -o-animation: cssload-loading-ani2 0.5s linear infinite;
+    -ms-animation: cssload-loading-ani2 0.5s linear infinite;
+    -webkit-animation: cssload-loading-ani2 0.5s linear infinite;
+    -moz-animation: cssload-loading-ani2 0.5s linear infinite;
+    transform: translate(-8px);
+    -o-transform: translate(-8px);
+    -ms-transform: translate(-8px);
+    -webkit-transform: translate(-8px);
+    -moz-transform: translate(-8px);
+  }
+  .cssload-loading i:nth-child(2),
+  .cssload-loading i:nth-child(3) {
+    animation: cssload-loading-ani3 0.5s linear infinite;
+    -o-animation: cssload-loading-ani3 0.5s linear infinite;
+    -ms-animation: cssload-loading-ani3 0.5s linear infinite;
+    -webkit-animation: cssload-loading-ani3 0.5s linear infinite;
+    -moz-animation: cssload-loading-ani3 0.5s linear infinite;
+  }
+  .cssload-loading i:last-child {
+    animation: cssload-loading-ani1 0.5s linear infinite;
+    -o-animation: cssload-loading-ani1 0.5s linear infinite;
+    -ms-animation: cssload-loading-ani1 0.5s linear infinite;
+    -webkit-animation: cssload-loading-ani1 0.5s linear infinite;
+    -moz-animation: cssload-loading-ani1 0.5s linear infinite;
+  }
+  
+  @keyframes cssload-loading-ani1 {
+    100% {
+      transform: translate(17px);
+      opacity: 0;
+    }
+  }
+  
+  @-o-keyframes cssload-loading-ani1 {
+    100% {
+      -o-transform: translate(17px);
+      opacity: 0;
+    }
+  }
+  
+  @-ms-keyframes cssload-loading-ani1 {
+    100% {
+      -ms-transform: translate(17px);
+      opacity: 0;
+    }
+  }
+  
+  @-webkit-keyframes cssload-loading-ani1 {
+    100% {
+      -webkit-transform: translate(17px);
+      opacity: 0;
+    }
+  }
+  
+  @-moz-keyframes cssload-loading-ani1 {
+    100% {
+      -moz-transform: translate(17px);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes cssload-loading-ani2 {
+    100% {
+      transform: translate(8px);
+      opacity: 1;
+    }
+  }
+  
+  @-o-keyframes cssload-loading-ani2 {
+    100% {
+      -o-transform: translate(8px);
+      opacity: 1;
+    }
+  }
+  
+  @-ms-keyframes cssload-loading-ani2 {
+    100% {
+      -ms-transform: translate(8px);
+      opacity: 1;
+    }
+  }
+  
+  @-webkit-keyframes cssload-loading-ani2 {
+    100% {
+      -webkit-transform: translate(8px);
+      opacity: 1;
+    }
+  }
+  
+  @-moz-keyframes cssload-loading-ani2 {
+    100% {
+      -moz-transform: translate(8px);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes cssload-loading-ani3 {
+    100% {
+      transform: translate(8px);
+    }
+  }
+  
+  @-o-keyframes cssload-loading-ani3 {
+    100% {
+      -o-transform: translate(8px);
+    }
+  }
+  
+  @-ms-keyframes cssload-loading-ani3 {
+    100% {
+      -ms-transform: translate(8px);
+    }
+  }
+  
+  @-webkit-keyframes cssload-loading-ani3 {
+    100% {
+      -webkit-transform: translate(8px);
+    }
+  }
+  
+  @-moz-keyframes cssload-loading-ani3 {
+    100% {
+      -moz-transform: translate(8px);
+    }
+  }
+  
+  ::ng-deep {
+    .xchangeaddaccessorieslightbox {
+        .ng-dropdown-panel {
+            border: none !important;
+        }
+
+        .ng-dropdown-panel .scroll-host {
+            position: fixed !important;
+            width: 123px;
+            height: 140px;
+            border-radius: 2px;
+            border: 1px solid #b1b1b1;
+
+            @include breakpoint-range($max: xl) {
+                width: 11% !important;
+                height: 140px;
+            }
+            @include breakpoint-range($max: sm) {
+              width: 24% !important;
+              height: 140px;
+            }
+
+          
+
+        }
+    }
+}
+
+::ng-deep{
+  .shipvia-change{
+    .shipvia.ng-select-single .ng-select-container .ng-value-container .ng-input > input{
+      text-transform: uppercase;
+    }
+    .shipvia div, .shipvia input, .shipvia span{
+      text-transform: uppercase;
+      .span-preferred{
+        text-transform: capitalize;
+      }
+    }
+  }
+}
+
+::ng-deep{       
+  .residentialOrderAddAccessories.modal-dialog {
+    min-height: 95%;
+    min-width: 80%;
+  }
+  .residentialOrderAddAccessories .modal-content {
+    min-height: fit-content;
+    min-width: auto;
+    .qty-col{
+      min-width: 110px;
+    }
+    @include breakpoint-range($max: md) {
+      min-height: auto;
+      min-width: auto;
+      .tab-content{
+        padding: 0px;
+      }
+    }
+  }
+}

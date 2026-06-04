@@ -1,0 +1,485 @@
+@import "/src/styles/colors";
+@import "/src/styles/mixins/breakpoints";
+
+.product-name {
+  font-size: 22px;
+  font-weight: 700;
+  //margin-top: 18px;
+  line-height: 22px;
+  @media (max-width: 767px) {
+    font-size: 19px;
+  }
+  small {
+    display: block;
+    font-size: 18px;
+    color: $color-gray;
+    font-weight: 400;
+    // padding-left: 10px;
+  }
+}
+
+.product-colors-container {
+  padding: 0px 0 0px 0;
+  //border-top: 1px solid $color-medium-gray;
+  border-bottom: 1px solid $color-medium-gray;
+  .view_all {
+    background: transparent;
+    border: none;
+    text-decoration: underline;
+  }
+
+}
+// .colors-list-ul {
+//   display: flex;
+//   gap: 10px;
+//   align-items: flex-start;
+//   & > li {
+//     display: flex;
+//     flex-wrap: wrap;
+//     justify-content: center;
+//     width: 101px;
+//     @include breakpoint-range($max: md) {
+//       width: calc(20% - 4px);
+//     }
+//     a {
+//       display: flex;
+//       width: 100%;
+//       padding: 3px;
+//       border-radius: 5px;
+//       cursor: pointer;
+//       img {
+//         width: 100%;
+//       }
+//     }
+
+//     .color-name {
+//       text-align: center;
+//       line-height: 18px;
+//       font-size: 16px;
+//       margin-top: 10px;
+//       @include breakpoint-range($max: xs) {
+//         font-size: 14px;
+//         margin-top: 5px;
+//         line-height: 16px;
+//         word-break: break-all;
+//       }
+//     }
+
+//     .color-code {
+//       @include breakpoint-range($max: xs) {
+//         font-size: 14px;
+//         line-height: 16px;
+//       }
+//     }
+//     &.active {
+//       a {
+//         border: 3px solid $color-red;
+//       }
+//     }
+//   }
+// }
+
+.change-image-mod-btns {
+  @include breakpoint-range($max: sm) {
+    .btn-secondary {
+      min-width: 125px;
+      width: 125px;
+      font-size: 13px;
+      margin: 0;
+    }
+  }
+}
+.left-carousal {
+  img {
+    @include breakpoint-range($max: md) {
+      height: 350px;
+    }
+    @include breakpoint-range($max: sm) {
+      height: 300px;
+    }
+  }
+}
+// ::ng-deep {
+//   pagination-controls {
+//     pagination-template {
+//       ul {
+//         border-radius: unset !important;
+//         li {
+//           border: none !important;
+//           border-radius: 0 5px 5px 0;
+//           // box-shadow: inset 0px 5px 6px #00000014;
+//           &:nth-child(3) {
+//             &.current {
+//               border-radius: 5px 0px 0px 5px;
+//             }
+//           }
+//           &.current {
+//             display: flex !important;
+//             box-shadow: unset;
+//           }
+//           a {
+//             text-decoration: unset !important;
+//             height: 100%;
+//             display: flex !important;
+//             align-items: center;
+//             justify-content: center;
+//           }
+//           &.pagination-next,
+//           &.pagination-previous {
+//             a {
+//               color: #ce0e2d;
+//               font-size: 24px;
+//               &::after,
+//               &::before {
+//                 margin-left: 0px !important;
+//                 margin-bottom: 3px !important;
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+.is-invalid {
+  border-radius: 6px;
+  border: 2px solid $color-red;
+}
+.product-varient-carousel {
+ 
+  ::ng-deep {
+    .owl-item {
+      // padding: 3px;
+      cursor: pointer;
+      max-width: 100px;
+      width: 100%;
+    }
+    .owl-dots {
+      height: 100%;
+      position: relative;
+      transform: none;
+      left: 0px;
+      bottom: 0px;
+      // bottom: -35px;
+      .owl-dot {
+        &.active {
+          span {
+            background: #ce0e2d;
+          }
+        }
+        span {
+          background: grey;
+        }
+      }
+    }
+  }
+  .color-name {
+    word-break: break-word;
+  }
+}
+.activeSlide {
+  border: 3px solid $color-red;
+  padding: 3px;
+}
+.ribbon-wrapper {
+  width: 160px;
+  height: 160px;
+  overflow: hidden;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 1;
+  border-radius: 0px;
+  top: -3px;
+  .ribbon {
+    color: $color-white;
+    text-align: center;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    position: relative;
+    padding: 0px 0px;
+    top: 18px;
+    left: -40px;
+    background-color: #ce0e2d;
+    font-size: small;
+    height: 50px;
+  }
+  .preferred-stock{
+    top: 23px;
+    left: -35px;
+  }
+}
+.ribbon-wrapper-preview {
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 1;
+  border-radius: 0px;
+  .ribbon {
+    color: $color-white;
+    text-align: center;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    position: relative;
+    padding: 2px 0;
+    top: 15px;
+    left: -40px;
+    width: 140px;
+    background-color: #ce0e2d;
+  }
+  .preferred-stock{
+    top: 11px;
+    left: -38px;
+    font-size: 11px;
+  }
+}
+
+img[data-action="zoom"] {
+  cursor: zoom-in;
+}
+
+@include breakpoint-range($min: lg, $max: xxl) {
+  .ipro-btn {
+    .parnt {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .pre-order {
+      width: 100%;
+    }
+  }
+}
+label.font-weight-600 {
+  p {
+    font-weight: normal;
+  }
+}
+
+::ng-deep{
+  .tooltip.show {
+    --mx-tooltip-bg: #ce0e2d;
+  }
+  .ng-select.disabledSize, .ng-select.disabledBacking{
+    pointer-events: none;
+  }
+}
+
+.quickshop-image {
+  position: absolute;
+    height: 90px;
+    width: 90px;
+    bottom: 0;
+    left: 0;
+    background-image: url(/assets/images/quick-ship-effect.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+  img{
+    width: 25px;
+    height: 25px;
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+  }
+}
+
+.quickshop-color-vairant{
+  left: 3px;
+  top: 8px;
+  img{
+    width: 16px;
+    height: 16px;
+  }
+  @include breakpoint-range($max: sm) {
+    top: 5px;
+  }
+}
+
+.quick-ship {
+  .image-overlay-container {
+    position: relative;
+  }
+
+  .image-overlay-container img {
+    display: block;
+    height: auto;
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgb(0, 0, 0);
+    background: -moz-linear-gradient(45deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 35%);
+    background: -webkit-linear-gradient(45deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 35%);
+    background: linear-gradient(45deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 35%);
+  }
+
+  .reload-icon {
+    position: absolute;
+    top: 83%;
+    left: 18%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+
+    @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
+      width: 14px;
+    }
+
+    @include breakpoint-range($max: sm) {
+      width: 14px;
+    }
+
+  }
+
+  .swatch-reload-icon {
+    position: absolute;
+    top: 94%;
+    left: 6%;
+    transform: translate(-50%, -50%);
+    width: 5%;
+    height: 5%;
+    min-width: 17px;
+    min-height: 17px;
+  }
+}
+:host ::ng-deep xchange-logo-pdp {
+  img {
+    width: 130px;
+    // float: right;
+  }
+
+}
+
+
+.cssload-loading i {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border-radius: 50%;
+  background: #b7b7b7;
+}
+.cssload-loading i:first-child {
+  opacity: 0;
+  animation: cssload-loading-ani2 0.5s linear infinite;
+  -o-animation: cssload-loading-ani2 0.5s linear infinite;
+  -ms-animation: cssload-loading-ani2 0.5s linear infinite;
+  -webkit-animation: cssload-loading-ani2 0.5s linear infinite;
+  -moz-animation: cssload-loading-ani2 0.5s linear infinite;
+  transform: translate(-8px);
+  -o-transform: translate(-8px);
+  -ms-transform: translate(-8px);
+  -webkit-transform: translate(-8px);
+  -moz-transform: translate(-8px);
+}
+.cssload-loading i:nth-child(2),
+.cssload-loading i:nth-child(3) {
+  animation: cssload-loading-ani3 0.5s linear infinite;
+  -o-animation: cssload-loading-ani3 0.5s linear infinite;
+  -ms-animation: cssload-loading-ani3 0.5s linear infinite;
+  -webkit-animation: cssload-loading-ani3 0.5s linear infinite;
+  -moz-animation: cssload-loading-ani3 0.5s linear infinite;
+}
+.cssload-loading i:last-child {
+  animation: cssload-loading-ani1 0.5s linear infinite;
+  -o-animation: cssload-loading-ani1 0.5s linear infinite;
+  -ms-animation: cssload-loading-ani1 0.5s linear infinite;
+  -webkit-animation: cssload-loading-ani1 0.5s linear infinite;
+  -moz-animation: cssload-loading-ani1 0.5s linear infinite;
+}
+@keyframes cssload-loading-ani1 {
+  100% {
+    transform: translate(17px);
+    opacity: 0;
+  }
+}
+@-o-keyframes cssload-loading-ani1 {
+  100% {
+    -o-transform: translate(17px);
+    opacity: 0;
+  }
+}
+@-ms-keyframes cssload-loading-ani1 {
+  100% {
+    -ms-transform: translate(17px);
+    opacity: 0;
+  }
+}
+@-webkit-keyframes cssload-loading-ani1 {
+  100% {
+    -webkit-transform: translate(17px);
+    opacity: 0;
+  }
+}
+@-moz-keyframes cssload-loading-ani1 {
+  100% {
+    -moz-transform: translate(17px);
+    opacity: 0;
+  }
+}
+@keyframes cssload-loading-ani2 {
+  100% {
+    transform: translate(8px);
+    opacity: 1;
+  }
+}
+@-o-keyframes cssload-loading-ani2 {
+  100% {
+    -o-transform: translate(8px);
+    opacity: 1;
+  }
+}
+@-ms-keyframes cssload-loading-ani2 {
+  100% {
+    -ms-transform: translate(8px);
+    opacity: 1;
+  }
+}
+@-webkit-keyframes cssload-loading-ani2 {
+  100% {
+    -webkit-transform: translate(8px);
+    opacity: 1;
+  }
+}
+@-moz-keyframes cssload-loading-ani2 {
+  100% {
+    -moz-transform: translate(8px);
+    opacity: 1;
+  }
+}
+@keyframes cssload-loading-ani3 {
+  100% {
+    transform: translate(8px);
+  }
+}
+@-o-keyframes cssload-loading-ani3 {
+  100% {
+    -o-transform: translate(8px);
+  }
+}
+@-ms-keyframes cssload-loading-ani3 {
+  100% {
+    -ms-transform: translate(8px);
+  }
+}
+@-webkit-keyframes cssload-loading-ani3 {
+  100% {
+    -webkit-transform: translate(8px);
+  }
+}
+@-moz-keyframes cssload-loading-ani3 {
+  100% {
+    -moz-transform: translate(8px);
+  }
+}

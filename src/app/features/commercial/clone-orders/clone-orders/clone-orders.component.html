@@ -1,0 +1,203 @@
+<!-- <p>clone-orders works!</p> -->
+<div class="container">
+  <ng-container *ngIf="showCloneOrders">
+    <xchange-breadcrumb
+      [breadcrumbItems]="breadcrumbItems"
+    ></xchange-breadcrumb>
+    <h2 class="text-center mb-4">Clone A Sample Order</h2>
+    <div class="_card-container mt-5">
+      <div class="row">
+        <h2 class="filter-by-widget-text">Filter By</h2>
+        <div
+          class="col-md-4 mt-3 mb-2 m-btn-0"
+          *ngFor="let account of salesHierarchyList"
+        >
+          <h4>
+            {{
+              account?.key == "TM"
+                ? "All Territory Manager"
+                : account?.key == "DM"
+                ? "All District Manager"
+                : account?.key == "SVP"
+                ? "All SVP Manager" 
+                : account?.key == "MNGR" 
+                ? 'Sales Manager'
+                : "All RVP Manager"
+            }}
+          </h4>
+          <div class="col-12">
+            <ng-select
+              [(ngModel)]="selectedFilter[account?.key]"
+              (change)="getHierarchyValue($event, account?.key)"
+              placeholder="Select Option"
+            >
+              <ng-option value="All"> {{account?.key == 'TM'
+                ? "Select All TM's"
+                : account?.key == 'DM'
+                ? "Select All DM's"
+                : account?.key == 'SVP'
+                ? "Select All SVP's"
+                : "Select All RVP's"}}</ng-option>
+              <ng-option
+                [value]="salesHierchy?.salesHierarchyCode"
+                *ngFor="
+                  let salesHierchy of account.value
+                    .salesHierarchyUserAssignmentList
+                "
+                >{{ salesHierchy?.salesManDescription }} -
+                {{ salesHierchy?.salesHierarchyCode }}</ng-option
+              >
+            </ng-select>
+          </div>
+        </div>
+        <!-- <div class="col-md-4 mt-3 mb-4 m-btn-0" *ngFor="let account of salesHierarchyListMGR; let index = index">
+          <h4> Sales Manager </h4>
+          <div class="col-12">
+            <ng-select
+              (change)="getHierarchyValue($event, account?.key)"
+              [(ngModel)]="selectedFilter[account?.key]"
+              placeholder="Select Option"
+              [clearable]="false"
+            >
+              <ng-option value="All"> Select All Sales Manager</ng-option>
+              <ng-option
+                [value]="salesHierchy?.salesHierarchyCode"
+                *ngFor="
+                  let salesHierchy of account.value
+                    .salesHierarchyUserAssignmentList
+                "
+                >{{ salesHierchy?.salesManDescription }} -
+                {{ salesHierchy?.salesHierarchyCode }}</ng-option
+              >
+            </ng-select>
+          </div>
+        </div> -->
+        <div class="col-md-4 mt-3 mb-2 m-btn-0">
+          <h4>Sample Order # *Req.</h4>
+          <input
+            type="text"
+            placeholder="Type Here"
+            class="form-control"
+            [formControl]="sampleOrder"
+            (paste)="checkValue()"
+            (keypress)="keyPressNumbers($event)"
+            [class.is-invalid]="sampleOrder.invalid"
+          />
+        </div>
+        <div class="col-md-4 mt-3 mb-2 m-btn-0">
+          <h4 _ngcontent-naf-c232="">Account Search</h4>
+          <xchange-search-control
+            [id]="'sampleOdersIp'"
+            placeholder="Type Here"
+            [isGlobalSearchEnabled]="false"
+            [searchKey]="accountSearch"
+            [searchByIcon]="true"
+            (sendValue)="onSearch($event, 1)"
+          ></xchange-search-control>
+        </div>
+        <div class="col-12 mt-4 overflow-auto">
+          <ngx-table
+            [configuration]="configuration"
+            [data]="
+              data
+                | paginate
+                  : {
+                      id: 'pg1',
+                      itemsPerPage: tableItemsSize,
+                      currentPage: pageIndex,
+                      totalItems: totalOrdersLength
+                    }
+            "
+            [columns]="columns"
+            [noResultsTemplate]="noResultsTemplate"
+            (event)="sortingByColumns($event)"
+            [loadingTemplate]="tableLoader"
+          >
+            <ng-template let-row let-index="index">
+              <td>
+                <label
+                  class="ngx-form-checkbox"
+                  [for]="'checkboxcustom1-' + index"
+                >
+                  <input
+                    type="checkbox"
+                    [id]="'checkboxcustom1-' + index"
+                    [(ngModel)]="row.selected"
+                    (ngModelChange)="itemSelectionChange(row)"
+                  />
+                  <i class="ngx-form-icon custom-checkbox-color"></i>
+                </label>
+              </td>
+              <td>
+                {{ row?.uid.split("_")[0] * 1 }}
+              </td>
+              <td>{{ row?.customerName }}</td>
+              <td>{{ row?.formattedAddress }}</td>
+              <td>{{ row?.phoneNumber }}</td>
+            </ng-template>
+          </ngx-table>
+          <ng-template #noResultsTemplate>
+            <td
+              class="no-results"
+              [attr.colspan]="columns.length"
+              class="no-results"
+              *ngIf="configuration.isLoading==false"
+            >
+              Account Not Found
+            </td>
+          </ng-template>
+          <ng-template #tableLoader>
+            <td *ngIf="configuration.isLoading==true" [attr.colspan]="columns.length" class="no-results text-center">
+              <div class="loader">Loading...</div>
+            </td>
+          </ng-template>
+        </div>
+        <div class="row mb-4 mt-4 mx-auto" *ngIf="configuration.isLoading == false && data.length > 0">
+          <div class="d-flex justify-content-center" *ngIf="data.length > 0">
+            <pagination-controls
+              id="pg1"
+              [maxSize]="tableItemsSize"
+              [responsive]="true"
+              [nextLabel]="''"
+              [previousLabel]="''"
+              (pageChange)="onTableDataChange($event)"
+            >
+            </pagination-controls>
+          </div>
+          <div class="col-md-12">
+            <p class="text-center mb-4">
+              {{ totalOrdersLength > 0 ? startValue : 0 }} -
+              {{
+                lastValue > totalOrdersLength ? totalOrdersLength : lastValue
+              }}
+              OF {{ totalOrdersLength > 0 ? totalOrdersLength : 0 }} ACCOUNTS
+            </p>
+          </div>
+        </div>
+        <div class="row mt-4 mb-4 col-md-12 full-btns p-50">
+          <div class="col-md-4"></div>
+          <div class="col-md-4">
+            <button
+              class="btn btn-primary mb-2 w-100"
+              [disabled]="
+                sampleOrder.value === '' || this.selectedItems.length == 0
+              "
+              (click)="proceed()"
+            >
+              Proceed
+            </button>
+          </div>
+          <div class="col-md-4"></div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!showCloneOrders">
+    <app-choose-address-lightbox
+      [isCloneOrders]="true"
+      [isAtpCheck]="false"
+      (cancelClick)="showCloneOrders = true"
+      (continueCloneOrderFlow)="continueCloneOrderFlow()"
+    ></app-choose-address-lightbox>
+  </ng-container>
+</div>

@@ -1,0 +1,319 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+@import "src/styles/mixins/box-shadow.mixin";
+
+::ng-deep {
+  .tab-content {
+    padding: 0px !important;
+  }
+}
+
+@include breakpoint-range($max: xs) {
+  .mb-15 {
+    margin-bottom: 15px;
+  }
+}
+
+.custom-order-tabs {
+  // .tab-container{
+  //      padding: 10px;
+
+  //      .nav{
+  //           position: relative;
+  //           top: 10px;
+  //      }
+  // }
+  ._card-container {
+    border-radius: 0 0 8px 8px;
+  }
+}
+
+.table-ul {
+  li {
+    border: 1px solid #e8e8e8;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 1px 4px #0000001a;
+    margin-bottom: 20px;
+
+    .list-header {
+      display: flex;
+      @include breakpoint-range($max: sm) {
+        display: block;
+        margin-bottom: 0 !important;
+      }
+      .d-flex {
+        width: 70%;
+        @include breakpoint-range($max: sm) {
+          width: 100%;
+        }
+        .b-c {
+          @include breakpoint-range($max: sm) {
+            width: 10%;
+          }
+        }
+        .b-t {
+          width: 100%;
+          display: flex;
+          @include breakpoint-range($max: sm) {
+            display: block;
+            width: 100%;
+          }
+          .info-text {
+            width: 30%;
+            @include breakpoint-range($max: sm) {
+              width: 50%;
+              display: inline-block;
+              margin-bottom: 10px;
+            }
+            span {
+              font-weight: 600;
+            }
+            p {
+              margin-bottom: 0;
+            }
+          }
+        }
+      }
+      .action {
+        @include breakpoint-range($max: sm) {
+          width: 100%;
+          text-align: center;
+          padding: 0;
+        }
+        width: 30%;
+        text-align: right;
+        padding-right: 0px;
+
+        button {
+          text-decoration: none;
+          text-transform: capitalize;
+          border: none !important;
+          padding-top: 0.75rem;
+          margin-bottom: 0rem;
+        }
+
+        .down-icon {
+          transform: rotate(-90deg);
+          display: inline-flex;
+          font-size: 0.625rem;
+          margin-left: 0.313rem;
+        }
+        .up-icon {
+          transform: rotate(-270deg);
+          display: inline-flex;
+          font-size: 0.625rem;
+          margin-left: 0.625rem;
+        }
+      }
+    }
+    .collapse {
+      margin-top: 20px;
+    }
+  }
+}
+
+.mt-4 {
+  @include breakpoint-range($max: sm) {
+    margin-top: 0 !important;
+  }
+}
+.schedule_buttons {
+  text-align: right;
+  .btn-margin {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+  .btn {
+    @include breakpoint-range($max: sm) {
+      width: 100% !important;
+      margin: 10px 0px 0px !important;
+    }
+  }
+}
+
+.cust-inline-flex {
+  width: 100%;
+  display: flex;
+  @include breakpoint-range($max: sm) {
+    display: block;
+    text-align: center;
+  }
+  .info-text {
+    width: 21%;
+    @include breakpoint-range($min: sm, $max: md) {
+      width: 50%;
+    }
+    @include breakpoint-range($max: sm) {
+      width: 100%;
+    }
+    span {
+      font-weight: 600;
+    }
+  }
+  p {
+    // margin-bottom: 0;
+    font-size: 16px;
+  }
+}
+
+/** ngx-pagination styling **/
+::ng-deep {
+  pagination-controls {
+    pagination-template {
+      ul {
+        border-radius: unset !important;
+
+        li {
+          border: none !important;
+          border-radius: 0 5px 5px 0;
+          box-shadow: inset 0px 5px 6px #00000014;
+
+          &:nth-child(3) {
+            &.current {
+              border-radius: 5px 0px 0px 5px;
+            }
+          }
+
+          &:nth-last-child(2) {
+            &.current {
+              border-radius: 0px 5px 5px 0px;
+            }
+          }
+
+          &.current {
+            display: flex !important;
+            box-shadow: unset;
+          }
+
+          a {
+            text-decoration: unset !important;
+            height: 100%;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+          }
+
+          &.pagination-next,
+          &.pagination-previous {
+            a {
+              color: $color-red;
+              font-size: 24px;
+
+              &::after,
+              &::before {
+                margin-left: 0px !important;
+                margin-bottom: 3px !important;
+              }
+            }
+          }
+        }
+
+        &.ngx-pagination.responsive {
+          li:not(.small-screen):not(.pagination-previous):not(.pagination-next) {
+            display: inline-block;
+          }
+
+          li.small-screen {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+::ng-deep {
+  .sorting-arrow {
+    .pointer {
+      position: relative;
+      display: block !important;
+      &::after {
+        content: "";
+        width: 22px;
+        height: 22px;
+        background: url("../../../../../../../assets/icons/sort.png") no-repeat;
+        top: 14px;
+        bottom: 0px;
+        right: 0px;
+        position: absolute;
+        display: inline-block;
+      }
+      .ngx-table__header-title {
+        .ngx-icon {
+          display: none;
+        }
+      }
+    }
+  }
+  .sorting-arrow-active {
+    .pointer {
+      position: relative;
+      display: block !important;
+      &::after {
+        content: "";
+        width: 22px;
+        height: 22px;
+        background: url("../../../../../../../assets/icons/sort-ascending-icon.svg")
+          no-repeat;
+        top: 8px;
+        bottom: 0px;
+        right: 0px;
+        position: absolute;
+        display: inline-block;
+        -webkit-transform: scaleY(-1);
+        transform: scaleY(-1);
+      }
+      .ngx-table__header-title {
+        .ngx-icon {
+          display: none;
+        }
+      }
+    }
+  }
+  .sorting-arrow-down-icon {
+    .pointer {
+      position: relative;
+      display: block !important;
+      &::after {
+        content: "";
+        width: 22px;
+        height: 22px;
+        background: url("../../../../../../../assets/icons/sort-descending-icon.svg")
+          no-repeat;
+        top: 14px;
+        bottom: 0px;
+        right: 0px;
+        position: absolute;
+        display: inline-block;
+        // -webkit-transform: scaleY(-1);
+        // transform: scaleY(-1);
+      }
+      .ngx-table__header-title {
+        .ngx-icon {
+          display: none;
+        }
+      }
+    }
+  }
+  .ngx-table__header-title {
+    padding: 10px 25px 10px 10px;
+  }
+  .ngx-table__table--normal > thead > tr > th {
+    vertical-align: top;
+  }
+}
+
+.desk-view {
+  @include breakpoint-range($max : md) {
+    display: none !important;
+  }
+}
+
+.m-view {
+  display: none !important;
+
+  @include breakpoint-range($max : md) {
+      display: flex !important;
+  }
+}

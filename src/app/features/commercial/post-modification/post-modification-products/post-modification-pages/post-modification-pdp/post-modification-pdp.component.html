@@ -1,0 +1,1126 @@
+<app-loader *ngIf="spinnerLoading"></app-loader>
+<div class="container postordermodification" #scrollToTop>
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <div class="d-flex justify-content-between">
+    <xchange-icon-button
+      icon="back"
+      label="Back To Search Results"
+      (click)="returnPreviousUrl()"
+    >
+    </xchange-icon-button>
+    <div class="d-flex">
+      <xchange-icon-button
+        icon="view-pdf"
+        label="View PDF"
+        (click)="openPDF()"
+      ></xchange-icon-button>
+      <xchange-icon-button
+        icon="share"
+        label="Share"
+        (click)="openShareViaEmailModal()"
+      ></xchange-icon-button>
+    </div>
+  </div>
+  <!-- <div *ngIf="addToCartFailed">
+    {{ this.errorMessage }} Failed to add product.Please try again
+  </div> -->
+  <alert
+    type="danger"
+    class="dashboard-page-alert"
+    [dismissible]="true"
+    *ngIf="addToCartFailed"
+  >
+    <div class="container">Error occured while adding product to the cart.</div>
+  </alert>
+  <div class="mb-3" *ngIf="exceptionErrorMessage">
+    <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+      <div class="container">
+        {{ exceptionErrorMessage }}
+      </div>
+    </alert>
+  </div>
+  <div class="mb-3">
+    <alert
+    [type]="alertType"
+    type="danger"
+    class="dashboard-page-alert mb-3"
+    [dismissible]="true"
+    *ngIf="colorSelect"
+  >
+  <div class="container">{{ errorMessage }}</div>
+</alert>
+  </div>
+  <div class="pdp-container">
+    <!-- <h2>{{ pdbData?.productTypeDesc || "N/A" }} - {{ "PM395" }}</h2> -->
+    <!-- <xchange-product-image-view
+      [pdpDataOptions]="{
+        otherDetails: pdbData,
+        backingOptions: pdbData?.backingOptions,
+        sizeOptions: pdbData?.sizeOptions,
+        priceRange: pdbData?.priceRange
+      }"
+      [colorVariant]="pdbData?.productColorVariantOptions"
+    ></xchange-product-image-view> -->
+
+    <product-post-modification-image-view
+      *ngIf="variantData"
+      [pdpDataOptions]="{
+        otherDetails: variantData,
+        backingOptions: variantData?.backingOptions,
+        sizeOptions: variantData?.sizeOptions,
+        priceDetails: productPriceDetails,
+        showOrderSample: enableOrderSample
+      }"
+      [productImages]="productImages"
+      [colorVariant]="variantData?.productColorVariantOptions"
+      (selectedProduct)="setSelectedProductItem($event)"
+      [isOrderSampleClickFromParent]="true"
+      (orderSampleClick)="orderSampleHandler()"
+      [pdpData]="pdbData"
+      [availabilityForms]="availabilityForms"
+      (colorSeletedCheck)="colorSeleted($event)"
+    ></product-post-modification-image-view>
+    <ng-template #availabilityForms>
+      <tabset
+        responsiveTabs
+        [justified]="true"
+        class="enter-quantity-tabs mt-4"
+        *ngIf="isAtpCheck; else feetYardFormRef"
+      >
+        <tab (selectTab)="resetEntires('feet')">
+          <ng-template tabHeading>Feet or Yards</ng-template>
+          <ng-container *ngTemplateOutlet="feetYardFormRef"></ng-container>
+        </tab>
+        <tab (selectTab)="resetEntires('Roll')">
+          <ng-template tabHeading>Rolls</ng-template>
+          <form [formGroup]="feetyardForm">
+            <div class="row mt-2">
+              <div class="col-lg-3 mb-3">
+                <label class="font-weight-600 mb-1 d-flex align-items-center"
+                  ># of Rolls</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Enter # of rolls"
+                  formControlName="quantity"
+                  (input)="
+                    restrictUptoTwoDecimal($event); checkExcessQuantity($event)
+                  "
+                  (keypress)="numberOnly($event)"
+                />
+              </div>
+              <!--  <div class="col-lg-3 mb-3">
+                <label class="font-weight-600 mb-1 d-flex align-items-center"
+                  >Target Length</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  [placeholder]="rollsPlaceholder"
+                  formControlName="feet"
+                  (keypress)="numberOnly($event)"
+                  (blur)="getTargetLength($event)"
+                />
+              </div> -->
+              <div class="col-lg-3 mb-3" *ngIf="selectedProduct.sellingBackingId != 'PB'">
+                <label class="font-weight-600 mb-1 d-flex align-items-center"
+                  >Min Length</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="{{ minRollLength }}"
+                  formControlName="minLength"
+                  (input)="
+                    restrictUptoTwoDecimal($event);
+                    checkMinMaxValidation($event, 'rolls', 'min')
+                  "
+                  (keypress)="numberOnly($event, 'rolls')"
+                  [readonly]="!csrSuperAdmin?.isCSRSuperAdmin"
+                  [class.is-invalid]="rollsMinLength"
+                />
+              </div>
+              <div class="col-lg-3 mb-3" *ngIf="selectedProduct.sellingBackingId != 'PB'">
+                <label class="font-weight-600 mb-1 d-flex align-items-center"
+                  >Max Length</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="{{ maxRollLength }}"
+                  formControlName="maxLength"
+                  (input)="
+                    restrictUptoTwoDecimal($event);
+                    checkMinMaxValidation($event, 'rolls', 'max')
+                  "
+                  (keypress)="numberOnly($event, 'rolls')"
+                  [readonly]="!csrSuperAdmin?.isCSRSuperAdmin"
+                  [class.is-invalid]="rollsMaxLength"
+                />
+              </div>
+              <div class="col-12 row">
+                <div class="col-lg-3 mb-3">
+                  <div
+                  class="specific-dye-lot"
+                  *ngIf="uomDetails?.displayDyeLot == true && selectedProduct.sellingBackingId != 'PB'"
+                >
+                  <label class="font-weight-600 mb-1 d-flex align-items-center"
+                    >Specific Dye Lot</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Optional"
+                    formControlName="dyeLot"
+                  />
+                  </div>
+                </div>
+                <div
+                  class="col-lg-6 d-flex align-items-center"
+                  *ngIf="uomDetails?.displayDyeLot == true && selectedProduct.sellingBackingId != 'PB'"
+                >
+                  <!-- <h4>Builder Order?</h4> -->
+                  <xchange-custom-checkbox
+                    [label]="'Same DyeLot'"
+                    [checked]="this.sameDyeLot"
+                    [disabled]="userInfo.isCustomer || userInfo.isSalesPerson"
+                    (model)="changeSameDyeLotEvent($event)"
+                  ></xchange-custom-checkbox>
+                </div>
+              </div>
+              <!-- <div class="col-lg-3 mb-3 d-flex align-items-end">
+                <p class="mt-1 mb-0" *ngIf="uomDetails?.patternRepeat">
+                  Pattern Repeat – {{ uomDetails?.patternRepeat }}
+                </p>
+              </div> -->
+              <div class="row">
+                <div class="col-lg-4 mb-3">
+                  <small
+                    class="mt-1 mb-0"
+                    *ngIf="uomDetails?.standardRollLength"
+                  >
+                    Standard Roll Size –
+                    {{ uomDetails?.standardRollLength }}
+                  </small>
+                </div>
+                <div class="col-lg-6 mb-3">
+                  <small class="mt-1 mb-0" *ngIf="uomDetails?.patternRepeat">
+                    Pattern Repeat – {{ uomDetails?.patternRepeat }}
+                  </small>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <hr />
+                <div class="d-flex justify-content-end mb-3 order-actions">
+                  <!-- <button class="btn btn-secondary request-quote-btn">
+                                  Request Quote
+                              </button> -->
+
+                  <button
+                    class="btn btn-primary ms-3 place-order-btn"
+                    [disabled]="
+                      !(feetyardForm.valid && enableCheckAvailability) ||
+                      userService.salesBlocked
+                    "
+                    (click)="checkForItemAddedinCart('Roll')"
+                  >
+                    {{ feetyardSubmitButton }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </tab>
+        <tab (selectTab)="resetEntires('Inventory')">
+          <ng-template tabHeading>View Inventory</ng-template>
+          <form [formGroup]="feetyardForm" class="">
+            <div class="row mt-2">
+              <div class="col-lg-3 mb-3">
+                <label class="font-weight-600 mb-1 d-flex align-items-center"
+                  >Min. Length(ft)</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="ft"
+                  formControlName="minFeet"
+                  (keypress)="numberOnly($event)"
+                />
+                <!-- <small class="mt-1 mb-0">
+                  Standard Roll Size – {{ uomDetails?.standardRollLength }}
+                </small> -->
+              </div>
+
+              <div class="col-lg-3 mb-3">
+                <label class="font-weight-600 d-none d-lg-inline-block"></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="in"
+                  formControlName="minInches"
+                  (keypress)="keyPressNumbers($event)"
+                />
+              </div>
+              <div class="col-lg-3 mb-3">
+                <label class="font-weight-600 mb-1 d-flex align-items-center"
+                  >Max. Length(ft)</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="ft"
+                  formControlName="maxFeet"
+                  (keypress)="numberOnly($event)"
+                />
+              </div>
+              <div class="col-lg-3 mb-3">
+                <label class="font-weight-600 d-none d-lg-inline-block"></label>
+
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="in"
+                  formControlName="maxInches"
+                  (keypress)="keyPressNumbers($event)"
+                />
+              </div>
+              <div class="row">
+                <div class="col-lg-4 mb-3">
+                  <small
+                    class="mt-1 mb-0"
+                    *ngIf="uomDetails?.standardRollLength"
+                  >
+                    Standard Roll Size –
+                    {{ uomDetails?.standardRollLength }}
+                  </small>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <hr />
+                <div class="d-flex justify-content-end mb-3 order-actions">
+                  <button
+                    class="btn btn-secondary request-quote-btn"
+                    (click)="checkAvailabilityPopup()"
+                    [disabled]="
+                      !(feetyardForm.valid && uomDetails?.enableRequestQuote) ||
+                      variantData?.selected?.isDropped ||
+                      userService.salesBlocked
+                    "
+                  >
+                    Request Quote
+                  </button>
+                  <button
+                    id="InventoryFormBtn"
+                    class="btn btn-primary ms-3 place-order-btn"
+                    (click)="checkForItemAddedinCart('Inventory')"
+                    [disabled]="
+                      (multiCutFlag && enableCheckAvailability) ||
+                      isProductManager ||
+                      pdbData?.droppedFlag ||
+                      userService.salesBlocked
+                    "
+                  >
+                    <!-- [disabled]="!(feetyardForm.valid && enableCheckAvailability)" -->
+                    Check Availability / Place Order
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </tab>
+        <!-- <tab (selectTab)="resetEntires(1)">
+          <ng-template tabHeading>Multi-Cuts</ng-template>
+
+          <form [formGroup]="multiCutsForm">
+            <div class="row mt-2">
+              <div class="col-lg-12 mb-2">
+                <h4>Quantity</h4>
+              </div>
+              <div class="col-lg-6 mb-3" formArrayName="multicuts">
+                <div
+                  class="row"
+                  *ngFor="let item of formData!['controls']; let i = index"
+                  [formGroupName]="i"
+                >
+                  <div class="col-lg-6">
+                    <label
+                      class="font-weight-600 mb-1 d-flex align-items-center"
+                      >{{ i + 1 }}.Feet</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Ft."
+                      formControlName="feet"
+                      (keyup)="addFormRow($event, i)"
+                      (keypress)="numberOnly($event)"
+                    />
+                  </div>
+                  <div class="col-lg-6">
+                    <label
+                      class="font-weight-600 mb-1 d-flex align-items-center"
+                      >Inches</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="in."
+                      formControlName="inches"
+                      maxlength="2"
+                      (keypress)="keyPressNumbers($event)"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 row">
+                <div class="col-lg-3 mb-3">
+                  <label class="font-weight-600 mb-1 d-flex align-items-center"
+                    >Specific Dye Lot</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Optional"
+                    formControlName="dye"
+                  />
+                </div>
+                <div
+                  class="col-lg-6 d-flex align-items-center"
+                  *ngIf="uomDetails?.displayDyeLot == true"
+                >
+                  
+                  <xchange-custom-checkbox
+                    [label]="'Same DyeLot'"
+                    [checked]="this.sameDyeLot"
+                    [disabled]="userInfo.isCustomer || userInfo.isSalesPerson"
+                    (model)="changeSameDyeLotEvent($event)"
+                  ></xchange-custom-checkbox>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4 mb-3">
+                  <small
+                    class="mt-1 mb-0"
+                    *ngIf="uomDetails?.standardRollLength"
+                  >
+                    Standard Roll Size –
+                    {{ uomDetails?.standardRollLength }}
+                  </small>
+                </div>
+                <div class="col-lg-6 mb-3">
+                  <small class="mt-1 mb-0" *ngIf="uomDetails?.patternRepeat">
+                    Pattern Repeat – {{ uomDetails?.patternRepeat }}
+                  </small>
+                </div>
+              </div>
+              <div class="col-lg-12 mb-2">
+                <p>
+                  *Cut lengths entered must be less than or equal to standard
+                  roll size minus 25 feet.
+                </p>
+              </div>
+              <div class="col-md-12">
+                <hr />
+                <div class="d-flex justify-content-end mb-3 order-actions">
+                 
+                  <button
+                    [disabled]="
+                      !(multiCutsForm.valid && enableCheckAvailability)
+                    "
+                    class="btn btn-primary ms-3 place-order-btn"
+                    (click)="getEntriesValueMultiCut(multiCutsForm.value)"
+                    id="multicutFormBtn"
+                  >
+                    {{ feetyardSubmitButton }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </tab> -->
+      </tabset>
+    </ng-template>
+    <ng-template #feetYardFormRef>
+      <form [formGroup]="feetyardForm">
+        <div class="row mt-2">
+          <div class="col-lg-4 mb-3">
+            <label class="font-weight-600 mb-1 d-flex align-items-center"
+              >Unit of Measure</label
+            >
+            <ng-select
+              placeholder="Unit of Measure"
+              formControlName="unit"
+              (change)="unitChange($event)"
+            >
+              <ng-option *ngFor="let item of unitArray" [value]="item.type">{{
+                item.value
+              }}</ng-option>
+            </ng-select>
+            <!-- <p class="mt-1 mb-0" *ngIf="uomDetails?.standardRollLength">
+              Standard Roll Size – {{ uomDetails?.standardRollLength }}
+            </p> -->
+          </div>
+          <div class="col-lg-3 mb-3">
+            <!-- *ngIf="productType == 'CARPETPRODUCT'" -->
+            <label
+              class="font-weight-600 mb-1 d-flex align-items-center"
+              *ngIf="feetyardForm?.value?.unit !== 'LF'"
+              >Quantity*</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              formControlName="feet"
+              (input)="restrictUptoTwoDecimal($event)"
+              (keypress)="numberOnly($event, feetyardForm.value.unit)"
+              *ngIf="feetyardForm?.value?.unit !== 'LF'"
+            />
+            <label
+              class="font-weight-600 mb-1 d-flex align-items-center"
+              *ngIf="feetyardForm?.value?.unit == 'LF'"
+              >Feet*</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              formControlName="feet"
+              placeholder="Ft."
+              (input)="restrictUptoTwoDecimal($event)"
+              (change)="validateQuantity()"
+              (keypress)="numberOnly($event, feetyardForm.value.unit)"
+              *ngIf="feetyardForm?.value?.unit == 'LF'"
+            />
+            <!-- <p class="mt-1 mb-0" *ngIf="uomDetails?.patternRepeat">
+              Pattern Repeat – {{ uomDetails?.patternRepeat }}
+            </p> -->
+          </div>
+
+          <div *ngIf="feetyardForm?.value?.unit == 'LF'" class="col-lg-3 mb-3">
+            <label class="font-weight-600 mb-1 d-flex align-items-center"
+              >Inches</label
+            >
+            <input
+              type="text"
+              class="form-control mx-2"
+              placeholder="in."
+              formControlName="inches"
+              maxlength="2"
+              (keypress)="keyPressNumbers($event)"
+              (change)="validateQuantity()"
+            />
+            <!-- <input
+              type="text"
+              class="form-control"
+              placeholder="inches"
+              formControlName="inches"
+            />
+            <span *ngIf="feetyardForm?.value?.unit != 'LF'">
+              {{
+                convertvalue(slectedUnitVal?.value, feetyardForm.value.quantity)
+              }}
+            </span> -->
+          </div>
+          <div
+            *ngIf="feetInchCal() != '' && pdpInventoryUom != 'Linear FT'"
+            class="col-lg-3 mb-3 d-flex align-items-center"
+          >
+            {{ feetInchCal() | number : "1.2-2" }}
+            {{ pdpInventoryUom }}
+          </div>
+          <div
+            *ngIf="feetInchCal() != '' && pdpInventoryUom == 'Linear FT'"
+            class="col-lg-3 mb-3 d-flex align-items-center"
+          >
+            {{ feetInchCal() }}
+          </div>
+
+          <!-- <div *ngIf="productType == 'WOOD'" class="col-lg-3 mb-3">
+            <label class="font-weight-600 mb-1 d-flex align-items-center"
+              >Quantity*</label
+            >
+            <input type="text" class="form-control" formControlName="feet" />
+            <p class="mt-1 mb-0">Pattern Repeat – NONE</p>
+          </div> -->
+
+          <div class="col-md-12">
+            <div class="col-12 row">
+              <div class="col-lg-3 mb-3">
+                <label class="font-weight-600 mb-1 d-flex align-items-center"
+                  >Specific Dye Lot</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Optional"
+                  formControlName="dyeLot"
+                />
+              </div>
+              <div
+                class="col-lg-6 d-flex align-items-center"
+                *ngIf="uomDetails?.displayDyeLot == true"
+              >
+                <!-- <h4>Builder Order?</h4> -->
+                <xchange-custom-checkbox
+                  [label]="'Same DyeLot'"
+                  [checked]="this.sameDyeLot"
+                  [disabled]="userInfo.isCustomer || userInfo.isSalesPerson"
+                  (model)="changeSameDyeLotEvent($event)"
+                ></xchange-custom-checkbox>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-4 mb-3">
+                <small class="mt-1 mb-0" *ngIf="uomDetails?.standardRollLength">
+                  Standard Roll Size –
+                  {{ uomDetails?.standardRollLength }}
+                </small>
+              </div>
+              <div class="col-lg-6 mb-3">
+                <small class="mt-1 mb-0" *ngIf="uomDetails?.patternRepeat">
+                  Pattern Repeat – {{ uomDetails?.patternRepeat }}
+                </small>
+              </div>
+            </div>
+            <hr />
+            <div class="d-flex justify-content-end mb-3 order-actions">
+              <!-- <button
+                class="btn btn-secondary request-quote-btn"
+                [disabled]="
+                  productImgInvalid ||
+                  feetyardForm.controls['quantity'].invalid
+                "
+                (click)="createQuote()"
+              >
+                Request Quote
+              </button> -->
+
+              <!-- <button class="btn btn-secondary request-quote-btn" [routerLink]="['/commercial/cart/accessories']"> -->
+              <button
+                id="feetYardFormBtn"
+                class="btn btn-primary ms-3 place-order-btn"
+                [disabled]="
+                  !(
+                    feetyardForm.valid &&
+                    enableCheckAvailability &&
+                    (feetyardForm.value.feet > '0' ||
+                      feetyardForm.value.feet > 0)
+                  ) || variantData?.selected?.isDropped ||
+                  userService.salesBlocked
+                "
+                (click)="checkForItemAddedinCart()"
+              >
+                {{ feetyardSubmitButton }}
+              </button>
+            </div>
+            <!--    <alert [type]="'info'" class="alert-info-v1" [dismissible]="true">
+              <p class="mb-0">
+                Overages - Subject to overage (beyond order quantity) on
+                Mohawk Group backorders:
+              </p>
+
+              <p class="mb-0" *ngFor="let item of overAgesStringArray">
+                {{ item }}
+              </p>
+            </alert>
+            <alert [type]="'info'" class="alert-info-v1" [dismissible]="true">
+              <p class="mb-0">
+                This product is subject of up to 10% overage based on the
+                quantity
+              </p>
+            </alert> -->
+          </div>
+        </div>
+      </form>
+    </ng-template>
+
+    <div class="card">
+      <div class="card-header">RECOMMENDED ITEMS</div>
+      <div class="card-body">
+        <ul
+          class="recomonded-products"
+          *ngIf="productCodeTerm?.length != 0; else emptyCondition"
+        >
+          <li *ngFor="let item of productCodeTerm" let i="index">
+            <div class="p-image" (click)="addToCart(item)">
+              <img [src]="recommendedImages[item]" alt="" />
+            </div>
+            <p class="p-name">{{ item }}</p>
+          </li>
+          <!-- <li>
+                        <div class="p-image">
+                            <img src="assets/images/products/p7.svg" alt="">
+                        </div>
+                        <p class="p-name">Installation</p>
+                    </li>
+                    <li>
+                        <div class="p-image">
+                            <img src="assets/images/products/p7.svg" alt="">
+                        </div>
+                        <p class="p-name">Installation</p>
+                    </li> -->
+        </ul>
+        <ng-template #emptyCondition>
+          <h4>No Recommendation Available</h4>
+        </ng-template>
+      </div>
+    </div>
+    <tabset responsiveTabs [justified]="true" class="enter-quantity-tabs mt-4">
+      <tab>
+        <ng-template tabHeading>
+          <span class="mohawak-icon specs-icon me-2"></span> Full Specifications
+        </ng-template>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="specification-container">
+              <h4>Specifications</h4>
+
+              <xchange-specifications-widget
+                [specifications]="[
+                  {
+                    name: 'Style Name',
+                    value: pdbData?.sellingStyleName
+                  },
+                  {
+                    name: 'Color',
+                    value: pdbData?.sellingColorName
+                  },
+                  {
+                    name: '# of Colors',
+                    value: pdbData?.numberOfColors
+                  },
+                  {
+                    name: 'Brand',
+                    value: pdbData?.brandName
+                  },
+                  {
+                    name: 'Product Type',
+                    value: pdbData?.productType
+                  },
+                  {
+                    name: 'Sub Product Type',
+                    value: pdbData?.subProductType
+                  }
+                ]"
+              ></xchange-specifications-widget>
+            </div>
+            <div class="specification-container">
+              <h4>Performance & Sustainability</h4>
+              <xchange-specifications-widget
+                [specifications]="[
+                  {
+                    name: 'FHA Compliance',
+                    value: ''
+                  },
+                  {
+                    name: 'Durability Rating',
+                    value: pdbData?.durability
+                  },
+                  {
+                    name: 'Indoor Air Quality',
+                    value: pdbData?.indoorAirQuality
+                  },
+                  {
+                    name: 'Flammability',
+                    value: pdbData?.flamability
+                  },
+                  {
+                    name: 'Recycled Content',
+                    value: pdbData?.preConsumerRecycledContent
+                  },
+                  {
+                    name: 'Leed Certification',
+                    value: pdbData?.leedCertification
+                  },
+                  {
+                    name: 'Country of Origin',
+                    value: pdbData?.countryOfOrigin
+                  }
+                ]"
+              >
+              </xchange-specifications-widget>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="specification-container">
+              <h4>Design</h4>
+              <xchange-specifications-widget
+                [specifications]="[
+                  {
+                    name: 'Construction',
+                    value: pdbData?.construction
+                  },
+                  {
+                    name: 'Surface Appearance',
+                    value: ''
+                  },
+                  {
+                    name: 'Fiber Category',
+                    value: pdbData?.fiberType
+                  },
+                  {
+                    name: 'Fiber Description',
+                    value: pdbData?.fiberBrandDescription
+                  },
+                  {
+                    name: 'Stain Resistance',
+                    value: pdbData?.inherent_StainResistance
+                  },
+                  {
+                    name: 'Soil Resistance',
+                    value: pdbData?.soilResistance
+                  },
+                  {
+                    name: 'Dye Method',
+                    value: pdbData?.dyeMethodDesc
+                  },
+                  {
+                    name: 'Primary Backing',
+                    value: ''
+                  },
+                  {
+                    name: 'Secondary Backing',
+                    value: ''
+                  }
+                ]"
+              >
+              </xchange-specifications-widget>
+            </div>
+            <div class="specification-container">
+              <h4>Weights & Measures</h4>
+              <xchange-specifications-widget
+                [specifications]="[
+                  {
+                    name: 'Standard Roll Size',
+                    value: uomDetails?.standardRollLength
+                      ? uomDetails?.standardRollLength
+                      : ''
+                  },
+                  {
+                    name: 'Pattern Repeat',
+                    value: uomDetails?.patternRepeat
+                      ? uomDetails?.patternRepeat
+                      : ''
+                  },
+                  {
+                    name: 'Roll Width',
+                    value: ''
+                  }
+                ]"
+              >
+              </xchange-specifications-widget>
+            </div>
+            <!-- <div class="specification-container">
+                            <h4>Downloads</h4>
+
+                            <div class="d-flex flex-wrap">
+                                <xchange-icon-button icon="view-pdf" label="Download Specsheet"></xchange-icon-button>
+                                <xchange-icon-button class="ms-sm-3" icon="view-pdf" label="Download Specsheet">
+                                </xchange-icon-button>
+                            </div>
+                        </div> -->
+          </div>
+        </div>
+      </tab>
+      <tab>
+        <ng-template tabHeading
+          ><span class="mohawak-icon pdf-icon me-2"></span>
+          Warranty</ng-template
+        >
+        <div class="row">
+          <p>N/A</p>
+        </div>
+      </tab>
+      <tab>
+        <ng-template tabHeading
+          ><span class="mohawak-icon care-icon me-2"></span> Care & Maintenance
+        </ng-template>
+        <div class="row">
+          <p>N/A</p>
+        </div>
+      </tab>
+    </tabset>
+  </div>
+
+  <div class="mt-4">
+    <p class="mb-0">
+      All specifications are subject to normal manufacturing tolerances
+    </p>
+    <p>
+      For additional technical information, please contact Technical Services at
+      <span class="color-red"><a class="tel-link" href="tel:8008336954">800-833-6954</a></span>
+    </p>
+  </div>
+</div>
+<ng-template #shippingOption>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Shipping Options</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeShippingOptionsModalModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing">
+    <alert
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="showValidationError"
+    >
+      <div class="container">{{ validationErrorMessage }}</div>
+    </alert>
+    <div class="row p-3">
+      <div class="col-md-6 col-lg-6 col-sm-12 mt-2 left-details border-right">
+        <div class="w-100">
+          <h3 class="modal-title f-w">Shipping Method</h3>
+          <p class="mb-0 address-text">
+            {{ defaultShippingMethod }}
+            {{ defaultShippingConditionDesc ? "-" : "" }}
+            {{
+              defaultShippingConditionDesc ? defaultShippingConditionDesc : ""
+            }}
+          </p>
+        </div>
+        <div class="w-100 mt-2">
+          <h3 class="modal-title f-w">Shipping WareHouse</h3>
+          <p class="mb-0">
+            {{ defaultShippingWarehouse }}
+            {{ defaultShippingWarehouseDesc ? "-" : "" }}
+            {{
+              defaultShippingWarehouseDesc ? defaultShippingWarehouseDesc : ""
+            }}
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-6 col-sm-12 mt-2 left-details">
+        <div class="w-100">
+          <h3 class="modal-title f-w">Inco Terms</h3>
+          <p class="mb-0">
+            {{ defaultIncoTerms }}
+            {{ defaultIncoTermsDesc ? "-" : "" }}
+            {{ defaultIncoTermsDesc }}
+          </p>
+        </div>
+        <div class="w-100 mt-2">
+          <h3 class="modal-title f-w">Ship Via</h3>
+          <p class="mb-0">
+            {{ defaultShipVia }}
+          </p>
+        </div>
+      </div>
+      <!-- <div class="col-6 mt-2">
+          
+                 </div>
+        <div class="col-6 mt-2">
+          
+        
+        </div> -->
+    </div>
+    <!-- <div class="row mb-2 left-details">
+        <div class="col-6 mt-2">
+          
+        
+        </div>
+        <div class="col-6 mt-2">
+          
+         
+        </div>
+      </div> -->
+
+    <div class="row text-center">
+      <div class="col-12 mt-2">
+        <button
+          (click)="closeShippingOptionsModalModal()"
+          class="btn btn-secondary m-2 btn-w-100"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="shippingOptionsModal(shippingOptionTemplate)"
+          class="btn btn-outline-primary m-2 btn-w-100"
+        >
+          Change Shipping Options
+        </button>
+        <button
+          (click)="validateShipViaAddress('chooseSolution')"
+          class="btn btn-primary m-2 btn-w-100"
+          [disabled]="showValidationError"
+        >
+          Choose Solution / Add To Cart
+        </button>
+      </div>
+      <!-- <div class="col-4 mt-3">
+      
+    </div> 
+    <div class="col-4 mt-3">
+      
+    </div>  -->
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #shippingOptionTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Change Shipping Options</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeChangeShippingOptionModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing">
+    <app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+    <alert
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="showValidationError"
+    >
+      <div class="container">{{ validationErrorMessage }}</div>
+    </alert>
+    <form #form="ngForm">
+      <div class="row">
+        <div class="col-md-6 col-sm-12">
+          <h4>Shipping Methods* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="
+              changeshipViaOptions($event); incoTermsSelectedOption = null
+            "
+            [(ngModel)]="shipViaSelectedOption"
+            name="ShipVia"
+            [clearable]="false"
+            required
+          >
+            <ng-option [value]="item?.value" *ngFor="let item of shipViaOptions"
+              >{{ item?.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <h4>Inco Terms* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="changeincoTermsOptions($event)"
+            [(ngModel)]="incoTermsSelectedOption"
+            name="IncoTerms"
+            [clearable]="false"
+            required
+             [disabled]="!shipViaSelectedOption || userInfo?.isCustomer || userInfo?.isSalesPerson || userInfo?.isSalesOps"
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of incoTermsOptions"
+              >{{ item?.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-6 col-sm-12 mt-3">
+          <h4>Shipping WareHouse* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="
+              changeShippingWareHouseOptions($event);
+              incoTermsLoc2SelectedOption = null
+            "
+            [(ngModel)]="shippingWareHouseSelectedOption"
+            [clearable]="false"
+            name="shippingWareHouse"
+            required
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of shippingWareHouseOptions"
+              >{{ item?.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-6 col-sm-12 mt-3 shipvia-change">
+          <h4>Ship Via* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            class="shipvia"
+            [(ngModel)]="incoTermsLoc2SelectedOption"
+            name="incoTermsLoc2"
+            [required]="userInfo?.isCSR ? true : ((userInfo?.isCustomer || userInfo?.isSalesPerson || userInfo?.isSalesOps) && shipViaSelectedOption !='MA') ? false : true"
+            [disabled]="!shippingWareHouseSelectedOption || (disableShipVia())"
+            [addTag]="userInfo?.isCSR ? true : ((userInfo?.isCustomer || userInfo?.isSalesPerson || userInfo?.isSalesOps) && shipViaSelectedOption !='MA') ? true : false"
+            [clearable]="false"
+            (ngModelChange)="validateShipVia($event)"
+          >
+            <ng-option
+              [value]="item?.label"
+              *ngFor="let item of incoTermsLoc2Options"
+              >{{ item?.label }} <span class="span-preferred" *ngIf="item?.preferred == true">(Preferred)</span> </ng-option
+            >
+          </ng-select>
+        </div>
+      </div>
+    </form>
+
+    <div class="row text-center">
+      <div class="col-12 mt-4">
+        <button
+          class="btn btn-outline-secondary m-2 btn-w-100"
+          (click)="closeChangeShippingOptionModal()"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary m-2 btn-w-100"
+          id="confirmShippingWareHouseChange"
+          (click)="validateShipViaAddress('changeShippingOption')"
+          [disabled]="!form.dirty || !form.valid || showValidationError"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #changeDeliveryType>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Delivery Information Changed</h4>
+    <!-- <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeInfoChanges()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button> -->
+  </div>
+  <div class="modal-body change-pricing text-center">
+    <div class="row">
+      <!-- <h4>Do you wish to Continue</h4> -->
+      <p>{{ this.shippingInfoMessage }}</p>
+    </div>
+    <div class="row text-center">
+      <div class="col-12">
+        <button
+          class="btn btn-outline-secondary m-2 btn-w-100"
+          (click)="closeInfoChanges()"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary m-2 btn-w-100"
+          id="confirmShippingWareHouseChange"
+          (click)="continueChanges()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

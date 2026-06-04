@@ -1,0 +1,205 @@
+<app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+
+<div class="modal-header text-center" id="scrollTop">
+  <h4 class="modal-title f-w w-100">Recommended Accessories </h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="closeModal()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body p-20">
+  <div class="text-center">
+    <alert
+      [type]="'info'"
+      class="alert-info-v1"
+      [dismissible]="true"
+      *ngIf="showSuccessAlert && !alertData?.message"
+    >
+      <p class="mb-0">Product added to quote successfully!!</p>
+    </alert>
+    <alert
+      [type]="alertType"
+      class="alert-info-v1"
+      [dismissible]="true"
+      *ngIf="showSuccessAlert && alertData?.message"
+    >
+      <p class="mb-0">{{ alertData?.message }}</p>
+    </alert>
+    <tabset
+      responsiveTabs
+      [justified]="true"
+      [class.changeCursor]="accessoryDetails.length == 1"
+      *ngIf="accessoryDetails.length > 0"
+    >
+      <ng-container *ngFor="let item of accessoryDetails">
+        <tab class="tab-content" [active]="activeTab  === item.key">
+          <ng-template tabHeading>{{ item?.key }}</ng-template>
+          <div class="row mt-3 ">
+            <ngx-table
+              *ngIf="item?.value?.references.length > 0"
+              [configuration]="configuration"
+              [data]="item?.value?.references"
+              [columns]="columns"
+              class="d-inline-table ref-table"
+              [rows]="item?.value?.references.length"
+            >
+              <ng-template let-row>
+                <td *ngFor="let column of columns">
+                  <ng-container *ngIf="column.key === 'qty'">
+                    <input
+                    class="form-control"
+                      type="number"
+                      placeholder="0"
+                      [(ngModel)]="row.quantity"
+                      (keypress)="keyPressNumbers($event)"
+                      [ngClass]="{'errorBorder': myForm.controls['qtyrolls'].invalid}"
+                      min="1"
+                      step="1" 
+                    />
+                    <p class="m-0 text-center pt-1">{{ row?.inventoryUOM }}</p>
+                  </ng-container>
+                  <img
+                    *ngIf="column.key === 'colorImgURL'"
+                    [src]="
+                      row?.colorImgURL ||
+                      'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                    "
+                    alt=""
+                    class=""
+                  />
+                  <p
+                    *ngIf="
+                      column.key !== 'colorImgURL' &&
+                      column.key !== 'qty' &&
+                      column.key !== 'price'
+                    "
+                  >
+                    {{ row[column.key] }}
+                  </p>
+                  <ng-container *ngIf="column.key === 'price' && this.userService?.isShowPrice()">
+                    <div class="cssload-container" *ngIf="row.isLoading">
+                      <div class="cssload-loading"><i></i><i></i><i></i><i></i></div>
+                    </div>
+                    <p *ngIf="!row.isLoading">
+                      {{
+                        row[column.key] === "0" || row[column.key] === "NA"
+                          ? "NA"
+                          : "$" + row[column.key] + "/ ea."
+                      }}
+                    </p>
+                  </ng-container>
+                </td>
+              </ng-template>
+            </ngx-table>
+          </div>
+        </tab>
+      </ng-container>
+    </tabset>
+
+    <!-- <div *ngFor="let item of accessoryDetails">
+      <h4>{{ item?.key }}</h4>
+      <!-- <form data-toggle="validator" (ngSubmit)="submit(myForm)" novalidate> --
+      <div class="mb-2 overflow-auto">
+        <ngx-table
+          *ngIf="item?.value?.references.length > 0"
+          [configuration]="configuration"
+          [data]="item?.value?.references"
+          [columns]="columns"
+          class="d-inline-table"
+        >
+          <ng-template let-row>
+            <!-- <td> -->
+            <!-- Error Message -->
+            <!-- <p class="m-0 text-center error-msg">Please enter a valid quantity. </p> -->
+            <!-- <ng-select placeholder="0">
+              <ng-option>1</ng-option>
+              <ng-option>2</ng-option>
+              <ng-option>3</ng-option>
+            </ng-select>
+            <p class="m-0 text-center pt-1">CT</p> -->
+
+            <!-- In Quote Button -->
+            <!-- <button _ngcontent-nke-c166="" class="btn btn-primary mb-2">In Quote</button> -->
+            <!-- </td> -->
+            <!-- <td class="text-center">
+            <img [src]="row.productImage" alt="" class="" />
+          </td> --
+
+            <td *ngFor="let column of columns">
+              <!-- <ng-container *ngIf="column.key === 'qty'">
+                <ng-select
+                  placeholder="0"
+                  [(ngModel)]="row.quantity"
+                  [ngClass]="{
+                    errorBorder: myForm.controls['qtyrolls'].invalid
+                  }"
+                >
+                  <ng-option
+                    *ngFor="let dropItem of quantityDropdownData"
+                    value="{{ dropItem?.value }}"
+                    >{{ dropItem?.label }}</ng-option
+                  >
+                </ng-select>
+                <p class="m-0 text-center pt-1">{{ row?.inventoryUOM }}</p>
+              </ng-container> --
+              <ng-container *ngIf="column.key === 'qty'">
+                <input
+                class="form-control"
+                  type="number"
+                  placeholder="0"
+                  min="1"
+                  step="1"
+                  [(ngModel)]="row.quantity"
+                  [ngClass]="{
+                    errorBorder: myForm.controls['qtyrolls'].invalid
+                  }"
+                  (change)="addtoQuote($event, row?.code, row?.inventoryUOM, row)"
+                >
+                <p class="m-0 text-center pt-1">{{ row?.inventoryUOM }}</p>
+              </ng-container>
+              <img
+                *ngIf="column.key === 'colorImgURL'"
+                [src]="row?.colorImgURL"
+                alt=""
+                class=""
+              />
+              <p
+                class="mb-0"
+                *ngIf="column.key !== 'colorImgURL' && column.key !== 'qty'"
+              >
+                {{ row[column.key] }}
+              </p>
+            </td>
+          </ng-template>
+        </ngx-table>
+      </div>
+    </div> -->
+    <div class="row mt-4 mb-4 full-btns p-50">
+      <div class="col-md-3" *ngIf="showContinueShopping">
+        <button class="btn btn-outline-secondary mb-2" (click)="continueShopping()">
+          Continue Shopping
+        </button>
+      </div>
+      <div class="col-md-3">
+        <button class="btn btn-secondary mb-2" (click)="closeModal()">
+          Return to Edit Quote
+        </button>
+      </div>
+      <div class="col-md-3" *ngIf="accessoryDetails[0]?.value?.references.length > 0" >
+        <button
+          class="btn btn-primary mb-2"
+          (click)="addtoCart()"
+          [disabled]="disableAddToCartBtn()"
+        >
+          Add to Cart
+        </button>
+      </div>
+    </div>
+    <!-- </form> -->
+  </div>
+</div>

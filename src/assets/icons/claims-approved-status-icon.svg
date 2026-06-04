@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="45" height="45" viewBox="0 0 45 45">
+  <defs>
+    <filter id="Ellipse_153" x="0" y="0" width="45" height="45" filterUnits="userSpaceOnUse">
+      <feOffset input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.051"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="claims-approved-status-icon" transform="translate(9 9)">
+    <g transform="matrix(1, 0, 0, 1, -9, -9)" filter="url(#Ellipse_153)">
+      <circle id="Ellipse_153-2" data-name="Ellipse 153" cx="13.5" cy="13.5" r="13.5" transform="translate(9 9)" fill="#fff"/>
+    </g>
+    <path id="Icon_ionic-ios-checkmark-circle" data-name="Icon ionic-ios-checkmark-circle" d="M13.358,3.375a9.983,9.983,0,1,0,9.983,9.983A9.981,9.981,0,0,0,13.358,3.375ZM18.469,10.6l-6.417,6.446h0a.867.867,0,0,1-.557.264.84.84,0,0,1-.562-.274L8.242,14.347a.191.191,0,0,1,0-.274l.854-.854a.186.186,0,0,1,.269,0L11.5,15.35l5.855-5.9a.19.19,0,0,1,.134-.058h0a.174.174,0,0,1,.134.058l.84.869A.189.189,0,0,1,18.469,10.6Z" transform="translate(0.142 0.142)" fill="#b4dbad" stroke="#fff" stroke-width="1"/>
+  </g>
+</svg>

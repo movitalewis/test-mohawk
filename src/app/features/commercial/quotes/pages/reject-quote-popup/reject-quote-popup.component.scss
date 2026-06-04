@@ -1,0 +1,10 @@
+@import "src/styles/mixins/box-shadow.mixin";
+@import 'src/styles/mixins/breakpoints';
+
+.modal-body {
+    padding: 0 30px;
+
+    @include breakpoint-range($max : sm) {
+        padding: 0 20px;
+    }
+}

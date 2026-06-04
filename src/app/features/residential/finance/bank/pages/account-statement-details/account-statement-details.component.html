@@ -1,0 +1,86 @@
+<app-loader *ngIf="spinnerLoading"></app-loader>
+<div class="container">
+    <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+    <div id="print-area">
+    <h2 class="text-center mb-4">STATEMENT FOR {{this.statementDate}}</h2>
+    <div class="row mb-3 hide-element">
+        <div class="col-12 col-sm-5 back-to" routerLink="/residential/finance/bank/account-statements"><span class="mohawak-icon angle-left-icon back-i"></span>Back To Statements</div>
+            <div class="col-12 col-sm-7 legend col-12 col-sm-7 back-to d-flex justify-content-end align-items-center">
+                <div class="me-3" (click)="xchangeLegendModal()"><span class="mohawak-icon legend-icon img"></span>View Legend</div>
+                <div class="me-3"  (click)="printPage()"><span class="mohawak-icon print-icon back-i"></span>Print</div>
+                <div class="me-3"  (click)="viewPdf()"><span class="mohawak-icon pdf-icon back-i"></span>View PDF</div>
+                <div class="me-3" (click)="viewPdf('share')"><span class="mohawak-icon share-icon back-i"></span>Share</div>
+            </div>
+        </div>
+        <div class="_card-container">
+            <div>
+                <ngx-table [data]="data" [columns]="columns" [configuration]="configuration">
+                    <ng-template let-row>
+                        <td>{{ row.currentDue | currency: priceLabel :'symbol':'1.2-2' || 'NA' }}</td>
+                        <td>{{ row.past30Due | currency: priceLabel :'symbol':'1.2-2' || 'NA' }}</td>
+                        <td>{{ row.past60Due | currency: priceLabel :'symbol':'1.2-2' || 'NA' }}</td>
+                        <td>{{ row.past90Due | currency: priceLabel :'symbol':'1.2-2' || 'NA' }}</td>
+                        <td>{{ row.past240Due | currency: priceLabel :'symbol':'1.2-2' || 'NA' }}</td>
+                        <td>{{ row.past241Due | currency: priceLabel :'symbol':'1.2-2' || 'NA' }}</td>
+                        <td>{{ row.totalDue | currency: priceLabel :'symbol':'1.2-2' || 'NA' }}</td>
+                    </ng-template>
+                </ngx-table>
+                <div class="margin-top">
+                    <div class="page-size-container col-md-12 text-end mb-3 hide-element">
+                        <label for="pageSize" class="page-size-label">Show</label>
+                        <select
+                            id="pageSize"
+                            class="page-size-dropdown"
+                            [ngModel]="tableItemsSize"
+                            (change)="onPageSizeChange($event.target)"
+                        >
+                            <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+                        </select>
+                    </div>
+                    <ngx-table 
+                        [data]="
+                            data1
+                                | paginate
+                                    : {
+                                        id: 'accountStatementTable',
+                                        itemsPerPage: tableItemsSize,
+                                        currentPage: pageIndex,
+                                        totalItems: data1?.length
+                                        }
+                        "
+                        [columns]="columns1" 
+                        [configuration]="configuration1" 
+                        class="margin-top" 
+                        (event)="tableSort($event)"
+                        #table2
+                    >
+                        <ng-template let-row>
+                            <td>{{ row.documentNumber || 'NA' }}</td>
+                            <td>{{ row.accountStatementType || 'NA' }}</td>
+                            <td>{{ row.documentDate | date : "MM/dd/yyyy" || 'NA' }}</td>
+                            <td>{{ row.finalDueDate | date : "MM/dd/yyyy" || 'NA' }}</td>
+                            <td>{{ row.openAmount | currency: priceLabel :'symbol':'1.2-2' || 'NA' }}</td>
+                        </ng-template>
+                    </ngx-table>
+                    <div class="row mt-4 hide-element" *ngIf="data1.length > 0">
+                        <div class="d-flex justify-content-center">
+                            <pagination-controls
+                            id="accountStatementTable"
+                            [responsive]="true"
+                            [currentPage]="pageIndex"
+                            [nextLabel]="''"
+                            [previousLabel]="''"
+                            (pageChange)="onTableDataChange($event)"
+                        ></pagination-controls>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Legend Popup -->
+<ng-template #template>
+<xchange-legend-popup></xchange-legend-popup>
+</ng-template>

@@ -1,0 +1,13 @@
+@import '/src/styles/colors';
+@import '/src/styles/my-profile';
+
+.subscribe-list {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+
+    &>li {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+}

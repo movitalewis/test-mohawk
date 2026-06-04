@@ -1,0 +1,85 @@
+@import "/src/styles/colors";
+@import "/src/styles/mixins/breakpoints";
+
+.product-name {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 18px;
+  line-height: 22px;
+  small {
+    display: block;
+    font-size: 18px;
+    color: $color-gray;
+    font-weight: 400;
+    // padding-left: 10px;
+  }
+}
+
+.product-colors-container {
+  padding: 20px 0;
+  border-top: 1px solid $color-medium-gray;
+  border-bottom: 1px solid $color-medium-gray;
+}
+.colors-list-ul {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  & > li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 101px;
+    @include breakpoint-range($max: md) {
+      width: calc(20% - 4px);
+    }
+    a {
+      display: flex;
+      width: 100%;
+      padding: 3px;
+      border-radius: 5px;
+      cursor: pointer;
+      img {
+        width: 100%;
+      }
+    }
+
+    .color-name {
+      text-align: center;
+      line-height: 18px;
+      font-size: 16px;
+      margin-top: 10px;
+      @include breakpoint-range($max: xs) {
+        font-size: 14px;
+        margin-top: 5px;
+        line-height: 16px;
+        word-break: break-all;
+      }
+    }
+
+    .color-code {
+      @include breakpoint-range($max: xs) {
+        font-size: 14px;
+        line-height: 16px;
+      }
+    }
+    &.active {
+      a {
+        border: 3px solid $color-red;
+      }
+    }
+  }
+}
+
+.change-image-mod-btns {
+  @include breakpoint-range($max: sm) {
+    .btn-secondary {
+      width: 130px;
+      margin: 0;
+    }
+  }
+}
+.left-carousal {
+  img {
+    max-height: 500px;
+  }
+}

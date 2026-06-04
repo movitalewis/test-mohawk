@@ -1,0 +1,102 @@
+@import "/src/styles/colors";
+@import "/src/styles/mixins/breakpoints";
+
+.postordermodification{
+
+  .pdp-container {
+    background: $color-white;
+    padding: 25px;
+    border-radius: 5px;
+    border: 1px solid $color-light-gray;
+  
+    @include breakpoint-range($max: sm) {
+      padding: 15px;
+    }
+  }
+  
+  .enter-quantity-tabs {
+    display: block;
+    .tab-content {
+      padding: 20px 0;
+    }
+  }
+  
+  .card {
+    --mx-card-border-width: 0;
+    .card-header {
+      background: $color-medium-gray;
+      font-weight: 600;
+    }
+    .card-body {
+      box-shadow: 0px 0px 6px 0 rgb(0 0 0 / 10%);
+      border: none;
+    }
+  }
+  .card-header {
+    &:first-child {
+      display: flex;
+      align-items: center;
+    }
+  }
+  
+  .recomonded-products {
+    display: flex;
+    flex-wrap: wrap;
+    & > li {
+      margin: 0 12px;
+      .p-image {
+        width: 153px;
+        padding: 10px;
+        box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: center;
+        img {
+          max-width: 100%;
+        }
+      }
+      .p-name {
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 0;
+      }
+    }
+  }
+  
+  .specification-container {
+    display: block;
+    width: 100%;
+    margin-bottom: 20px;
+    h4 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+  }
+  
+  @include breakpoint-range($max: xs) {
+    .order-actions {
+      flex-wrap: wrap;
+      .request-quote-btn,
+      .place-order-btn {
+        width: 100%;
+        margin-left: 0 !important;
+      }
+    }
+  }
+  .form-control {
+    &.ng-invalid {
+      color: unset;
+      border-color: unset;
+      border: 1px solid #b1b1b1;
+      &.ng-touched {
+        color: #ce0e2d;
+        border-color: #ce0e2d;
+      }
+    }
+  }
+  
+}
+
+.tel-link{
+  text-decoration: none;
+}

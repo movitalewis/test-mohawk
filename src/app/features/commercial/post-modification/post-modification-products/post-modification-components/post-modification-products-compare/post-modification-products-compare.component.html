@@ -1,0 +1,108 @@
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <h2 class="text-center mb-4">Compare Products</h2>
+  <div class="row mb-3">
+    <div class="col-6 col-sm-6 back-to" (click)="returnPreviousUrl()">
+      <span class="mohawak-icon angle-left-icon back-i"></span>Back To Results
+    </div>
+    <div class="col-6 col-sm-6 pdf-print">
+      <div><span class="mohawak-icon pdf-icon pdf"></span>View PDF</div>
+    </div>
+  </div>
+  <div>
+    <div class="compare-list-container mt-3">
+      <ul class="compare-list mt-3">
+        <li *ngFor="let item of selectedProducts">
+          <button
+            class="mohawak-icon close-icon close-btn"
+            (click)="removeCompareItem(item)"
+          ></button>
+          <div class="image">
+            <img
+              [src]="
+                item?.image
+                  ? item?.image
+                  : 'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+              "
+              alt=""
+            />
+          </div>
+          <h4>{{ item?.name || "NA" }}</h4>
+          <div class="w-100 d-flex">
+            <p class="left-p w-50 text-start">{{ item?.type || "NA" }}</p>
+            <p class="right-p w-50 text-end">Mohawk</p>
+          </div>
+
+          <!-- <h4>{{ item?.code||"NA" }}</h4> -->
+          <!-- <p>{{ item?.productType || "NA" }}</p> -->
+        </li>
+      </ul>
+    </div>
+
+    <div class="compare-div">
+      <div class="spec-div">
+        <h3>Specifications</h3>
+        <div>
+          <table class="spec-table">
+            <tr *ngFor="let item of columns">
+              <th>{{ item?.title }}</th>
+              <td *ngFor="let p of this.compareProducts; let i = index">
+               
+                <span *ngFor="let c of toKeys(p) ; let i =index">
+                  <span *ngIf="c.key == item.key; else notFound">{{
+                    c?.value || "NA"
+                  }}</span>
+                  <ng-template #notFound>
+                    <!-- <span *ngIf="toKeys(p).length -1 == i">
+                        NA
+                    </span> -->
+                  </ng-template>
+                  
+                  
+                </span>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="design-div">
+        <h3>Design</h3>
+        <div>
+          <table class="design-table">
+            <tr *ngFor="let item of designColumns" style="width: 100%">
+              <th>{{ item?.title }}</th>
+              <td *ngFor="let p of this.compareProducts; let i = index">
+                <span *ngFor="let c of toKeys(p)"
+                  ><span *ngIf="c.key == item.key">{{ c?.value }}</span></span
+                >
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="sus-div">
+        <h3>Sustainability</h3>
+        <div>
+          <table class="sus-table">
+            <tr *ngFor="let item of susColumns">
+              <th>{{ item?.title }}</th>
+
+              <td *ngFor="let p of compareProducts; let i = index">
+                <span *ngFor="let c of toKeys(p)"
+                  ><span *ngIf="c.key == item.key">{{
+                    c?.value || "NA"
+                  }}</span></span
+                >
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-div col-12 d-flex justify-content-center">
+    <button class="btn btn-primary" (click)="returnPreviousUrl()">
+      BACK TO RESULT
+    </button>
+  </div>
+</div>

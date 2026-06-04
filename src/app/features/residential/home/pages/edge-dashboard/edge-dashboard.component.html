@@ -1,0 +1,256 @@
+<div class="container">
+    <app-loader *ngIf="spinnerLoading"></app-loader>
+    <div class="row mt-3 align-items-stretch  mb-4">
+        <div class="col-sm-12 col-xs-12 col-md-6">
+            <div class="search-box-widget  sales-top-bar-height">
+                <label class= "ex-sales-landpage-heading">Sales</label>
+                <img class="edge-top-logo mt-3"[src]="edgeLogo"  />
+                <div class="mt-4 sales-slider">
+                    <div class="sales-bar-container" *ngIf="salesGoals?.length">
+                        <!-- Progress Bar -->
+                        <div class="sales-bar">
+                          <!-- Progress -->
+                          <div class="sales-bar-progress" [style.width]="getClampedPosition(sales.totalSalesProgress, sales.premierGoal)">
+                            <span 
+                              class="current-sales-label"
+                              [ngClass]="{'text-white': isLabelOverlapping()}"
+                              *ngIf="currentSales > 0">
+                              {{ sales?.totalSalesRound }}
+                            </span>
+                          </div>
+                          
+                      
+                          <!-- Milestones -->
+                                                <div
+                        class="sales-milestone"
+                        *ngFor="let goal of salesGoals"
+                        [style.left]="getVerticalPosition(goal.amount)">
+                        <div class="milestone-line"></div>
+                        <div class="milestone-label">
+                            {{ goal.label }}<br />${{ goal.amount / 1000 }}K
+                        </div>
+                        </div>
+                          <!-- Net Sales Marker -->
+                          <div
+                          class="sales-marker"
+                          [style.left]="getnetClampedPosition(sales?.previousYearSales)"
+                        >
+                          <div class="triangle"></div>
+                          <div class="sales-marker-line"></div>
+                          <div class="marker-label">
+                            {{ previousYearDesc }}<br />
+                            {{edgeDashboardNetSales}}<br />
+                            <div class="marker">{{ sales?.previousYearSalesRound }}</div>
+                          </div>
+                        </div>
+                        </div>
+                      </div>
+                         
+                  </div>
+                  <div class="mt-db-msr-txt" *ngIf="salesGoals?.length">Measures progress towards next year's Edge status</div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-xs-12 col-md-6 mt-3 mt-md-0">
+            <div class="search-box-widget  sales-top-bar-height">
+                <label class= "ex-sales-landpage-heading">Rewards <img src="/assets/images/dashboard-icons/right-arrow-red.png" height="16px" alt="Edge Select"></label>
+                <div class="row mt-3">
+                    <div class="col-xs-6 col-sm-6 col-md-4 rewards-cont">
+                        <span>Balance Points</span>
+                        <p>{{rewards?.balancePoints}}</p>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-4 rewards-cont">
+                        <span>Earned Points</span>
+                        <p>{{rewards?.earnedPoints}}</p>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-4 rewards-cont">
+                        <span>Spent Points</span>
+                        <p>{{rewards?.spentPoints}}</p>
+                    </div>
+                </div>
+                <label class="ex-sales-landpage-heading">Reviews <img src="/assets/images/dashboard-icons/right-arrow-red.png" height="16px" alt="Edge Select"></label>
+                <div class="row mt-3">
+                    <div class="col-xs-6 col-sm-6 col-md-4 rewards-cont">
+                        <span>Total Reviews</span>
+                        <p>{{reviews?.reviewCount}}</p>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-4 rewards-cont">
+                        <span>Average Rating</span>
+                        <div class="star-ratings">
+                            <p>{{ reviews?.rating || 0.0 }}</p>
+                            <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
+                              <fa-icon
+                                [icon]="getStarIcon(i)"
+                                [ngClass]="getStarClass(i)"
+                                class="fa-star"
+                              ></fa-icon>
+                            </ng-container>
+                          </div>
+                          
+                          
+                    </div>
+                    
+                </div>
+        </div>
+        </div>
+    </div>
+    <!-- <div class="row mt-3 mb-3">
+        <div class="col-sm-12 col-xs-12 col-md-6 chart-graph-height">
+            <div class="search-box-widget">
+                <label class= "ex-sales-landpage-heading">Flooring Growth Rebate 2024</label>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-xl-5 chart-align-bottom">
+                            <div class="wrapper">
+                                <div class="c100" [ngClass]="'p' + (sales?.hardSurfaceGrowthGoalPercentage || 0) + ' orange'">
+                                    <div class="slice">
+                                      <div class="bar"></div>
+                                      <div class="fill"></div>
+                                    </div>
+                                </div>
+                                <div class="c100 c80"[ngClass]="'p' + (sales?.hardSurfaceSFGoalPercentage || 0) + ' blue'">
+                                    <div class="slice">
+                                      <div class="bar"></div>
+                                      <div class="fill"></div>
+                                    </div>
+                                </div>
+                                <div class="c100 c60"[ngClass]="'p' + (sales?.softSurfaceGoalPercentage || 0) + ' red'">
+                                    <div class="slice">
+                                      <div class="bar"></div>
+                                      <div class="fill"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        <div class="color-repr-main-div">
+                            <div class="color-repr-div">
+                                <div class="color-box-repr orange"></div>
+                                <p>Hard Surface Growth Goal</p>
+                            </div>
+                            <div class="color-repr-div">
+                                <div class="color-box-repr blue"></div>
+                                <p>Hard Surface SF Goal</p>
+                            </div>
+                            <div class="color-repr-div">
+                                <div class="color-box-repr red"></div>
+                                <p>Soft Surface Goal</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-xl-7">
+                        <div class="chart-cont mt-3">
+                            <div class="chart-per orange">{{sales?.hardSurfaceGrowthGoalPercentage}}%</div>
+                            <div class="chart-values">
+                                <h1>Hard Surface Growth Goal <img src="/assets/images/dashboard-icons/Xchange_Info_icon.png" alt="Info"></h1>
+                                <div class="chart-values-disc">
+                                    <span>Previous Year</span>
+                                    <p>${{sales?.previousYearSales}}</p>
+                                </div>
+                                <div class="chart-values-disc">
+                                    <span class="red">Current</span>
+                                    <p>${{sales?.currentSales}}</p>
+                                </div>
+                                <div class="chart-values-disc">
+                                    <span class="red">Goal</span>
+                                <p>${{sales?.salesGoal10}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-cont">
+                            <div class="chart-per blue">{{sales?.hardSurfaceSFGoalPercentage}}%</div>
+                            <div class="chart-values">
+                                <h1>Hard Surface SF Goal <img src="/assets/images/dashboard-icons/Xchange_Info_icon.png" alt="Info"></h1>
+                                <div class="chart-values-disc">
+                                    <span class="red">Current</span>
+                                    <p>{{sales?.currentHsSf}} sq ft</p>
+                                </div>
+                                <div class="chart-values-disc">
+                                    <span class="red">Goal</span>
+                                    <p>{{sales?.hsSfGoal}} sq ft</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-cont">
+                            <div class="chart-per red">{{sales?.softSurfaceGoalPercentage}}%</div>
+                            <div class="chart-values">
+                                <h1>Soft Surface Goal <img src="/assets/images/dashboard-icons/Xchange_Info_icon.png" alt="Info"></h1>
+                                <div class="chart-values-disc">
+                                    <span class="red">Current</span>
+                                    <p>${{sales?.currentSoftSurface}}</p>
+                                </div>
+                                <div class="chart-values-disc">
+                                    <span class="red">Goal</span>
+                                    <p>${{sales?.previousYearSoftSurface}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-xs-12 col-md-6 chart-graph-height mt-3 mt-md-0">
+            <div class="search-box-widget">
+                <label class= "ex-sales-landpage-heading">Cushion Growth Rebate 2024</label>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-xl-5 chart-align-bottom">
+                        <div class="wrapper">
+                            <div class="c100 " [ngClass]="'p' + (sales?.growthGoalPercentage || 0) + ' orange'">
+                                <div class="slice">
+                                  <div class="bar"></div>
+                                  <div class="fill"></div>
+                                </div>
+                            </div>
+                            <div class="c100 c80 "[ngClass]="'p' + (sales?.cushionSYGoalPercentage || 0) + ' blue'">
+                                <div class="slice">
+                                  <div class="bar"></div>
+                                  <div class="fill"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="color-repr-main-div">
+                            <div class="color-repr-div">
+                                <div class="color-box-repr orange"></div>
+                                <p>Growth Goal</p>
+                            </div>
+                            <div class="color-repr-div">
+                                <div class="color-box-repr blue"></div>
+                                <p>Cushion SY Goal</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-xl-7">
+                        <div class="chart-cont mt-3">
+                            <div class="chart-per orange">{{sales?.growthGoalPercentage}}%</div>
+                            <div class="chart-values">
+                                <h1>Growth Goal <img src="/assets/images/dashboard-icons/Xchange_Info_icon.png" alt="Info"></h1>
+                                <div class="chart-values-disc">
+                                    <span>Previous Year</span>
+                                    <p>${{sales?.previousYearPadSales}}</p>
+                                </div>
+                                <div class="chart-values-disc">
+                                    <span class="red">Current</span>
+                                    <p>${{sales?.currentPadSales}}</p>
+                                </div>
+                                <div class="chart-values-disc">
+                                    <span class="red">Goal</span>
+                                    <p>${{sales?.padGoal10}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-cont">
+                            <div class="chart-per blue">{{sales?.cushionSYGoalPercentage}}%</div>
+                            <div class="chart-values">
+                                <h1>Cushion SY Goal <img src="/assets/images/dashboard-icons/Xchange_Info_icon.png" alt="Info"></h1>
+                                <div class="chart-values-disc">
+                                    <span class="red">Current</span>
+                                    <p>{{sales?.currentPadSY}} sq yd</p>
+                                </div>
+                                <div class="chart-values-disc">
+                                    <span class="red">Goal</span>
+                                    <p>{{sales?.padSYGoal}} sq yd</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+</div>

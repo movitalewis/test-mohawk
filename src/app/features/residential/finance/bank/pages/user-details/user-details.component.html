@@ -1,0 +1,60 @@
+<div class="container">
+    <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+    <h2 class="text-center mb-4">Add Bank Account</h2>
+    <div class="row mb-3">
+        <div class="col-6 col-sm-6 back-to"><span class="mohawak-icon angle-left-icon back-i"></span>Back To Bank Accounts</div>        
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="_card-container">
+                <div class="edit-btn">
+                    <button class="btn btn-primary">EDIT USER</button>        
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <h4>Name on Account*</h4>
+                        <input type='text' placeholder='Name Or Company Name' class='form-control'>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Account Type*</h4>
+                        <ng-select placeholder="Select Amount Type">
+                            <ng-option>1</ng-option>
+                        </ng-select>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Currency</h4>
+                        <input type='text' [disabled]='true' placeholder='USD' class='form-control'>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <h4>Bank Routing #*</h4>
+                        <input type='text' placeholder='Enter Routing #' class='form-control'>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Confirm Bank Routing #*</h4>
+                        <input type='text' placeholder='Enter Routing #' class='form-control'>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <h4>Bank Account #*</h4>
+                        <input type='text' placeholder='Enter Account #' class='form-control'>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Confirm Bank Account #*</h4>
+                        <input type='text' placeholder='Enter Account #' class='form-control'>
+                    </div>
+                </div>
+                <div class="row align-center">
+                    <div class="col-md-3 btn-grid col-6">
+                        <button class="btn btn-outline-secondary" routerLink = "/residential/finance/bank/accounts-list">Cancel</button>
+                    </div>
+                    <div class="col-md-3 mb-3 btn-grid col-6">
+                        <button class="btn btn-primary" routerLink = "/residential/finance/bank/accounts-list">Add Account</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+<div class="container mt-5 mb-5">
+    <div class="row margin-0">
+      <app-product-features [list]="salesOpsAccessList"></app-product-features>
+    </div>
+
+    <div class="_card-container mt-1">
+        <h2 class="filter-by-widget-text text-center">Claims - Pending Approval</h2>
+
+        <div class="col-12 mt-4">
+            <ngx-table
+              [configuration]="configuration"
+              [data]="data"
+              [columns]="columns">
+              
+            </ngx-table>
+          </div>
+
+    </div>
+  </div>
+  

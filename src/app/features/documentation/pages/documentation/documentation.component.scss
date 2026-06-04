@@ -1,0 +1,131 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+
+.doc-title {
+    margin: 30px 0 20px 0;
+    border-bottom: 1px solid $color-gray;
+    padding-bottom: 15px;
+    font-size: 24px;
+}
+
+.logo-list {
+    display: flex;
+    flex-wrap: wrap;
+
+
+    &>li {
+        padding: 20px;
+        border: 1px dotted $color-gray;
+        border-radius: 10px;
+        margin: 5px;
+        width: 400px;
+        background: #fff;
+
+        .dark {
+            background: $color-medium-black;
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+    }
+}
+
+
+.code-block {
+    width: 100%;
+    display: block;
+    font-size: 12px;
+    background: #f7f7f7;
+    padding: 15px 20px 10px 20px;
+    border-radius: 5px;
+    position: relative;
+    margin-top: 20px;
+    background: #fff;
+
+    &::before {
+        position: absolute;
+        content: "Code:";
+        top: -10px;
+        background: #f7f7f7;
+        padding: 2px 10px;
+        border-radius: 5px;
+    }
+}
+
+.mw400 {
+    max-width: 400px;
+}
+
+.table {
+    border: 1px dotted $color-gray;
+    margin-right: 20px;
+    background: #fff;
+
+    tr {
+
+        td,
+        th {
+            padding: 5px 20px;
+            border: 1px dotted $color-gray;
+            border-color: $color-gray;
+        }
+    }
+}
+
+.card {
+    border: none;
+  
+    .card-header {
+      background-color: $color-medium-gray;
+      border: none;
+      padding: 0px;
+  
+      button {
+        text-decoration: none;
+        text-transform: capitalize;
+        border: none !important;
+        padding-top: 0.75rem;
+        margin-bottom: 0rem;
+      }
+      .down-icon{
+        transform: rotate(-270deg);
+        display: inline-flex;
+        font-size: 0.625rem;
+        margin-left: 0.313rem;
+      }
+      .up-icon{
+        transform: rotate(-90deg);
+        display: inline-flex;
+        font-size: 0.75rem;
+        margin-left: 0.625rem;
+      }
+    }
+  }
+  ::ng-deep{
+  @include breakpoint-range($max : xs) {
+    .nav-tabs li {
+         display: none;
+      }
+      .nav-tabs .nav-item.active .nav-link::before 
+         {
+              display: none;
+         }
+}
+.nav-tabs li.active {
+    display: block;
+}
+.nav-tab-mobile li{
+    display: block;
+}
+  }
+  
+.menu-bars{
+text-align: right;
+color: $color-red;
+border: none;
+background: transparent;
+transform: translateY(14px);
+z-index: 99999;
+position: absolute;
+right: 20px;
+}

@@ -1,0 +1,522 @@
+<!-- <app-loader *ngIf="loadingFlag"></app-loader> -->
+<ng-container>
+  <div class="container"  #scrollToTop>
+    <xchange-breadcrumb
+      [breadcrumbItems]="breadcrumbItems"
+    ></xchange-breadcrumb>
+    <div class="buttons text d-flex flex-wrap justify-content-center mt-4 mb-4">
+      <button
+        class="btn btn-primary"
+        (click)="signUpBillPayModal(termsAndConditions)"
+        [hidden]="!(payBillsPermission && (payBillFlag === 'Z' || payBillFlag === 'EMPTY'))"
+      >
+        SIGN UP FOR PAPERLESS BILLING / BILL PAY
+      </button>
+    </div>
+
+    <!-- Page Header -->
+    <h2 class="text-center mb-4">Make A Payment / Receivables</h2>
+    <div class="recievable-header">
+      <div class="text-center text-md-start">
+        <p class="mb-2 mt-2">
+          <b>Total Scheduled Amount</b> = ${{
+            !!receivablesData?.openReceivablesData
+              ? totalScheduledAmount(receivablesData.openReceivablesData)
+              : 0
+          }}
+        </p>
+      </div>
+      <div class="text-center text-md-start">
+        <div class="icon-link align-center">
+          <button type="button" (click)="openModal(legendTemplate)">
+            <span class="mohawak-icon legend-icon"></span>Legend
+          </button>
+          <button type="button" (click)="openModal(creditAnalystTemplate)">
+            <span class="mohawak-icon document-icon"></span>Contact Your Credit
+            Analyst
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Alerts -->
+    <div class="mb-4">
+      <div class="mb-2">
+        <alert
+          type="success"
+          class="dashboard-page-alert"
+          [dismissible]="true"
+          *ngIf="confirmationNumber"
+        >
+          <div class="container">
+            The payment has been scheduled successfully, and you can reference
+            it with the Confirmation Number: {{ confirmationNumber }}
+          </div>
+        </alert>
+      </div>
+      <alert
+        type="info"
+        class="dashboard-page-alert"
+        [dismissible]="true"
+        [hidden]="selected.length > 0"
+      >
+        <div class="container">
+          Please make a selection from the provided list to make a payment
+        </div>
+      </alert>
+      <div class="mt-2">
+        <alert
+          type="danger"
+          class="dashboard-page-alert "
+          [dismissible]="true"
+          *ngIf="errorMessage"
+        >
+          <div class="container">
+            {{ errorMessage }}
+          </div>
+        </alert>
+        </div>
+        <alert
+        type="success"
+        class="dashboard-page-alert"
+        [dismissible]="true"
+        *ngIf="successMessage"
+      >
+        <div class="container">
+          {{ successMessage }}
+        </div>
+      </alert>
+    </div>
+    <!-- Page Body -->
+    <div class="_card-container">
+      <div class="row brd-pd">
+        <div class="col-md-3 col-lg-3 d-flex align-items-end">
+          <button
+            class="btn btn-primary w-100"
+            routerLink="/residential/finance/payments/make-payment"
+            [disabled]="!payBillsPermission || selected.length === 0"
+            (click)="storeSelected()"
+          >
+            Make a Payment
+          </button>
+        </div>
+        <div class="col-md-6 col-sm-12 col-xs-12">
+          <div class="payment-details">
+            <ul>
+              <li>
+                <span>Current Balance</span>
+                <p>
+                  {{ priceLabel }}
+                  {{ receivablesData?.currentDue != null && receivablesData?.currentDue !== undefined 
+                    ? (receivablesData?.currentDue | number : '1.2-2') 
+                    : 'NA' }}
+                </p>
+              </li>
+              <li>
+                <span>Past Due</span>
+                <p>
+                  {{ priceLabel }}
+                  {{ receivablesData?.pastDue != null && receivablesData?.pastDue !== undefined 
+                    ? (receivablesData?.pastDue | number : '1.2-2') 
+                    : 'NA' }}
+                </p>
+              </li>
+              <li>
+                <span>Total</span>
+                <p>
+                  {{ priceLabel }}
+                  {{ receivablesData?.totalDue != null && receivablesData?.totalDue !== undefined 
+                    ? (receivablesData?.totalDue | number : '1.2-2') 
+                    : 'NA' }}
+                </p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+          <div class="row justify-content-start">
+            <div class="col-xs-12 col-md-6 col-lg-5 col-xl-5 mb-3">
+              <h4>Company</h4>
+              <ng-select
+                placeholder="All"
+                [(ngModel)]="filter.company"
+                (change)="getReceivables('0')"
+              >
+                <ng-option value="R">Residential</ng-option>
+                <ng-option value="C">Commercial</ng-option>
+                <ng-option value="H">Hospitality</ng-option>
+                <ng-option value="I">International</ng-option>
+                <ng-option value="" selected>All</ng-option>
+              </ng-select>
+            </div>
+            <div class="col-xs-12 col-md-6 col-lg-5 col-xl-5 mb-3">
+              <h4>Receivable Type</h4>
+              <ng-select
+                placeholder="Total"
+                [(ngModel)]="filter.type"
+                (change)="getReceivables('0')"
+              >
+                <ng-option value="past">Past Due</ng-option>
+                <ng-option value="current">Current</ng-option>
+                <ng-option value="" selected>Total</ng-option>
+              </ng-select>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+          <div class="row justify-content-end">
+            <div class="col-xs-12 col-md-6 col-lg-6 col-xl-5 mb-3">
+              <h4>Search By</h4>
+              <ng-select
+                placeholder="PO #"
+                [(ngModel)]="selectSearchType"
+                (change)="searchByChanged($event)"
+              >
+                <ng-option value="poNumber" selected>PO #</ng-option>
+                <ng-option value="documentNumber">Invoice #</ng-option>
+              </ng-select>
+            </div>
+            <div
+              class="col-xs-12 col-md-6 col-lg-6 col-xl-5 d-flex align-items-end mb-3"
+            >
+              <xchange-search-control
+                #searchInput
+                [isGlobalSearchEnabled]="false"
+                [searchByIcon]="true"
+                (sendValue)="performSearch($event)"
+                placeholder="Type Here"
+                class="w-100"
+                [searchKey]="searchKeyValue"
+              ></xchange-search-control>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="row mt-4 text-right align-items-end"
+        *ngIf="selected?.length !== undefined && selected?.length !== 0"
+      >
+        <div class="col-md-12 col-lg-12 d-flex align-items-end mb-3 text-right">
+          <b class="text-right">Total Selected Amount:&nbsp;</b
+          >{{ selectedAmount | currency : priceLabel }}
+        </div>
+      </div>
+      <div class="overflow-auto">
+        <!-- <app-loader *ngIf="tableLoading"></app-loader> -->
+        <ngx-table
+          #table
+          [configuration]="tableConfig"
+          [data]="
+            tableData[page]
+              | paginate
+                : {
+                    id: 'pg1',
+                    itemsPerPage: 10,
+                    currentPage: page + 1,
+                    totalItems: pagination.count
+                  }
+          "
+          [columns]="columns"
+          [pagination]="pagination"
+          (event)="tableSort($event)"
+        >
+          <ng-template let-row>
+            <td *ngIf="showCheckboxes">
+              <label class="ngx-form-checkbox" *ngIf="row.status === 'Open'">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="row.checked"
+                  (change)="selectReceivable(row)"
+                />
+                <i class="ngx-form-icon custom-checkbox-color"></i>
+              </label>
+            </td>
+            <td>{{ row.company == 80 ? 'R' : (row.company || '') }}</td>
+            <td>{{ row.type || "NA" }}</td>
+            <td>{{ row.status || "NA" }}</td>
+            <td>
+              <a
+              (click)="viewPDF(row)"
+              class="text-danger"
+              style="cursor: pointer"
+            >
+            {{ row.documentNumber || "NA" }}
+            </a>
+            </td>
+            <td>{{ row.poNumber || "NA" }}</td>
+            <td>{{ row.documentDate || "NA" }}</td>
+            <td>{{ row.finalDueDate || "NA" }}</td>
+            <td>
+              {{ row.openAmount != null && row.openAmount !== undefined 
+                ? (row.openAmount | number : '1.2-2') 
+                : 'NA' }}
+            </td>
+            <td>
+              {{ row.discountAmount != null && row.discountAmount !== undefined 
+                ? (row.discountAmount | number : '1.2-2') 
+                : 'NA' }}
+            </td>
+            <td>
+              {{ row.netAmount != null && row.netAmount !== undefined 
+                ? (row.netAmount | number : '1.2-2') 
+                : 'NA' }}
+            </td>
+            <td>
+              {{ row.scheduledAmount != null && row.scheduledAmount !== undefined 
+                ? (row.scheduledAmount | number : '1.2-2') 
+                : 'NA' }}
+            </td>
+          </ng-template>
+        </ngx-table>
+      </div>
+    </div>
+    <!-- Pagination -->
+    <div class="row mb-4 mt-4" *ngIf="pagination.count > 0">
+      <div class="d-flex justify-content-center desk-view">
+        <pagination-controls
+          id="pg1"
+          [maxSize]="10"
+          [responsive]="true"
+          [nextLabel]="''"
+          [previousLabel]="''"
+          (pageChange)="onPaginationChange($event)"
+        >
+        </pagination-controls>
+      </div>
+      <div class="d-flex justify-content-center m-view">
+        <pagination-controls
+          id="pg1"
+          [maxSize]="5"
+          [responsive]="true"
+          [nextLabel]="''"
+          [previousLabel]="''"
+          (pageChange)="onPaginationChange($event)"
+        >
+        </pagination-controls>
+      </div>
+      <div class="col-md-12">
+        <p class="text-center mb-0">
+          {{ page * 10 + 1 }} -
+          {{
+            page * 10 + 10 > pagination.count
+              ? pagination.count
+              : page * 10 + 10
+          }}
+          OF {{ pagination.count }} RECEIVABLES
+        </p>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- Credit Analyst Modal -->
+<ng-template #creditAnalystTemplate>
+  <div class="modal-header text-center">
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 f-img mb-3">
+          <img src="/assets/images/credit-1.png" style="border-radius: 20px" />
+        </div>
+        <div class="col-md-6">
+          <div class="box-text mb-4">
+            <h1>Contact Your Credit Analyst</h1>
+            <p *ngIf="!!CreditData.firstName || !!CreditData.lastName">
+              <b>Name:</b> {{ CreditData.firstName }} {{ CreditData.lastName }}
+            </p>
+            <p *ngIf="!!CreditData.phone">
+              <b>Phone: </b>
+              <a href="tel:{{ CreditData.phone }}">{{ CreditData.phone }}</a>
+            </p>
+            <p *ngIf="!!CreditData.fax"><b>Fax</b> {{ CreditData.fax }}</p>
+            <p *ngIf="!!CreditData.email">
+              <b>Email: </b>
+              <a href="mailto:{{ CreditData.email }}">{{ CreditData.email }}</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Legend Modal -->
+<ng-template #legendTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w">Legend</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <ngx-table
+      [columns]="legendAbbreviationColumns"
+      [configuration]="legendConfiguration"
+      [data]="legendAbbreviationData"
+    >
+    </ngx-table>
+    <div class="p-20">
+      <p>
+        One alpha or numeric character representing the internal company that
+        the deduction is taken against will follow the above abbreviation. The
+        next series of numbers will correspond to the original invoice number or
+        the check number referenced in the deduction.
+      </p>
+    </div>
+    <ngx-table
+      [columns]="legendTransactionColumns"
+      [configuration]="legendConfiguration"
+      [data]="legendTransactionData"
+    >
+    </ngx-table>
+    <div class="p-20">
+      <p>DOCUMENT DATE : Date obligation is created in the Mohawk system.</p>
+      <p>
+        DUE DATE : Date when obligation is due. Any date after the Due Date is
+        past due.
+      </p>
+      <p>
+        ORIGINAL ITEM AMOUNT : Original item balance. Credit amounts are noted
+        with (-).
+      </p>
+      <p>
+        ITEM BALANCE : Open item balance. Credit amounts are noted with (-).
+      </p>
+    </div>
+    <div class="p-20 f-w text-center">
+      <button class="btn btn-outline-secondary mb-2" (click)="modalRef?.hide()">
+        Close
+      </button>
+    </div>
+  </div>
+</ng-template>
+<!-- Terms and Conditions Modal -->
+<ng-template #termsAndConditions>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Terms and Conditions</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <div class="text-center">
+      <textarea
+        rows="10"
+        cols="40"
+        style="border: 1px solid rgb(204, 204, 204); width: 80%"
+        readonly
+      >
+
+        US Customers:
+
+
+
+        NOTE: In order to pre-enroll in the Pay Bill program you need to agree to the following terms, select a Pay Invoice Admin and provide a valid Invoice Notification e-mail address.
+
+
+
+        By clicking "I AGREE" you agree to enroll in Mohawk Carpet, LLC (which along with any divisions, subsidiaries or affiliates is "Mohawk") Electronic Invoice Presentment and Payment program under the following terms and conditions:
+
+
+
+        Invoices and other Documents: You will not receive any future agreements, documents, disclosures or invoices regarding your account except that Mohawk will periodically notify you by email that such new account documents are available electronically at www.mohawkxchange.com. It is your responsibility to access your account at www.mohawkxchange.com to review the documents associated with your account. It is your responsibility to keep your email address with Mohawk current and ensure that Mohawk's emails are not blocked or routed so that you do not receive them.
+
+
+
+        Payment: You authorize Mohawk, or its agent, to initiate financial transactions electronically between its accounts and your accounts, at a financial institution designated by you (the "Financial Institution"), for payments by you to Mohawk (the "Payment Program"). You will authorize the Financial Institution to accept these debit entries as valid debit activities under your account. Mohawk, or its agent, reserves the right to terminate your participation in the Payment Program for any reason or for no reason. There may be additional terms and conditions that Mohawk's agent requires for the handling of financial transactions and you agree to any such additional terms and conditions, but such terms and conditions will not narrow the scope of this agreement. It is your responsibility to keep your identification code and password for access to www.mohawkxchange.com confidential.
+
+
+
+        Waiver: You hereby waive any rights or claims against Mohawk for any reason as a result of your participation in this program, including your participation in the Payment Program, and you will not hold Mohawk responsible for any errors, acts or omissions related to the Payment Program, except for bonofide overpayments or erroneous withdrawals and then only to the extent of such over payments or erroneous withdrawals. You hereby waive any rights or claims against Mohawk for any late charges or forfeited discounts as a result of your participation in this program or failure to review these documents regardless of the reason. MOHAWK MAKES NO REPRESENTATIONS AND EXTENDS NO WARRANTIES OF ANY KIND FOR THIS PROGRAM, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL MOHAWK BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL, CONSEQUENTIAL, OR
+
+        EXEMPLARY DAMAGES, INCLUDING LOST PROFITS (EVEN IF MOHAWK IS ADVISED OF SUCH A POSSIBILITY) RELATED TO YOUR USE OF THIS PROGRAM.
+
+
+
+        Alternative Methods: Although you may print account documents from your account at www.mohawkxchange.com, you may also always obtain a paper copy of any documentation without any fee by contacting the Credit Department at 1-800-241-4494. You may update your contact information or
+
+        withdraw consent to receive documents and disclosures electronically or to participate in the Payment Program by contacting the Credit Department, by accessing your account at www.mohawkxchange.com or by mailing written correspondence to Mohawk Carpet LLC, P.O. Box 12069, Calhoun, GA 30703 Attn: Credit Department. If you withdraw your consent to receive documents and disclosures electronically, Mohawk may immediately terminate your participation in the Payment Program.
+
+
+
+        Computer System Requirements: In order for you to participate in this program, your computer system must have the following features: 1) Internet access; 2) an Internet browser; 3) an e-mail program capable of receiving and displaying text-based e-mail messages; 4) sufficient hard disk space to save any downloaded documents (if you wish to download documents); and 5) a printer connected to your computer (if you wish to print documents).
+
+
+
+        Other Terms and Conditions: These terms and conditions set forth the entire agreement between you and Mohawk and supersede any other agreements, licenses, negotiations, representations, and promises with respect to these matters (regardless of whether in marketing materials or otherwise). These terms and conditions may only be amended, modified or waived by a written document stating that Mohawk so amends, modifies or waives and is signed by Mohawk Carpet LLC. Mohawk may amend or modify these terms and conditions at any time and your continued participation in this program indicates that you agree to such amended or modified terms and conditions. You may not assign this
+
+        agreement, but Mohawk may assign it in its sole discretion. If any provision of these terms and conditions are held unenforceable, the remaining agreement will remain valid and enforceable. This agreement will be governed by the laws of Georgia.
+
+
+
+        By clicking "I AGREE" you agree that you have read and are bound by the terms and conditions of Mohawk's Electronic Bill Presentment and Payment program.
+
+
+
+        Canadian Customers:
+
+
+
+        I / we authorize Mohawk Canada Corporation ("Mohawk") and the financial institution designated (or any other financial institution I / We may authorize at any time) to begin deductions as per my / our instructions for monthly regular recurring payments and / or one-time payments from time to time, for payment of all charges arising under my / our Mohawk account(s). Mohawk will obtain my/our authorization for any other
+
+        one-time or sporadic debits.
+
+
+
+        This authority is to remain in effect until Mohawk has received written notification from me / us of its change or termination. This notification must be received at least ten (10) business days before the next debit is scheduled at the address provided below. I / We may obtain a sample cancellation form, or more information on my / our right to cancel a PAD Agreement at my/our financial institution or by visiting www.payments.ca. (Note: Canadian customers may also visit www.payments.ca).
+
+
+
+        Mohawk may not assign this authorization, whether directly or indirectly, by operation of law, change of control or otherwise, without providing at least 10 days prior written notice to me/us. I / we have certain recourse rights if any debit does not comply with this agreement. For example, I / we have the right to receive reimbursement for any PAD that is not authorized or is not consistent with this PAD Agreement. To obtain a form for a Reimbursement Claim, or for more information on my / our recourse rights, I / we may contact my / our financial institution or visit www.payments.ca
+
+      </textarea>
+
+      <xchange-custom-checkbox
+        type="checkbox"
+        [id]="'xy98'"
+        (model)="optOutOfTermsAndConditions($event)"
+        label="Dont Show Terms and Condition Again"
+      >
+      </xchange-custom-checkbox>
+      <div class="mt-4 mb-4">
+        <button
+          class="btn btn-outline-secondary me-3"
+          (click)="closeTermsModal()"
+        >
+          No
+        </button>
+        <button class="btn btn-primary" (click)="acceptTermsAndConditions()">
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- No Results Template -->
+<ng-template #noResultsTemplate>
+  <td [attr.colspan]="columns.length" class="no-results text-center">
+    No Receivables Found
+  </td>
+</ng-template>

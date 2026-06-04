@@ -1,0 +1,108 @@
+@import 'src/styles/mixins/breakpoints';
+@import "src/styles/colors";
+
+
+.ngx-pagination-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+@include breakpoint-range($max : md) {
+    .d-flex {
+        display: block !important;
+    }
+    .d-xs-none{
+        display: none !important;
+    }
+    .btn{
+        width: 100%;
+    }
+}
+.mb-3{
+    @include breakpoint-range($max : sm) {
+        margin-bottom: 0px !important;
+    }
+}
+.no-results {
+    text-align: center;
+    height: 75px;
+}
+::ng-deep .ngx-pagination-wrapper {
+    display: flex;
+    justify-content: center;
+}
+div.drp {
+    position: relative;
+
+    .span-clear {
+      position: absolute;
+      top: 5px;
+      padding: 5px 9px;
+      right: 5px;
+      background-color: $color-white;
+      font-size: 18px;
+      box-sizing: border-box;
+      color: $color-red;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+  }
+  /** ngx-pagination styling **/
+  ::ng-deep {
+    pagination-controls {
+      pagination-template {
+        ul {
+          border-radius: unset !important;
+          li {
+            border: none !important;
+            border-radius: 0 5px 5px 0;
+            box-shadow: inset 0px 5px 6px #00000014;
+            &:nth-child(3) {
+              &.current {
+                border-radius: 5px 0px 0px 5px;
+              }
+            }
+            &:nth-last-child(2) {
+              &.current {
+                border-radius: 0px 5px 5px 0px;
+              }
+            }
+            &.current {
+              display: flex !important;
+              box-shadow: unset;
+            }
+            a {
+              text-decoration: unset !important;
+              height: 100%;
+              display: flex !important;
+              align-items: center;
+              justify-content: center;
+            }
+            &.pagination-next,
+            &.pagination-previous {
+              a {
+                color: $color-red;
+                font-size: 24px;
+                &::after,
+                &::before {
+                  margin-left: 0px !important;
+                  margin-bottom: 3px !important;
+                }
+              }
+            }
+          }
+          &.ngx-pagination.responsive {
+            justify-content: center;
+            li:not(.small-screen):not(.pagination-previous):not(
+                .pagination-next
+              ) {
+              display: inline-block;
+            }
+            li.small-screen {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }

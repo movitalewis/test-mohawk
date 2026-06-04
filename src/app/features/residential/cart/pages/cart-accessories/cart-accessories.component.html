@@ -1,0 +1,327 @@
+<app-loader *ngIf="spinnerLoading"></app-loader>
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <app-alerts
+    [alertData]="alertData"
+    [alertType]="alertType"
+    *ngIf="alertTrigger"
+  ></app-alerts>
+
+  <h4 class="text-center">My Cart</h4>
+  <ng-container *ngIf="cartDataIsEmpty">
+    <div class="row mt-4 text-center">
+      <h3 class="mb-2">0 ITEM(S) Total</h3>
+      <h2>Your shopping cart is empty</h2>
+    </div>
+  </ng-container>
+  <form
+    *ngIf="!cartDataIsEmpty"
+    [formGroup]="myForm"
+    data-toggle="validator"
+    (ngSubmit)="submit(myForm)"
+    novalidate
+  >
+    <div class="_card-container mt-2">
+      <p class="mb-2">* = Required input</p>
+
+      <div class="container m-0 p-0">
+        <div class="row mt-2 mb-4">
+          <div class="col-md-4 col-xs-12">
+            <h4>Submitted For *</h4>
+            <ng-select
+              placeholder="Select"
+              formControlName="submittedFor"
+              [ngClass]="{
+                errorBorder:
+                  myForm.controls['submittedFor'].touched &&
+                  myForm.controls['submittedFor'].invalid
+              }"
+            >
+              <ng-option>Daffey Duck</ng-option>
+              <ng-option>Kelton Mark</ng-option>
+              <ng-option>Patty J </ng-option>
+              <ng-option>Rajesh Multiacc</ng-option>
+              <ng-option>Vasavi Rao</ng-option>
+            </ng-select>
+            <small
+              class="text-danger"
+              *ngIf="
+                myForm.controls['submittedFor'].touched &&
+                myForm.controls['submittedFor'].status == 'INVALID'
+              "
+            >
+              SubmittedFor is required!
+            </small>
+            <div *ngIf="submitted && f['submittedFor'].errors">
+              <div
+                *ngIf="f['submittedFor'].errors['required']"
+                class="text-danger"
+              >
+                SubmittedFor is required.
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 col-xs-12">
+            <h4>End User *</h4>
+            <input
+              type="text"
+              formControlName="endUser"
+              placeholder="Empty Field"
+              class="form-control"
+              (change)="getMinMaxValues($event)"
+              oninput="this.value = this.value.replace(/[^a-z,A-Z]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^a-z,A-Z, ' ']/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+            />
+
+            <div *ngIf="submitted && f['endUser'].errors">
+              <div *ngIf="f['endUser'].errors['required']" class="text-danger">
+                EndUser is required.
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 col-xs-12">
+            <h4>Job Location *</h4>
+            <input
+              type="text"
+              formControlName="jobLocation"
+              placeholder="Empty Field"
+              class="form-control"
+            />
+
+            <div *ngIf="submitted && f['jobLocation'].errors">
+              <div
+                *ngIf="f['jobLocation'].errors['required']"
+                class="text-danger"
+              >
+                JobLocation is required.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-2 mb-4">
+          <div class="col-md-4 col-xs-12">
+            <h4>Market Segment *</h4>
+            <ng-select
+              placeholder="Select"
+              formControlName="marketSegment"
+              [ngClass]="{
+                errorBorder:
+                  myForm.controls['marketSegment'].touched &&
+                  myForm.controls['marketSegment'].invalid
+              }"
+            >
+              <ng-option
+                [value]="item.code"
+                *ngFor="let item of marketsegmentdata"
+                >{{ item?.name }}</ng-option
+              >
+            </ng-select>
+
+            <div *ngIf="submitted && f['marketSegment'].errors">
+              <div
+                *ngIf="f['marketSegment'].errors['required']"
+                class="text-danger"
+              >
+                MarketSegment is required.
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-xs-12">
+            <h4>Submitted By *</h4>
+            <input
+              type="text"
+              formControlName="submittedBy"
+              placeholder="Megan Stafford"
+              class="form-control"
+              oninput="this.value = this.value.replace(/[^a-z,A-Z]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^a-z,A-Z, ' ']/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+            />
+
+            <div *ngIf="submitted && f['submittedBy'].errors">
+              <div
+                *ngIf="f['submittedBy'].errors['required']"
+                class="text-danger"
+              >
+                SubmittedBy is required.
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 col-xs-12">
+            <h4>
+              <label for="comments" class="control-label">Comments</label>
+            </h4>
+            <textarea
+              formControlName="comments"
+              placeholder="Comments"
+              id="comments"
+              class="form-control"
+              maxlength="50"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="row mt-4 pt-2 mb-4">
+          <div class="col-md-12 col-xs-12">
+            <p>{{ totalitem }} ITEM(S) TOTAL</p>
+            <div class="card mt-2" *ngFor="let item of entryData">
+              <div class="card-header mb-2 dark">
+                <h4 class="text-white d-inline">{{ item?.name }}</h4>
+                <div class="float-end mohawk-logo text-end">
+                  <xchange-logo-pdp
+                    type="commercial"
+                    theme="light"
+                    [isInverted]="true"
+                    [selectedPdpData]="item?.product"
+                  ></xchange-logo-pdp>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-12 mt-2">
+                  <div class="row">
+                    <div class="col-sm-3 col-md-4 col-lg-3 col-xl-2">
+                      <div class="col-6 col-sm-12">
+                        <img
+                          class="card-img-top rounded img"
+                          [src]="item?.productImage"
+                          alt=""
+                        />
+                        <button
+                          type="button"
+                          class="btn btn-secondary w-100 mt-2"
+                          (click)="removeEntry(item?.entryNumber)"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="col-sm-9 col-md-8 col-lg-9 col-xl-10">
+                      <div class="box-flex">
+                        <div class="info-text">
+                          <h4>Color</h4>
+                          <p>{{ item?.colour }}</p>
+                        </div>
+                        <div class="info-text">
+                          <h4>Size</h4>
+                          <p>{{ item?.size }}</p>
+                        </div>
+                        <div class="info-text">
+                          <h4>Order QTY</h4>
+                          <p>{{ item?.Quantity }}</p>
+                        </div>
+                        <div class="info-text">
+                          <h4>Backing</h4>
+                          <p>{{ item?.backingname }}</p>
+                        </div>
+                        <div class="info-text">
+                          <h4>Dye lot</h4>
+                          <p>NA</p>
+                        </div>
+                      </div>
+                      <div class="">
+                        <button
+                          type="button"
+                          class="btn btn-primary btn-lg mt-2"
+                          (click)="openCartAccessoriesModal()"
+                        >
+                          Add Accessories
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- (click)="cancelActionQuotes()" -->
+        <div class="row mt-4 mb-4 pt-4 full-btns p-50">
+          <div class="col-md-5 col-lg-3">
+            <button
+              class="btn btn-secondary mb-2"
+              type="button"
+              (click)="removecart(template4, itemData)"
+            >
+              Cancel Quote Request
+            </button>
+          </div>
+          <div class="col-md-5 col-lg-3">
+            <button class="btn btn-secondary mb-2" (click)="continueShopping()">
+              Continue Shopping
+            </button>
+          </div>
+          <div class="col-md-5 col-lg-3">
+            <button
+              type="submit"
+              [disabled]="myForm.invalid"
+              class="btn btn-primary mb-2"
+            >
+              Request Quote
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<ng-template #template3>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w">Remove product?</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>Are you sure you want to Remove product?</p>
+      <div class="mt-4 mb-4">
+        <button
+          class="btn btn-outline-secondary me-2"
+          (click)="modalRef.hide()"
+        >
+          No
+        </button>
+        <button class="btn btn-primary" (click)="removeItemFromCart()">
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #template4>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Cancel Quote</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef!.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="text-center">
+      <div class="col-12 mt-2 mb-2">
+        <p>Are you sure want to cancel the cart?</p>
+      </div>
+      <div class="mt-4 mb-4">
+        <button
+          class="btn btn-outline-secondary me-3"
+          (click)="modalRef!.hide()"
+        >
+          No
+        </button>
+        <button class="btn btn-primary mt-2" (click)="cancelActionQuotes()">
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,33 @@
+@import "src/styles/colors";
+@import 'src/styles/mixins/breakpoints';
+.search-box-widget {
+  width: 100%;
+  text-align: center;
+  border: 0.5px solid $color-gray;
+  padding: 20px;
+  border-radius: 8px;
+  background: $color-white;
+  height: 130px ;
+  @include breakpoint-range($max: sm) {
+    height: auto;
+}
+
+  .search-box-widget-label {
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    line-height: 24px;
+    @include breakpoint-range($max: sm) {
+      font-size: 18px;
+  }
+  
+  }
+
+  ::ng-deep {
+    xchange-search-control {
+      .mx-search-box {
+        max-width: 100%;
+      }
+    }
+  }
+}

@@ -1,0 +1,352 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+@import "/src/styles/table";
+
+.container {
+  h2,
+  h4 {
+    color: $color-dark-gray;
+  }
+  h2 {
+    font-size: 25px;
+  }
+}
+.md-none {
+  background-color: #ce0e2d;
+}
+.mohawk-logo {
+  text-align: right;
+  img {
+    width: 150px;
+  }
+}
+.pdf-label {
+  border: none;
+  background-color: transparent;
+  font-size: 14px;
+  width: auto;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+.background-yellow {
+  background-color: #fffdeb;
+  border: 1px solid #d9c400;
+  border-radius: 6px;
+  padding: 15px;
+}
+.tooltip.show {
+  position: absolute;
+
+  --mx-tooltip-bg: #ce0e2d;
+  font-size: 12px;
+  margin-top: 40px !important;
+}
+.bs-tooltip-top .tooltip-arrow::before {
+  left: 15px;
+  top: 38px;
+}
+.help-info {
+  cursor: pointer;
+  color: #ce0e2d;
+}
+.m-top {
+  margin-top: 1.25rem;
+  @include breakpoint-range($max: xs) {
+    margin-top: 0.25rem;
+  }
+}
+.show-card {
+  border: none;
+
+  .card-header {
+    background-color: $color-medium-gray;
+    border: none;
+    padding: 0px;
+    ::ng-deep {
+      .mohawk-logo img {
+        width: 150px !important;
+      }
+    }
+    button {
+      text-decoration: none;
+      text-transform: capitalize;
+      border: none !important;
+      padding-top: 0.75rem;
+      margin-bottom: 0rem;
+    }
+    .down-icon {
+      transform: rotate(-90deg);
+      display: inline-flex;
+      font-size: 0.625rem;
+      margin-left: 0.313rem;
+    }
+    .up-icon {
+      transform: rotate(-270deg);
+      display: inline-flex;
+      font-size: 0.625rem;
+      margin-left: 0.625rem;
+    }
+  }
+}
+.text-f-s {
+  font-size: 0.75rem;
+}
+.xchange-icon-btn {
+  justify-content: start !important;
+}
+.bg-1,
+.bg-0 {
+  background-color: $color-light-gray;
+  padding: 10px 25px;
+  border-radius: 8px;
+
+  p {
+    margin-bottom: 15px;
+  }
+
+  @include breakpoint-range($max: xs) {
+    p {
+      text-align: left;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+.bg-0 {
+  text-align: center;
+}
+
+.bg-0 {
+  background-color: $color-light-gray;
+  padding: 10px 25px;
+  border-radius: 8px;
+
+  p {
+    margin-bottom: 15px;
+  }
+
+  @include breakpoint-range($max: xs) {
+    p {
+      text-align: left;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+.dylotcheck {
+  @include breakpoint-range($min: sm) {
+    margin-top: 20px;
+  }
+  @include breakpoint-range($min: md) {
+    margin-top: 20px;
+  }
+  @include breakpoint-range($min: lg) {
+    margin-top: 20px;
+  }
+  @include breakpoint-range($min: xl) {
+    margin-top: 0px;
+  }
+}
+.dylot {
+  @include breakpoint-range($min: sm) {
+    margin-top: 0px;
+  }
+  @include breakpoint-range($min: md) {
+    margin-top: 0px;
+  }
+  @include breakpoint-range($min: lg) {
+    margin-top: 0px;
+  }
+  @include breakpoint-range($min: xl) {
+    margin-top: 3.1rem;
+  }
+}
+.deskView {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr);
+  text-wrap: nowrap;
+}
+.img {
+  // height: 9.125rem;
+  object-fit: cover;
+  border-radius: 5px;
+}
+.icon-sec {
+  color: $color-red;
+  display: flex;
+  cursor: pointer;
+  div {
+    margin-right: 8px;
+  }
+}
+.justify-content-end {
+  .back-i {
+    top: 1px;
+    font-weight: 600;
+  }
+}
+.back-to {
+  display: flex;
+  .back-icon {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    position: relative;
+    margin-right: 5px;
+    font-size: 12px;
+    top: -6px;
+  }
+}
+.back-i {
+  @include breakpoint-range($max: sm) {
+    margin-right: 5px;
+  }
+  margin-right: 5px;
+  top: 4px;
+  position: relative;
+}
+
+.quote-details {
+  .buttons {
+    gap: 20px;
+  }
+  .buttons button {
+    margin: 0;
+  }
+}
+
+.header-logo {
+  display: flex;
+  justify-content: space-between;
+}
+.card-header {
+  ::ng-deep {
+    .mohawk-logo img {
+      width: 150px !important;
+    }
+  }
+  background-color: $color-dark-gray;
+  .text-white {
+    margin: 0;
+    text-decoration: none;
+  }
+  .text-white:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+.card-body {
+  .add-remove-btns button {
+    font-size: 13px;
+  }
+  .pdf-label{
+    border: none;
+    background-color: transparent;
+    font-size: 14px;
+    width: auto;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+}
+.tool-tip {
+  background-color: transparent;
+  border: none;
+  color: $color-red;
+  display: inline-block;
+  width: auto;
+  @include breakpoint-range($max: sm) {
+    margin-right: 10px;
+    margin-left: 0;
+    padding: 0;
+  }
+  span {
+    @include breakpoint-range($max: sm) {
+      margin-right: 0px;
+    }
+
+    position: relative;
+    top: 0px;
+    margin-bottom: 0;
+    color: $color-red;
+  }
+}
+.tool-tip {
+  background-color: transparent;
+  border: none;
+  color: $color-red;
+  display: inline-block;
+  width: auto;
+  @include breakpoint-range($max: sm) {
+    margin-right: 10px;
+    margin-left: 0;
+    padding: 0;
+  }
+  span {
+    @include breakpoint-range($max: sm) {
+      margin-right: 0px;
+    }
+
+    position: relative;
+    top: 0px;
+    margin-bottom: 0;
+    color: $color-red;
+  }
+}
+.info-header {
+  background-color: #b1b1b1;
+  padding: 4px;
+}
+.acco-content {
+  border: 1px solid #b1b1b1;
+  border-radius: 5px;
+  margin: 0px;
+}
+.down-icon,
+.up-icon {
+  display: inline-flex;
+  font-size: 20px;
+  color: $color-medium-black;
+  margin: 5px 10px 0px;
+}
+.icon-h:hover {
+  cursor: pointer;
+}
+.down-icon {
+  transform: rotate(-90deg);
+  margin-left: 0.313rem;
+}
+.up-icon {
+  transform: rotate(-270deg);
+  margin-left: 0.625rem;
+}
+.btn {
+  font-size: 12px;
+}
+.print-element {
+  display: none;
+}
+.print-show {
+  display: none;
+}
+.print-hide {
+  display: block;
+}
+.overflow-wrap {
+  overflow-wrap: break-word;
+}
+.link-matches {
+  cursor: pointer;
+  color: #ce0e2d;
+}
+
+
+
+
+

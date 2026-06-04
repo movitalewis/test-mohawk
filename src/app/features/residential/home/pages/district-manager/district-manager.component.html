@@ -1,0 +1,47 @@
+<div class="container">
+    <div class="_card-container mt-5">
+      <!-- Filter By Section -->
+      <div class="row">
+        <h2 class="filter-by-widget-text">Filter By</h2>
+        <div class="col-md-6 mt-3 mb-3 m-btn-0">
+          <div class="col-12">
+            <filter-by [select]="districtOption" placeholder=" All District Managers "></filter-by>
+          </div>
+        </div>
+        <div class="col-md-6 mt-3 mb-3 m-btn-0">
+            <filter-by [select]="territoryOption" placeholder="All Territory Managers "></filter-by>
+        </div>
+  
+        <div class="col-12">
+          <div class="row">
+            <div class="col-12 col-sm-4 col-md-6 col-lg-3 mt-2 mb-2 m-btn-0">
+              <button type="button" class="btn btn-primary btn-grid w-100">
+                OPEN ORDERS: 10
+              </button>
+            </div>
+            <div class="col-12 col-sm-4 col-md-6 col-lg-3 mt-2 mb-2 m-btn-0">
+              <button type="button" class="btn btn-primary btn-grid w-100">
+                OPEN CLAIMS: 41
+              </button>
+            </div>
+            <div class="col-12 col-sm-4 col-md-6 col-lg-3 mt-2 mb-2 m-btn-0">
+              <button type="button" class="btn btn-primary btn-grid w-100">
+                RECENT INVOICES: 101
+              </button>
+            </div>
+            <div class="col-12 col-sm-4 col-md-6 col-lg-3 mt-2 mb-2 m-btn-0">
+              <button type="button" class="btn btn-primary btn-grid w-100">
+                  CLAIMS APPROVAL: 2
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Product features section -->
+    </div>
+    <div class="row mb-5 margin-0">
+      <app-product-features [list]="districtManagerAccessList"></app-product-features>
+    </div>
+  </div>
+  

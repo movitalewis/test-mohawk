@@ -1,0 +1,156 @@
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <h2 class="text-center mb-3">Quotes</h2>
+
+  <alert
+    *ngIf="showSuccessForCartHistory"
+    type="info"
+    class="dashboard-page-alert"
+    [dismissible]="true"
+  >
+    <div class="container">Quote Cart has been cancelled</div>
+  </alert>
+
+  <alert
+    *ngIf="quoteCreated"
+    type="info"
+    class="dashboard-page-alert"
+    [dismissible]="true"
+  >
+    <div class="container ps-0">
+      Thank you for shopping at Mohawk Xchange! A salesperson will review your
+      quote({{ createdQuoteNumber }}) request as soon as possible.
+    </div>
+  </alert>
+
+  <alert
+    *ngIf="showCancelQuoteMessage"
+    type="danger"
+    class="dashboard-page-alert"
+    [dismissible]="true"
+  >
+    <div class="container">{{ showCancelQuoteMessage }}</div>
+  </alert>
+
+  <div class="_card-container mt-3">
+    <div class="row">
+      <div class="col-md-4">
+        <h4>Search By</h4>
+        <ng-select
+          placeholder="Quotes #"
+          [items]="searchByList"
+          bindLabel="name"
+          autofocus
+          bindValue="id"
+          (change)="onSearchBY($event)"
+        >
+        </ng-select>
+      </div>
+      <div class="col-md-4 d-grid align-items-end">
+        <xchange-search-control
+          [isGlobalSearchEnabled]="false"
+          placeholder="Search Quote"
+          [disabled]="param.searchBy ? false : true"
+          [searchKey]="searchText"
+          (sendValue)="onSearchQuotes($event)"
+        ></xchange-search-control>
+      </div>
+      <div class="col-md-4">
+        <h4>Filter By</h4>
+        <ng-select
+          (change)="onStatusChange($event)"
+          placeholder="Submitted Quotes"
+          [items]="searchByList"
+          bindLabel="status"
+          autofocus
+          bindValue="id"
+        >
+        </ng-select>
+      </div>
+      <div class="mt-4">
+        <app-loader *ngIf="tableLoading"></app-loader>
+        <div class="overflow-auto">
+          <ngx-table
+            [configuration]="configuration"
+            [data]="
+              allquoteData
+                | paginate
+                  : {
+                      id: 'pg1',
+                      itemsPerPage: tableItemsSize,
+                      currentPage: pageIndex,
+                      totalItems: totlRecords
+                    }
+            "
+            [columns]="columns"
+            (event)="sortingByColumns($event)"
+          >
+            <!-- [summaryTemplate]="summaryTemplateRef" -->
+            <ng-template let-row let-index="index">
+              <td>
+                {{ row?.state }}
+              </td>
+              <td>
+                <a
+                  [routerLink]="[
+                    '/commercial/quotes/quote-detail/' + row?.code
+                  ]"
+                  >{{ row?.code }}</a
+                >
+              </td>
+              <td>
+                {{ row?.endUserDescription }}
+              </td>
+              <td>
+                {{ row?.name }}
+              </td>
+              <td>
+                {{ row?.jobLocation }}
+              </td>
+              <td>
+                {{ row?.expirationTime | date : "MM/dd/yyyy" }}
+              </td>
+              <td>
+                {{ formatMoney(row?.totalPrice?.value) }}
+              </td>
+            </ng-template>
+          </ngx-table>
+        </div>
+        <!-- <ng-template
+          #summaryTemplateRef
+          let-total="total"
+          let-limit="limit"
+          let-page="page"
+        >
+          <th colspan="8">
+            <span class="mb-2">showing:{{ page }} to {{ total }} </span>
+            <span class="mb-2"> of entries: {{ total }} </span>
+          </th>
+        </ng-template> -->
+      </div>
+    </div>
+  </div>
+  <div class="row mb-4 mt-4">
+    <div class="d-flex justify-content-center">
+      <pagination-controls
+        *ngIf="totlRecords > 0"
+        id="pg1"
+        [maxSize]="10"
+        [responsive]="true"
+        [nextLabel]="''"
+        [previousLabel]="''"
+        (pageChange)="onTablePageChange($event)"
+      >
+      </pagination-controls>
+    </div>
+    <!-- <div class="col-md-12">
+      <p class="text-center mb-4">
+        {{ startValue > 0 ? startValue : 0 }} -
+        {{
+          this.lastValue > this.allquoteData.length ? this.allquoteData.length : this.lastValue
+        }}
+        OF {{ allquoteData.length > 0 ? allquoteData.length : 0 }} INVOICES
+      </p>
+    </div> -->
+  </div>
+</div>

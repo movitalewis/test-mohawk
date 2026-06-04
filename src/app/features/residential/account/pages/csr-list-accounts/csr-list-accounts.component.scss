@@ -1,0 +1,131 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+
+.minus-icon-size {
+  font-size: 3px;
+  transform: translateY(9px);
+  position: absolute;
+  margin-left: -22px;
+}
+
+.operations {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  column-gap: 27px;
+
+  .save-btn {
+
+    .btn {
+      max-width: auto;
+    }
+  }
+}
+
+.cta-align {
+  @include breakpoint-range($min: lg) {
+    margin-top: 27px;
+  }
+}
+
+::ng-deep .table-responsive {
+  .ngx-table__table--normal > thead > tr > th {
+    padding: 6px 15px;
+  }
+  .ngx-table {
+    text-align: center ;
+  }
+ 
+
+    
+}
+.align-btn {
+  margin-bottom: 41.5px;
+}
+::ng-deep{
+  .rescsrlist{
+    // .ngx-table__table--normal > tbody > tr > td:nth-child(2){
+    //   padding: 0px 25px !important;
+    //   text-align: left !important;
+    // }
+    // .ngx-table__table--normal > tbody > tr > td:nth-child(3) {
+    //   padding: 0px 95px !important;
+    //   text-align: left !important; 
+    //   }
+      .ngx-pagination-wrapper {
+        display: flex;
+        justify-content: center; 
+        align-items: center;
+    }
+      }
+}
+
+/* Container styling */
+.csr-list {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+
+/* Toggle switch base */
+.form-check-input.csr-list-check {
+  width: 40px;
+  height: 19px;
+  background-color: #ccc;
+  border-radius: 50px;
+  border: none;
+  position: relative;
+  appearance: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Slider knob */
+.form-check-input.csr-list-check::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0px;
+  width: 21px;
+  height: 21px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+  border: 1px solid #ccc;
+}
+
+/* Checked state */
+.form-check-input.csr-list-check:checked {
+  background-color: #ce0e2d;
+}
+
+/* Move knob to right when checked */
+.form-check-input.csr-list-check:checked::before {
+  transform: translateX(24px);
+}
+
+.form-check-input.csr-list-check:checked::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -4px;
+  width: 21px;
+  height: 21px;
+  transition: transform 0.3s ease;
+  border: 1px solid #ce0e2d;
+}
+.form-switch .form-check-input.csr-list-check:checked {
+    --mx-form-switch-bg: unset;
+}
+
+.form-check-input.csr-list-check:checked[type=checkbox] {
+    --mx-form-check-bg-image: unset;
+}
+
+.form-check-input.csr-list-check:focus {
+    box-shadow: unset;
+}
+.form-check-label.csr-list-label {
+    margin-top: 4px;
+}
+}

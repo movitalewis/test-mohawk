@@ -1,0 +1,1472 @@
+<div class="row inv-lines"  
+  *ngIf="isLaborClaim || ( !isLaborClaim &&
+    claimsService.selectedInvoiceLines?.line?.length > 0)">
+<alert type="danger"  [dismissible]="true" *ngIf="errorMessage !== ''">
+  <div class="container">{{ errorMessage }}</div>
+</alert>
+  <div class="card checkout-card mt-4">
+    <div class="card-header checkout-card-header">
+      <div class="row">
+        <div 
+          class="col-12 col-sm-8 col-xs-12"
+          *ngIf="
+            !isLaborClaim &&
+            claimsService.selectedInvoiceLines?.line?.length > 0
+          "
+        >
+          <div class="row justify-content-between">
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <h4 class="d-inline">Invoice #</h4>
+              <p>{{ claimsService.selectedInvoiceLines.invoiceNumber }}</p>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <h4 class="d-inline">Invoice Date</h4>
+              <p>{{ claimsService.selectedInvoiceLines.invoiceDate }}</p>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <h4 class="d-inline">Invoice Total</h4>
+              <p>{{ claimsService.selectedInvoiceLines.invoiceTotal }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-9 col-xs-12 labor-claim" *ngIf="isLaborClaim">
+          <div class="row justify-content-between">
+            <div class="col-md-2 col-sm-2 col-xs-12">
+              <h4 class="d-inline">Claim #</h4>
+              <p>{{ existingClaimData?.claimNumber }}</p>
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12">
+              <h4 class="d-inline">Claim Submitted Date</h4>
+              <p>{{ existingClaimData?.claimSubmitDate }}</p>
+            </div>
+            <div class="col-md-2 col-sm-2 col-xs-12">
+              <h4 class="d-inline">Claim Type</h4>
+              <p>{{ existingClaimData?.claimType }}</p>
+            </div>
+            <div class="col-md-2 col-sm-2 col-xs-12">
+              <h4 class="d-inline">Claim Status</h4>
+              <p>{{ existingClaimData?.claimStatus }}</p>
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12">
+              <h4 class="d-inline">Invoice #</h4>
+              <p>{{ existingClaimData?.invoiceNumber }}</p>
+            </div>
+          </div>
+        </div>
+        <ng-container
+          *ngIf="
+            !isLaborClaim &&
+            claimsService.selectedInvoiceLines?.line?.length > 0
+          "
+        >
+          <div class="col-12 col-sm-4 col-xs-12">
+            <div class="float-end text-end d-flex hide-w-100">
+              <button
+              [disabled]="
+                   (claimsService.selectedInvoiceLines.isFromClaimHistory ==
+                    true &&
+                    (claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() !=
+                      'DRAFT' && claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() !=
+                      'IN PROCESS')) || (claimLineTypeModalClaims.includes(claimType) ? checkAlreadyAddedLabor() === true && claimsService.selectedInvoiceLines.isAllLinesAdded : claimsService.selectedInvoiceLines.isAllLinesAdded) ||
+                      (existingClaimData?.laborLineExists && claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() !== 'DRAFT')
+                      || (claimLineTypeModalClaims.includes(claimType) ? checkAlreadyAddedLabor() === true  && claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() === 'DRAFT' &&  claimsService.selectedInvoiceLines.isAllLinesAdded : null)
+                      || ((claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() == 'IN PROCESS') && claimsService.selectedInvoiceLines?.claimData?.laborLineExists)
+                "
+                type="button"
+                class="btn btn-primary"
+                (click)="addItemToClaim()"
+              >
+                add item to claim
+              </button>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="isLaborClaim">
+          <div class="col-12 col-sm-3 col-xs-12 labor-claim ">
+            <div class="float-end text-end d-flex hide-w-100 lc-div">
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="addLaborLine()"
+                [disabled]="claimsService.selectedInvoiceLines.isAllSelected"
+              >
+                {{claimsService.selectedInvoiceLines?.line?.length > 0 ? 'Add different labor line' : 'Add new labor line'}}
+              </button>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <div *ngIf="claimsService.selectedInvoiceLines?.line?.length > 0">
+      <div class="card-body">
+        <div class="col-12" class="table-data">
+          <form #invoiceSelectedLineForm="ngForm">
+            <!-- All Product Lines Table-->
+            <table *ngIf="showAllProductLines" id="allProductLines">
+              <thead>
+                <tr>
+                  <th
+                    *ngIf="
+                      claimsService.selectedInvoiceLines.claimData ==
+                        undefined ||
+                      claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() ==
+                        'DRAFT' ||
+                      claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() ==
+                        'IN PROCESS' ||
+                      claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() ==
+                        'ACTION REQUIRED'
+                    "
+                  >Add/View Comments</th>
+
+                  <th
+                    *ngFor="let col of columns; let colIndex = index"
+                    [ngClass]="{
+                      'sticky-th':
+                        col.key === 'claimQuanity' ||
+                        col.key === 'claimQuantity'
+                    }"
+                  >
+                    {{ col.title }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container
+                  *ngFor="
+                    let line of claimsService.selectedInvoiceLines.line;
+                    let i = index
+                  "
+                >
+                  <ng-container
+                    *ngFor="let inv of line?.selectedLines; let j = index"
+                  >
+                    <tr
+                      class="product-line-bg"
+                      *ngIf="inv.component == 'PRODUCT' && inv.standaloneLine == undefined"
+                      [class.removed-line]="line?.isRemovedLine === true"
+                    >
+                      <td
+                        *ngIf="
+                          claimsService.selectedInvoiceLines.claimData ==
+                            undefined ||
+                          claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() ==
+                            'DRAFT' ||
+                          claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() ==
+                            'IN PROCESS' ||
+                          claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() ==
+                            'ACTION REQUIRED'
+                        "
+                      >
+                        <div class="icon-container">
+                          <div class="collapses" *ngIf="hasNonProdLines(line?.selectedLines)">
+                            <span *ngIf="nonProductlength(line, inv) > 0"
+                              (click)="isCollapseArr[i] = !isCollapseArr[i]"
+                            >
+                              <h6 *ngIf="!isCollapseArr[i]">
+                                <span
+                                  class="mohawak-icon angle-left-icon up-icon"
+                                ></span>
+                              </h6>
+                              <h6 *ngIf="isCollapseArr[i]" class="d-flex">
+                                <span
+                                  class="mohawak-icon angle-left-icon down-icon"
+                                ></span>
+                              </h6>
+                            </span>
+                          </div>
+                          <div class="comments">
+                            <span
+                              *ngIf="
+                                claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() !=
+                                'IN PROCESS'
+                              "
+                              (click)="removeItem(inv, j, line)"
+                              class="icon-wrapper collapse-cursor"
+                            >
+                              <fa-icon [icon]="faTimes"></fa-icon>
+                            </span>
+                            <span
+                              tooltip="{{((!inv?.disputeCaseId || inv?.disputeCaseId == 'NA') && claimsService.selectedInvoiceLines?.claimData?.claimStatus?.toUpperCase() != 'DRAFT' && claimsService.selectedInvoiceLines?.claimData?.claimStatus) ? 'disputeCaseId not available' : ''}}"
+                            >
+                              <span
+                                class="mx-clear-input-btn icon-wrapper"
+                                (click)="openommentModal(lineItemComment, inv)"
+                                [class.disabled-comment-cta] = "((!inv?.disputeCaseId || inv?.disputeCaseId == 'NA') && claimsService.selectedInvoiceLines?.claimData?.claimStatus?.toUpperCase() != 'DRAFT' && claimsService.selectedInvoiceLines?.claimData?.claimStatus)"
+                              >
+                                <fa-icon [icon]="faMessage"></fa-icon>
+                              </span>
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        {{ inv?.invoiceSeq }}
+                      </td>
+                      <td *ngIf="showDisputeCaseId">
+                        {{ inv?.disputeCaseId || "NA" }}
+                      </td>
+                      <td>
+                        {{ line?.claimStatusDetail || claimsService.selectedInvoiceLines?.claimData?.claimStatus || "NA" }}
+                      </td>
+                      <td>
+                        {{ inv?.component }}
+                      </td>
+                      <td>
+                        {{ inv?.styleNumber }}
+                        <span *ngIf="inv?.styleNumber && inv?.styleName && inv?.styleName != 'NA'">-</span>
+                        {{ inv?.styleName }}
+                      </td>
+                      <td>
+                        {{ inv?.colorNumber }}
+                        <span *ngIf="inv?.colorNumber && inv?.colorName && inv?.colorName != 'NA'">-</span>
+                        {{ inv?.colorName }}
+                      </td>
+                      <td>
+                        {{ inv?.dyeLot }}
+                      </td>
+                      <td>
+                        {{ inv?.rollNumber }}
+                      </td>
+                      <td>
+                        {{ inv?.partNumber }}
+                      </td>
+                      <td>{{ inv?.shipQuantity }} ({{ inv?.uomDesc }})</td>
+                      <td *ngIf="inv.component == 'PRODUCT'">
+                        {{ inv?.pricePerUnit }} ({{ inv?.priceUOMDesc }})
+                      </td>
+                      <td *ngIf="inv.component == 'PRODUCT'">
+                        {{ inv?.productPrice }}
+                      </td>
+                      <td
+                        *ngIf="
+                          claimType !== claimTypes.PRICING &&
+                          inv.component == 'PRODUCT'
+                        "
+                        [ngClass]="{
+                          'sticky-change': inv.claimQuantity > 0,
+                          'sticky-col':
+                            inv.claimQuantity <= 0 || !inv.claimQuantity
+                        }"
+                      >
+                        <input
+                          id="rqd-{{ i }}-{{ j }}"
+                          type="text"
+                          class="form-control custom-ip"
+                          max="{{ inv?.shipQuantity }}"
+                          [disabled]="
+                            (this.claimsService.selectedInvoiceLines
+                              .isFromClaimHistory == true &&
+                            claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() !=
+                              'DRAFT') || isLaborClaim
+                          "
+                          [(ngModel)]="inv.claimQuantity"
+                          (input)="checkValidity(true)"
+                          (blur)="onInputBlur($event)"
+                          (keypress)="
+                            quantityKey($event, inv?.shipQuantity, inv?.uom)
+                          "
+                          (paste)="quantityPaste($event, inv, inv?.shipQuantity, 'shipQuantity')"
+                          required
+                          [class.is-invalid]="
+                            inv.claimQuantity != '' && inv.claimQuantity == 0
+                          "
+                          name="claimQuantity-{{ i }}-{{ j }}"
+                          autocomplete="off"
+                        />
+                        ({{ inv?.uomDesc }})* <br /><span
+                          class="text-danger"
+                          *ngIf="
+                            inv.claimQuantity != '' && inv.claimQuantity == 0
+                          "
+                          >value should not be 0
+                        </span>
+                      </td>
+                      <td
+                        *ngIf="inv.component == 'PRODUCT'"
+                        [attr.rowspan]="
+                          hasLaborLine(line?.selectedLines)
+                            ? line?.selectedLines?.length - 1
+                            : isCollapseArr[i]
+                            ? line?.selectedLines?.length
+                            : 1
+                        "
+                      >
+                        {{ inv?.invoiceSubTotal || "NA" }}
+                      </td>
+                      <td
+                        *ngIf="
+                          claimType === claimTypes.PRICING &&
+                          inv.component == 'PRODUCT'
+                        "
+                        [ngClass]="{
+                          'sticky-change': inv.claimQuantity > 0,
+                          'sticky-col':
+                            inv.claimQuantity <= 0 || !inv.claimQuantity
+                        }"
+                      >
+                        <input
+                          #claimQtty
+                          id="rqd-{{ i }}-{{ j }}"
+                          type="text"
+                          class="form-control custom-ip"
+                          max="{{ inv?.shipQuantity }}"
+                          [disabled]="
+                            (this.claimsService.selectedInvoiceLines
+                              .isFromClaimHistory == true &&
+                            claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() !=
+                              'DRAFT') || isLaborClaim
+                          "
+                          [(ngModel)]="inv.claimQuantity"
+                          (input)="checkValidity(true)"
+                          (blur)="onInputBlur($event)"
+                          (keypress)="
+                            quantityKey($event, inv?.shipQuantity, inv?.uom)
+                          "
+                          (paste)="quantityPaste($event, inv, inv?.shipQuantity, 'shipQuantity')"
+                          required
+                          [class.is-invalid]="
+                            inv.claimQuantity != '' && inv.claimQuantity == 0
+                          "
+                          name="claimQuantity-{{ i }}-{{ j }}"
+                          autocomplete="off"
+                        />
+                        ({{ inv?.uomDesc }})* <br /><span
+                          class="text-danger"
+                          *ngIf="
+                            inv.claimQuantity != '' && inv.claimQuantity == 0
+                          "
+                          >value should not be 0
+                        </span>
+                      </td>
+                    </tr>
+                    <tr
+                      class="non-product-line-bg"
+                      *ngIf="inv.component != 'PRODUCT' && isCollapseArr[i]"
+                    >
+                      <ng-container>
+                        <td>
+                          <div class="subproduct">
+                            <span
+                              (click)="removeItem(inv, j, line)"
+                              class="icon-wrapper collapse-cursor"
+                              *ngIf="
+                                claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() !=
+                                'IN PROCESS'
+                              "
+                            >
+                              <fa-icon [icon]="faTimes"></fa-icon>
+                            </span>
+                            <span
+                              tooltip="{{((!inv?.disputeCaseId || inv?.disputeCaseId == 'NA') && claimsService.selectedInvoiceLines?.claimData?.claimStatus?.toUpperCase() != 'DRAFT' && claimsService.selectedInvoiceLines?.claimData?.claimStatus) ? 'disputeCaseId not available' : ''}}"
+                            >
+                            <span
+                              class="mx-clear-input-btn icon-wrapper"
+                              (click)="openommentModal(lineItemComment, inv)"
+                              [class.disabled-comment-cta] = "((!inv?.disputeCaseId || inv?.disputeCaseId == 'NA') && claimsService.selectedInvoiceLines?.claimData?.claimStatus?.toUpperCase() != 'DRAFT' && claimsService.selectedInvoiceLines?.claimData?.claimStatus)"
+                            >
+                              <fa-icon [icon]="faMessage"></fa-icon>
+                            </span>
+                            </span>
+                          </div>
+                        </td>
+                        <td *ngIf="!line.hasOwnProperty('isRemovedLine') || line?.isRemovedLine === undefined"
+                          [style.display]="j == 1 ? 'table-cell' : 'none'"
+                          [attr.rowspan]="line?.selectedLines?.length - 1"
+                        >
+                          <span *ngIf="inv?.standaloneLine === true">
+                            {{line?.invoiceSeq}}
+                          </span>
+                        </td>
+                        <td *ngIf="line?.isRemovedLine === true">
+                          {{line?.invoiceSeq}}
+                        </td>
+                        <td *ngIf="showDisputeCaseId">
+                          {{ inv?.disputeCaseId || "NA" }}
+                        </td>
+                        <td>{{ inv?.claimStatusDetail || claimsService.selectedInvoiceLines?.claimData?.claimStatus || "NA" }}</td>
+                        <td>{{ inv?.component }}</td>
+                        <td
+                          class="non-product-lines"
+                          [style.display]="j == 1 ? 'table-cell' : 'none'"
+                          [attr.colspan]="7"
+                          [attr.rowspan]="line?.selectedLines?.length - 1"
+                        >
+                          Non Product Lines
+                        </td>
+                        <td *ngIf="claimTypeMap[inv.component] !== undefined && claimTypeMap[inv.component] != '' && inv.component !='LABOR'">
+                          {{ inv[claimTypeMap[inv.component]]}} {{claimTypeDesc[inv.component] || ''}}
+                        </td>
+                        <!-- <td *ngIf="!line.hasOwnProperty('isRemovedLine') || line?.isRemovedLine === undefined"
+                          [style.display]="j == 1 ? 'table-cell' : 'none'"
+                          [attr.rowspan]="line?.selectedLines?.length - 1"
+                        >
+                      </td> -->
+                      <td *ngIf="inv.component == 'LABOR'"></td>
+                        <!-- start labor-line logic-->
+                        <ng-container *ngIf="inv.component == 'LABOR'">
+                          <td [colSpan]="2" class="">
+                            <a
+                              class="text-danger cursor-pointer"
+                              (click)="scrollToLaborDiv()"
+                              ><b>ADD LABOR DETAILS*</b></a
+                            >
+                          </td>
+                        </ng-container>
+                        <!-- end labor-line logic-->
+
+                        <!-- start non-labor-line logic-->
+                        <ng-container *ngIf="inv.component != 'LABOR'">
+                          <td
+                            *ngIf="
+                              !line.hasOwnProperty('isRemovedLine') ||
+                              line?.isRemovedLine === undefined
+                            "
+                            [style.display]="j == 1 ? 'table-cell' : 'none'"
+                            [attr.rowspan]=" hasLaborLine(line?.selectedLines) ? line?.selectedLines?.length - 2 : line?.selectedLines?.length - 1"
+                            id="0001"
+                          ></td>
+                          <td *ngIf="line?.isRemovedLine === true">
+                            <!-- empty -->
+                          </td>
+                          <td
+                            *ngIf="
+                              line?.isRemovedLine === true ||
+                              inv?.standaloneLine == true
+                            "
+                            [style.display]="j == 1 ? 'table-cell' : 'none'"
+                          >
+                            {{ inv?.invoiceSubTotal }}
+                          </td>
+                        </ng-container>
+                        <!-- end non-labor-line logic-->
+                      </ng-container>
+                    </tr>
+                  </ng-container>
+                </ng-container>
+              </tbody>
+            </table>
+            <!-- Only Product Lines Table-->
+            <table *ngIf="showProductLines">
+              <thead>
+                <tr>
+                  <th>Add/View Comments</th>
+                  <th
+                    *ngFor="let col of columns; let colIndex = index"
+                    [ngClass]="{
+                      'sticky-th':
+                        col.key === 'expectedUnitPrice' ||
+                        col.key === 'claimQuanity' ||
+                        col.key === 'claimQuantity'
+                    }"
+                  >
+                    {{ col.title }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container
+                  *ngFor="
+                    let line of claimsService.selectedInvoiceLines.line;
+                    let i = index
+                  "
+                >
+                  <ng-container
+                    *ngFor="let inv of line?.selectedLines; let j = index"
+                  >
+                    <tr *ngIf="disableRow(inv)">
+                      <td>
+                        <div class="comments">
+                          <span
+                            (click)="removeItem(inv, j, line)"
+                            class="collapse-cursor icon-wrapper"
+                            *ngIf="
+                              claimsService.selectedInvoiceLines.claimData ==
+                                undefined ||
+                              claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() ==
+                                'DRAFT'
+                            "
+                          >
+                            <fa-icon [icon]="faTimes"></fa-icon>
+                          </span>
+
+                          <span
+                            tooltip="{{((!inv?.disputeCaseId || inv?.disputeCaseId == 'NA') && claimsService.selectedInvoiceLines?.claimData?.claimStatus?.toUpperCase() != 'DRAFT' && claimsService.selectedInvoiceLines?.claimData?.claimStatus) ? 'disputeCaseId not available' : ''}}"
+                          >
+                          <span
+                            class="mx-clear-input-brn icon-wrapper"
+                            (click)="openommentModal(lineItemComment, inv)"
+                            [class.disabled-comment-cta] = "((!inv?.disputeCaseId || inv?.disputeCaseId == 'NA') && claimsService.selectedInvoiceLines?.claimData?.claimStatus?.toUpperCase() != 'DRAFT' && claimsService.selectedInvoiceLines?.claimData?.claimStatus)"
+                          >
+                            <fa-icon [icon]="faMessage"></fa-icon>
+                          </span>
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        {{ inv?.invoiceSeq }}
+                      </td>
+                      <td *ngIf="showDisputeCaseId">
+                        {{ inv?.disputeCaseId || "NA" }}
+                      </td>
+                      <td>
+                        {{ line?.claimStatusDetail || claimsService.selectedInvoiceLines?.claimData?.claimStatus || "NA" }}
+                      </td>
+                      <td>
+                        {{ inv?.component }}
+                      </td>
+                      <td>
+                        {{ inv?.styleNumber }}
+                        <span *ngIf="inv?.styleNumber && inv?.styleName && inv?.styleName != 'NA'">-</span>
+                        {{ inv?.styleName }}
+                      </td>
+                      <td>
+                        {{ inv?.colorNumber }}
+                        <span *ngIf="inv?.colorNumber && inv?.colorName && inv?.colorName != 'NA'">-</span>
+                        {{ inv?.colorName }}
+                      </td>
+                      <td>
+                        {{ inv?.dyeLot }}
+                      </td>
+                      <td>
+                        {{ inv?.rollNumber }}
+                      </td>
+                      <td>
+                        {{ inv?.partNumber }}
+                      </td>
+                      <td>{{ inv?.shipQuantity }} ({{ inv?.uomDesc }})</td>
+                      <td *ngIf="inv.component == 'PRODUCT'">
+                        {{ inv?.pricePerUnit }} ({{ inv?.priceUOMDesc }})
+                      </td>
+                      <td *ngIf="inv.component == 'PRODUCT'">
+                        {{ inv?.productPrice }}
+                      </td>
+                      <td
+                        *ngIf="claimType == claimTypes.ACCOMMODATION_RETURN"
+                        [ngClass]="{
+                          'sticky-change': inv.claimQuantity > 0,
+                          'sticky-col':
+                            inv.claimQuantity <= 0 || !inv.claimQuantity
+                        }"
+                      >
+                        <input
+                          id="arc-{{ i }}-{{ j }}"
+                          type="text"
+                          class="form-control custom-ip"
+                          step="0.1"
+                          max="{{ inv?.shipQuantity }}"
+                          [(ngModel)]="inv.claimQuantity"
+                          name="claimQuantity-{{ i }}-{{ j }}"
+                          [disabled]="
+                            this.claimsService.selectedInvoiceLines
+                              .isFromClaimHistory == true &&
+                            claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() !=
+                              'DRAFT'
+                          "
+                          (input)="checkValidity(true)"
+                          (blur)="onInputBlur($event)"
+                          (keypress)="
+                            quantityKey($event, inv?.shipQuantity, inv?.uom)
+                          "
+                          (paste)="quantityPaste($event, inv, inv?.shipQuantity, 'shipQuantity')"
+                          required
+                          [class.is-invalid]="
+                            inv.claimQuantity != '' && inv.claimQuantity == 0
+                          "
+                          autocomplete="off"
+                        />({{ inv?.uomDesc }})* <br /><span
+                          class="text-danger"
+                          *ngIf="
+                            inv.claimQuantity != '' && inv.claimQuantity == 0
+                          "
+                          >value should not be 0
+                        </span>
+                      </td>
+                      <td>
+                        {{ inv?.invoiceSubTotal }}
+                      </td>
+                      <td
+                        *ngIf="claimType == claimTypes.PRICING"
+                        [ngClass]="{
+                          'sticky-change': inv.expectedUnitPrice >= 0 && inv.expectedUnitPrice !== '',
+                          'sticky-col':inv.expectedUnitPrice == '' || inv.expectedUnitPrice == null
+                        }"
+                      >
+                        <input
+                          id="rqd-{{ i }}-{{ j }}"
+                          type="text"
+                          class="form-control custom-ip"
+                          [(ngModel)]="inv.expectedUnitPrice"
+                          name="expectedUnitPrice-{{ i }}-{{ j }}"
+                          [disabled]="
+                            this.claimsService.selectedInvoiceLines
+                              .isFromClaimHistory == true &&
+                            claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() !=
+                              'DRAFT'
+                          "
+                          (input)="expectedUnitPriceChange($event, inv)"
+                          (blur)="onInputBlur($event)"
+                          (keypress)="
+                            quantityKey(
+                              $event,
+                              inv?.pricePerUnit,
+                              inv?.priceUOM
+                            )
+                          "
+                          (paste)="quantityPaste($event, inv, inv?.pricePerUnit, 'pricing')"
+                          max="{{ inv?.pricePerUnit }}"
+                          required
+                          autocomplete="off"
+                        />
+                        ({{ inv?.priceUOMDesc }})<br />
+                        <span
+                        class="text-danger"
+                        *ngIf="
+                        inv.expectedUnitPrice == null"
+                        >value is required
+                    </span>
+                      </td>
+                      <td *ngIf="claimType == claimTypes.PRICING">
+                        {{ inv?.adjustmentAmount }}
+                      </td>
+                    </tr>
+                  </ng-container>
+                </ng-container>
+              </tbody>
+            </table>
+          </form>
+        </div>
+        <div *ngIf="claimType == claimTypes.PRICING">
+          <div class="row mt-2">
+            <div class="col-md-6 col-sm-6 col-xs-12 mb-3">
+              Total Adjustment Amount (USD) ${{
+                claimsService.totalAdjutmentAmount | number : "1.2-2"
+              }}
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12 mb-3 two">
+              Expected Unit Price Quoted By*
+              <form #expectedUnitForm="ngForm" class="no-border">
+                <input
+                #REUPQ
+                  name="expectedUnitPriceQuotedBy"
+                  id="rqd1"
+                  type="text"
+                  class="form-control"
+                  maxlength="30"
+                  ngModel 
+                  #pqb="ngModel"
+                  [(ngModel)]="claimsService.expectedUnitPriceQuotedBy"
+                  required
+                  (keypress)="keyPressAlphaWithSpace($event,REUPQ)"
+                  [disabled]="
+                    this.claimsService.selectedInvoiceLines
+                      .isFromClaimHistory == true &&
+                    claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() !=
+                      'DRAFT'
+                  "
+                  [class.errorBorder]= "
+                    (expectedUnitForm.invalid && expectedUnitForm.touched)
+                  "
+                  [class.is-invalid]= "
+                    (expectedUnitForm.invalid && expectedUnitForm.touched)
+                  "
+                  (input)="claimsService.formMarkAsDirty.next(true);"
+                />
+                <div class="invalid-feedback">
+                  Please enter price quoted by
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-12" class="table-data">
+          <form #nonProductlineForm="ngForm">
+            <table *ngIf="showNonProductLines">
+              <thead>
+                <tr><th>Add/View Comments</th>
+                  <th
+                    *ngFor="let col of columns; let colIndex = index"
+                    [ngClass]="{
+                      'sticky-th':
+                        col.key === 'claimAmount' ||
+                        col.key === 'claimQuanity' ||
+                        col.key === 'claimQuantity'
+                    }"
+                  >
+                    {{ col.title }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container
+                  *ngFor="
+                    let line of claimsService.selectedInvoiceLines.line;
+                    let i = index
+                  "
+                >
+                  <ng-container
+                    *ngFor="let inv of line?.selectedLines; let j = index"
+                  >
+                  <ng-template #elseTemplate>
+                    <tr *ngIf="disableRow(inv)">
+                      <td>
+                        <div class="comments">
+                          <span
+                            (click)="removeItem(inv, j, line)"
+                            class="collapse-cursor"
+                            *ngIf="
+                              claimsService.selectedInvoiceLines.claimData ==
+                                undefined ||
+                              claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() ==
+                                'DRAFT'
+                            "
+                            class="icon-wrapper collapse-cursor"
+                          >
+                            <fa-icon [icon]="faTimes"></fa-icon>
+                          </span>
+                          <span
+                            tooltip="{{((!inv?.disputeCaseId || inv?.disputeCaseId == 'NA') && claimsService.selectedInvoiceLines?.claimData?.claimStatus?.toUpperCase() != 'DRAFT' && claimsService.selectedInvoiceLines?.claimData?.claimStatus) ? 'disputeCaseId not available' : ''}}"
+                          >
+                          <span
+                            class="mx-clear-input-btn icon-wrapper"
+                            (click)="openommentModal(lineItemComment, inv)"
+                            [class.disabled-comment-cta] = "((!inv?.disputeCaseId || inv?.disputeCaseId == 'NA') && claimsService.selectedInvoiceLines?.claimData?.claimStatus?.toUpperCase() != 'DRAFT' && claimsService.selectedInvoiceLines?.claimData?.claimStatus)"
+                          >
+                            <fa-icon [icon]="faMessage"></fa-icon>
+                          </span>
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        {{ inv?.invoiceSeq }}
+                      </td>
+                      <td *ngIf="showDisputeCaseId">
+                        {{ inv?.disputeCaseId || "NA" }}
+                      </td>
+                      <td>
+                        {{ line?.claimStatusDetail || claimsService.selectedInvoiceLines?.claimData?.claimStatus || "NA" }}
+                      </td>
+                      <td>
+                        {{ inv?.component }}
+                      </td>
+                      <td>
+                        {{ inv?.styleNumber }}
+                        <span *ngIf="inv?.styleNumber && inv?.styleName && inv?.styleName != 'NA'">-</span>
+                        {{ inv?.styleName }}
+                      </td>
+                      <td>
+                        {{ inv?.colorNumber }}
+                        <span *ngIf="inv?.colorNumber && inv?.colorName && inv?.colorName != 'NA'">-</span>
+                        {{ inv?.colorName }}
+                      </td>
+                      <td>{{ inv?.shipQuantity }} {{ inv?.uomDesc }}</td>
+                      <td
+                        *ngIf="
+                          inv?.component == 'LABOR' &&
+                          claimType == claimTypes.CANCELLATION_FEE
+                        "
+                      >
+                        {{ inv?.claimAmount ? inv?.claimAmount : "NA" }}
+                      </td>
+                      <td
+                          *ngIf="
+                            freightMap.includes(inv.component) &&
+                            claimType == claimTypes.FREIGHT
+                          "
+                      >
+                          {{ inv[claimTypeMap[inv.component]]}}
+                      </td>
+                      <td *ngIf="inv.component == 'TAX'">
+                        {{ inv?.taxAmount ? inv?.taxAmount : "NA" }}
+                      </td>
+                      <td
+                        *ngIf="
+                          inv.component == 'CANCELLATION_FEE' ||
+                          claimType == claimTypes.CANCELLATION_FEE
+                        "
+                      >
+                        {{ inv?.miscCharge ? inv?.miscCharge : "NA" }}
+                      </td>
+                      <td
+                        *ngIf="
+                          inv?.component == 'LABOR' &&
+                          claimType !== claimTypes.CANCELLATION_FEE
+                        "
+                      >
+                        {{ inv?.claimAmount ? inv?.claimAmount : "NA" }}
+                      </td>
+                      <td
+                        *ngIf="claimType == claimTypes.FREIGHT"
+                        [ngClass]="{
+                          'sticky-change': inv.claimAmount > 0,
+                          'sticky-col': inv.claimAmount <= 0 || !inv.claimAmount
+                        }"
+                      >
+                        <input
+                          id="fcc{{ i }}-{{ j }}"
+                          type="text"
+                          class="form-control custom-ip"
+                          step="0.1"
+                          maxlength="14"
+                          max="{{ inv?.freightCharge || inv?.fuelSurcharge || inv?.jobSiteDelivery || inv?.liftGateCharge || inv?.palletJackCharge}}"
+                          [(ngModel)]="inv.claimAmount"
+                          (input)="checkValidity(true)"
+                          (blur)="onInputBlur($event)"
+                          (keypress)="
+                            quantityKey(
+                              $event,
+                              inv?.freightCharge || inv?.fuelSurcharge || inv?.jobSiteDelivery || inv?.liftGateCharge || inv?.palletJackCharge,
+                              ''
+                            )
+                          "
+                          (paste)="quantityPaste($event, inv, inv?.freightCharge || inv?.fuelSurcharge || inv?.jobSiteDelivery || inv?.liftGateCharge || inv?.palletJackCharge)"
+                          required
+                          [class.is-invalid]="
+                            inv.claimAmount != '' && inv.claimAmount == 0
+                          "
+                          name="freight-claim-{{ i }}-{{ j }}"
+                          autocomplete="off"
+                        />
+                        <br /><span
+                          class="text-danger"
+                          *ngIf="inv.claimAmount != '' && inv.claimAmount == 0"
+                          >value should not be 0
+                        </span>
+                        <!-- 
+                        [disabled]="
+                            this.claimsService.selectedInvoiceLines
+                              .isFromClaimHistory == true &&
+                            claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() !=
+                              'DRAFT'
+                          "
+                        -->
+                      </td>
+                      <td
+                        *ngIf="claimType == claimTypes.TAX"
+                        [ngClass]="{
+                          'sticky-change': inv.claimAmount > 0,
+                          'sticky-col': inv.claimAmount <= 0 || !inv.claimAmount
+                        }"
+                      >
+                        <input
+                          #TaxRef
+                          id="tbec-{{ i }}-{{ j }}"
+                          type="text"
+                          class="form-control custom-ip"
+                          max="{{ inv?.taxAmount }}"
+                          [(ngModel)]="inv.claimAmount"
+                          [disabled]="
+                            this.claimsService.selectedInvoiceLines
+                              .isFromClaimHistory == true &&
+                            claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() !=
+                              'DRAFT'
+                          "
+                          (input)="checkValidity(true)"
+                          (blur)="onInputBlur($event)"
+                          (keypress)="quantityKey($event, inv?.taxAmount, '')"
+                          (paste)="quantityPaste($event, inv, inv?.taxAmount)"
+                          required
+                          [class.is-invalid]="
+                            inv.claimAmount != '' && inv.claimAmount == 0
+                          "
+                          name="tax-billing-input-{{ i }}-{{ j }}"
+                          autocomplete="off"
+                        />
+                        <br /><span
+                          class="text-danger"
+                          *ngIf="inv.claimAmount != '' && inv.claimAmount == 0"
+                          >value should not be 0
+                        </span>
+                      </td>
+                      <td
+                        *ngIf="
+                          claimType == claimTypes.CANCELLATION_FEE &&
+                          (inv.component == 'CANCELLATION_FEE' || inv.component == 'CALIFORNIA_CARE_FEE')
+
+                        "
+                        [ngClass]="{
+                          'sticky-change': inv.claimAmount > 0,
+                          'sticky-col': inv.claimAmount <= 0 || !inv.claimAmount
+                        }"
+                      >
+                        <input
+                          #CancellationRef
+                          id="rqd-{{ i }}-{{ j }}"
+                          type="text"
+                          class="form-control custom-ip"
+                          step="0.1"
+                          max="{{ inv?.miscCharge || inv?.californiaCareFee}}"
+                          [(ngModel)]="inv.claimAmount"
+                          [disabled]="
+                            this.claimsService.selectedInvoiceLines
+                              .isFromClaimHistory == true &&
+                            claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() !=
+                              'DRAFT'
+                          "
+                          (input)="checkValidity(true)"
+                          (blur)="onInputBlur($event)"
+                          (keypress)="quantityKey($event, 
+                          inv?.miscCharge || inv?.californiaCareFee, '', CancellationRef)"
+                          (paste)="quantityPaste($event, inv, inv?.miscCharge || inv?.californiaCareFee)"
+                          required
+                          [class.is-invalid]="
+                            inv.claimAmount != '' && inv.claimAmount == 0
+                          "
+                          name="cancellation-fees-{{ i }}-{{ j }}"
+                          autocomplete="off"
+                        /><br /><span
+                          class="text-danger"
+                          *ngIf="inv.claimAmount != '' && inv.claimAmount == 0"
+                          >value should not be 0
+                        </span>
+                      </td>
+                      <td
+                        *ngIf="
+                          claimType == claimTypes.CANCELLATION_FEE &&
+                          inv.component == 'LABOR'
+                        "
+                      ></td>
+                    </tr>
+                  </ng-template>
+                  <ng-container  *ngIf="(claimType == claimTypes.FREIGHT && this.claimsService.selectedInvoiceLines.isFromClaimHistory && !(claimsService.selectedInvoiceLines.nonProductLinesFlag)); else elseTemplate">
+                    <tr
+                      class="product-line-bg"
+                      *ngIf="inv.component == 'PRODUCT' && inv.standaloneLine == undefined"
+                      [class.removed-line]="line?.isRemovedLine === true"
+                    >
+                      <td>
+                        <div class="icon-container">
+                          <div class="collapses"*ngIf="
+                          claimsService.selectedInvoiceLines.claimData ==
+                            undefined ||
+                          claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() ==
+                            'DRAFT' ||
+                          claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() ==
+                            'IN PROCESS'
+                        ">
+                            <span
+                              (click)="isCollapseArr[i] = !isCollapseArr[i]"
+                            >
+                              <h6 *ngIf="!isCollapseArr[i]">
+                                <span
+                                  class="mohawak-icon angle-left-icon up-icon"
+                                ></span>
+                              </h6>
+                              <h6 *ngIf="isCollapseArr[i]" class="d-flex">
+                                <span
+                                  class="mohawak-icon angle-left-icon down-icon"
+                                ></span>
+                              </h6>
+                            </span>
+                          </div>
+                          <div class="comments">
+                            <span
+                              tooltip="{{((!inv?.disputeCaseId || inv?.disputeCaseId == 'NA') && claimsService.selectedInvoiceLines?.claimData?.claimStatus?.toUpperCase() != 'DRAFT' && claimsService.selectedInvoiceLines?.claimData?.claimStatus) ? 'disputeCaseId not available' : ''}}"
+                            >
+                              <span
+                                class="mx-clear-input-btn icon-wrapper"
+                                (click)="openommentModal(lineItemComment, inv)"
+                                [class.disabled-comment-cta] = "((!inv?.disputeCaseId || inv?.disputeCaseId == 'NA') && claimsService.selectedInvoiceLines?.claimData?.claimStatus?.toUpperCase() != 'DRAFT' && claimsService.selectedInvoiceLines?.claimData?.claimStatus)"
+                              >
+                                <fa-icon [icon]="faMessage"></fa-icon>
+                              </span>
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        {{ inv?.invoiceSeq }}
+                      </td>
+                      <td *ngIf="showDisputeCaseId">
+                        {{ inv?.disputeCaseId || "NA" }}
+                      </td>
+                      <td>
+                        {{ line?.claimStatusDetail || claimsService.selectedInvoiceLines?.claimData?.claimStatus || "NA" }}
+                      </td>
+                      <td>
+                        {{ inv?.component }}
+                      </td>
+                      <td>
+                        {{ inv?.styleNumber }}
+                        <span *ngIf="inv?.styleNumber && inv?.styleName && inv?.styleName != 'NA'">-</span>
+                        {{ inv?.styleName }}
+                      </td>
+                      <td>
+                        {{ inv?.colorNumber }}
+                        <span *ngIf="inv?.colorNumber && inv?.colorName && inv?.colorName != 'NA'">-</span>
+                        {{ inv?.colorName }}
+                      </td>
+                      <td>
+                        {{ inv?.dyeLot }}
+                      </td>
+                      <td>
+                        {{ inv?.rollNumber }}
+                      </td>
+                      <td>
+                        {{ inv?.partNumber }}
+                      </td>
+                      <td>{{ inv?.shipQuantity }} ({{ inv?.uomDesc }})</td>
+                      <td>
+                        {{ inv?.pricePerUnit }} ({{ inv?.priceUOMDesc }})
+                      </td>
+                      <td>
+                        {{ inv?.productPrice }}
+                      </td>
+                      <td [rowSpan]="inv?.rowspan">
+                        {{ inv?.invoiceSubTotal }}
+                      </td>
+                      <td
+                        [ngClass]="{
+                          'sticky-change': inv.claimQuantity > 0,
+                          'sticky-col':
+                            inv.claimQuantity <= 0 || !inv.claimQuantity
+                        }"
+                      >
+                        <ng-container *ngIf="inv.claimQuantity == 'NA'">NA</ng-container>
+                        <ng-container *ngIf="inv.claimQuantity != 'NA'">
+                          <input
+                            #CQ
+                            id="rqd-{{ i }}-{{ j }}"
+                            type="text"
+                            class="form-control custom-ip"
+                            max="{{ inv?.shipQuantity }}"
+                            [disabled]="
+                              this.claimsService.selectedInvoiceLines
+                                .isFromClaimHistory == true &&
+                              claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() !=
+                                'DRAFT'
+                            "
+                            [(ngModel)]="inv.claimQuantity"
+                            (input)="checkValidity(true)"
+                            (blur)="onInputBlur($event)"
+                            (keypress)="
+                              quantityKey($event, inv?.shipQuantity, inv?.uom, CQ)
+                            "
+                            (paste)="quantityPaste($event, inv, inv?.shipQuantity, 'shipQuantity')"
+                            required
+                            [class.is-invalid]="
+                              inv.claimQuantity != '' && inv.claimQuantity == 0
+                            "
+                            name="claimQuantity-{{ i }}-{{ j }}"
+                            autocomplete="off"
+                          />
+                          ({{ inv?.uomDesc }})* <br /><span
+                            class="text-danger"
+                            *ngIf="
+                              inv.claimQuantity != '' && inv.claimQuantity == 0
+                            "
+                            >value should not be 0
+                          </span>
+                        </ng-container>
+                      </td>
+                      <td>{{ inv?.affectedQuantity || 'NA' }}</td>
+                      <td>{{ inv?.amountProductAffected  || 'NA' }}</td>
+                      <td>{{ inv?.expectedQuantity || 'NA' }}</td>
+                      <td>{{ inv?.receivedQuantity || 'NA' }}</td>
+                      <td>{{ inv?.priceQuoted || 'NA' }}</td>
+                      <td>{{ inv?.disputeAmount || 'NA' }}</td>                      
+                    </tr>
+                    <tr
+                      class="non-product-line-bg"
+                      *ngIf="inv.component != 'PRODUCT' && isCollapseArr[i]"
+                    >
+                      <ng-container>
+                        <td>
+                          <div class="subproduct">
+                            <span
+                              (click)="removeItem(inv, j, line)"
+                              class="icon-wrapper collapse-cursor"
+                              *ngIf="
+                                claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() !=
+                                'IN PROCESS'
+                              "
+                            >
+                              <fa-icon [icon]="faTimes"></fa-icon>
+                            </span>
+                            <span
+                              tooltip="{{((!inv?.disputeCaseId || inv?.disputeCaseId == 'NA') && claimsService.selectedInvoiceLines?.claimData?.claimStatus?.toUpperCase() != 'DRAFT' && claimsService.selectedInvoiceLines?.claimData?.claimStatus) ? 'disputeCaseId not available' : ''}}"
+                            >
+                            <span
+                              class="mx-clear-input-btn icon-wrapper"
+                              (click)="openommentModal(lineItemComment, inv)"
+                              [class.disabled-comment-cta] = "((!inv?.disputeCaseId || inv?.disputeCaseId == 'NA') && claimsService.selectedInvoiceLines?.claimData?.claimStatus?.toUpperCase() != 'DRAFT' && claimsService.selectedInvoiceLines?.claimData?.claimStatus)"
+                            >
+                              <fa-icon [icon]="faMessage"></fa-icon>
+                            </span>
+                            </span>
+                          </div>
+                        </td>
+                        <td *ngIf="!line.hasOwnProperty('isRemovedLine') || line?.isRemovedLine === undefined"
+                          [style.display]="j == 1 ? 'table-cell' : 'none'"
+                          [attr.rowspan]="line?.selectedLines?.length - 1"
+                        >
+                        <span *ngIf="inv?.standaloneLine === true">
+                          {{line?.invoiceSeq}}
+                        </span>
+                      </td>
+                        <td *ngIf="line?.isRemovedLine === true">
+                          {{line?.invoiceSeq}}
+                        </td>
+                        <td *ngIf="showDisputeCaseId">
+                          {{ inv?.disputeCaseId || "NA" }}
+                        </td>
+                        <td>{{ inv?.claimStatusDetail || claimsService.selectedInvoiceLines?.claimData?.claimStatus || "NA" }}</td>
+                        <td>{{ inv?.component }}</td>
+
+                        <td
+                          class="non-product-lines"
+                          [style.display]="j == 1 ? 'table-cell' : 'none'"
+                          [attr.colspan]="7"
+                          [attr.rowspan]="line?.selectedLines?.length - 1"
+                        >
+                          Non Product Lines
+                        </td>
+                        <td *ngIf="claimTypeMap[inv.component] !== undefined && claimTypeMap[inv.component] != ''">
+                          {{ inv[claimTypeMap[inv.component]]}} {{claimTypeDesc[inv.component] || ''}}
+                        </td>
+                        <td *ngIf="!line.hasOwnProperty('isRemovedLine') || line?.isRemovedLine === undefined"
+                          [style.display]="j == 1 ? 'table-cell' : 'none'"
+                          [attr.rowspan]="line?.selectedLines?.length - 1"
+                          
+                        >
+                      </td>
+                        <td *ngIf="line?.isRemovedLine === true">
+                          <!-- empty -->
+                        </td>
+                      <td>{{ inv?.affectedQuantity || 'NA' }}</td>
+                      <td>{{ inv?.amountProductAffected  || 'NA' }}</td>
+                      <td>{{ inv?.expectedQuantity || 'NA' }}</td>
+                      <td>{{ inv?.receivedQuantity || 'NA' }}</td>
+                      <td>{{ inv?.priceQuoted || 'NA' }}</td>
+                      <td>{{ inv?.disputeAmount || 'NA' }}</td>
+                      </ng-container>
+                    </tr>
+                    <!-- only non-product lines-->
+                    <tr
+                      class="non-product-line-bg"
+                      *ngIf="inv.component != 'PRODUCT' && inv?.isNonProductLine"
+                    >
+                      <td>
+                        <div class="comments">
+                          <span
+                            (click)="removeItem(inv, j, line)"
+                            class="collapse-cursor"
+                            *ngIf="
+                              claimsService.selectedInvoiceLines.claimData ==
+                                undefined ||
+                              claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() ==
+                                'DRAFT'
+                            "
+                            class="icon-wrapper collapse-cursor"
+                          >
+                            <fa-icon [icon]="faTimes"></fa-icon>
+                          </span>
+                          <span
+                            tooltip="{{((!inv?.disputeCaseId || inv?.disputeCaseId == 'NA') && claimsService.selectedInvoiceLines?.claimData?.claimStatus?.toUpperCase() != 'DRAFT' && claimsService.selectedInvoiceLines?.claimData?.claimStatus) ? 'disputeCaseId not available' : ''}}"
+                          >
+                          <span
+                            class="mx-clear-input-btn icon-wrapper"
+                            (click)="openommentModal(lineItemComment, inv)"
+                            [class.disabled-comment-cta] = "((!inv?.disputeCaseId || inv?.disputeCaseId == 'NA') && claimsService.selectedInvoiceLines?.claimData?.claimStatus?.toUpperCase() != 'DRAFT' && claimsService.selectedInvoiceLines?.claimData?.claimStatus)"
+                          >
+                            <fa-icon [icon]="faMessage"></fa-icon>
+                          </span>
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        {{ inv?.invoiceSeq }}
+                      </td>
+                      <td *ngIf="showDisputeCaseId">
+                        {{ inv?.disputeCaseId || "NA" }}
+                      </td>
+                      <td>
+                        {{ line?.claimStatusDetail || claimsService.selectedInvoiceLines?.claimData?.claimStatus || "NA" }}
+                      </td>
+                      <td>
+                        {{ inv?.component }}
+                      </td>
+                      <td>
+                        {{ inv?.styleNumber }}
+                        <span *ngIf="inv?.styleNumber && inv?.styleName && inv?.styleName">-</span>
+                        {{ inv?.styleName }}
+                      </td>
+                      <td>
+                        {{ inv?.colorNumber }}
+                        <span *ngIf="inv?.colorNumber && inv?.colorName && inv?.colorName != 'NA'">-</span>
+                        {{ inv?.colorName }}
+                      </td>
+                      <td>
+                        {{ inv?.dyeLot || 'NA' }}
+                      </td>
+                      <td>
+                        {{ inv?.rollNumber || 'NA' }}
+                      </td>
+                      <td>
+                        {{ inv?.partNumber || 'NA' }}
+                      </td>
+                      <td>{{ inv?.shipQuantity }} {{ inv?.uomDesc }}</td>
+                      <td>
+                        {{ inv?.pricePerUnit }} ({{ inv?.priceUOMDesc }})
+                      </td>
+                      <td>
+                        {{ inv?.productPrice || 'NA' }}
+                      </td>
+                      <td>
+                        {{ inv?.invoiceSubTotal || 'NA' }}
+                      </td>
+                      <td
+                        *ngIf="claimType == claimTypes.FREIGHT"
+                        [ngClass]="{
+                          'sticky-change': inv.claimAmount > 0,
+                          'sticky-col': inv.claimAmount <= 0 || !inv.claimAmount
+                        }"
+                      >
+                        <input
+                          #RECA
+                          id="fcc-{{ i }}-{{ j }}"
+                          type="text"
+                          class="form-control custom-ip"
+                          step="0.1"
+                          maxlength="14"
+                          max="{{ inv?.freightCharge || inv?.fuelSurcharge || inv?.jobSiteDelivery || inv?.liftGateCharge || inv?.palletJackCharge}}"
+                          [(ngModel)]="inv.claimAmount"
+                          [disabled]="
+                            this.claimsService.selectedInvoiceLines
+                              .isFromClaimHistory == true &&
+                            claimsService.selectedInvoiceLines?.claimData?.claimStatus.toUpperCase() !=
+                              'DRAFT'
+                          "
+                          (input)="checkValidity(true)"
+                          (blur)="onInputBlur($event)"
+                          (keypress)="
+                            quantityKey(
+                              $event,
+                              inv?.freightCharge || inv?.fuelSurcharge|| inv?.jobSiteDelivery || inv?.liftGateCharge || inv?.palletJackCharge,
+                              inv?.uom,
+                              RECA
+                            )
+                          "
+                          (paste)="quantityPaste($event,
+                            inv, inv?.freightCharge || inv?.fuelSurcharge || inv?.jobSiteDelivery || inv?.liftGateCharge || inv?.palletJackCharge)"
+                          required
+                          [class.is-invalid]="
+                            inv.claimAmount != '' && inv.claimAmount == 0
+                          "
+                          name="freight-claim-{{ i }}-{{ j }}"
+                          autocomplete="off"
+                        />
+                        <br /><span
+                          class="text-danger"
+                          *ngIf="inv.claimAmount != '' && inv.claimAmount == 0"
+                          >value should not be 0
+                        </span>
+                      </td>
+                      <td>{{ inv?.affectedQuantity || 'NA' }}</td>
+                      <td>{{ inv?.amountProductAffected  || 'NA' }}</td>
+                      <td>{{ inv?.expectedQuantity || 'NA' }}</td>
+                      <td>{{ inv?.receivedQuantity || 'NA' }}</td>
+                      <td>{{ inv?.priceQuoted || 'NA' }}</td>
+                      <td>{{ inv?.disputeAmount || 'NA' }}</td>
+                    </tr>
+                  </ng-container>
+                  </ng-container>
+                </ng-container>
+              </tbody>
+            </table>
+          </form>
+          <div class="alert alert-warning d-flex align-items-center mb-3 mt-3 p-2" role="alert" aria-live="polite">
+            <span class="mx-clear-input-btn icon-wrapper white-chat">
+              <fa-icon [icon]="faMessage"></fa-icon>
+            </span>
+            <span>
+              <b>Communicate directly through your claim.</b> Use the Add/View Comments icon on each line item to send messages directly
+              to your claims analyst and view their responses — no email needed. All claim-related communications are tracked in
+              one place for faster resolution.
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button
+  class="btn btn-primary mt-3"
+  (click)="openModal()"
+  *ngIf="
+    !isLaborClaim &&
+    (claimsService.selectedInvoiceLines.line == undefined ||
+    claimsService.selectedInvoiceLines?.line?.length === 0)
+  "
+>
+  INVOICE SEARCH
+</button>
+
+<ng-template #lineItemComment>
+  <div class="modal-header">
+    <h4 class="modal-title text-center w-100">Additional Comments</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="onHideModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body modal-body-padding">
+    <div class="card invoice-list-card checkout-card mt-2">
+      <div class="card-header checkout-card-header">
+        <div class="row">
+          <div class="col-12 col-sm-12">
+            <div class="row">
+              <div class="col-sm-2 column">
+                <h4 class="d-inline">Invoice Line</h4>
+                <p class="mb-0">
+                  {{ selectedInvLine?.invoiceSeq }}
+                </p>
+              </div>
+              <div class="col-sm-2 column">
+                <h4 class="d-inline">Type</h4>
+                <p class="mb-0">
+                  {{ selectedInvLine?.component }}
+                </p>
+              </div>
+              <div class="col-sm-3 column">
+                <h4 class="d-inline">Style / Desc</h4>
+                <p class="mb-0">
+                  {{ selectedInvLine?.styleNumber }}
+                  <span
+                    *ngIf="
+                      selectedInvLine?.styleNumber &&
+                      selectedInvLine?.styleName &&
+                      selectedInvLine?.styleName != 'NA'
+                    "
+                    >-</span
+                  >
+                  {{ selectedInvLine?.styleName }}
+                </p>
+              </div>
+              <div class="col-sm-2 column">
+                <h4 class="d-inline">Color #/Desc</h4>
+                <p class="mb-0">
+                  {{ selectedInvLine?.colorNumber }}
+                  <span
+                    *ngIf="
+                      selectedInvLine?.colorNumber &&
+                      selectedInvLine?.colorName &&
+                      selectedInvLine?.colorName != 'NA'
+                    "
+                    >-</span
+                  >
+                  {{ selectedInvLine?.colorName }}
+                </p>
+              </div>
+              <div class="col-sm-2 column">
+                <h4 class="d-inline">Invoice Qty</h4>
+                <p class="mb-0">
+                  {{ selectedInvLine?.shipQuantity }}
+                </p>
+              </div>
+              <div class="col-sm-1 d-flex"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
+                <div class="comments-header">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="pt-2">
+                            <h3 class="comments-h-title">User Comments ({{selectedInvLine?.claimComments?.length || 0}})</h3>
+                        </div>
+                        <div class="text-right" *ngIf="selectedInvLine?.claimComments?.length > 0">
+                                <span class="posted-comments-icon" aria-hidden="true"(click)="showPostedComments = !showPostedComments">
+                                    <img *ngIf="showPostedComments" src="assets/icons/arrow-dropdown-circle-up.svg"                                    alt="Collapse Icon" />
+                                    <img *ngIf="!showPostedComments" src="assets/icons/arrow-dropdown-circle-down.svg"
+                                        alt="Expand Icon" />
+                                </span>
+                        </div>
+                    </div>
+                    <div class="comments-container collapsible" [class.open]="showPostedComments" [attr.aria-hidden]="!showPostedComments">
+                        <div *ngFor="let item of selectedInvLine?.claimComments; let i = index"
+                            [class.comment-section]="i !== selectedInvLine?.claimComments.length - 1" class="py-3">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="comment-user-name ">
+                                    <h4>{{ item?.userName }}</h4>
+                                </div>
+                                <div class="text-right text-muted comment-date"> <span class="italic">{{ item?.claimCommentDate }}</span>
+                                </div>
+                            </div>
+                            <p class="text-muted comment-text mb-0">{{ item?.claimComment }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3" *ngIf="this.storageService.userInfo?.isCustomer != true">
+                <div class="comments-header">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="pt-2">
+                            <h3 class="comments-h-title">Salesperson Comments ({{selectedInvLine.claimSalesComments?.length || 0}})</h3>
+                        </div>
+                        <div class="text-right" *ngIf="selectedInvLine?.claimSalesComments?.length > 0">
+                                <span  (click)="showSalesComments = !showSalesComments" class="posted-comments-icon" aria-hidden="true">
+                                    <img *ngIf="showSalesComments" src="assets/icons/arrow-dropdown-circle-up.svg"
+                                        alt="Collapse Icon" />
+                                    <img *ngIf="!showSalesComments" src="assets/icons/arrow-dropdown-circle-down.svg"
+                                        alt="Expand Icon" />
+                                </span>
+                        </div>
+                    </div>
+                    <div class="comments-container collapsible" [class.open]="showSalesComments" [attr.aria-hidden]="!showSalesComments">
+                        <div *ngFor="let item of selectedInvLine?.claimSalesComments; let i = index"
+                            [class.comment-section]="i !== selectedInvLine?.claimSalesComments?.length - 1" class="py-3">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="comment-user-name">
+                                    <h4>{{ item?.userName }}</h4>
+                                </div>
+                                <div class="text-right text-muted comment-date"> <span class="italic">{{ item?.claimCommentDate }}</span>
+                                </div>
+                            </div>
+                            <p class="text-muted comment-text mb-0">{{ item?.claimComment }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-1">
+          <div class="col">
+            <div class="new-comments-section p-30">
+                <h3 class="h5 text-center">Add New Comment</h3>
+                <div class="form-group py-2">
+                    <label class="font-weight-600 mb-1 d-flex align-items-center input-label" for="commentInput">
+                        Enter Comment
+                    </label>
+                    <textarea id="commentInput" placeholder="Type Here" class="form-control"
+                        [(ngModel)]="lineComment"></textarea>
+                </div>
+                <div class="py-1 info-section">
+                  <p>
+                    To attach photo or documentation associated with this claim, please
+                    <a href="javascript:void(0)" (click)="uploadhereClick()">upload here</a>.
+                  </p>
+                </div>
+                <div class="row mt-4 justify-content-center gap-3">
+                        <button type="button" class="cancel-btn btn btn-secondary btn-w-150" (click)="onHideModal()">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary btn-w-150"
+                          [disabled]="!lineComment"
+                          (click)="addComment()"
+                        >
+                          Submit
+                        </button>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

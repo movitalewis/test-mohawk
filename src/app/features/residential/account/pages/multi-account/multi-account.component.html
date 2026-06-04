@@ -1,0 +1,87 @@
+<app-loader *ngIf="spinnerLoading"></app-loader>
+<div class="container" #scrollToTop>
+  <div class="banner-height mt-4 mb-4">
+    <img class="rounded w-100" [src]="
+        'https://s7d4.scene7.com/is/image/MohawkResidential/better_together?scl=1'
+      " alt="" />
+  </div>
+  <xchange-browser-alert></xchange-browser-alert>
+  <h2 class="text-center mt-4 mb-4">Select Account</h2>
+  <div class="_card-container">
+    <div>
+      <div class="col-12 mt-4">
+        <ngx-table [configuration]="configuration" [data]="data" [columns]="columns">
+          <ng-template let-row>
+            <td>
+              <a class="cursor-pointer" (click)="checkForPassKeyRequired(row)">
+                {{ displayCustNumber(   row.uid) }}</a>
+            </td>
+            <td>
+              {{ row.name }}
+            </td>
+            <td>
+              {{row.addresses[0].formattedAddress}}
+            </td>
+            <td>
+              {{row.addresses[0].phone}}
+            </td>
+
+          </ng-template>
+        </ngx-table>
+      </div>
+    </div>
+    <!-- <div class="row mb-4 mt-4" *ngIf="customerBaseData.length > 0">
+      <div class="d-flex justify-content-center mx-auto">
+        <pagination-controls
+          id="pg1"
+          [maxSize]="5"
+          [responsive]="true"
+          [nextLabel]="''"
+          [previousLabel]="''"
+          (pageChange)="onTableDataChange($event)"
+        >
+        </pagination-controls>
+      </div>
+      <div class="col-md-12">
+        <p class="text-center mb-4">
+          {{ customerBaseData.length > 0 ? startValue : 0 }} -
+          {{ lastValue > customerBaseData.length ? customerBaseData.length : lastValue }}
+          OF {{ customerBaseData.length > 0 ? customerBaseData.length : 0 }} ACCOUNTS
+        </p>
+      </div>
+    </div> -->
+  </div>
+</div>
+<ng-template #noResultsTemplate>
+  <td [attr.colspan]="columns.length" class="no-results text-center">
+    No Result
+  </td></ng-template
+>
+
+<ng-template #confirmCart>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w w-100">Are You Sure?</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="onCancelModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p class="modal-title f-w w-100">The below account(s) has existing items in the cart which will be removed.</p>
+      <h5 class="modal-title f-w w-100">{{currentAccount}}</h5>
+      <div class="mt-4 mb-4 d-flex justify-content-evenly w-50 mx-auto">
+        <button class="btn btn-primary" (click)="onCancelModal()">
+          Cancel
+        </button>
+        <button class="btn btn-outline-secondary" (click)="onContinueModal(newAccount)">
+          Continue
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

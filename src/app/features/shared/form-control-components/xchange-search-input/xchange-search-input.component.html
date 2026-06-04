@@ -1,0 +1,67 @@
+<div id="product-dropDown">
+  <div class="mx-search-box" [ngClass]="{ active: searchDefaultValue }">
+    <input
+      [disabled]="disabled"
+      [placeholder]="placeholder"
+      [value]="searchDefaultValue"
+      type="text"
+      #searchBoxInput
+      (input)="onInputEvent($event)"
+      (keypress)="onKeypress($event)"
+      [(ngModel)]="searchKey"
+      (keydown)="onKeydown($event)"
+      (keyup)="onKeyup($event)"
+      (blur)="onBlurEvent($event)"
+      class="form-control"
+      (keyup.enter)="onEnter()"
+      (keydown.backspace)="onKeypress($event)"
+      (focus)="onFocus()"
+      (paste)="showSpinner = true"
+    />
+    <div
+      *ngIf="showSpinner && searchKey?.length > 0"
+      class="spinner-border ms-auto d-flex align-items-center searchspinner"
+      role="searchstatus"
+      aria-hidden="true"
+    ></div>
+    <button [disabled]="disabled" class="mx-search-btn">
+      <img
+        src="/assets/images/icons/search-primary.svg"
+        alt="Search Button"
+        (click)="onSearch()"
+      />
+    </button>
+    <button
+      [disabled]="disabled"
+      class="mx-clear-input-brn"
+      *ngIf="searchKey?.length > 0"
+      (click)="onClearInput()"
+    >
+      <img
+        src="/assets/images/icons/close-primary.svg"
+        alt="Search Input Clear"
+      />
+    </button>
+  </div>
+  <div
+    class="mx-search-suggestions"
+      #suggestionBox
+    [style.display]="searchKey && ((isSuggestionBoxOpen && searchResults.length > 0) || (searchKey?.length > 0 && !showSpinner && searchResults?.length == 0)) ? 'block' : 'none'"
+  >
+    <p
+      *ngIf="
+        searchKey?.length > 0 && !showSpinner && searchResults?.length == 0
+      "
+      class="suggestion-li text-danger mb-0"
+    >
+      No Results Found
+    </p>
+    <div *ngIf="searchKey?.length > 0">
+      <span *ngFor="let suggestion of searchResults">
+        <ul (click)="onSuggestionClick(suggestion)">
+          <li class="suggestion-li" *ngFor="let label of bindLabels">{{ suggestion[label] }} </li>
+        </ul>
+      </span>
+    </div>
+  </div>
+</div>

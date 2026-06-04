@@ -1,0 +1,224 @@
+@import "src/styles/mixins/breakpoints";
+@import "src/styles/colors";
+
+.new-claim {
+  @include breakpoint-range($max: md) {
+    padding: 0px;
+    font-size: 13px;
+  }
+}
+.search-mob-width {
+  @include breakpoint-range($max: sm) {
+    // width: 50%;
+  }
+  ::ng-deep xchange-search-control{
+   .mx-search-box{
+    max-width: 100%;
+   }
+  }
+}
+.claim-number {
+  color: #ce0e2d;
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+::ng-deep {
+  .ngx-table__table--normal {
+    thead {
+      tr {
+        th {
+          padding: 6px 10px;
+        }
+      }
+    }
+    tbody {
+      tr {
+        td {
+          padding: 6px 10px;
+          &:nth-child(2) {
+            width: 15% !important;
+          }
+          &.claimNumber {
+            color: #e21836;
+          }
+          p {
+            margin-bottom: 0px;
+          }
+        }
+      }
+    }
+  }
+
+
+  ::ng-deep.bottom  {
+    left: -160px !important;
+    @media screen and (max-width:756px){
+      left:0px !important
+    }
+  }
+  // .table {
+  //   table {
+  //     tr {
+  //       td {
+  //         padding: 6px 14px;
+  //         &:nth-child(2) {
+  //           width: 15% !important;
+  //         }
+  //         &.claimNumber {
+  //           color: #e21836;
+  //         }
+  //         p{
+  //           margin-bottom: 0px;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+}
+
+/** ngx-pagination styling **/
+::ng-deep {
+  pagination-controls {
+    pagination-template {
+      ul {
+        border-radius: unset !important;
+        li {
+          border: none !important;
+          border-radius: 0 5px 5px 0;
+          box-shadow: inset 0px 5px 6px #00000014;
+          &:nth-child(3) {
+            &.current {
+              border-radius: 5px 0px 0px 5px;
+            }
+          }
+          &:nth-last-child(2) {
+            &.current {
+              border-radius: 0px 5px 5px 0px;
+            }
+          }
+          &.current {
+            display: flex !important;
+            box-shadow: unset;
+          }
+          a {
+            text-decoration: unset !important;
+            height: 100%;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+          }
+          &.pagination-next,
+          &.pagination-previous {
+            a {
+              color: $color-red;
+              font-size: 24px;
+              &::after,
+              &::before {
+                margin-left: 0px !important;
+                margin-bottom: 3px !important;
+              }
+            }
+          }
+        }
+        &.ngx-pagination.responsive {
+          li:not(.small-screen):not(.pagination-previous):not(
+              .pagination-next
+            ) {
+            display: inline-block;
+          }
+          li.small-screen {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1040px) and (min-width: 768px){
+  .cust-col-md-4{
+    width: 50%;
+  }
+}
+::ng-deep {
+  .sorting-arrow {
+    .pointer {
+      position: relative;
+      display: block !important;
+      &::after {
+        content: "";
+        width: 22px;
+        height: 22px;
+        background: url("../../../../../../assets/icons/sort.png") no-repeat;
+        top: 14px;
+        bottom: 0px;
+        right: 0px;
+        position: absolute;
+        display: inline-block;
+      }
+      .ngx-table__header-title {
+        .ngx-icon {
+          display: none;
+        }
+      }
+    }
+  }
+  .sorting-arrow-active {
+    .pointer {
+      position: relative;
+      display: block !important;
+      &::after {
+        content: "";
+        width: 22px;
+        height: 22px;
+        background: url("../../../../../../assets/icons/sort-ascending-icon.svg")
+          no-repeat;
+        top: 8px;
+        bottom: 0px;
+        right: 0px;
+        position: absolute;
+        display: inline-block;
+        -webkit-transform: scaleY(-1);
+        transform: scaleY(-1);
+      }
+      .ngx-table__header-title {
+        .ngx-icon {
+          display: none;
+        }
+      }
+    }
+  }
+  .sorting-arrow-down-icon {
+    .pointer {
+      position: relative;
+      display: block !important;
+      &::after {
+        content: "";
+        width: 22px;
+        height: 22px;
+        background: url("../../../../../../assets/icons/sort-descending-icon.svg")
+          no-repeat;
+        top: 14px;
+        bottom: 0px;
+        right: 0px;
+        position: absolute;
+        display: inline-block;
+        // -webkit-transform: scaleY(-1);
+        // transform: scaleY(-1);
+      }
+      .ngx-table__header-title {
+        .ngx-icon {
+          display: none;
+        }
+      }
+    }
+  }
+  .ngx-table__header-title {
+    padding: 10px 25px 10px 10px;
+  }
+  .ngx-table__table--normal > thead > tr > th {
+    vertical-align: top;
+  }
+}

@@ -1,0 +1,67 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+
+/** ngx-pagination styling **/
+::ng-deep {
+    pagination-controls {
+      pagination-template {
+        ul {
+          border-radius: unset !important;
+          li {
+            border: none !important;
+            border-radius: 0 5px 5px 0;
+            box-shadow: inset 0px 5px 6px #00000014;
+            &:nth-child(3) {
+              &.current {
+                border-radius: 5px 0px 0px 5px;
+              }
+            }
+            &:nth-last-child(2) {
+              &.current {
+                border-radius: 0px 5px 5px 0px;
+              }
+            }
+            &.current {
+              display: flex !important;
+              box-shadow: unset;
+            }
+            a {
+              text-decoration: unset !important;
+              height: 100%;
+              display: flex !important;
+              align-items: center;
+              justify-content: center;
+            }
+            &.pagination-next,
+            &.pagination-previous {
+              a {
+                color: $color-red;
+                font-size: 24px;
+                &::after,
+                &::before {
+                  margin-left: 0px !important;
+                  margin-bottom: 3px !important;
+                }
+              }
+            }
+          }
+          &.ngx-pagination.responsive {
+            li:not(.small-screen):not(.pagination-previous):not(
+                .pagination-next
+              ) {
+              display: inline-block;
+            }
+            li.small-screen {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+  ::ng-deep {
+    .ngx-table__table-loader-wrapper {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+  }

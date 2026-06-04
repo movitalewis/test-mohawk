@@ -1,0 +1,16 @@
+<div class="modal-header text-center">
+  <h4 class="modal-title w-100">Extend eligible items?</h4>
+  <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="onHideModal()">
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="text-center">
+    <p> {{ bsModalRef.content?.reponseMessage }} are non extendable, do you want to reserve the eligible items?</p>
+    <!-- <p>One or more items in your reserve are non extendable, do you want to reserve the eligible items?</p> -->
+    <div class="mt-4 mb-4">
+      <button class="btn btn-outline-secondary me-3" (click)="onHideModal()">NO</button>
+      <button class="btn btn-primary" (click)="extendReservedItems()">YES</button>
+    </div>
+  </div>
+</div>

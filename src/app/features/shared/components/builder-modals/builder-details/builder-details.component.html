@@ -1,0 +1,122 @@
+<div class="modal-header text-center">
+  <div class="w-100">
+    <h4 class="modal-title">Builder Order Details</h4>
+  </div>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="close"
+    (click)="closeModal()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body mb-4 p-4" *ngIf="fromPage == 'orders'">
+  <div class="row">
+    <div class="col-xs-12 col-sm-4">
+      <div class="match-height xs-m-b-10">
+        <div class="lato-bold">Builder</div>
+        <div>{{ ( builderInfo?.builderName  | titlecase ) }}</div>
+        <div>
+          {{ ( builderInfo?.builderCity  | titlecase ) }}, {{ ( builderInfo?.builderCity | titlecase ) }}
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-4">
+      <div class="match-height xs-m-b-10">
+        <div class="lato-bold">Division</div>
+        <div>{{ ( builderInfo?.divName | titlecase ) }}</div>
+        <div>{{ ( builderInfo?.divCity | titlecase ) }}, {{ ( builderInfo?.divState | titlecase ) }}</div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-4">
+      <div class="match-height">
+        <div class="lato-bold">Subdivision</div>
+        <div>{{ ( builderInfo?.subDivName | titlecase ) }}</div>
+        <div>{{ ( builderInfo?.subDivCity | titlecase ) }}, {{ ( builderInfo?.subDivState | titlecase ) }}</div>
+      </div>
+    </div>
+  </div>
+  <hr />
+  <div class="row">
+    <div class="col-xs-6 col-sm-4">
+      <div class="match-height m-b-10">
+        <div class="lato-bold">Lot</div>
+        <div>{{ builderInfo?.lotNum }}</div>
+      </div>
+    </div>
+    <div class="col-xs-6 col-sm-4">
+      <div class="match-height m-b-10">
+        <div class="lato-bold">Block</div>
+        <div>{{ builderInfo?.blockNum }}</div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-4" *ngIf="customerFlag == false">
+      <div class="lato-bold">Model Home</div>
+      <div>{{ builderInfo?.modelHome ? "Yes" : "No" }}</div>
+    </div>
+  </div>
+</div>
+<div class="modal-body mb-4 p-4" *ngIf="fromPage == 'cart'">
+  <div class="row">
+    <div class="col-sm-4 col-md-4">
+      <label>Builder Name</label>
+      <p>{{ ( builderInfo?.builderName | titlecase ) }}</p>
+    </div>
+    <div class="col-sm-4 col-md-4">
+      <label>City</label>
+      <p>{{ ( builderInfo?.builderCity | titlecase ) }}</p>
+    </div>
+    <div class="col-sm-4 col-md-4">
+      <label>State</label>
+      <p>{{ ( builderInfo?.builderState | titlecase ) }}</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4 col-md-4">
+      <label>Division Name</label>
+      <p>{{ ( builderInfo?.divName | titlecase ) }}</p>
+    </div>
+    <div class="col-sm-4 col-md-4">
+      <label>City</label>
+      <p>{{ ( builderInfo?.divCity | titlecase ) }}</p>
+    </div>
+    <div class="col-sm-4 col-md-4">
+      <label>State</label>
+      <p>{{ ( builderInfo?.divState | titlecase ) }}</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4 col-md-4">
+      <label>Subdivision Name</label>
+      <p>{{ ( builderInfo?.subDivName | titlecase ) }}</p>
+    </div>
+    <div class="col-sm-4 col-md-4">
+      <label>City</label>
+      <p>{{ ( builderInfo?.subDivCity | titlecase ) }}</p>
+    </div>
+    <div class="col-sm-4 col-md-4">
+      <label>State</label>
+      <p>{{ ( builderInfo?.subDivState | titlecase ) }}</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4 col-md-4" *ngIf="customerFlag == false">
+      <label>Model Home?</label>
+      <p>{{ builderInfo?.modelHome ? "Yes" : "No" }}</p>
+    </div>
+    <div class="col-sm-4 col-md-4">
+      <label>Lot</label>
+      <p>{{ builderInfo?.lotNum }}</p>
+    </div>
+    <div class="col-sm-4 col-md-4">
+      <label>Block</label>
+      <p>{{ builderInfo?.blockNum }}</p>
+    </div>
+  </div>
+  <div class="row mt-4 justify-content-end">
+    <div class="col-md-3">
+      <button class="btn btn-secondary w-100 mb-3" (click)="closeModal()">Done</button>
+    </div>
+  </div>
+</div>

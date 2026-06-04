@@ -1,0 +1,50 @@
+<div class="modal-header text-center">
+  <h4 class="modal-title w-100">Change DyeLot</h4>
+
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="onHideModal()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="form-group">
+    <label for="dateInput">Current DyeLot</label>
+    <input
+      type="text"
+      [value]="selectedEntry?.selectedEntry?.solution[0].dyeLot"
+      placeholder="Change Sidemark"
+      class="form-control"
+      readonly
+    />
+  </div>
+  <div class="form-group mt-2">
+    <label for="dateInput">New DyeLot</label>
+    <input
+      type="text"
+      [(ngModel)]="enteredQuantity"
+      placeholder="Please enter new DyeLot"
+      class="form-control"
+    />
+  </div>
+</div>
+<div class="buttons d-flex justify-content-center mb-3">
+  <div class="">
+    <button class="btn btn-outline-secondary me-2" (click)="onHideModal()">
+      Cancel
+    </button>
+  </div>
+  <div class="">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="submit()"
+      [disabled]="!enteredQuantity"
+    >
+      Confirm
+    </button>
+  </div>
+</div>

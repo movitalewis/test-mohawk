@@ -1,0 +1,1304 @@
+<div class="container custom-order-tabs">
+  <app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <tabset responsiveTabs [justified]="true">
+    <tab class="tab-content" (selectTab)="selectTab(1)">
+      <ng-template tabHeading>CURRENT BUDGET</ng-template>
+      <div class="currency">
+        <p><b>Currency Selection: </b></p>
+        <xchange-custom-radio
+          type="radio"
+          [checked]="selectAllFlag"
+          [group]="'Both'"
+          (model)="changeRadioButton($event)"
+          [id]="'xyz1'"
+          [name]="'Both'"
+          label="Both"
+        >
+        </xchange-custom-radio>
+        <xchange-custom-radio
+          type="radio"
+          [checked]="selectUSDFlag"
+          [group]="'USD'"
+          (model)="changeRadioButton($event)"
+          [id]="'xyz2'"
+          [name]="'USD'"
+          label="USD"
+        >
+        </xchange-custom-radio>
+        <xchange-custom-radio
+          type="radio"
+          [checked]="selectCADFlag"
+          [group]="'CAD'"
+          (model)="changeRadioButton($event)"
+          [id]="'xyz3'"
+          [name]="'CAD'"
+          label="CAD"
+        >
+        </xchange-custom-radio>
+      </div>
+      <div class="card mt-4 card-transfer" *ngIf="showCreateBudget">
+        <form #f="ngForm" (ngSubmit)="f.form.valid && createSampleFund(f)">
+          <div class="card-header2">
+            <h4>Create Sample Funds</h4>
+          </div>
+          <div class="_card-container card-body">
+            <div class="row mb-4 mt-4">
+              <ng-template #toTmDataFormatItems let-item="item">
+                <span>{{ item.tmNumber }} | {{ item.salesManName }}</span>
+              </ng-template>
+              <div class="col-md-4 col-lg-3 tm-suggestions">
+                <h4>For (#)</h4>
+                <input
+                  type="text"
+                  placeholder="For (#)"
+                  class="form-control"
+                  [(ngModel)]="selectedFromName"
+                  name="tmNumber"
+                  typeaheadOptionField="tmNumber"
+                  [typeahead]="toTmNumberssuggestions$"
+                  [typeaheadAsync]="true"
+                   (typeaheadOnSelect)="onSelectFromNumber($event)"
+                  [typeaheadItemTemplate]="toTmDataFormatItems"
+                  (typeaheadOnBlur)="typeaheadOnBlurCreate($event)"
+                  required
+                  autocomplete="off"
+                />
+              </div>
+              <div class="col-md-4 col-lg-3">
+                <h4>From (Business Unit)</h4>
+                <ng-select
+                  placeholder="Select"
+                  [(ngModel)]="createTransfer.productType"
+                  name="productType"
+                  required
+                >
+                  <ng-option
+                    *ngFor="let item of productTypesArray"
+                    [value]="item.value"
+                    >{{ item.key }}</ng-option
+                  >
+                </ng-select>
+              </div>
+              <div class="col-md-4 col-lg-3">
+                <h4>Amount ({{currencyLabel}})</h4>
+                <input
+                  type="text"
+                  placeholder="0.00"
+                  class="form-control"
+                  [(ngModel)]="createTransfer.amount"
+                  (keypress)="allowNumberTwoDecimal($event)"
+                  name="amount"
+                  (paste)="onPaste($event)"
+                   min="1"
+                  required
+                  autocomplete="off"
+                />
+                <p class="color-red" *ngIf="createTransfer.amount && createTransfer.amount == 0">
+                  Please enter a valid amount.
+                </p>
+              </div>
+              <div class="col-md-4 col-lg-3">
+                <h4>Currency</h4>
+                <ng-select
+                  placeholder="Select"
+                  [(ngModel)]="createTransfer.currency"
+                  name="currency"
+                  required
+                >
+                  <ng-option
+                    *ngFor="let item of currencyArray"
+                    [value]="item.value"
+                    >{{ item.key }}</ng-option
+                  >
+                </ng-select>
+              </div>
+              <div class="row mb-4 mt-4">
+                <div class="col-md-4 col-lg-3">
+                  <h4>Action</h4>
+                  <ng-select
+                    placeholder="Select"
+                    [(ngModel)]="createTransfer.action"
+                    name="action"
+                    required
+                  >
+                    <ng-option
+                      *ngFor="let item of actionArray"
+                      [value]="item.value"
+                      >{{ item.key }}</ng-option
+                    >
+                  </ng-select>
+                </div>
+                <div class="col-md-4 col-lg-3 mt-4">
+                  <button
+                    class="btn btn-primary"
+                  [disabled]="!f.form.valid || createTransfer.amount == 0"
+                    type="submit"
+                  >
+                    CREATE/UPDATE/REDUCE
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+
+      <div class="card mt-4 card-transfer" *ngIf="showTransferBudget">
+        <form #f="ngForm" (ngSubmit)="f.form.valid && transferModal(f)">
+          <div class="card-header2">
+            <h4>Transfer - Sample Funds</h4>
+          </div>
+          <div class="_card-container card-body">
+            <div class="row mb-4 mt-4">
+              <ng-template #fromTmDataFormatItems let-item="item">
+                <span>{{ item.tmNumber }} | {{ item.salesManName }}</span>
+              </ng-template>
+              <div class="col-md-4 col-lg-3 tm-suggestions">
+                <h4>From (#)</h4>
+                <input
+                  type="text"
+                  placeholder="From (#)"
+                  class="form-control"
+                  [(ngModel)]="selectedFromToName"
+                  name="fromTmNumber"
+                  typeaheadOptionField="tmNumber"
+                  [typeahead]="fromTMsuggestions$"
+                  [typeaheadAsync]="true"
+                  (typeaheadOnSelect)="onSelectFromTM($event)"
+                  [typeaheadItemTemplate]="fromTmDataFormatItems"
+                  (typeaheadOnBlur)="typeaheadOnBlur($event,'fromTmNumber')"
+                  required
+                  autocomplete="off"
+                />
+                <p class="error-info" *ngIf="showFromToError">
+                  From (#) and To (#) should not be same.
+                </p>
+              </div>
+              <div class="col-md-4 col-lg-3">
+                <h4>From (Business Unit)</h4>
+                <ng-select
+                  placeholder="Select"
+                  [(ngModel)]="transferBudget.fromProductType"
+                  name="fromProductType"
+                  (change)="checkProductType($event)"
+                  required
+                >
+                  <ng-option
+                    *ngFor="let item of productTypesArray"
+                    [value]="item.value"
+                    >{{ item.key }}</ng-option
+                  >
+                </ng-select>
+              </div>
+              <div class="col-md-4 col-lg-3 tm-suggestions">
+                <h4>To (#)</h4>
+                <input
+                  type="text"
+                  placeholder="To (#)"
+                  class="form-control"
+                  [(ngModel)]="selectedToName"
+                  name="toToNumber"
+                  typeaheadOptionField="tmNumber"
+                  [typeahead]="toTmNumberssuggestions$"
+                  [typeaheadAsync]="true"
+                  (typeaheadOnSelect)="onSelectToTM($event)"
+                  [typeaheadItemTemplate]="fromTmDataFormatItems"
+                  (typeaheadOnBlur)="typeaheadOnBlur($event,'toTmNumber')"
+                  [disabled]="!selectedFromToName"
+                  required
+                  autocomplete="off"
+                />
+              </div>
+              <div class="col-md-4 col-lg-3 tm-suggestions">
+                <h4>To (Business Unit)</h4>
+                <ng-select
+                  placeholder="Select"
+                  [(ngModel)]="transferBudget.toProductType"
+                  name="toProductType"
+                  (change)="checkProductType($event)"
+                  [disabled]="true"
+                  required
+                >
+                  <ng-option
+                    *ngFor="let item of productTypesArray"
+                    [value]="item.value"
+                    >{{ item.key }}</ng-option
+                  >
+                </ng-select>
+              </div>
+            </div>
+            <div class="row mb-4 mt-4">
+              <div class="col-md-4 col-lg-3">
+                <h4>Amount ({{currencyLabel}})</h4>
+                <input
+                  type="text"
+                  placeholder="0.00"
+                  class="form-control"
+                  [(ngModel)]="transferBudget.amount"
+                  (keypress)="allowNumberTwoDecimal($event)"
+                  (paste)="onPaste($event)"
+                  name="amount"
+                  required
+                  autocomplete="off"
+                />
+                <p class="color-red" *ngIf="transferBudget.amount && transferBudget.amount == 0">
+                  Please enter a valid amount.
+                </p>
+              </div>
+              <div class="col-md-4 col-lg-3 mt-4">
+                <button
+                  class="btn btn-primary"
+                  [disabled]="!f.form.valid || showFromToError || transferBudget.amount == 0"
+                  type="submit"
+                >
+                  TRANSFER
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="card mt-4" *ngIf="(salesManRole == 'SVP' || isSalesOps )">
+        <div class="card-header">
+          <h4>SVP - Sample Budget</h4>
+        </div>
+        <div class="_card-container card-body">
+          <div class="row mb-4 mt-2 search-section">
+            <div class="col-md-4 col-lg-3 d-grid align-items-end searchInput">
+              <h4>Search Budgets</h4>
+              <xchange-search-control
+                [isGlobalSearchEnabled]="false"
+                (input)="onGlobalSearch($event, 'SVP')"
+                placeholder="Search #"
+                [searchKey]="searchTextSVP"
+              ></xchange-search-control>
+            </div>
+            <div class="col-md-4 col-lg-3 page-size-container text-right">
+              <label for="pageSize" class="page-size-label">Show </label>
+              <select
+                id="pageSize"
+                class="page-size-dropdown"
+                [ngModel]="pageSizeSVP"
+                (change)="onPageSizeChange($event.target, 'SVP')"
+              >
+                <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+              </select>
+              <label for="pageSize" class="page-size-label px-1">entries </label>
+            </div>
+          </div>
+          <ngx-table
+            [id]="'svpTable'"
+            [configuration]="configuration"
+            [data]="
+              sampleBudgetsSVPList
+                | paginate
+                  : {
+                      id: 'svpListPagination',
+                      itemsPerPage: pageSizeSVP,
+                      currentPage: pageIndexSVP,
+                      totalItems: totalSampleBudgetSVPLength
+                    }
+            "
+            [columns]="sampleBudgetcolumns"
+            (event)= "onTableEvent($event, 'SVP')"
+          >
+            <ng-template let-row>
+              <td>
+                {{ row.tmNumber }}
+              </td>
+              <td>
+                {{ row.salesManName }}
+              </td>
+              <td>{{ row.role }}</td>
+              <td>
+                {{ row.sampleGroupDesc }}
+              </td>
+              <td>
+                ${{ row.remainingBudget | number : "1.2-2" }}
+              </td>
+              <td>
+                {{ row.currency }}
+              </td>
+            </ng-template>
+          </ngx-table>
+          <div 
+            class="row mb-2 mt-4"
+            *ngIf="sampleBudgetsSVPList?.length > 0"
+          >
+            <div
+              class="d-flex justify-content-center"
+            >
+              <pagination-controls
+                id="svpListPagination"
+                [responsive]="true"
+                [nextLabel]="''"
+                [previousLabel]="''"
+                (pageChange)="onTableDataChange($event, 'SVP')"
+              >
+              </pagination-controls>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mt-4" *ngIf="showCustomerBudget">
+        <div class="card-header">
+          <h4>RVP - Sample Budget</h4>
+        </div>
+        <div class="_card-container card-body">
+          <div class="row mb-4 mt-2 search-section">
+            <div class="col-md-4 col-lg-3 d-grid align-items-end searchInput">
+              <h4>Search Budgets</h4>
+              <xchange-search-control
+                [isGlobalSearchEnabled]="false"
+                (input)="onGlobalSearch($event, 'RVP')"
+                placeholder="Search #"
+                [searchKey]="searchTextRVP"
+              ></xchange-search-control>
+            </div>
+            <div class="col-md-4 col-lg-3 page-size-container text-right">
+              <label for="pageSize" class="page-size-label">Show </label>
+              <select
+                id="pageSize"
+                class="page-size-dropdown"
+                [ngModel]="pageSizeRVP"
+                (change)="onPageSizeChange($event.target, 'RVP')"
+              >
+                <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+              </select>
+              <label for="pageSize" class="page-size-label px-1">entries </label>
+            </div>
+          </div>
+          <ngx-table
+            [id]="'rvpTable'"
+            [configuration]="configuration"
+            [data]="
+              sampleBudgetsRVPList
+                | paginate
+                  : {
+                      id: 'rvpListPagination',
+                      itemsPerPage: pageSizeRVP,
+                      currentPage: pageIndexRVP,
+                      totalItems: totalSampleBudgetRVPLength
+                    }
+            "
+            [columns]="sampleBudgetcolumns"
+            (event)= "onTableEvent($event, 'RVP')"
+          >
+            <ng-template let-row>
+              <td>
+                {{ row.tmNumber }}
+              </td>
+              <td>
+                {{ row.salesManName }}
+              </td>
+              <td>{{ row.role }}</td>
+              <td>
+                {{ row.sampleGroupDesc }}
+              </td>
+              <td>
+                ${{ row.remainingBudget | number : "1.2-2" }}
+              </td>
+              <td>
+                {{ row.currency }}
+              </td>
+            </ng-template>
+          </ngx-table>
+          <div 
+            class="row mb-2 mt-4"
+            *ngIf="sampleBudgetsRVPList?.length > 0"
+          >
+            <div
+              class="d-flex justify-content-center"
+            >
+              <pagination-controls
+                id="rvpListPagination"
+                [responsive]="true"
+                [nextLabel]="''"
+                [previousLabel]="''"
+                (pageChange)="onTableDataChange($event, 'RVP')"
+              >
+              </pagination-controls>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-4" *ngIf="salesManRole == 'DM' || showCustomerBudget">
+        <div class="card-header">
+          <h4>Managers - Sample Budget</h4>
+        </div>
+        <div class="_card-container card-body">
+          <div class="row mb-4 mt-2 search-section">
+            <div class="col-md-4 col-lg-3 d-grid align-items-end searchInput">
+              <h4>Search Budgets</h4>
+              <xchange-search-control
+                [isGlobalSearchEnabled]="false"
+                (input)="onGlobalSearch($event, 'DM')"
+                placeholder="Search #"
+                [searchKey]="searchTextDM"
+              ></xchange-search-control>
+            </div>
+            <div class="col-md-4 col-lg-3 page-size-container text-right">
+              <label for="pageSize" class="page-size-label">Show </label>
+              <select
+                id="pageSize"
+                class="page-size-dropdown"
+                [ngModel]="pageSizeDM"
+                (change)="onPageSizeChange($event.target, 'DM')"
+              >
+                <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+              </select>
+              <label for="pageSize" class="page-size-label px-1">entries </label>
+            </div>
+          </div>
+          <ngx-table
+            [id]="'dmTable'"
+            [configuration]="configuration"
+            [data]="
+              sampleBudgetsDMList
+                | paginate
+                  : {
+                      id: 'dmListPagination',
+                      itemsPerPage: pageSizeDM,
+                      currentPage: pageIndexDM,
+                      totalItems: totalSampleBudgetDMLength
+                    }
+            "
+            [columns]="sampleBudgetcolumns"
+            (event)= "onTableEvent($event, 'DM')"
+          >
+            <ng-template let-row>
+              <td>
+                {{ row.tmNumber }}
+              </td>
+              <td>
+                {{ row.salesManName }}
+              </td>
+              <td>{{ row.role }}</td>
+              <td>
+                {{ row.sampleGroupDesc }}
+              </td>
+              <td>
+                ${{ row.remainingBudget | number : "1.2-2"}}
+              </td>
+              <td>
+                {{ row.currency }}
+              </td>
+            </ng-template>
+          </ngx-table>
+          <div 
+            class="row mb-2 mt-4"
+            *ngIf="sampleBudgetsDMList?.length > 0"
+          >
+            <div
+              class="d-flex justify-content-center"
+            >
+              <pagination-controls
+                id="dmListPagination"
+                [responsive]="true"
+                [nextLabel]="''"
+                [previousLabel]="''"
+                (pageChange)="onTableDataChange($event, 'DM')"
+              >
+              </pagination-controls>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="card mt-4 mb-4"
+        *ngIf="
+          salesManRole == 'TM' || salesManRole == 'DM' || showCustomerBudget
+        "
+      >
+        <div class="card-header">
+          <h4>Territory Managers - Sample Budget</h4>
+        </div>
+        <div class="_card-container card-body">
+          <div class="row mb-4 mt-2 search-section">
+            <div class="col-md-4 col-lg-3 d-grid align-items-end searchInput">
+              <h4>Search Budgets</h4>
+              <xchange-search-control
+                [isGlobalSearchEnabled]="false"
+                (input)="onGlobalSearch($event, 'TM')"
+                placeholder="Search #"
+                [searchKey]="searchTextTM"
+              ></xchange-search-control>
+            </div>
+            <div class="col-md-4 col-lg-3 page-size-container text-right">
+              <label for="pageSize" class="page-size-label">Show </label>
+              <select
+                id="pageSize"
+                class="page-size-dropdown"
+                [ngModel]="pageSizeTM"
+                (change)="onPageSizeChange($event.target, 'TM')"
+              >
+                <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+              </select>
+              <label for="pageSize" class="page-size-label px-1">entries</label>
+            </div>
+          </div>
+          <ngx-table
+            [id]="'tmTable'"
+            [configuration]="configuration"
+            [data]="
+              sampleBudgetsTMList
+                | paginate
+                  : {
+                      id: 'tmListPagination',
+                      itemsPerPage: pageSizeTM,
+                      currentPage: pageIndexTM,
+                      totalItems: totalSampleBudgetTMLength
+                    }
+            "
+            [columns]="sampleBudgetcolumns"
+            (event)= "onTableEvent($event, 'TM')"
+          >
+            <ng-template let-row>
+              <td>
+                {{ row.tmNumber }}
+              </td>
+              <td>
+                {{ row.salesManName }}
+              </td>
+              <td>{{ row.role }}</td>
+              <td>
+                {{ row.sampleGroupDesc }}
+              </td>
+              <td>
+                ${{ row.remainingBudget | number : "1.2-2" }}
+              </td>
+              <td>
+                {{ row.currency }}
+              </td>
+            </ng-template>
+          </ngx-table>
+          <div 
+            class="row mb-2 mt-4"
+            *ngIf="sampleBudgetsTMList?.length > 0"
+          >
+            <div
+              class="d-flex justify-content-center"
+            >
+              <pagination-controls
+                id="tmListPagination"
+                [responsive]="true"
+                [nextLabel]="''"
+                [previousLabel]="''"
+                (pageChange)="onTableDataChange($event, 'TM')"
+              >
+              </pagination-controls>
+            </div>
+          </div>
+        </div>
+      </div>
+     
+    </tab>
+
+    <tab
+      class="tab-content"
+      (selectTab)="selectTab(2)"
+      *ngIf="storageService?.userInfo?.salesManRole !== 'TM'"
+    >
+      <ng-template tabHeading>FUTURE BUDGET</ng-template>
+      <div class="currency">
+        <p><b>Currency Selection: </b></p>
+        <xchange-custom-radio
+          type="radio"
+          [checked]="selectAllFlag"
+          [group]="'Both'"
+          (model)="changeRadioButton($event)"
+          [id]="'xyz1'"
+          [name]="'Both'"
+          label="Both"
+        >
+        </xchange-custom-radio>
+        <xchange-custom-radio
+          type="radio"
+          [checked]="selectUSDFlag"
+          [group]="'USD'"
+          (model)="changeRadioButton($event)"
+          [id]="'xyz2'"
+          [name]="'USD'"
+          label="USD"
+        >
+        </xchange-custom-radio>
+        <xchange-custom-radio
+          type="radio"
+          [checked]="selectCADFlag"
+          [group]="'CAD'"
+          (model)="changeRadioButton($event)"
+          [id]="'xyz3'"
+          [name]="'CAD'"
+          label="CAD"
+        >
+        </xchange-custom-radio>
+        <!-- <xchange-custom-radio type="radio" [id]="'xyz'" [name]="'123'" label="Both">
+                    </xchange-custom-radio>
+                    <xchange-custom-radio type="radio" [id]="'xyz'" [name]="'123'" label="USD">
+                    </xchange-custom-radio>
+                    <xchange-custom-radio type="radio" [id]="'xyz'" [name]="'123'" label="CAD">
+                    </xchange-custom-radio>-->
+      </div>
+      <div class="card mt-4 card-transfer" *ngIf="showCreateBudget">
+        <form #f="ngForm" (ngSubmit)="f.form.valid && createSampleFund(f)">
+          <div class="card-header2">
+            <h4>Create Sample Funds</h4>
+          </div>
+          <div class="_card-container card-body">
+            <div class="row mb-4 mt-4">
+              <ng-template #tmDataFormatItems let-item="item">
+                <span>{{ item.tmNumber }} | {{ item.salesManName }}</span>
+              </ng-template>
+              <div class="col-md-4 col-lg-3">
+                <h4>For (#)</h4>
+                <input
+                  type="text"
+                  placeholder="For (#)"
+                  class="form-control"
+                  [(ngModel)]="selectedFromName"
+                  name="tmNumber"
+                  typeaheadOptionField="tmNumber"
+                  [typeahead]="toTmNumberssuggestions$"
+                  [typeaheadAsync]="true"
+                  [typeaheadItemTemplate]="tmDataFormatItems"
+                  (typeaheadOnSelect)="onSelectFromNumber($event)"
+                  (typeaheadOnBlur)="typeaheadOnBlurCreate($event)"
+                  required
+                  autocomplete="off"
+                />
+              </div>
+              <div class="col-md-4 col-lg-3">
+                <h4>From (Business Unit)</h4>
+                <ng-select
+                  placeholder="Select"
+                  [(ngModel)]="createTransfer.productType"
+                  name="productType"
+                  required
+                >
+                  <ng-option
+                    *ngFor="let item of productTypesArray"
+                    [value]="item.value"
+                    >{{ item.key }}</ng-option
+                  >
+                </ng-select>
+              </div>
+              <div class="col-md-4 col-lg-3">
+                <h4>Amount ({{currencyLabel}})</h4>
+                <input
+                  type="text"
+                  placeholder="0.00"
+                  class="form-control"
+                  [(ngModel)]="createTransfer.amount"
+                  (keypress)="allowNumberTwoDecimal($event)"
+                  (paste)="onPaste($event)"
+                  name="amount"
+                  required
+                  autocomplete="off"
+                />
+                <p class="color-red" *ngIf="createTransfer.amount && createTransfer.amount == 0">
+                  Please enter a valid amount.
+                </p>
+              </div>
+              <div class="col-md-4 col-lg-3">
+                <h4>Currency</h4>
+                <ng-select
+                  placeholder="Select"
+                  [(ngModel)]="createTransfer.currency"
+                  name="currency"
+                  required
+                >
+                  <ng-option
+                    *ngFor="let item of currencyArray"
+                    [value]="item.value"
+                    >{{ item.key }}</ng-option
+                  >
+                </ng-select>
+              </div>
+              <div class="row mb-4 mt-4">
+                <div class="col-md-4 col-lg-3">
+                  <h4>Action</h4>
+                  <ng-select
+                    placeholder="Select"
+                    [(ngModel)]="createTransfer.action"
+                    name="action"
+                    required
+                  >
+                    <ng-option
+                      *ngFor="let item of actionArray"
+                      [value]="item.value"
+                      >{{ item.key }}</ng-option
+                    >
+                  </ng-select>
+                </div>
+                <div class="col-md-4 col-lg-3 mt-4">
+                  <button
+                    class="btn btn-primary"
+                    [disabled]="!f.form.valid || createTransfer.amount == 0"
+                    type="submit"
+                  >
+                    CREATE/UPDATE/REDUCE
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="card mt-4 card-transfer" *ngIf="showTransferBudget">
+        <form #f="ngForm" (ngSubmit)="f.form.valid && transferModal(f)">
+          <div class="card-header2">
+            <h4>Transfer - Sample Funds</h4>
+          </div>
+          <div class="_card-container card-body">
+            <div class="row mb-4 mt-4">
+              <ng-template #tmSampleDataFormat let-item="item">
+                <span>{{ item.tmNumber }} | {{ item.salesManName }}</span>
+              </ng-template>
+              <div class="col-md-4 col-lg-3 tm-suggestions">
+                <h4>From (#)</h4>
+                <input
+                  type="text"
+                  placeholder="From (#)"
+                  class="form-control"
+                  [(ngModel)]="selectedFromToName"
+                  name="fromTmNumber"
+                  typeaheadOptionField="tmNumber"
+                  [typeahead]="fromTMsuggestions$"
+                  [typeaheadAsync]="true"
+                  (typeaheadOnSelect)="onSelectFromTM($event)"
+                  [typeaheadItemTemplate]="tmSampleDataFormat"
+                  (typeaheadOnBlur)="typeaheadOnBlur($event,'fromTmNumber')"
+                  required
+                  autocomplete="off"
+                />
+                <p class="error-info" *ngIf="showFromToError">
+                  From (#) and To (#) should not be same.
+                </p>
+              </div>
+              <div class="col-md-4 col-lg-3">
+                <h4>From (Business Unit)</h4>
+                <ng-select
+                  placeholder="Select"
+                  [(ngModel)]="transferBudget.fromProductType"
+                  name="fromProductType"
+                  (change)="checkProductType($event)"
+                  required
+                >
+                  <ng-option
+                    *ngFor="let item of productTypesArray"
+                    [value]="item.value"
+                    >{{ item.key }}</ng-option
+                  >
+                </ng-select>
+              </div>
+              <div class="col-md-4 col-lg-3 tm-suggestions" >
+                <h4>To (#) </h4>
+                <input
+                  type="text"
+                  placeholder="To (#)"
+                  class="form-control"
+                  [(ngModel)]="selectedToName"
+                  name="toToNumber"
+                  typeaheadOptionField="tmNumber"
+                  [typeahead]="toTmNumberssuggestions$"
+                  [typeaheadAsync]="true"
+                  (typeaheadOnSelect)="onSelectToTM($event)"
+                  [typeaheadItemTemplate]="tmSampleDataFormat"
+                  (typeaheadOnBlur)="typeaheadOnBlur($event,'toTmNumber')"
+                  [disabled]="!selectedFromToName"
+                  required
+                  autocomplete="off"
+                />
+              </div>
+              <div class="col-md-4 col-lg-3">
+                <h4>To (Business Unit)</h4>
+                <ng-select
+                  placeholder="Select"
+                  [(ngModel)]="transferBudget.toProductType"
+                  name="toProductType"
+                  (change)="checkProductType($event)"
+                  [disabled]="true"
+                  required
+                >
+                  <ng-option
+                    *ngFor="let item of productTypesArray"
+                    [value]="item.value"
+                    >{{ item.key }}</ng-option
+                  >
+                </ng-select>
+              </div>
+            </div>
+            <div class="row mb-4 mt-4">
+              <div class="col-md-4 col-lg-3">
+                <h4>Amount ({{currencyLabel}})</h4>
+                <input
+                  type="text"
+                  placeholder="0.00"
+                  class="form-control"
+                  [(ngModel)]="transferBudget.amount"
+                  (keypress)="allowNumberTwoDecimal($event)"
+                  (paste)="onPaste($event)"
+                  name="amount"
+                  required
+                  autocomplete="off"
+                />
+                <p class="color-red" *ngIf="transferBudget.amount && transferBudget.amount == 0">
+                  Please enter a valid amount.
+                </p>
+              </div>
+              <div class="col-md-4 col-lg-3 mt-4">
+                <button
+                  class="btn btn-primary"
+                  [disabled]="!f.form.valid || showFromToError || transferBudget.amount == 0"
+                  type="submit"
+                >
+                  TRANSFER
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="card mt-4" *ngIf="(salesManRole == 'SVP' || isSalesOps )">
+        <div class="card-header">
+          <h4>SVP - Sample Budget</h4>
+        </div>
+        <div class="_card-container card-body">
+          <div class="row mb-4 mt-2 search-section">
+            <div class="col-md-4 col-lg-3 d-grid align-items-end searchInput">
+              <h4>Search Budgets</h4>
+              <xchange-search-control
+                [isGlobalSearchEnabled]="false"
+                (input)="onGlobalSearch($event, 'SVP')"
+                placeholder="Search #"
+                [searchKey]="searchTextSVP"
+              ></xchange-search-control>
+            </div>
+            <div class="col-md-4 col-lg-3 page-size-container text-right">
+              <label for="pageSize" class="page-size-label">Show </label>
+              <select
+                id="pageSize"
+                class="page-size-dropdown"
+                [ngModel]="pageSizeSVP"
+                (change)="onPageSizeChange($event.target, 'SVP')"
+              >
+                <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+              </select>
+              <label for="pageSize" class="page-size-label px-1">entries </label>
+            </div>
+          </div>
+          <ngx-table
+            [id]="'svpTable'"
+            [configuration]="configuration"
+            [data]="
+              sampleBudgetsSVPList
+                | paginate
+                  : {
+                      id: 'svpListPagination',
+                      itemsPerPage: pageSizeSVP,
+                      currentPage: pageIndexSVP,
+                      totalItems: totalSampleBudgetSVPLength
+                    }
+            "
+            [columns]="sampleBudgetcolumns"
+            (event)= "onTableEvent($event, 'SVP')"
+          >
+            <ng-template let-row>
+              <td>
+                {{ row.tmNumber }}
+              </td>
+              <td>
+                {{ row.salesManName }}
+              </td>
+              <td>{{ row.role }}</td>
+              <td>
+                {{ row.sampleGroupDesc }}
+              </td>
+              <td>
+                ${{ row.futureBudget | number : "1.2-2"}}
+              </td>
+              <td>
+                {{ row.currency }}
+              </td>
+            </ng-template>
+          </ngx-table>
+          <div 
+            class="row mb-2 mt-4"
+            *ngIf="sampleBudgetsSVPList?.length > 0"
+          >
+            <div
+              class="d-flex justify-content-center"
+            >
+              <pagination-controls
+                id="svpListPagination"
+                [responsive]="true"
+                [nextLabel]="''"
+                [previousLabel]="''"
+                (pageChange)="onTableDataChange($event, 'SVP')"
+              >
+              </pagination-controls>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mt-4" *ngIf="showCustomerBudget">
+        <div class="card-header">
+          <h4>RVP - Sample Budget</h4>
+        </div>
+        <div class="_card-container card-body">
+          <div class="row mb-4 mt-2 search-section">
+            <div class="col-md-4 col-lg-3 d-grid align-items-end searchInput">
+              <h4>Search Budgets</h4>
+              <xchange-search-control
+                placeholder="Search #"
+                [isGlobalSearchEnabled]="false"
+                (input)="onGlobalSearch($event, 'RVP')"
+              ></xchange-search-control>
+            </div>
+            <div class="col-md-4 col-lg-3 page-size-container text-right">
+              <label for="pageSize" class="page-size-label">Show </label>
+              <select
+                id="pageSize"
+                class="page-size-dropdown"
+                [ngModel]="pageSizeRVP"
+                (change)="onPageSizeChange($event.target, 'RVP')"
+              >
+                <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+              </select>
+              <label for="pageSize" class="page-size-label px-1">entries </label>
+            </div>
+          </div>
+          <ngx-table
+            [id]="'rvpTable'"
+            [configuration]="configuration"
+            [data]="
+              sampleBudgetsRVPList
+                | paginate
+                  : {
+                      id: 'rvpListPagination',
+                      itemsPerPage: pageSizeRVP,
+                      currentPage: pageIndexRVP,
+                      totalItems: totalSampleBudgetRVPLength
+                    }
+            "
+            [columns]="sampleBudgetcolumns"
+            (event)= "onTableEvent($event, 'RVP')"
+          >
+            <ng-template let-row>
+              <td>
+                {{ row.tmNumber }}
+              </td>
+              <td>
+                {{ row.salesManName }}
+              </td>
+              <td>{{ row.role }}</td>
+              <td>
+                {{ row.sampleGroupDesc }}
+              </td>
+              <td>
+                ${{ row.futureBudget | number : "1.2-2"}}
+              </td>
+              <td>
+                {{ row.currency }}
+              </td>
+            </ng-template>
+          </ngx-table>
+          <div 
+            class="row mb-2 mt-4"
+            *ngIf="sampleBudgetsRVPList?.length > 0"
+          >
+            <div
+              class="d-flex justify-content-center"
+            >
+              <pagination-controls
+                id="rvpListPagination"
+                [responsive]="true"
+                [nextLabel]="''"
+                [previousLabel]="''"
+                (pageChange)="onTableDataChange($event, 'RVP')"
+              >
+              </pagination-controls>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="card mt-4 card-transfer" *ngIf="showCreateBudget">
+        <form #f="ngForm" (ngSubmit)="f.form.valid && createSampleFund(f)">
+          <div class="card-header2">
+            <h4>Create Sample Funds</h4>
+          </div>
+          <div class="_card-container card-body">
+            <div class="row mb-4 mt-4">
+              <ng-template #tmDataFormatItems let-item="item">
+                <span>{{ item.tmNumber }} | {{ item.salesManName }}</span>
+              </ng-template>
+              <div class="col-md-4 col-lg-3">
+                <h4>For (#)</h4>
+                <input
+                  type="text"
+                  placeholder="For (#)"
+                  class="form-control"
+                  [(ngModel)]="createTransfer.tmNumber"
+                  name="tmNumber"
+                  typeaheadOptionField="tmNumber"
+                  [typeahead]="toTmNumberssuggestions$"
+                  [typeaheadAsync]="true"
+                  [typeaheadItemTemplate]="tmDataFormatItems"
+                  (typeaheadOnBlur)="typeaheadOnBlurCreate($event)"
+                  required
+                />
+              </div>
+              <div class="col-md-4 col-lg-3">
+                <h4>From (Business Unit)</h4>
+                <ng-select
+                  placeholder="Select"
+                  [(ngModel)]="createTransfer.productType"
+                  name="productType"
+                  required
+                >
+                  <ng-option
+                    *ngFor="let item of productTypesArray"
+                    [value]="item.value"
+                    >{{ item.key }}</ng-option
+                  >
+                </ng-select>
+              </div>
+              <div class="col-md-4 col-lg-3">
+                <h4>Amount ({{currencyLabel}})</h4>
+                <input
+                  type="text"
+                  placeholder="0.00"
+                  class="form-control"
+                  [(ngModel)]="createTransfer.amount"
+                  name="amount"
+                  required
+                />
+              </div>
+              <div class="col-md-4 col-lg-3">
+                <h4>Currency</h4>
+                <ng-select
+                  placeholder="Select"
+                  [(ngModel)]="createTransfer.currency"
+                  name="currency"
+                  required
+                >
+                  <ng-option
+                    *ngFor="let item of currencyArray"
+                    [value]="item.value"
+                    >{{ item.key }}</ng-option
+                  >
+                </ng-select>
+              </div>
+              <div class="row mb-4 mt-4">
+                <div class="col-md-4 col-lg-3">
+                  <h4>Action</h4>
+                  <ng-select
+                    placeholder="Select"
+                    [(ngModel)]="createTransfer.action"
+                    name="action"
+                    required
+                  >
+                    <ng-option
+                      *ngFor="let item of actionArray"
+                      [value]="item.value"
+                      >{{ item.key }}</ng-option
+                    >
+                  </ng-select>
+                </div>
+                <div class="col-md-4 col-lg-3 mt-4">
+                  <button
+                    class="btn btn-primary"
+                    [disabled]="!f.form.valid"
+                    type="submit"
+                  >
+                    CREATE/UPDATE/REDUCE
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div> -->
+
+      <div class="card mt-4" *ngIf="salesManRole == 'DM' || showCustomerBudget">
+        <div class="card-header">
+          <h4>Managers - Sample Budget</h4>
+        </div>
+        <div class="_card-container card-body">
+          <div class="row mb-4 mt-2 search-section">
+            <div class="col-md-4 col-lg-3 d-grid align-items-end searchInput">
+              <h4>Search Budgets</h4>
+              <xchange-search-control
+                [isGlobalSearchEnabled]="false"
+                placeholder="Search #"
+                (input)="onGlobalSearch($event, 'DM')"
+                [searchKey]="searchTextDM"
+              ></xchange-search-control>
+            </div>
+            <div class="col-md-4 col-lg-3 page-size-container text-right">
+              <label for="pageSize" class="page-size-label">Show </label>
+              <select
+                id="pageSize"
+                class="page-size-dropdown"
+                [ngModel]="pageSizeDM"
+                (change)="onPageSizeChange($event.target, 'DM')"
+              >
+                <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+              </select>
+              <label for="pageSize" class="page-size-label px-1">entries </label>
+            </div>
+          </div>
+          <ngx-table
+            #tableDM
+            [id]="'dmTable'"
+            [configuration]="configuration"
+            [data]="
+              sampleBudgetsDMList
+                | paginate
+                  : {
+                      id: 'dmListPagination',
+                      itemsPerPage: pageSizeDM,
+                      currentPage: pageIndexDM,
+                      totalItems: totalSampleBudgetDMLength
+                    }
+            "
+            [columns]="sampleBudgetcolumns"
+            (event)= "onTableEvent($event, 'DM')"
+          >
+            <ng-template let-row>
+              <td>
+                {{ row.tmNumber }}
+              </td>
+              <td>
+                {{ row.salesManName }}
+              </td>
+              <td>{{ row.role }}</td>
+              <td>
+                {{ row.sampleGroupDesc }}
+              </td>
+              <td>
+                ${{ row.futureBudget | number : "1.2-2" }}
+              </td>
+              <td>
+                {{ row.currency }}
+              </td>
+            </ng-template>
+          </ngx-table>
+          <div 
+            class="row mb-2 mt-4"
+            *ngIf="sampleBudgetsDMList?.length > 0"
+          >
+            <div
+              class="d-flex justify-content-center"
+            >
+              <pagination-controls
+                id="dmListPagination"
+                [responsive]="true"
+                [nextLabel]="''"
+                [previousLabel]="''"
+                (pageChange)="onTableDataChange($event, 'DM')"
+              >
+              </pagination-controls>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="card mt-4"
+        *ngIf="
+          salesManRole == 'TM' || salesManRole == 'DM' || showCustomerBudget
+        "
+      >
+        <div class="card-header">
+          <h4>Territory Managers - Sample Budget</h4>
+        </div>
+        <div class="_card-container card-body">
+          <div class="row mb-4 mt-2 search-section">
+            <div class="col-md-4 col-lg-3 d-grid align-items-end searchInput">
+              <h4>Search Budgets</h4>
+              <xchange-search-control
+                [isGlobalSearchEnabled]="false"
+                placeholder="Search #"
+                (input)="onGlobalSearch($event, 'TM')"
+                [searchKey]="searchTextTM"
+              ></xchange-search-control>
+            </div>
+            <div class="col-md-4 col-lg-3 page-size-container text-right">
+              <label for="pageSize" class="page-size-label">Show </label>
+              <select
+                id="pageSize"
+                class="page-size-dropdown"
+                [ngModel]="pageSizeTM"
+                (change)="onPageSizeChange($event.target, 'TM')"
+              >
+                <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+              </select>
+              <label for="pageSize" class="page-size-label px-1">entries </label>
+            </div>
+          </div>
+          <ngx-table
+            #tableTM
+            [id]="'tmTable'"
+            [configuration]="configuration"
+            [data]="
+              sampleBudgetsTMList
+                | paginate
+                  : {
+                      id: 'tmListPagination',
+                      itemsPerPage: pageSizeTM,
+                      currentPage: pageIndexTM,
+                      totalItems: totalSampleBudgetTMLength
+                    }
+            "
+            [columns]="sampleBudgetcolumns"
+            (event)= "onTableEvent($event, 'TM')"
+          >
+            <ng-template let-row>
+              <td>
+                {{ row.tmNumber }}
+              </td>
+              <td>
+                {{ row.salesManName }}
+              </td>
+              <td>{{ row.role }}</td>
+              <td>
+                {{ row.sampleGroupDesc }}
+              </td>
+              <td>
+                ${{ row.futureBudget | number : "1.2-2" }}
+              </td>
+              <td>
+                {{ row.currency }}
+              </td>
+            </ng-template>
+          </ngx-table>
+          <div 
+            class="row mb-2 mt-4"
+            *ngIf="sampleBudgetsTMList?.length > 0"
+          >
+            <div
+              class="d-flex justify-content-center"
+            >
+              <pagination-controls
+                id="tmListPagination"
+                [responsive]="true"
+                [nextLabel]="''"
+                [previousLabel]="''"
+                (pageChange)="onTableDataChange($event, 'TM')"
+              >
+              </pagination-controls>
+            </div>
+          </div>
+        </div>
+      </div>
+     
+    </tab>
+  </tabset>
+</div>

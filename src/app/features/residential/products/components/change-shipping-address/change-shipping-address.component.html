@@ -1,0 +1,167 @@
+<!-- <app-loader [fullScreen]="true" *ngIf="tableLoading"></app-loader> -->
+<div [ngClass]="{ 'modal-hide': !isModalContentVisible }">
+<div class="modal-header text-center">
+  <h4 class="modal-title f-w w-100">Change the Shipping Address for Your  {{isPriceSearch ? 'Pricing':'Order'}}</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="onHideModal('ChangeShippingAddressComponent')"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body p-20">
+  <div class="row mb-4 full-btns p-50">
+    <div class="col-lg-5 col-md-8">
+      <xchange-search-control
+        #searchCtrlRef
+        [searchByIcon]="true"
+        [isGlobalSearchEnabled]="false"
+        placeholder="Search address#"
+        (sendValue)="onChange($event)"
+      ></xchange-search-control>
+    </div>
+  </div>
+
+  <div class="mb-2">
+    <alert type="warning" class="dashboard-page-alert" [dismissible]="true">
+      <div class="container">
+        Note: Changing your shipping address may result in changes to the listed item price.
+      </div>
+    </alert>
+    
+  </div>
+
+  <div class="text-center">
+    <div class="mb-2">
+      <ngx-table
+        *ngIf="!tableLoading"
+        #table
+        [configuration]="configuration"
+        [data]="
+          allAddressData
+            | paginate
+              : {
+                  id: 'pgModal',
+                  itemsPerPage: tableItemsSize,
+                  currentPage: pageIndex,
+                  totalItems: totlRecords
+                }
+        "
+        [columns]="columns"
+        class="d-inline-table"
+        (event)="eventEmitted($event)"
+      >
+        <ng-template let-row let-index="index">
+          <td>
+            <xchange-custom-radio
+              [type]="'radio'"
+              [id]="'radio-' + index"
+              [checked]="row.selected"
+              [value]="row"
+              (model)="rowSelected($event, index)"
+            ></xchange-custom-radio>
+          </td>
+          <td>
+            {{ row?.companyName }} <br/> Ship To # ({{row?.id.split("_")[0]}})
+          </td> 
+          <td>
+            {{ row?.line2 }}  {{ row?.line1 }}{{ row?.building ? ", " : "" }}{{ row?.building }}<br />
+            {{ row?.town }},
+            {{ row?.region?.isocodeShort }}
+            {{ row?.postalCode }}
+          
+          </td>
+          <td>
+            {{ row?.defaultShippingMethod }}
+            {{ row?.defaultShippingConditionDesc ? "-" : " "
+            }}{{ row?.defaultShippingConditionDesc }}
+          </td>
+          <!-- <td>
+            <xchange-icon-button
+              icon="share"
+              label="Delete"
+            ></xchange-icon-button>
+          </td> -->
+        </ng-template>
+      </ngx-table>
+    </div>
+    <div class="row mb-4 mt-4">
+      <div class="d-flex justify-content-center" *ngIf="totlRecords > 0">
+        <pagination-controls
+          id="pgModal"
+          [maxSize]="5"
+          [responsive]="true"
+          [nextLabel]="''"
+          [previousLabel]="''"
+          (pageChange)="onTablePageChange($event, searchCtrlRef)"
+        >
+        </pagination-controls>
+      </div>
+    </div>
+  </div>
+  <div class="row my-4 full-btns justify-content-center">
+    <!-- <div class="col-md-3"></div> -->
+    <div class="col-md-3">
+      <button
+        class="btn btn-outline-secondary mb-3"
+        (click)="onHideModal('ChangeShippingAddressComponent')"
+      >
+        Cancel
+      </button>
+    </div>
+    <div class="col-md-3">
+      <button
+        class="btn btn-primary mb-3"
+        (click)="onSubmitModal('ChangeShippingAddressComponent')"
+        [disabled]="!selectedAddress || !enableDoneBtn"
+      >
+        DONE
+      </button>
+    </div>
+  </div>
+</div>
+</div>
+
+<ng-template #showMinMaxChangeTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Min/Max Values Changes</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="onHideModal('viewReplacementOrderModal')"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row mx-2">
+      <div class="col-12 mb-2">
+        <h4>Current Order Roll Min/Max values = {{this.initialState?.minRollLength}} / {{this.initialState?.maxRollLength}}</h4>
+        <h4>Override Roll Min/Max values found for this ship to location of {{this.minRollLength}} / {{this.maxRollLength}}</h4>
+      </div>
+      Do You Want to Apply New  Min/Max?
+    </div>
+      <div class="mt-4 mb-4 pt-4 full-btns p-50 align-center change-date justify-content-center">
+        <div>
+          <button
+            class="btn btn-outline-secondary me-2"
+            (click)="useOldMinMaxValues();onHideModal('viewReplacementOrderModal');"
+          >
+            No
+          </button>
+        </div>
+        <div>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="useNewMinMaxValues();onHideModal('viewReplacementOrderModal');"
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+     
+  </div></ng-template>

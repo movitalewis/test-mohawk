@@ -1,0 +1,236 @@
+<div class="container claims-container" #scrollTop>
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <!-- <h2 class="text-center mb-4">Create A New Claim</h2> -->
+
+  <!-- <div class="row mb-4">
+    <div class="_card-container">
+      <div class="text-center">Please select a claim type to continue.</div>
+      <hr />
+      <div class="row mb-4">
+        <div class="row mb-4">
+        <div class="col-md-3 col-xs-12 dg">
+          <button
+            class="btn btn-secondary mb-0"
+            (click)="
+              createNewClaim('FREIGHT BILLING Notes', 'FREIGHT BILLING reason')
+            "
+            [routerLink]="['/commercial/claims/freight-claim']"
+          >
+            FREIGHT BILLING ERROR
+          </button>
+          <p class="text-center mt-3 mb-3">Choose this option for an issue with freight charges, fuel charges, or drop charges.</p>
+        </div>
+        <div class="col-md-3 col-xs-12 dg">
+          <button
+            class="btn btn-secondary mb-0"
+            (click)="
+              createNewClaim('PRICING BILLING Notes', 'PRICING BILLING reason')
+            "
+            [routerLink]="['/commercial/claims/pricing-billing-error']"
+          >
+            PRICING BILLING ERROR
+          </button>
+          <p class="text-center mt-3 mb-3">Choose this option for issues with product pricing.</p>
+        </div>
+        <div class="col-md-3 col-xs-12 dg">
+          <button
+            class="btn btn-secondary mb-0"
+            (click)="createNewClaim('TAX BILLING Notes', 'TAX BILLING reason')"
+            [routerLink]="['/commercial/claims/tax-billing-error']"
+          >
+            TAX BILLING ERROR
+          </button>
+          <p class="text-center mt-3 mb-3">Tax only issues</p>
+        </div>
+        <div class="col-md-3 col-xs-12 dg">
+          <button
+            class="btn btn-secondary mb-0"
+            (click)="
+              createNewClaim(
+                'ACCOMMODATION RETURN Notes',
+                'ACCOMMODATION RETURN reason'
+              )
+            "
+            [routerLink]="['/commercial/claims/accommodation-return']"
+          >
+            ACCOMMODATION RETURN
+          </button>
+          <p class="text-center mt-3 mb-3">
+            Choose this option to request a return authorization for material that is uninstalled and not suspected to be defective. Note: Restocking and freight fees may apply.
+          </p>
+        </div>
+        <div class="col-md-3 col-xs-12 dg">
+          <button
+            class="btn btn-secondary mb-0"
+            (click)="
+              createNewClaim(
+                'MOHAWK ORDER ERROR Notes',
+                'MOHAWK ORDER ERROR Reason'
+              )
+            "
+            [routerLink]="['/commercial/claims/mohawk-order-error']"
+          >
+            ORDER ERROR CLAIM
+          </button>
+          <p class="text-center mt-3 mb-3">Choose this option for errors created by Mohawk during the order entry process.</p>
+        </div>
+        <div class="col-md-3 col-xs-12 dg">
+          <button
+            class="btn btn-secondary mb-0"
+            (click)="
+              createNewClaim(
+                'DEFECTIVE PRODUCT Notes',
+                'DEFECTIVE PRODUCT Reason'
+              )
+            "
+            [routerLink]="['/commercial/claims/defective-product']"
+          >
+            DEFECTIVE PRODUCT CLAIM
+          </button>
+          <p class="text-center mt-3 mb-3">Choose this option if you suspect the product is defective in some way. Note: Do not use this option for damage, wrong or mislabeled product, or quantity errors.</p>
+        </div>
+        <div class="col-md-3 col-xs-12 dg">
+          <button
+            class="btn btn-secondary mb-0"
+            (click)="
+              createNewClaim('WRONG PRODUCT Notes', 'WRONG PRODUCT Reason')
+            "
+            [routerLink]="['/commercial/claims/wrong-product']"
+          >
+            WRONG PRODUCT CLAIM
+          </button>
+          <p class="text-center mt-3 mb-3">Choose this option if the product received was something other than what was ordered.</p>
+        </div>
+        <div class="col-md-3 col-xs-12 dg">
+          <button
+            class="btn btn-secondary mb-0"
+            (click)="createNewClaim('DAMAGED Notes', 'DAMAGED Reason')"
+            [routerLink]="['/commercial/claims/damaged']"
+          >
+            DAMAGE CLAIM
+          </button>
+          <p class="text-center mt-3 mb-3">Choose this option if product was delivered with shipping/handling damage. Note: Visible must be reported within 10 days.</p>
+        </div>
+        <div class="col-md-3 col-xs-12 dg">
+          <button
+            class="btn btn-secondary mb-0"
+            (click)="
+              createNewClaim(
+                'WRONG QUANTITY/SHORTAGE Notes',
+                'WRONG QUANTITY/SHORTAGE Reason'
+              )
+            "
+            [routerLink]="['/commercial/claims/wrong-quantity-shortage']"
+          >
+            QUANTITY CLAIM
+          </button>
+          <p class="text-center mt-3 mb-3">
+            Choose this option if the quantity of product received was more or less than the quantity ordered.
+          </p>
+         </div>
+        <div class="col-md-3 col-xs-12 dg">
+          <button
+            class="btn btn-secondary mb-0"
+            (click)="
+              createNewClaim(
+                'CANCELLATION FEES Notes',
+                'CANCELLATION FEES Reason'
+              )
+            "
+            [routerLink]="['/commercial/claims/cancellation-fees']"
+          >
+            CANCELLATION FEES
+          </button>
+          <p class="text-center mt-3 mb-3">
+            Choose this option if you feel you were incorrectly charged cancellation fees because of a cancelled order.
+          </p>
+        </div>
+        <div class="col-md-3 col-xs-12 dg">
+          <button
+            class="btn btn-secondary mb-0"
+            (click)="
+              createNewClaim(
+                'CUSTOMER SATISFACTION Notes',
+                'CUSTOMER SATISFACTION Reason'
+              )
+            "
+            [routerLink]="['/commercial/claims/customer-satisfaction']"
+          >
+            ASSURANCE WARRANTY CLAIM
+          </button>
+          <p class="text-center mt-3 mb-3">
+            Choose this option only if your product is covered by a 30,60,90, or 120 day assurance warranty as outlined in your warranty document. Note: These claims are not defect related.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div> -->
+ 
+  
+   <!-- Header Section (Responsive) -->
+  <div class="row align-items-center text-center text-md-start mb-3 claim-container-header">
+
+    <!-- Back Link -->
+    <!-- <div class="col-12 col-md-4 mb-2 mb-md-0 align-self-end text-start claim-header-left">
+      <a routerLink="/commercial/claims/history" class="text-danger d-inline-block text-decoration-none back-to-claims-link">
+        <img src="assets/images/icons/back-icon.svg" class="back-icon" alt="back-icon"> Back To Claims
+      </a>
+    </div> -->
+
+    <!-- Title and Subtitle -->
+    <div class="col-12 text-center claim-header-center">
+      <h2 class="text-center mb-1 page-title">Create A New Claim</h2>
+      <p class="mb-0 page-p">Please select a claim type to continue.</p>
+    </div>
+
+    <!-- Empty right column for balance (optional) -->
+    <!-- <div class="col-12 col-md-4 d-none d-md-block claim-header-end"></div> -->
+  </div>
+  <!-- Divider -->
+  <hr class="my-4" />
+  <div class="row claim-cards-container d-flex flex-wrap gap-31px">
+    <div 
+      class="col-12 col-md-4 col-xl-3 claim-col"
+      *ngFor="let card of claimTypesData"
+    >
+      <div 
+        class="card h-100 shadow-sm custom-card-hover d-flex text-center claim-custom-card"
+        [routerLink]="[card.link]"
+      >
+        <div class="clipped-bg"></div>
+        <div class="card-body d-flex flex-column align-items-center justify-content-start w-100 claim-custom-card-body">
+          <!-- Icon Image -->
+          <img 
+            [src]="card.imageUrl" 
+            alt="icon" 
+            class="rounded-circle mt-1 mb-3 card-icon"
+          />
+          <!-- Title -->
+          <h5 class="card-title mb-2">{{ card.title }}</h5>
+          <!-- Description -->
+          <p class="card-text mx-2">{{ card.description }}</p>
+          <!-- Spacer to push button to bottom -->
+          <div class="mt-auto py-1 claim-card-button-container">
+            <button [routerLink]="[card.link]" class="btn btn-secondary card-cta">{{ card.buttonLabel || 'FILE CLAIM' }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Don't see your claim type section -->
+  <div class="claim-contact-section mt-5 mb-4">
+    <div class="claim-contact-content">
+      <h4 class="claim-contact-title">Don't see your claim type?</h4>
+      <p class="claim-contact-desc px-4">If you have a concern that isn't listed, contact us with details for your claim and we'll get back to you.</p>
+      <button class="claim-contact-btn" routerLink="/commercial/contact-us">CONTACT US</button>
+    </div>
+  </div>
+
+  <div class="text-center mt-4 mb-5">
+    <button (click)="scrollToTop()" class="p-2 back-to-top-sec">
+      <img class="back-to-top-icon" src="assets/images/icons/drop-down-arrow.svg" alt="Back to Top"><br/>
+      <p class="back-to-top mb-0">Back to Top</p>
+    </button>
+  </div>
+</div>

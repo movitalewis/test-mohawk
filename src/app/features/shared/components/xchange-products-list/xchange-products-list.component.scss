@@ -1,0 +1,30 @@
+@import "/src/styles/colors";
+@import "/src/styles/mixins/breakpoints";
+
+:host {
+  width: 100%;
+  display: block;
+
+  @include breakpoint-range($max: sm) {
+    padding: 0 12px;
+  }
+}
+
+.product-list-container {
+  position: relative;
+  background: $color-white;
+  border-radius: 5px;
+  border: 1px solid $color-light-gray;
+  overflow: auto;
+  height: auto;
+
+  /* Disable default scrollbar */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-container {
+    border: 1px solid $color-light-gray;
+    padding: 20px;
+  }
+}

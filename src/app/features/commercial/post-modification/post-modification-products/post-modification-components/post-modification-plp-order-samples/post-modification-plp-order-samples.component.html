@@ -1,0 +1,319 @@
+<div class="modal-header text-center">
+  <h4 class="modal-title f-w text-center w-100">
+    Order Samples {{ selectedVarient }}
+  </h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="onHideModal()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body p-50">
+  <div class="row">
+    <div class="col-md-4">
+      <button
+        _ngcontent-nke-c166=""
+        class="btn btn-primary mb-2"
+        (click)="clearSamples()"
+      >
+        CLEAR SAMPLES
+      </button>
+    </div>
+  </div>
+  <hr />
+  <div class="row pt-2">
+    <div class="col-md-12">
+      <div class="samples-grid">
+        <ul>
+          <!-- <li>
+            <div class="sample-img selected">
+              <img
+                src="https://s7d4.scene7.com/is/image/MohawkResidential/28074_717_swatch?wid=200&hei=200&scl=3"
+                alt=""
+                class=""
+              />
+            </div>
+            <h4>Crackled Glaze</h4>
+            <p>717</p>
+          </li>
+          <li>
+            <div class="sample-img selected">
+              <img
+                src="https://s7d4.scene7.com/is/image/MohawkResidential/28074_727_swatch?wid=200&hei=200&scl=3"
+                alt=""
+                class=""
+              />
+            </div>
+            <h4>Gleaming Tan</h4>
+            <p>727</p>
+          </li>
+          <li>
+            <div class="sample-img selected">
+              <img
+                src="https://s7d4.scene7.com/is/image/MohawkResidential/28074_729_swatch?wid=200&hei=200&scl=3"
+                alt=""
+                class=""
+              />
+            </div>
+            <h4>Homestead</h4>
+            <p>729</p>
+          </li>
+          <li>
+            <div class="sample-img selected">
+              <img
+                src="https://s7d4.scene7.com/is/image/MohawkResidential/28074_732_repeat?wid=200&hei=200&scl=3"
+                alt=""
+                class=""
+              />
+            </div>
+            <h4>Adobe</h4>
+            <p>732</p>
+          </li>
+          <li>
+            <div class="sample-img">
+              <img
+                src="https://s7d4.scene7.com/is/image/MohawkResidential/28074_752_repeat?wid=200&hei=200&scl=3"
+                alt=""
+                class=""
+              />
+            </div>
+            <h4>Redstone Lasso</h4>
+            <p>752</p>
+          </li>
+          <li>
+            <div class="sample-img">
+              <img
+                src="https://s7d4.scene7.com/is/image/MohawkResidential/28074_819_repeat?wid=200&hei=200&scl=3"
+                alt=""
+                class=""
+              />
+            </div>
+            <h4>Shimmer</h4>
+            <p>819</p>
+          </li> -->
+          <li *ngFor="let item of orderSamples" (click)="onSelectItem(item)">
+            <div class="sample-img" [class.selected]="item?.selected">
+              <img
+                [src]="
+                  item?.src ||
+                  'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                "
+                alt=""
+                class=""
+              />
+            </div>
+            <h4>{{ item?.value.code || "NA" }}</h4>
+            <p>{{ item.price || "NA" }}</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <hr />
+  <div class="row pt-2">
+    <div class="col-md-12 mb-2">
+      <h3>Selected Samples</h3>
+    </div>
+    <form class="row" [formGroup]="reactiveForm">
+      <ng-container *ngFor="let item of orderSamples">
+        <ng-container *ngIf="item?.selected == true">
+          <div class="col-md-6">
+            <div class="selected-sample">
+              <a class="close" (click)="onSelectItem(item)">x</a>
+              <div class="">
+                <h4>Color</h4>
+                <p>{{ item?.value.code }}</p>
+              </div>
+              <!-- <div class="d-flex">
+              <div class="size">
+                <h4>Size</h4>
+                
+                <ng-select placeholder="Select" [(ngModel)]="selectedSize"  bindValue="selectedSize">
+                  <ng-option value='24" X 24"'>24" X 24"</ng-option>
+                  <ng-option value='30" X 30"'>30" X 30"</ng-option>
+                  <ng-option value='36" X 36"'>36" X 36" </ng-option>
+                </ng-select>
+              </div>
+              <div class="qty">
+                <h4>Quantity</h4>
+                <ng-select placeholder="Select" [(ngModel)]="selectedQuantity" bindValue="selectedQuantity">
+                  <ng-option value="1">1</ng-option>
+                  <ng-option value="2">2</ng-option>
+                  <ng-option value="3">3</ng-option>
+                </ng-select>
+              </div>
+            </div> -->
+              <div class="d-flex">
+                <div class="size">
+                  <h4>Size</h4>
+                  <ng-select
+                    placeholder="Select"
+                    [(ngModel)]="item.size"
+                    formControlName="Adobe"
+                    (keypress)="validateNo($event)"
+                  >
+                    <ng-option value='24" X 24"'>24" X 24"</ng-option>
+                    <ng-option value='30" X 30"'>30" X 30"</ng-option>
+                    <ng-option value='36" X 36"'>36" X 36" </ng-option>
+                  </ng-select>
+                  <div
+                    *ngIf="f['Adobe'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['Adobe'].errors['required']">
+                      Size is Req.
+                    </div>
+                  </div>
+                </div>
+                <div class="qty">
+                  <h4>Quantity</h4>
+                  <ng-select
+                    placeholder="Select"
+                    [(ngModel)]="item.quantity"
+                    formControlName="AdobeQuantity"
+                    (keypress)="validateNo($event)"
+                  >
+                    <ng-option value="1">1</ng-option>
+                    <ng-option value="2">2</ng-option>
+                    <ng-option value="3">3</ng-option>
+                  </ng-select>
+                  <div
+                    *ngIf="f['AdobeQuantity'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['AdobeQuantity'].errors['required']">
+                      Quantity is Req.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </form>
+    <!-- <div class="col-md-6">
+      <div class="selected-sample">
+        <a href="#" class="close">x</a>
+        <div class="">
+          <h4>Color</h4>
+          <p>Gleaming Tan</p>
+        </div>
+        <div class="d-flex">
+          <div class="size">
+            <h4>Size</h4>
+            <ng-select placeholder="Select">
+              <ng-option>24" X 24"</ng-option>
+              <ng-option>30" X 30"</ng-option>
+              <ng-option>36" X 36" </ng-option>
+            </ng-select>
+          </div>
+          <div class="qty">
+            <h4>Quantity</h4>
+            <ng-select placeholder="Select">
+              <ng-option>1</ng-option>
+              <ng-option>2</ng-option>
+              <ng-option>3</ng-option>
+            </ng-select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="selected-sample">
+        <a href="#" class="close">x</a>
+        <div class="">
+          <h4>Color</h4>
+          <p>Homestead</p>
+        </div>
+        <div class="d-flex">
+          <div class="size">
+            <h4>Size</h4>
+            <ng-select placeholder="Select">
+              <ng-option>24" X 24"</ng-option>
+              <ng-option>30" X 30"</ng-option>
+              <ng-option>36" X 36" </ng-option>
+            </ng-select>
+          </div>
+          <div class="qty">
+            <h4>Quantity</h4>
+            <ng-select placeholder="Select">
+              <ng-option>1</ng-option>
+              <ng-option>2</ng-option>
+              <ng-option>3</ng-option>
+            </ng-select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="selected-sample">
+        <a href="#" class="close">x</a>
+        <div class="">
+          <h4>Color</h4>
+          <p>Adobe</p>
+        </div>
+        <div class="d-flex">
+          <div class="size">
+            <h4>Size</h4>
+            <ng-select placeholder="Select">
+              <ng-option>24" X 24"</ng-option>
+              <ng-option>30" X 30"</ng-option>
+              <ng-option>36" X 36" </ng-option>
+            </ng-select>
+          </div>
+          <div class="qty">
+            <h4>Quantity</h4>
+            <ng-select placeholder="Select">
+              <ng-option>1</ng-option>
+              <ng-option>2</ng-option>
+              <ng-option>3</ng-option>
+            </ng-select>
+          </div>
+        </div>
+      </div>
+    </div> -->
+  </div>
+  <div>
+    Additional freight charges may apply.
+  </div>
+  <div class="row mt-4 full-btns">
+    <div class="col-md-4 col-lg-3">
+      <button
+        class="btn btn-secondary mb-3"
+        [disabled]="showGotoCartBtn || checkCartAdded() || !enableButton"
+        (click)="addToCartClick()"
+      >
+        ADD TO CART
+      </button>
+   
+    </div>
+    <div class="col-md-4 col-lg-3" *ngIf="showGotoCartBtn">
+      <button
+        class="btn btn-secondary mb-3"
+        (click)="checkoutPage()"
+      >
+        <span class="cart-icon"></span>GO TO CART
+      </button>
+    </div>
+    <div class="col-md-4 col-lg-3">
+      <button
+        class="btn btn-outline-secondary mb-3"
+        (click)="onHideModal()"
+      >
+        CANCEL
+      </button>
+    </div>
+    <div class="col-md-4 col-lg-3" *ngIf="showGotoCartBtn">
+      <button
+        class="btn btn-primary mb-3"
+        (click)="continueShopping()"
+      >
+        CONTINUE SHOPPING
+      </button>
+    </div>
+  </div>
+</div>

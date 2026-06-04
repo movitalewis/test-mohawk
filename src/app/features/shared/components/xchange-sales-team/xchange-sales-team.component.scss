@@ -1,0 +1,86 @@
+@import "/src/styles/colors";
+@import "/src/styles/mixins/breakpoints";
+
+.team-member-container {
+  display: flex;
+  border: 0.5px solid $color-gray-b1;
+  padding: 10px;
+  border-radius: 5px;
+  // flex-wrap: wrap;
+
+  .image-container {
+    width: 144px;
+    background-size: cover;
+    align-self: start;
+    // height: 173px;
+    border: 0.5px solid $color-gray-b1;
+    border-radius: 5px;
+    overflow: hidden;
+    background: $color-gray-b1;
+
+    @include breakpoint-range($max: lg) {
+      width: 100px;
+    }
+  }
+
+  .team-content {
+    width: calc(100% - 143px);
+    padding-left: 12px;
+    display: flex;
+    flex-wrap: wrap;
+
+    @include breakpoint-range($max: lg) {
+      width: calc(100% - 100px);
+    }
+
+    header,
+    footer,
+    body {
+      width: 100%;
+      display: block;
+    }
+
+    .body {
+      margin: 10px 0;
+    }
+
+    footer {
+      align-self: flex-end;
+    }
+
+    p {
+      font-size: 12px;
+      margin-bottom: 0;
+    }
+  }
+}
+
+.sales-team-list {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 30px 50px;
+  justify-content: space-between;
+
+  & > li {
+    width: calc(50% - 25px);
+    margin-bottom: 25px;
+  }
+
+  @include breakpoint-range($max: xl) {
+    padding: 10px;
+
+    & > li {
+      width: calc(50% - 10px);
+      margin-bottom: 20px;
+    }
+  }
+
+  @include breakpoint-range($max: lg) {
+    padding: 0;
+
+    & > li {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+  }
+}

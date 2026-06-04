@@ -1,0 +1,168 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+
+.back-to {
+  color: #{$color-red};
+  display: flex;
+  cursor: pointer;
+}
+.pdf-print {
+  color: #{$color-red};
+  display: flex;
+  justify-content: flex-end;
+  cursor: pointer;
+}
+.pdf {
+  @include breakpoint-range($max: sm) {
+    margin-right: 5px;
+  }
+  position: relative;
+  top: 2px;
+  margin-right: 5px;
+}
+.back-i {
+  @include breakpoint-range($max: sm) {
+    margin-right: 5px;
+  }
+  margin-right: 5px;
+  top: 4px;
+  position: relative;
+  //transform: rotate(180deg);
+}
+
+.compare-list-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  @include breakpoint-range($max: lg) {
+    justify-content: center;
+  }
+}
+.compare-list {
+  display: flex;
+  justify-content: center;
+  & > li {
+    width: 296px;
+    background: $color-white;
+    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 12px 0;
+    margin: 0 14px;
+    position: relative;
+    border-radius: 5px;
+    .image {
+      width: 272px;
+      height: 206px;
+      overflow: hidden;
+      border-radius: 5px;
+      img {
+        width: 100%;
+        height: 100%;
+        // object-fit: contain;
+      }
+    }
+
+    h4 {
+      font-size: 20px;
+      font-weight: 900;
+      width: 100%;
+      text-align: start;
+      margin-top: 15px;
+      margin-bottom: 0px;
+      margin-left: 15px;
+      word-break: break-word;
+      padding: 0 5px;
+    }
+    div {
+      margin: 10px 20px;
+      p {
+        font-size: 14px;
+        font-weight: 600;
+        color: $color-gray;
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  @include breakpoint-range($max: lg) {
+    & > li {
+      width: 130px;
+      margin: 0 5px;
+      padding: 7px 0;
+      .image {
+        width: 90%;
+      }
+      h4 {
+        margin-top: 5px;
+      }
+    }
+  }
+  @include breakpoint-range($max: sm) {
+    flex-wrap: wrap;
+    & > li {
+      width: 100px;
+      .image {
+        height: 60px;
+      }
+    }
+  }
+}
+
+.close-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid $color-gray;
+  background: transparent;
+  border-radius: 100%;
+  color: $color-gray;
+  background: $color-white;
+  font-size: 14px;
+  position: absolute;
+  top: -7px;
+  right: -6px;
+}
+.compare-div {
+  div {
+    display: grid;
+    h3 {
+      font-size: 22px;
+      margin-bottom: 18px;
+    }
+    div {
+      overflow-x: auto;
+      margin-bottom: 23px;
+      table {
+        tr {
+          min-height: 45px;
+          th {
+            font-size: 20px;
+            height: 45px;
+            min-width: 240px;
+            background: #f8f8f8;
+            border: 0.5px solid #b1b1b1;
+            padding: 0px 8px;
+          }
+          td {
+            font-size: 20px;
+            height: 45px;
+            min-width: 330px;
+            background: #fff;
+            color: #6e6e6e;
+            border: 0.5px solid #b1b1b1;
+            padding: 0px 8px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.bottom-div {
+  margin-top: 20px;
+
+  button {
+    width: 200px;
+  }
+}

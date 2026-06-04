@@ -1,0 +1,33 @@
+<div class="modal-header text-center">
+  <h4 class="modal-title f-w w-100">Add New Item To claim</h4>
+  <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="onHideModal()">
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body p-20 text-center">
+  <h2 class="body-heading">Please Select To Continue</h2>
+  <ul class="subscribe-list w-100 d-flex justify-content-evenly mt-4">
+    <li *ngFor="let site of claimLineTypes">
+      <div class="box-container align-content-center" [class.card-disabled]="site.disabled" [class.active-card]="selectedSite === site.id" (click)="changeSite($event, site.id)">
+        <div class="boxes">
+          <div class="icon">
+            <img [src]="'/assets/icons/' + (
+              site.name === 'International' ? (selectedSite === site.id ? 'globe-active.svg' : 'globe-inactive.svg') :
+              site.name === 'Hospitality' ? (selectedSite === site.id ? 'business-active.svg' : 'business-inactive.svg') :
+              site.name === 'Add Invoice Line' ? (selectedSite === site.id ? 'business-active.svg' : 'Invoice-gray-circle.svg') :
+              (selectedSite === site.id ? 'labor-red-circle.svg' : 'labor-gray-circle.svg')
+            )" [alt]="site.name" />
+          </div>
+          <span class="box-heading">{{site.name}}</span>
+        </div>
+      </div>
+      <div class="info-text text-center mt-2" *ngIf="site.id == '1' && addInvoiceLine">All Invoice Line(s) added</div>
+    </li>
+  </ul>
+  <div class="d-flex footer-btns mt-4 justify-content-center">
+    <button class="btn btn-primary" (click)="handleAction()" [disabled]="!selectedSite">
+      Continue
+    </button>
+  </div>
+</div>

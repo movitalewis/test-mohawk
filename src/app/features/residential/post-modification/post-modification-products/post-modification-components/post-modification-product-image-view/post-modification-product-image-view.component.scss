@@ -1,0 +1,232 @@
+@import "/src/styles/colors";
+@import "/src/styles/mixins/breakpoints";
+
+.product-name {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 18px;
+  line-height: 22px;
+  small {
+    display: block;
+    font-size: 18px;
+    color: $color-gray;
+    font-weight: 400;
+    padding-left: 10px;
+  }
+}
+.is-invalid {
+  border-radius: 6px;
+  border: 2px solid $color-red;
+}
+.product-colors-container {
+  padding: 0px 0 0px 0;
+  // border-top: 1px solid $color-medium-gray;
+  border-bottom: 1px solid $color-medium-gray;
+  .view_all {
+    background: transparent;
+    border: none;
+    text-decoration: underline;
+  }
+}
+// .colors-list-ul {
+//   display: flex;
+//   gap: 10px;
+//   align-items: flex-start;
+//   & > li {
+//     display: flex;
+//     flex-wrap: wrap;
+//     justify-content: center;
+//     width: 101px;
+//     @include breakpoint-range($max: md) {
+//       width: calc(20% - 4px);
+//     }
+//     a {
+//       display: flex;
+//       width: 100%;
+//       padding: 3px;
+//       border-radius: 5px;
+//       cursor: pointer;
+//       img {
+//         width: 100%;
+//       }
+//     }
+
+//     .color-name {
+//       text-align: center;
+//       line-height: 18px;
+//       font-size: 16px;
+//       margin-top: 10px;
+//       @include breakpoint-range($max: xs) {
+//         font-size: 14px;
+//         margin-top: 5px;
+//         line-height: 16px;
+//         word-break: break-all;
+//       }
+//     }
+
+//     .color-code {
+//       @include breakpoint-range($max: xs) {
+//         font-size: 14px;
+//         line-height: 16px;
+//       }
+//     }
+//     &.active {
+//       a {
+//         border: 3px solid $color-red;
+//       }
+//     }
+//   }
+// }
+
+.change-image-mod-btns {
+  @include breakpoint-range($max: sm) {
+    .btn-secondary {
+      width: 130px;
+      margin: 0;
+    }
+  }
+}
+.left-carousal {
+  img {
+    @include breakpoint-range($max: md) {
+      height: 350px;
+    }
+    @include breakpoint-range($max: sm) {
+      height: 300px;
+    }
+  }
+}
+
+// ::ng-deep {
+//   pagination-controls {
+//     pagination-template {
+//       ul {
+//         border-radius: unset !important;
+//         li {
+//           border: none !important;
+//           border-radius: 0 5px 5px 0;
+//           // box-shadow: inset 0px 5px 6px #00000014;
+//           &:nth-child(3) {
+//             &.current {
+//               border-radius: 5px 0px 0px 5px;
+//             }
+//           }
+//           &.current {
+//             display: flex !important;
+//             box-shadow: unset;
+//           }
+//           a {
+//             text-decoration: unset !important;
+//             height: 100%;
+//             display: flex !important;
+//             align-items: center;
+//             justify-content: center;
+//           }
+//           &.pagination-next,
+//           &.pagination-previous {
+//             a {
+//               color: #ce0e2d;
+//               font-size: 24px;
+//               &::after,
+//               &::before {
+//                 margin-left: 0px !important;
+//                 margin-bottom: 3px !important;
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+.product-varient-carousel {
+  ::ng-deep {
+    .owl-item {
+      // padding: 3px;
+      cursor: pointer;
+      max-width: 100px;
+    }
+    .owl-dots {
+      height: 100%;
+      position: relative;
+      transform: none;
+      left: 0px;
+      bottom: 0px;
+      // bottom: -35px;
+      .owl-dot {
+        &.active {
+          span {
+            background: #ce0e2d;
+          }
+        }
+        span {
+          background: grey;
+        }
+      }
+    }
+  }
+  .color-name {
+    word-break: break-word;
+  }
+}
+
+.activeSlide {
+  border: 3px solid $color-red;
+  padding: 3px;
+}
+.ribbon-wrapper {
+  width: 160px;
+  height: 160px;
+  overflow: hidden;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 1;
+  border-radius: 0px;
+  top: -3px;
+  .ribbon {
+    color: $color-white;
+    text-align: center;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    position: relative;
+    padding: 0px 0px;
+    top: 18px;
+    left: -40px;
+    background-color: #ce0e2d;
+    font-size: small;
+    height: 50px;
+  }
+}
+.ribbon-wrapper-preview {
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 1;
+  border-radius: 0px;
+  .ribbon {
+    color: $color-white;
+    text-align: center;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    position: relative;
+    padding: 5px 0;
+    top: 15px;
+    left: -40px;
+    width: 140px;
+    background-color: #ce0e2d;
+  }
+}
+:host ::ng-deep xchange-logo-pdp {
+  img {
+    width: 130px;
+    // float: right;
+  }
+}

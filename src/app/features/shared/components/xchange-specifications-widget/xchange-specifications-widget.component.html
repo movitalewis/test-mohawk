@@ -1,0 +1,13 @@
+<table class="table specifications-table">
+  <tr *ngFor="let spec of specifications">
+    <th>
+      {{ spec?.name }}
+    </th>
+    <td 
+      [class.salesMaterial]="spec?.name == 'Sales Material' && spec?.url"
+      (click)="(spec?.name == 'Sales Material' && spec?.url) ? clickOnUrl(spec?.url) : ''"
+    >
+      {{ spec?.value }}
+    </td>
+  </tr>
+</table>

@@ -1,0 +1,72 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+
+.justify-content-between a {
+  color: $color-white;
+}
+
+h2 {
+  color: $color-white;
+}
+
+.sign-in-form {
+  width: 400px;
+  max-width: 100%;
+
+  @include breakpoint-range($max: lg) {
+    width: 100%;
+  }
+}
+
+.sign-up-link {
+  font-size: 14px;
+
+  span {
+    font-weight: 700;
+    color: $color-red;
+  }
+}
+
+@include breakpoint-range($max: lg) {
+  .submit-btn {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .form-fields-container {
+    background: $color-white;
+    padding: 20px;
+    border: 1px solid $color-gray;
+    margin-bottom: 20px;
+
+    @include breakpoint-range($max: lg) {
+      .form-label,
+      .form-info,
+      .form-icon {
+        color: $color-black;
+      }
+    }
+  }
+}
+
+.form-control.error,
+.form-control:invalid,
+.form-control.ng-invalid.ng-pristine,
+.form-control.ng-invalid:focus {
+  border: 1px solid $color-gray;
+  color: $color-light-black;
+}
+.form-control.ng-invalid.ng-touched:blur,
+.form-control.is-invalid {
+  border: 1px solid $color-red;
+  color: $color-red;
+}
+.custom-spinner {
+  display: inline-block;
+  border: 4px solid #FFF;
+  border-top: 4px solid transparent; 
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+}

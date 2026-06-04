@@ -1,0 +1,11 @@
+<!-- <section class="xchange-loader" [style.top]="fullScreen ? 0 : height">
+  <ngx-spinner
+    type="ball-clip-rotate"
+    [size]="loadersize"
+    color="#ce0e2d"
+    [fullScreen] = "fullScreen"  
+    ></ngx-spinner>
+</section> -->
+<section class="xchange-loader" [style.top]="fullScreen ? 0 : height" [style.background-color]="spinnerBackgroundColor">
+  <div  class="custom-spinner" [style.background-color]="spinnerBackgroundColor"></div>
+</section>

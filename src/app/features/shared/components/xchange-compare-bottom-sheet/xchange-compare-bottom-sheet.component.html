@@ -1,0 +1,41 @@
+<div class="container">
+  <div class="compare-list-container">
+    <ul class="compare-list">
+      <li *ngFor="let item of compareData">
+        <button
+          class="mohawak-icon close-icon close-btn"
+          (click)="removeCompareItem(item)"
+        ></button>
+        <div class="image">
+          <img
+            [src]="
+              item?.productImageURL
+                ? getImage(item?.productImageURL)
+                : 'https://s7d4.scene7.com/is/image/MohawkResidential/missing?$xchangeThumb$'
+            "
+            alt=""
+          />
+        </div>
+        <h4>{{ item?.styleName || "NA" }}</h4>
+        <p>{{ item?.styleId || "NA" }}</p>
+      </li>
+    </ul>
+    <ul class="compare-list">
+      <li class="no-bg">
+        <button
+          class="btn btn-primary"
+          [disabled]="compareData.length <= 1"
+          (click)="compareAll(compareData)"
+        >
+          Compare All
+        </button>
+        <button
+          class="btn btn-outline-secondary"
+          (click)="removeaAllData(compareData)"
+        >
+          Clear All
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,115 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+@import "src/styles/mixins/box-shadow.mixin";
+
+::ng-deep {
+  .tab-content {
+    padding: 0px !important;
+  }
+}
+.align-center {
+  justify-content: center;
+}
+.custom-order-tabs {
+  ._card-container {
+    border-radius: 0 0 8px 8px;
+  }
+}
+.border-box {
+  border: 1px solid #b1b1b1;
+  padding: 20px 30px;
+  border-radius: 5px;
+  min-height: 100px;
+  margin: 10px 0;
+  .address-text {
+    p {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    span {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+  }
+}
+.full-btns {
+  .btn {
+    width: 100%;
+  }
+}
+.address-check {
+  font-weight: 600;
+  p {
+    padding-left: 35px;
+    font-weight: 300;
+  }
+}
+.c-r {
+  margin-right: 20px;
+}
+.p-50 {
+  padding: 0 50px;
+  @include breakpoint-range($max: sm) {
+    padding: 0;
+  }
+}
+.text-right {
+  text-align: right;
+  @include breakpoint-range($max: sm) {
+    text-align: left;
+  }
+}
+.fs-12 {
+  font-size: 12px;
+}
+.blue-bg {
+  background-color: #ecf6ff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  p {
+    margin-bottom: 0;
+  }
+}
+.mt-4 {
+  @include breakpoint-range($max: sm) {
+    margin-top: 10px;
+  }
+}
+.form-control {
+  &.ng-invalid {
+    color: unset;
+    border-color: unset;
+    border: 1px solid #b1b1b1;
+    &.ng-touched {
+      color: #ce0e2d;
+      border-color: #ce0e2d;
+    }
+  }
+}
+
+::ng-deep .error {
+  .ng-select-container {
+    border: 1px solid #ce0e2d;
+  }
+}
+.buttons-modal {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+.change-date {
+  display: flex;
+  gap: 20px;
+}
+::ng-deep{ 
+  .loader-for-address{ 
+    .xchange-loader{ 
+      position: unset !important; 
+      .ngx-spinner-overlay { 
+        position: absolute !important; 
+        background-color: rgba(255, 2555, 2555, 0.7) !important; border-radius: 7px !important; 
+      } 
+    }  
+  }
+}

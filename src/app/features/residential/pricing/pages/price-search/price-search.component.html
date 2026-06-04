@@ -1,0 +1,287 @@
+<app-loader *ngIf="spinnerLoading"></app-loader>
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <form [formGroup]="priceSearchForm">
+    <h2 class="text-center mb-4">PRICING</h2>
+    <div class="mb-3">
+      <alert
+        type="danger"
+        [dismissible]="true"
+        *ngIf="showErrorMessage && errorMessage.length > 0"
+      >
+        <div class="container">
+          {{ errorMessage }}
+        </div>
+      </alert>
+    </div>
+    <p class="mb-1">{{ this.dateString }}</p>
+    <div class="_card-container">
+      <div class="row">
+        <div
+          class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 cust-col-md-4"
+        >
+          <h4>Product Category*</h4>
+          <ng-select
+            class="mb-3"
+            placeholder="Select Category"
+            formControlName="productCategory"
+            (change)="getPricingBrands()"
+            [class.errorBorder]="
+              priceSearchForm.controls['productCategory'].touched == true &&
+              priceSearchForm.controls['productCategory'].hasError('required')
+            "
+          >
+            <ng-option
+              *ngFor="let option of productCategory"
+              [value]="option?.name"
+              >{{ option?.name?.toUpperCase() }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div
+          class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 cust-col-md-4"
+        >
+          <h4>Product Price</h4>
+          <ng-select
+            placeholder="Select Price"
+            class="mb-3"
+            formControlName="priceType"
+          >
+            <ng-option
+              *ngFor="let option of productPrice"
+              [value]="option?.value"
+              >{{ option.name }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div
+          class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 cust-col-md-4"
+        >
+          <h4>Selling Group (Brand)</h4>
+          <ng-select
+            class="mb-3"
+            placeholder="All"
+            formControlName="sellingGroup"
+          >
+            <ng-option [value]="''">All</ng-option>
+            <ng-option
+              *ngFor="let option of sellingGroup | keyvalue"
+              [value]="option.key"
+              >{{ option.value }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div
+          class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 desk-view cust-col-md-4"
+        >
+          <div class="b-c mb-3">
+            <xchange-custom-checkbox
+              type="checkbox"
+              [id]="'xyz9'"
+              label="Promotional Products Only"
+              formControlName="promoFlg"
+            >
+            </xchange-custom-checkbox>
+            <xchange-custom-checkbox
+              type="checkbox"
+              [id]="'xyz9'"
+              label="Dropped products Only"
+              formControlName="dropped"
+            >
+            </xchange-custom-checkbox>
+          </div>
+        </div>
+          <div
+          class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 cust-col-md-4 loading-input-wrapper"
+        >
+          <h4>ShipTo*</h4>
+          <ng-select
+            class="mb-3 hide-empty-msg"
+            placeholder="Select"
+            formControlName="shippingAddress"
+            (click)="!isShiptoUser && openChangeShippingAddress()"
+            [disabled]="isLoading"
+            [class.errorBorder]="
+              priceSearchForm.controls['shippingAddress'].touched == true &&
+              priceSearchForm.controls['shippingAddress'].hasError('required')
+            "
+            [clearable]='isShiptoUser ? false : true'
+          >
+          </ng-select>
+          <div class="cssload-loading" *ngIf="isLoading"><i></i><i></i><i></i><i></i></div>
+        </div>
+        
+        <div
+          class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 cust-col-md-4"
+        >
+          <h4>Style # (optional)</h4>
+          <input
+            type="text"
+            placeholder="Type Here"
+            class="form-control mb-3"
+            formControlName="styleNumber"
+          />
+        </div>
+        <div
+          class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 cust-col-md-4"
+        >
+          <h4>Style Name (optional)</h4>
+          <input
+            type="text"
+            placeholder="Type Here"
+            class="form-control mb-3"
+            formControlName="styleName"
+          />
+        </div>
+        <div
+          class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 m-view cust-col-md-4"
+        >
+          <div class="b-c mb-3">
+            <xchange-custom-checkbox
+              type="checkbox"
+              [id]="'xyz9'"
+              label="Promotional Products Only"
+              formControlName="promoFlg"
+            >
+            </xchange-custom-checkbox>
+            <xchange-custom-checkbox
+              type="checkbox"
+              [id]="'xyz9'"
+              label="Dropped products Only"
+              formControlName="dropped"
+            >
+            </xchange-custom-checkbox>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <div class="row my-4 justify-content-center">
+    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+      <button
+        class="btn btn-primary mb-2 w-100"
+        (click)="onSearch(priceSearchForm.value)"
+        [disabled]="!priceSearchForm.valid || isLoading"
+      >
+        SEARCH
+      </button>
+    </div>
+  </div>
+  <div class="mb-5">
+    <alert *ngIf="emptyMessage" type="info" [dismissible]="true">
+      <p class="mb-0">No prices found for your search.</p>
+    </alert>
+  </div>
+  <div class="mb-3">
+    <alert
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="showErrorMessage"
+    >
+      <div class="container">
+        {{ errorMessage }}
+      </div>
+    </alert>
+  </div>
+  <div class="mb-3">
+    <alert
+      [type]="alertType"
+      class="mb-3"
+      [dismissible]="true"
+      *ngIf="showEmailMessage"
+    >
+      <div class="container">{{ showEmailMessage }}</div>
+    </alert>
+  </div>
+
+  <div *ngIf="showTable && !emptyMessage">
+    <div class="row mt-4">
+      <div class="col-md-4">
+        <p class="mb-1">Pricing As Of {{ this.currentDate }} EST</p>
+      </div>
+      <div class="col-4">
+        <p class="mb-1">
+          Currency: {{storageService.userInfo.priceLabel}}
+        </p>
+      </div>
+      <div class="col-md-4 text-end mb-1">
+        <div class="icon-link align-center" *ngIf="this.storageService?.userInfo?.userPermissions.includes('Pricing Download')">
+          <button type="button" (click)="downloadAllPrices('pdf')">
+            <span class="mohawak-icon pdf-icon"></span>View PDF
+          </button>
+          <button type="button" (click)="downloadAllPrices('excel')">
+            <span class="mohawak-icon finance-icon"></span>Excel
+          </button>
+          <button type="button" (click)="openShareEmailModal()">
+            <span class="mohawak-icon share-icon"></span>Share
+          </button>
+        </div>
+        <p class="icon-link">
+          Note: Excel sheets will contain additional fields.
+        </p>
+      </div>
+    </div>
+    <div class="_card-container" id="print-section">
+      <div class="row mb-4 mt-4">
+        <div class="col-md-12 col-lg-12">
+          <div class="overflow-auto">
+            <ngx-table
+              [configuration]="configuration1"
+              [data]="
+                data
+                  | paginate
+                    : {
+                        id: 'pg1',
+                        itemsPerPage: tableItemsSize,
+                        currentPage: pageIndex,
+                        totalItems: totalDataLength
+                      }
+              "
+              [columns]="columns1"
+              class="margin-top"
+              (event)="onSort($event)"
+            >
+            </ngx-table>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="d-flex justify-content-center" *ngIf="totalDataLength > 0">
+          <pagination-controls
+            id="pg1"
+            [maxSize]="5"
+            [responsive]="true"
+            [nextLabel]="''"
+            [previousLabel]="''"
+            (pageChange)="onTableDataChange($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div class="col-md-12">
+          <p class="text-center">
+            {{ totalDataLength > 0 ? startValue : 0 }} -
+            {{ lastValue > totalDataLength ? totalDataLength : lastValue }}
+            OF {{ totalDataLength > 0 ? totalDataLength : 0 }} Pricing
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-md-6 offset-md-3 mb-1">
+        <div class="text-center">
+          <p class="p-2 fs-12">
+            Prices subject to all taxes, excise fees, and stewardship fees
+            appropriate for your jurisdiction.<br>
+            CALIFORNIA - CalRecycle has 
+            implemented a differential assessment structure for broadloom carpet 
+            and carpet tile shipped into California: Broadloom carpet = $1.05 Sy; 
+            Broadloom Carpet with =>10% Post Consumer Content = $0.96 Sy;
+            Carpet Tile = $1.49 Sy; Carpet Tile with => 10% Post Consumer 
+            Content = $1.40 Sy.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

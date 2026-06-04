@@ -1,0 +1,458 @@
+<div class="profile-section" #scrollToTop>
+  <header class="page-header">
+    <h2>Notification</h2>
+  </header>
+  <app-alerts
+    [alertData]="alertData"
+    [alertType]="alertType"
+    *ngIf="alertTrigger"
+  >
+  </app-alerts>
+  <app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+  <p class="mt-4 w-100">Choose your notification preferences.</p>
+  <section class="mb-4 w-100">
+    <div class="order-notification-header mb-2">
+      <xchange-custom-radio
+        [disabled]="checkDisabled"
+        type="radio"
+        [className]="'strong-500'"
+        [id]="'xyz'"
+        [name]="'All Orders'"
+        label="All Orders"
+        [group]="'All Orders'"
+        (model)="changeRadioOrder($event)"
+        [checked]="selectAllOrder"
+      >
+      </xchange-custom-radio>
+      <xchange-custom-radio
+        type="radio"
+        [className]="'strong-500'"
+        [id]="'xyz1'"
+        [name]="'My Orders'"
+        label="My Orders"
+        [group]="'My Orders'"
+        (model)="changeRadioOrder($event)"
+        [checked]="selectMyOrder"
+      >
+      </xchange-custom-radio>
+      <xchange-custom-checkbox
+        [disabled]="checkDisabled"
+        type="checkbox"
+        label="Select All"
+        [id]="'all-orders'"
+        [checked]="allOrdersSelected"
+        class="select-all"
+        (model)="onSelectAllOrders($event)"
+      >
+      </xchange-custom-checkbox>
+    </div>
+    <div class="table-container">
+      <table class="table black-header-table">
+        <thead>
+          <tr>
+            <th class="mw460p">Order Notifications</th>
+            <th class="text-center">Email</th>
+            <!-- <th>Fax</th> -->
+            <!-- <th>Text</th> -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of orderNotifications; let i = index">
+            <td class="mw460p w-50">
+              {{ item.name }}
+            </td>
+            <td class="mw100p text-center">
+              <xchange-custom-checkbox
+                type="checkbox"
+                [id]="item.columns[0].value"
+                [checked]="item.columns[0].checked"
+                class="checkBox1"
+                (model)="setNotificationData($event, item.columns[0].value)"
+              >
+              </xchange-custom-checkbox>
+            </td>
+            <!-- <td class="mw100p text-center">
+              <xchange-custom-checkbox
+                type="checkbox"
+                [id]="item.columns[1].value"
+                [checked]="item.columns[1].checked"
+                class="checkBox2"
+                (model)="setNotificationData($event, item.columns[1].value)"
+              >
+              </xchange-custom-checkbox>
+            </td> -->
+            <!-- <td class="mw100p text-center">
+              <xchange-custom-checkbox
+                [disabled]="item.columns[2].disable"
+                type="checkbox"
+                [id]="item.columns[2].value"
+                [checked]="item.columns[2].checked"
+                class="checkBox3"
+                (model)="setNotificationData($event, item.columns[2].value)"
+              >
+              </xchange-custom-checkbox>
+            </td> -->
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section class="mb-4 w-100">
+    <div class="order-notification-header mb-2">
+      <xchange-custom-radio
+        [disabled]="checkDisabled"
+        type="radio"
+        [className]="'strong-500'"
+        [id]="'allClaims'"
+        [name]="'All Claims'"
+        label="All Claims"
+        [group]="'All Claims'"
+        [checked]="selectAllClaims"
+        (model)="changeRadioClaims($event)"
+      >
+      </xchange-custom-radio>
+      <xchange-custom-radio
+        [disabled]="checkDisabled"
+        type="radio"
+        [className]="'strong-500'"
+        [id]="'myClaims'"
+        [name]="'My Claims'"
+        label="My Claims"
+        [group]="'My Claims'"
+        [checked]="selectMyClaims"
+        (model)="changeRadioClaims($event)"
+      >
+      </xchange-custom-radio>
+      <xchange-custom-checkbox
+        [disabled]="checkDisabled"
+        type="checkbox"
+        label="Select All"
+        [id]="'all-claims'"
+        [checked]="allClaimsSelected"
+        class="select-all"
+        (model)="onSelectAllClaims($event)"
+      >
+      </xchange-custom-checkbox>
+    </div>
+    <div class="table-container">
+      <table class="table black-header-table">
+        <thead>
+          <tr>
+            <th class="mw460p">Claim Notifications</th>
+            <th class="text-center">Email</th>
+            <!-- <th>Fax</th> -->
+            <!-- <th>Text</th> -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of claimNotifications; let i = index">
+            <td class="mw460p w-50">
+              {{ item.name }}
+            </td>
+            <td class="mw100p text-center">
+              <xchange-custom-checkbox
+                [disabled]="item.columns[0].disable"
+                type="checkbox"
+                [id]="item.columns[0].value"
+                [checked]="item.columns[0].checked"
+                class="checkBox1"
+                (model)="setNotificationData($event, item.columns[0].value)"
+              >
+              </xchange-custom-checkbox>
+            </td>
+            <!-- <td class="mw100p text-center">
+              <xchange-custom-checkbox
+                type="checkbox"
+                [disabled]="item.columns[1].disable"
+                [id]="item.columns[1].value"
+                [checked]="item.columns[1].checked"
+                class="checkBox2"
+                (model)="setNotificationData($event, item.columns[1].value)"
+              >
+              </xchange-custom-checkbox>
+            </td> -->
+            <!-- <td class="mw100p text-center">
+              <xchange-custom-checkbox
+                [disabled]="item.columns[2].disable"
+                type="checkbox"
+                [id]="item.columns[2].value"
+                [checked]="item.columns[2].checked"
+                class="checkBox3"
+                (model)="setNotificationData($event, item.columns[2].value)"
+              >
+              </xchange-custom-checkbox>
+            </td> -->
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="mb-4 w-100">
+    <div class="order-notification-header mb-2">
+      <xchange-custom-radio
+        [disabled]="reserveDisable"
+        type="radio"
+        [className]="'strong-500'"
+        [id]="'Reserves'"
+        [name]="'All Reserves'"
+        label="All Reserves"
+        [group]="'All Reserves'"
+        (model)="changeRadioReserve($event)"
+        [checked]="selectAllReserves"
+      >
+      </xchange-custom-radio>
+      <xchange-custom-radio
+        [disabled]="reserveDisable"
+        type="radio"
+        [className]="'strong-500'"
+        [id]="'myReserves'"
+        [name]="'My Reserves'"
+        label="My Reserves"
+        [group]="'My Reserves'"
+        (model)="changeRadioReserve($event)"
+        [checked]="selectMyReserves"
+      >
+      </xchange-custom-radio>
+      <xchange-custom-checkbox
+        [disabled]="reserveDisable"
+        type="checkbox"
+        label="Select All"
+        [id]="'all-reserves'"
+        [checked]="allReservesSelected"
+        class="select-all"
+        (model)="onSelectAllReserves($event)"
+      >
+      </xchange-custom-checkbox>
+    </div>
+    <div class="table-container">
+      <table class="table black-header-table">
+        <thead>
+          <tr>
+            <th class="mw460p">Reserve Notifications</th>
+            <th class="text-center">Email</th>
+            <!-- <th>Fax</th> -->
+            <!-- <th>Text</th> -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of reserveNotifications; let i = index">
+            <td class="mw460p w-50">
+              {{ item.name }}
+            </td>
+            <td class="mw100p text-center">
+              <xchange-custom-checkbox
+                [disabled]="item.columns[0].disable"
+                type="checkbox"
+                [id]="item.columns[0].value"
+                [checked]="item.columns[0].checked"
+                (model)="setNotificationData($event, item.columns[0].value)"
+              >
+              </xchange-custom-checkbox>
+            </td>
+            <!-- <td class="mw100p text-center">
+              <xchange-custom-checkbox
+                [disabled]="item.columns[1].disable"
+                type="checkbox"
+                [id]="item.columns[1].value"
+                [checked]="item.columns[1].checked"
+                (model)="setNotificationData($event, item.columns[0].value)"
+              >
+              </xchange-custom-checkbox>
+            </td> -->
+            <!-- <td class="mw100p text-center">
+              <xchange-custom-checkbox
+                [disabled]="item.columns[2].disable"
+                type="checkbox"
+                [id]="item.columns[2].value"
+                [checked]="item.columns[2].checked"
+                (model)="setNotificationData($event, item.columns[0].value)"
+              >
+              </xchange-custom-checkbox>
+            </td> -->
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="mb-4 w-100">
+    <div class="order-notification-header mb-2">
+      <xchange-custom-radio
+        [disabled]="reserveDisable"
+        type="radio"
+        [className]="'strong-500 me-3'"
+        [id]="'allQuotes'"
+        [name]="'All Quotes'"
+        label="All Quotes"
+        [group]="'All Quotes'"
+        (model)="changeRadioQuote($event)"
+        [checked]="selectAllQuotes"
+      >
+      </xchange-custom-radio>
+      <xchange-custom-radio
+        [disabled]="reserveDisable"
+        type="radio"
+        [className]="'strong-500'"
+        [id]="'myQuotes'"
+        [name]="'My Quotes'"
+        label="My Quotes"
+        [group]="'My Quotes'"
+        (model)="changeRadioQuote($event)"
+        [checked]="selectMyQuotes"
+      >
+      </xchange-custom-radio>
+      <xchange-custom-checkbox
+       [disabled]="reserveDisable"
+        type="checkbox"
+        label="Select All"
+        [id]="'all-quotes'"
+        [checked]="allQuotesSelected"
+        class="select-all"
+        (model)="onSelectAllQuotes($event)"
+      >
+      </xchange-custom-checkbox>
+    </div>
+    <div class="table-container">
+      <table class="table black-header-table">
+        <thead>
+          <tr>
+            <th class="mw460p">Quote Notifications</th>
+            <th class="text-center">Email</th>
+            <!-- <th>Fax</th> -->
+            <!-- <th>Text</th> -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of quoteNotifications; let i = index">
+            <td class="mw460p w-50">
+              {{ item.name }}
+            </td>
+            <td class="mw100p text-center">
+              <xchange-custom-checkbox
+                type="checkbox"
+                [id]="item.columns[0].value"
+                [checked]="item.columns[0].checked"
+                (model)="setNotificationData($event, item.columns[0].value)"
+                [disabled]="reserveDisable"
+              >
+              </xchange-custom-checkbox>
+            </td>
+            <!-- <td class="mw100p text-center">
+              <xchange-custom-checkbox
+                type="checkbox"
+                [id]="item.columns[1].value"
+                [checked]="item.columns[1].checked"
+                (model)="setNotificationData($event, item.columns[1].value)"
+                [disabled]="reserveDisable"
+              >
+              </xchange-custom-checkbox>
+            </td> -->
+            <!-- <td class="mw100p text-center">
+              <xchange-custom-checkbox
+                type="checkbox"
+                [id]="item.columns[2].value"
+                [checked]="item.columns[2].checked"
+                (model)="setNotificationData($event, item.columns[2].value)"
+              >
+              </xchange-custom-checkbox>
+            </td> -->
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="mb-4 w-100">
+    <div class="order-notification-header mb-2">
+      <xchange-custom-radio
+        type="radio"
+        [disabled]="checkDisabled"
+        [className]="'strong-500 invisible'"
+        [id]="'Financials2'"
+        [name]="'123'"
+        [name]="'My Financials'"
+        label="My Financials"
+        [group]="'My Financials'"
+        [checked]="selectMyFinancials"
+      >
+      </xchange-custom-radio>
+      <xchange-custom-radio
+        type="radio"
+        [disabled]="checkDisabled"
+        [className]="'strong-500'"
+        [id]="'Financials1'"
+        [name]="'123'"
+        label="All Financials"
+        [name]="'All Financials'"
+        [group]="'All Financials'"
+        (model)="changeRadioFinancials($event)"
+        [checked]="selectAllFinancials"
+      >
+      </xchange-custom-radio>
+      <xchange-custom-checkbox
+        [disabled]="checkDisabled"
+        type="checkbox"
+        label="Select All"
+        [id]="'all-financials'"
+        [checked]="allFinancialsSelected"
+        class="select-all finance-check"
+        (model)="onSelectAllFinancials($event)"
+      >
+      </xchange-custom-checkbox>
+    </div>
+    <div class="table-container">
+      <table class="table black-header-table">
+        <thead>
+          <tr>
+            <th class="mw460p">Financial Notifications</th>
+            <th class="text-center">Email</th>
+            <!-- <th>Fax</th> -->
+            <!-- <th>Text</th> -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of financeNotifications; let i = index">
+            <td class="mw460p w-50">
+              {{ item.name }}
+            </td>
+            <td class="mw100p text-center">
+              <xchange-custom-checkbox
+                type="checkbox"
+                [disabled]="item.columns[0].disable"
+                [id]="item.columns[0].value"
+                [checked]="item.columns[0].checked"
+                (model)="setNotificationData($event, item.columns[0].value)"
+              >
+              </xchange-custom-checkbox>
+            </td>
+            <!-- <td class="mw100p text-center">
+              <xchange-custom-checkbox
+                [disabled]="item.columns[1].disable"
+                type="checkbox"
+                [id]="item.columns[1].value"
+                [checked]="item.columns[1].checked"
+                (model)="setNotificationData($event, item.columns[1].value)"
+              >
+              </xchange-custom-checkbox>
+            </td> -->
+            <!-- <td class="mw100p text-center">
+              <xchange-custom-checkbox
+                [disabled]="item.columns[2].disable"
+                type="checkbox"
+                [id]="item.columns[2].value"
+                [checked]="item.columns[2].checked"
+                (model)="setNotificationData($event, item.columns[2].value)"
+              >
+              </xchange-custom-checkbox>
+            </td> -->
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <button class="btn btn-primary save-btn mt-4" (click)="onSubmit()">
+    SAVE CHANGES
+  </button>
+</div>

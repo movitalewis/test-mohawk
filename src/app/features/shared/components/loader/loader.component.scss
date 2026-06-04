@@ -1,0 +1,38 @@
+@import "src/styles/mixins/breakpoints";
+
+.xchange-loader {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  // background-color: rgba(51, 51, 51, 0.8);
+  z-index: 999;
+  left: 0;
+ // top: 9.1vw;
+  bottom: 0;
+  right: 0;
+  @include breakpoint-range($max: sm) {
+    // top: 26vw !important;
+    // position: fixed !important;
+  }
+}
+
+::ng-deep .ngx-spinner-overlay {
+  //position: fixed !important;
+  // top: 8.7vw !important;
+  // left: 10vw !important;
+  pointer-events: none;
+  @include breakpoint-range($max: sm) {
+    // top: 26vw !important;
+    // position: fixed !important;
+  }
+}
+.custom-spinner {
+  border: 4px solid #ce0e2d;
+  border-top: 4px solid transparent; 
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}

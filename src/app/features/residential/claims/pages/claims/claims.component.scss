@@ -1,0 +1,188 @@
+@import "src/styles/mixins/box-shadow.mixin";
+@import 'src/styles/mixins/breakpoints';
+
+.dg{
+    display: grid;
+}
+@media (max-width: 1024px) and (min-width: 578px) {
+  .btn {
+    font-size: 12px;
+  }
+}
+
+.claims-container{
+  hr
+    {
+      border: 1px solid #E8E8E8;
+      margin-top: 20px;
+      margin-bottom: 35px;
+      opacity: 1;
+    }
+  .claim-container-header{
+    .claim-header-left{
+      .back-to-claims-link{
+        .back-icon{
+          margin-bottom: 2px;
+        }
+
+      }
+    }
+    .claim-header-center{
+      .page-title{
+        font-size: 25px;
+        font-weight: 600;
+        color: #383838;
+        padding-bottom: 15px;
+      }
+      .page-p{
+        font-size: 16px;
+      }
+    }
+  
+  }
+  .row.claim-cards-container{
+    --mx-gutter-x: 30px;
+    --mx-gutter-y: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    .claim-col{
+      .claim-custom-card{
+        position: relative;
+        overflow: visible;
+        background: #FFFFFF 0% 0% no-repeat padding-box;
+        box-shadow: 0px 0px 20px #00000014 !important;
+        border: 0.33000001311302185px solid #B1B1B1;;
+        border-radius: 12px;
+        &:hover{
+          cursor: pointer;
+          background-color: #FFFFFF;
+          box-shadow: 0px 16px 48px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.14);
+          border: 1.5px solid #CE0E2D;
+          border-radius: 12px;
+          transform: scale(1.02);
+          transition: transform 0.35s cubic-bezier(.22,1,.36,1), box-shadow 0.35s cubic-bezier(.22,1,.36,1), border 0.25s, background-color 0.25s;
+          will-change: transform, box-shadow;
+          // z-index: 2;
+          .clipped-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #F8F8F8;
+            clip-path: polygon(93% 0, 100% 0, 100% 100%, 0 100%, 0 38%);
+            // z-index: 1;
+            border: none;
+            border-radius: 10px;
+          }
+        }
+        .claim-custom-card-body{
+            position: relative;
+            // z-index: 2;
+          .card-icon{
+            width: 75px;
+            height: 75px;
+            object-fit: cover;
+            margin: 10px 25px 20px 25px !important;
+          }
+          h5.card-title{
+            font-size: 18px;
+            // font-weight: 600;
+            color: #383838;
+          }
+          p.card-text{
+            font-size: 14px;
+          }
+          .claim-card-button-container{
+            .card-cta{
+              width: 180px;
+              border: none;
+              &:hover{
+                color: #FFFFFF;
+                background-color: #ce0e2d;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .claim-contact-section {
+    background: #333333;
+    border-radius: 8px;
+    box-shadow: 0px 4px 16px #00000014;
+    padding: 32px 0 32px 0;
+    max-width: 100%;
+    margin: 0 auto;
+    border-top: 6px solid #ce0e2d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .claim-contact-content {
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+  }
+  .claim-contact-title {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .claim-contact-desc {
+    color: #fff;
+    font-size: 15px;
+    margin-bottom: 22px;
+    font-weight: 400;
+  }
+  .claim-contact-btn {
+    background: #ce0e2d;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: 0px 2px 8px #00000014;
+    cursor: pointer;
+    // transition: background 0.2s;
+  }
+  .claim-contact-btn:hover {
+    background: #a00b22;
+  }
+  .back-to-top {
+    color: #222;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-block;
+  }
+  .back-to-top-icon {
+    transform: rotate(180deg);
+  }
+}
+  .back-to-top-sec{
+    border: none;
+    background-color: transparent;
+    &:hover{
+    cursor: pointer;
+  }
+}
+
+// Responsive clip-path for .clipped-bg
+@media (max-width: 1200px) {
+  .clipped-bg {
+    clip-path: polygon(90% 0, 100% 0, 100% 100%, 0 100%, 0 40%);
+  }
+}
+@media (max-width: 900px) {
+  .clipped-bg {
+    clip-path: polygon(85% 0, 100% 0, 100% 100%, 0 100%, 0 45%);
+  }
+}
+@media (max-width: 600px) {
+  .clipped-bg {
+    clip-path: polygon(80% 0, 100% 0, 100% 100%, 0 100%, 0 50%);
+  }
+}

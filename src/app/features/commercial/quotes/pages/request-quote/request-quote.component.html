@@ -1,0 +1,629 @@
+<app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <app-alerts
+    [alertData]="alertData"
+    [alertType]="alertType"
+    *ngIf="alertTrigger"
+  ></app-alerts>
+  <div class="_card-container mt-2 request-quote-container">
+    <h4 class="text-center">Request Quote</h4>
+    <tabset responsiveTabs [justified]="true" #tabs>
+      <tab >
+        <ng-template tabHeading>Quote Request</ng-template>
+        <div *ngIf="!cartIsEmpty">
+          <form
+            [formGroup]="myForm"
+            data-toggle="validator"
+            (ngSubmit)="submit(myForm)"
+            novalidate
+          >
+            <p class="mt-2 mb-2">* = Required input</p>
+
+            <div class="container m-0 p-0">
+              <div class="row mt-2 mb-4">
+                <div class="col-md-4 col-xs-12" *ngIf="!userRole">
+                  <h4>Submitted For *</h4>
+                  <ng-select
+                    placeholder="Select"
+                    formControlName="submittedFor"
+                    [ngClass]="{
+                      errorBorder:
+                        myForm.controls['submittedFor'].touched &&
+                        myForm.controls['submittedFor'].invalid
+                    }"
+                  >
+                    <ng-option
+                      [value]="element.name"
+                      *ngFor="let element of submittedForList"
+                      >{{ element.name }}</ng-option
+                    >
+                  </ng-select>
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      myForm.controls['submittedFor'].touched &&
+                      myForm.controls['submittedFor'].status == 'INVALID'
+                    "
+                  >
+                    Submitted For is required!
+                  </small>
+                  <div *ngIf="submitted && f['submittedFor'].errors">
+                    <div
+                      *ngIf="f['submittedFor'].errors['required']"
+                      class="text-danger"
+                    >
+                      Submitted For is required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-xs-12" *ngIf="userRole">
+                  <h4>Submitted For *</h4>
+                  <input
+                    type="text"
+                    formControlName="submittedFor"
+                    placeholder="Megan Stafford"
+                    class="form-control"
+                    oninput="this.value = this.value.replace(/[^a-z,A-Z]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^a-z,A-Z, ' ']/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+                  />
+                </div>
+                <div class="col-md-4 col-xs-12">
+                  <h4>End User *</h4>
+                  <!-- <ng-select
+                  type="text"
+                  formControlName="endUser"
+                  placeholder="Select"
+                  [ngClass]="{
+                    errorBorder:
+                      myForm.controls['endUser'].touched &&
+                      myForm.controls['endUser'].invalid
+                  }"
+                  oninput="this.value = this.value.replace(/[^a-z,A-Z]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^a-z,A-Z, ' ']/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+                >
+                  <ng-option
+                    *ngFor="let item of endUsers"
+                    [value]="item.value"
+                    >{{ item.value }}</ng-option
+                  >
+                </ng-select> -->
+                  <!-- Custom item template -->
+                  <ng-template #enduserFormatItem let-item="item">
+                    <span>{{ endUserFormattedText(item) }}</span>
+                  </ng-template>
+                  <div class="endUser-suggestions">
+                    <input
+                      formControlName="endUser"
+                      typeaheadOptionField="value.unitName"
+                      [typeaheadItemTemplate]="enduserFormatItem"
+                      [typeahead]="suggestions$"
+                      [typeaheadAsync]="true"
+                      class="form-control"
+                      placeholder="Enter End User"
+                      [typeaheadMinLength]="1"
+                      (typeaheadOnBlur)="typeaheadOnBlur($event)"
+                      (typeaheadOnSelect)="onSelectEndUser($event)"
+                    />
+                    <button
+                      *ngIf="myForm.value.endUser"
+                      (click)="typeaheadOnBlur('', true)"
+                      class="mx-clear-input-brn"
+                    >
+                      <img
+                        src="/assets/images/icons/close-primary.svg"
+                        alt="Search Input Clear"
+                      />
+                    </button>
+                    <span class="help-info" *ngIf="notFoundendUser"
+                      >This end user customer does not exist in our Database. We
+                      have used your account name as end user.</span
+                    >
+                  </div>
+                  <div *ngIf="submitted && f['endUser'].errors">
+                    <div
+                      *ngIf="f['endUser'].errors['required']"
+                      class="text-danger"
+                    >
+                      EndUser is required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <h4>Dealer Network</h4>
+                  <div class="endUser-suggestions">
+                    <ng-template #creFormatItem let-item="item">
+                      <span>{{ creFormattedText(item) }}</span>
+                    </ng-template>
+                    <input
+                      formControlName="cre"
+                      typeaheadOptionField="value.unitName"
+                      [typeaheadItemTemplate]="creFormatItem"
+                      [typeahead]="suggestionsCre$"
+                      [typeaheadAsync]="true"
+                      [typeaheadMinLength]="3"
+                      (typeaheadOnBlur)="creTypeAheadOnBlur($event)"
+                      (typeaheadOnSelect)="onSelectCre($event)"
+                      class="form-control"
+                      placeholder="Enter Cre"
+                    />
+                    <button
+                      *ngIf="myForm.value.cre"
+                      (click)="creTypeAheadOnBlur('', true)"
+                      class="mx-clear-input-brn"
+                    >
+                      <img
+                        src="/assets/images/icons/close-primary.svg"
+                        alt="Search Input Clear"
+                      />
+                    </button>
+                    <!-- <span class="help-info" *ngIf="notFoundCre">This dealer network does not exist in our Database.</span> -->
+                  </div>
+                  <!-- <input
+                    *ngIf="isQuoteCart"
+                    class="form-control"
+                    bindLabel="value"
+                    bindValue="key"
+                    formControlName="cre"
+                  /> -->
+                </div>
+
+                <div
+                  class="col-12 col-sm-4"
+                  [ngClass]="{ 'mt-4': deviceType !== 'mobile' }"
+                >
+                  <h4>GPO (Global Purchasing Organization)</h4>
+                  <div class="endUser-suggestions">
+                    <ng-template #gpoFormatItem let-item="item">
+                      <span>{{ gpoFormattedText(item) }}</span>
+                    </ng-template>
+                    <input
+                      formControlName="gpo"
+                      typeaheadOptionField="value.unitName"
+                      [typeaheadItemTemplate]="gpoFormatItem"
+                      [typeahead]="suggestionsGpo$"
+                      [typeaheadAsync]="true"
+                      [typeaheadMinLength]="3"
+                      (typeaheadOnBlur)="gpoTypeAheadOnBlur($event)"
+                      (typeaheadOnSelect)="onSelectGpo($event)"
+                      class="form-control"
+                      placeholder="Enter GPO"
+                    />
+                    <button
+                      *ngIf="myForm.value.gpo"
+                      (click)="gpoTypeAheadOnBlur('', true)"
+                      class="mx-clear-input-brn"
+                    >
+                      <img
+                        src="/assets/images/icons/close-primary.svg"
+                        alt="Search Input Clear"
+                      />
+                    </button>
+                    <!-- <span class="help-info" *ngIf="notFoundGpo">This GPO does not exist in our Database.</span> -->
+                  </div>
+                  <!-- <input
+                    *ngIf="isQuoteCart"
+                    class="form-control"
+                    bindLabel="value"
+                    bindValue="key"
+                    formControlName="gpo"
+                  /> -->
+                </div>
+
+                <div
+                  class="col-12 col-sm-4"
+                  [ngClass]="{ 'mt-4': deviceType !== 'mobile' }"
+                >
+                  <h4>Real Estate Management Firm</h4>
+                  <div class="endUser-suggestions">
+                    <ng-template #adFormatItem let-item="item">
+                      <span>{{ adFormattedText(item) }}</span>
+                    </ng-template>
+                    <input
+                      formControlName="ad"
+                      typeaheadOptionField="value.unitName"
+                      [typeaheadItemTemplate]="adFormatItem"
+                      [typeahead]="suggestionsAd$"
+                      [typeaheadAsync]="true"
+                      [typeaheadMinLength]="3"
+                      (typeaheadOnBlur)="adTypeAheadOnBlur($event)"
+                      (typeaheadOnSelect)="onSelectAd($event)"
+                      class="form-control"
+                      placeholder="Enter AD"
+                    />
+                    <button
+                      *ngIf="myForm.value.ad"
+                      (click)="adTypeAheadOnBlur('', true)"
+                      class="mx-clear-input-brn"
+                    >
+                      <img
+                        src="/assets/images/icons/close-primary.svg"
+                        alt="Search Input Clear"
+                      />
+                    </button>
+                    <!-- <span class="help-info" *ngIf="notFoundAd">This AD does not exist in our Database.</span> -->
+                  </div>
+                  <!-- <input
+                    *ngIf="isQuoteCart"
+                    class="form-control"
+                    bindLabel="value"
+                    bindValue="key"
+                    formControlName="ad"
+                  /> -->
+                </div>
+                <div
+                  class="col-md-4 col-xs-12"
+                  [ngClass]="{ 'mt-4': deviceType !== 'mobile' }"
+                >
+                  <h4>Job Location *</h4>
+                  <input
+                    type="text"
+                    formControlName="jobLocation"
+                    placeholder="Empty Field"
+                    class="form-control"
+                  />
+
+                  <div *ngIf="submitted && f['jobLocation'].errors">
+                    <div
+                      *ngIf="f['jobLocation'].errors['required']"
+                      class="text-danger"
+                    >
+                      JobLocation is required.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mt-2 mb-4">
+                <div class="col-md-4 col-xs-12">
+                  <h4>Market Segment *</h4>
+                  <ng-select
+                    placeholder="Select"
+                    formControlName="marketSegment"
+                    [ngClass]="{
+                      errorBorder:
+                        myForm.controls['marketSegment'].touched &&
+                        myForm.controls['marketSegment'].invalid
+                    }"
+                  >
+                    <ng-option
+                      [value]="item.code"
+                      *ngFor="let item of marketsegmentdata"
+                      >{{ item?.name }}
+                    </ng-option>
+                  </ng-select>
+
+                  <div *ngIf="submitted && f['marketSegment'].errors">
+                    <div
+                      *ngIf="f['marketSegment'].errors['required']"
+                      class="text-danger"
+                    >
+                      MarketSegment is required.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-4 col-xs-12">
+                  <h4>Submitted By *</h4>
+                  <input
+                    type="text"
+                    formControlName="submittedBy"
+                    placeholder="Megan Stafford"
+                    class="form-control"
+                    oninput="this.value = this.value.replace(/[^a-z,A-Z]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^a-z,A-Z, ' ']/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+                  />
+
+                  <div *ngIf="submitted && f['submittedBy'].errors">
+                    <div
+                      *ngIf="f['submittedBy'].errors['required']"
+                      class="text-danger"
+                    >
+                      SubmittedBy is required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-xs-12">
+                  <h4>
+                    <label for="comments" class="control-label">Comments</label>
+                  </h4>
+                  <textarea
+                    formControlName="comments"
+                    placeholder="Comments"
+                    id="comments"
+                    class="form-control"
+                    maxlength="50"
+                  ></textarea>
+                </div>
+              </div>
+
+              <div class="row mt-4 pt-2 mb-4">
+                <div class="col-md-12 col-xs-12">
+                  <p>{{ totalitem }} ITEM(S) TOTAL</p>
+                  <div
+                    class="card mt-2"
+                    *ngFor="let item of cartEntries; let i = index"
+                  >
+                    <div class="card-header mb-2 dark">
+                      <h4
+                        class="text-white d-inline item-name"
+                        (click)="navigateToPDP(item?.product?.code)"
+                      >
+                        {{ item?.product?.name }} -
+                        {{ item?.product?.styleNumber }}
+                      </h4>
+                      <div class="float-end mohawk-logo text-end">
+                        <xchange-logo-pdp
+                          type="mohawk-group"
+                          theme="light-2"
+                          [isInverted]="true"
+                          [selectedPdpData]="item?.product"
+                        ></xchange-logo-pdp>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <div class="col-12 col-sm-12 col-md-12 col-lg-12 mt-2">
+                        <div class="row">
+                          <div class="col-sm-3 col-md-4 col-lg-3 col-xl-2">
+                            <div
+                              class="col-xs-6 col-sm-6 col-md-12 col-lg-12 col-xl-12"
+                            >
+                              <img
+                                class="card-img-top rounded img"
+                                (click)="navigateToProductPage(item?.product?.code)"
+                                [src]="
+                                item?.product?.productImageURL
+                                  ? getProductImage(item?.product?.productImageURL)
+                                  : 'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                              "
+                                alt=""
+                              />
+                            </div>
+                            <div
+                              class="col-xs-6 col-sm-6 col-md-12 col-lg-12 col-xl-12"
+                            >
+                              <div class="action-ctas">
+                                <button
+                                  type="button"
+                                  class="btn btn-secondary w-100 mt-2"
+                                  (click)="removeEntry(item?.entryNumber)"
+                                >
+                                  Remove
+                                </button>
+                                <button
+                                  type="button"
+                                  class="btn btn-primary btn-lg mt-2 below-margin w-100"
+                                  (click)="openCartAccessoriesModal(item)"
+                                  [disabled]="!item.enableAddAccessories"
+                                >
+                                  Add Accessories
+                                </button>
+                              </div>
+                              <div
+                                class="col-20 col-xl-10"
+                                *ngIf="item?.product?.overages?.[0]?.overagePercentage"
+                              >
+                                <div class="alert alert-info p-3">
+                                  This product is subject to upto
+                                  {{item?.product?.overages?.[0]?.overagePercentage
+
+
+
+
+
+
+
+
+
+                                  }}% overage based on the quantity
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-sm-9 col-md-8 col-lg-9 col-xl-10">
+                            <div class="box-flex">
+                              <div class="info-text">
+                                <h4>Color</h4>
+                                <p>
+                                  {{ item?.product?.sellingColorName || "NA" }}
+                                  -
+                                  {{ item?.product?.sellingColorId || "NA" }}
+                                </p>
+                              </div>
+                              <div class="info-text">
+                                <h4>
+                                  {{
+                                    item?.product?.subProductType ===
+                                      "CARPET_TILE" ||
+                                    item?.product?.subProductType ===
+                                      "BROADLOOM"
+                                      ? "Width"
+                                      : "Size"
+                                  }}
+                                </h4>
+                                <p>
+                                  {{
+                                    item?.product?.sellingSizeDescription
+                                      ? item?.product?.sellingSizeDescription
+                                      : item?.product?.sellingSizeId || "NA"
+                                  }}
+                                </p>
+                              </div>
+
+                              <div class="info-text">
+                                <h4>Order QTY</h4>
+                                <p>{{ getOrderQuantity(item) }}</p>
+                                <!-- <p>
+                                  {{ item?.userRequestedQuantity }}
+                                  {{ item?.uom?.name }}
+                                </p> -->
+                              </div>
+                              <div class="info-text">
+                                <h4>Backing</h4>
+                                <p>
+                                  {{ item?.product?.sellingBackingId || "NA" }}
+                                  -
+                                  {{
+                                    item?.product?.sellingBackingName || "NA"
+                                  }}
+                                </p>
+                              </div>
+                              <div class="info-text">
+                                <h4>Dye Lot</h4>
+                                <p>{{ item?.requestedDyelot || "NA" }}</p>
+                              </div>
+                              <div class="info-text">
+                                <h4>Same DyeLot</h4>
+                                <p>{{ item?.sameDyeLot == true ? "Yes" : "No" }}</p>
+                              </div>
+
+                              <!-- <div class="info-text">
+                          <h4>Dye lot</h4>
+                          <p>NA</p>
+                        </div> -->
+                            </div>
+                            <div class="col-12 col-sm-4">
+                              <!-- [ngClass]="{ 'mt-4': deviceType !== 'mobile' }" -->
+                              <h4>User Requested Price </h4>
+                              <div class="endUser-suggestions">
+                                <input
+                                  [(ngModel)]="item.userRequestedPrice"
+                                  [ngModelOptions]="{ standalone: true }"
+                                  class="form-control col-sm-6"
+                                  placeholder="User Requested Price"
+                                  (keypress)="isDecimalNumberKey($event)"
+                                  (blur)="validateUserRequesPrice(item)"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- (click)="cancelActionQuotes()" -->
+              <div class="row mt-4 mb-4 pt-4 full-btns p-50">
+                <div class="col-md-5 col-lg-3">
+                  <button
+                    class="btn btn-secondary mb-2"
+                    type="button"
+                    (click)="removecart(template4, itemData)"
+                  >
+                    Cancel Quote Request
+                  </button>
+                </div>
+                <div class="col-md-5 col-lg-3">
+                  <button
+                    class="btn btn-secondary mb-2"
+                    type="button"
+                    (click)="continueShopping()"
+                  >
+                    Continue Shopping
+                  </button>
+                </div>
+                <div class="col-md-5 col-lg-3">
+                  <button
+                    type="submit"
+                    [disabled]="myForm.invalid"
+                    class="btn btn-primary mb-2"
+                  >
+                    Request Quote
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div *ngIf="cartIsEmpty && spinnerLoading == false">
+          <div class="row mt-4 align-center">
+            <h3 class="mb-2">0 ITEM(S) Total</h3>
+            <h2>Your quote cart is empty</h2>
+          </div>
+        </div>
+      </tab>
+      <tab >
+        <ng-template tabHeading>Quote Confirmation</ng-template>
+        <div class="col-12 text-center mt-4 text-f-line">
+          <h1>Thank you for shopping at Mohawk Xchange!</h1>
+
+          <h3 class="mt-3">
+            A salesperson will review your quote (
+            <span class="text-danger"
+              ><a class="link" (click)="navigateToQuoteDetails()">{{
+                quoteCode
+              }}</a></span
+            >
+            ) request as soon as possible.
+          </h3>
+          <p class="mt-3">
+            Additionally, you will receive quote confirmation via email based on
+            <span class="link"> notification preferences</span>.
+          </p>
+        </div>
+      </tab>
+    </tabset>
+    <!-- <ng-template tabHeading>Quote Request</ng-template> -->
+  </div>
+</div>
+
+<ng-template #template3>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w">Remove product?</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>Are you sure you want to Remove product?</p>
+      <div class="mt-4 mb-4">
+        <button
+          class="btn btn-outline-secondary me-2"
+          (click)="modalRef.hide()"
+        >
+          No
+        </button>
+        <button class="btn btn-primary" (click)="removeItemFromCart()">
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #template4>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Cancel Quote</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef!.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="text-center">
+      <div class="col-12 mt-2 mb-2">
+        <p>Are you sure want to cancel the cart?</p>
+      </div>
+      <div class="mt-4 mb-4">
+        <button
+          class="btn btn-outline-secondary me-3"
+          (click)="modalRef!.hide()"
+        >
+          No
+        </button>
+        <button class="btn btn-primary" (click)="cancelActionQuotes()">
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,16 @@
+<app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+<div class="modal-header text-center">
+  <h4 class="modal-title w-100">Add items to cart?</h4>
+  <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="onHideModal()">
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="text-center">
+    <p>Adding the reserve to the cart will delete all the existing products in cart. Do you want to proceed?</p>
+    <div class="mt-4 mb-4">
+      <button class="btn btn-outline-secondary me-3" (click)="onHideModal()">NO</button>
+      <button class="btn btn-primary"(click)="addReserveToCart()">YES</button>
+    </div>
+  </div>
+</div>

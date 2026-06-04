@@ -1,0 +1,109 @@
+@import "/src/styles/colors";
+@import "/src/styles/mixins/breakpoints";
+
+.colors-list-ul {
+    // display: flex;
+    gap: 15px;
+    // align-items: flex-start;
+    // flex-wrap: wrap;
+    display: grid;
+    grid: auto/ auto auto auto auto auto auto;
+    @include breakpoint-range($max: xs) {
+      grid: auto/ auto auto;
+    }
+    @include breakpoint-range($min: md, $max: xl) {
+      grid: auto/ auto auto auto auto;
+    }
+    @include breakpoint-range($min: xs, $max: md) {
+      grid: auto/ auto auto auto;
+    }
+    & > li {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 170px;
+      @include breakpoint-range($max: xs) {
+        width: 100%;
+      }
+      @include breakpoint-range($min: md, $max: xl) {
+        width: 175px;
+      }
+      @include breakpoint-range($min: xs, $max: md) {
+        width: 145px;
+      }
+      // @include breakpoint-range($max: xl) {
+      //   width: 145px;
+      // }
+      a {
+        display: flex;
+        width: 100%;
+        padding: 3px;
+        border-radius: 5px;
+        cursor: pointer;
+        img {
+          width: 100%;
+        }
+      }
+  
+      .color-name {
+        text-align: center;
+        line-height: 18px;
+        font-size: 16px;
+        margin-top: 10px;
+        @include breakpoint-range($max: xs) {
+          font-size: 14px;
+          margin-top: 5px;
+          line-height: 16px;
+          word-break: break-all;
+        }
+      }
+  
+      .color-code {
+        @include breakpoint-range($max: xs) {
+          font-size: 14px;
+          line-height: 16px;
+        }
+      }
+      &.active {
+        a {
+          border: 3px solid $color-red;
+        }
+      }
+    }
+    .ribbon-wrapper-plp {
+      width: 150px;
+      height: 150px;
+      overflow: hidden;
+      position: absolute;
+      z-index: 1;
+      border-radius: 0px;
+      .ribbon {
+        color: $color-white;
+        text-align: center;
+        -webkit-transform: rotate(-45deg);
+        -moz-transform: rotate(-45deg);
+        -ms-transform: rotate(-45deg);
+        -o-transform: rotate(-45deg);
+        position: relative;
+        padding: 5px 0;
+        top: 13px;
+        left: -40px;
+        width: 140px;
+        background-color: #ce0e2d;
+        font-size: small;
+        height: 30px;
+      }
+    }
+  }
+  .desk-color-p, .mob-color-p{
+    margin: unset;
+    @include breakpoint-range($max: xs) {
+      margin: 0 auto;
+    }
+  }
+  .desk-color-ul, .mob-color-ul{
+    display: flex;
+    @include breakpoint-range($max: xs) {
+      display: grid;
+    }
+  }

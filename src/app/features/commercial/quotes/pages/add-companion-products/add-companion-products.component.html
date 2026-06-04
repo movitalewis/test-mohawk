@@ -1,0 +1,996 @@
+<app-loader
+  [fullScreen]="true"
+  *ngIf="spinnerLoading || isLoading"
+></app-loader>
+<div class="modal-header text-center">
+  <h4 class="modal-title f-w w-100">Choose a Solution</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="onHideModal(); removeATPEntry();"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<!-- <alert
+type="danger"
+class="dashboard-page-alert"
+[dismissible]="true"
+*ngIf="addtoCartFailed"
+>
+<div class="container">
+  Error occured while adding product to the cart.
+</div>
+</alert> -->
+<div class="modal-body p-20" #scrollToTop>
+  <app-alerts
+    [alertData]="alertData"
+    [alertType]="alertType"
+    *ngIf="alertTrigger"
+  ></app-alerts>
+  <ng-container *ngIf="addtoCartFailed">
+    <div class="mb-3" *ngIf="addtoCartErrorMessage">
+      <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+        <div class="container">
+          {{ addtoCartErrorMessage }}
+        </div>
+      </alert>
+    </div>
+  </ng-container>
+
+  <div class="container position-relative">
+    <div class="row mt-4 pt-2 mb-4">
+      <div class="col-md-12 col-xs-12">
+        <div class="card mt-2">
+          <div class="card-header mb-2 dark">
+            <h4 class="text-white d-inline">
+              {{ product.name }} - {{ product.styleNumber }}
+            </h4>
+            <div class="float-end mohawk-logo text-end">
+              <xchange-logo-pdp
+                type="commercial"
+                theme="light"
+              ></xchange-logo-pdp>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 mt-2">
+              <div class="row">
+                <div class="col-sm-3 col-md-4 col-lg-3 col-xl-2 mb-4">
+                  <div class="col-6 col-sm-12">
+                    <!-- <div class="shadow-lg "> -->
+                    <img
+                      class="card-img-top rounded img"
+                      [src]="
+                        product.productImageURL ||
+                        'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                      "
+                    />
+                    <!-- </div> -->
+                  </div>
+                </div>
+
+                <div class="col-sm-9 col-md-8 col-lg-9 col-xl-10">
+                  <div class="box-flex">
+                    <div class="info-text">
+                      <h4>Color #</h4>
+                      <p>{{ product.sellingColorId || "NA" }}</p>
+                    </div>
+                    <div class="info-text">
+                      <h4>Color</h4>
+                      <p>{{ product.sellingColorName || "NA" }}</p>
+                    </div>
+                    <div class="info-text">
+                      <h4>Size</h4>
+                      <p>{{ product.sellingSizeDescription || "NA" }}</p>
+                    </div>
+                    <div class="info-text">
+                      <h4>Backing</h4>
+                      <p>
+                        {{ product?.sellingBackingId }}
+                        {{ product?.sellingBackingName || "NA" }}
+                      </p>
+                    </div>
+                    <div class="info-text">
+                      <h4>Shipping Address</h4>
+                      <p>
+                        {{
+                          shippingAddress?.companyName ||
+                            shippingAddress?.addressName
+                        }}<br />
+                        <span *ngIf="!shippingAddress?.oneTimeShippingAddress && !shippingAddress?.isOneTimeShipTo">
+                          {{ shippingAddress?.id ? "Ship To #" : ""
+                          }}{{
+                            shippingAddress?.id
+                              ? shippingAddress?.id.split("_")[0]
+                              : ""
+                          }}<br />
+                        </span>
+                        {{
+                          shippingAddress?.line1 ||
+                            shippingAddress?.addressLine1
+                        }} {{
+                          shippingAddress?.line2 ||
+                            shippingAddress?.addressLine2
+                        }} {{ shippingAddress?.building ? ", " : "" }}{{ shippingAddress?.building }}<br />
+                        {{
+                          shippingAddress?.town || shippingAddress?.addressCity
+                        }},
+                        {{ shippingAddress?.region?.isocodeShort }}
+                        {{
+                          shippingAddress?.postalCode ||
+                            shippingAddress?.addressPostalCode
+                        }}
+                      </p>
+                      <h4>Shipping Method</h4>
+                      <p>
+                        {{ shippingAddress?.shippingCondition || shippingAddress?.defaultShippingMethod }}
+                        {{
+                          shippingAddress?.shippingConditionDesc || shippingAddress?.defaultShippingConditionDesc 
+                            ? " - "
+                            : ""
+                        }}
+                        {{ shippingAddress?.shippingConditionDesc ||  shippingAddress?.defaultShippingConditionDesc   }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr />
+
+    <ng-container
+      *ngIf="
+        !!availableSolutionData?.length &&
+        solutionType != 'RO' &&
+        entry?.product?.subProductType != 'CUSHION_PAD' &&
+        entry?.product?.erpProductCategory != 'S'
+      "
+    >
+      <div class="avl-s-container">
+        <h2>Available Solutions</h2>
+        <p>
+          Requested Order Quantity <br />
+          {{ entry?.quantity }}
+          {{ getUomDesc(entry?.checkUom) }}
+        </p>
+      </div>
+      <div class="table-responsive">
+        <ngx-table
+          [configuration]="config"
+          [data]="availableSolutionData || []"
+          [columns]="columns"
+          [filtersTemplate]="toggleRollTemplate"
+        >
+          <ng-template let-row let-i="index" let-isFirst="first">
+            <td>
+              <label class="ngx-form-checkbox">
+                <xchange-radio-button
+                  classNames="size-22"
+                  [name]="'name-' + row.solutionID"
+                  [value]="row.solutionID"
+                  [id]="row.solutionID"
+                  [checked]="selectedSolution?.solutionID === row.solutionID"
+                  (change)="openBalanceModal(row, balanceTemplate)"
+                ></xchange-radio-button>
+              </label>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.rollAssignment }}
+              </p>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.rollAssignedInFeet }}
+              </p>
+            </td>
+            <td class="dymica-length-column">
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{
+                  toggleLengthColumn
+                    ? item.rollAssignedInSF
+                    : item.rollAssignedInSY
+                }}
+              </p>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.dyeLot }}
+              </p>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.rollNumber }}
+              </p>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.plant }} {{ item.plantDescription ? " - " : "" }}
+                {{ item.plantDescription ? item.plantDescription : "" }}
+              </p>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{
+                  item?.estimatedDeliveryDate?.trim().toLowerCase() ===
+                    "in process" || !item?.estimatedDeliveryDate
+                    ? "In Process"
+                    : dateConvert(item?.estimatedDeliveryDate)
+                    ? (dateConvert(item?.estimatedDeliveryDate)
+                      | date : "MM/dd/yyyy")
+                    : "In Process"
+                }}
+              </p>
+            </td>
+          </ng-template>
+        </ngx-table>
+      </div>
+    </ng-container>
+
+    <ng-container
+      *ngIf="
+        !!availableSolutionData?.length &&
+        entry?.product?.erpProductCategory == 'S' &&
+        entry?.product?.subProductType != 'CARPET_TILE' &&  entry?.product?.subProductType !== 'CUSHION_PAD'
+      "
+    >
+      <div class="avl-s-container">
+        <h2>Available Solutions</h2>
+        <p>
+          Requested Order Quantity <br />
+          {{ entry?.quantity }}
+          {{ "CT" }}
+        </p>
+      </div>
+      <div class="table-responsive">
+        <ngx-table
+          [configuration]="config"
+          [data]="availableSolutionData || []"
+          [columns]="columnsHS"
+        >
+          <ng-template let-row let-i="index" let-isFirst="first">
+            <td>
+              <label class="ngx-form-checkbox">
+                <xchange-radio-button
+                  classNames="size-22"
+                  [name]="'name-' + row.solutionID"
+                  [value]="row.solutionID"
+                  [id]="row.solutionID"
+                  [checked]="selectedSolution?.solutionID === row.solutionID"
+                  (change)="openBalanceModal(row, balanceTemplate)"
+                ></xchange-radio-button>
+              </label>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.requestedQty }}
+                {{
+                  item?.requestedUOM === "CT" ? "Carton" : item?.requestedUOM
+                }}
+              </p>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.rollAssignedInSF }}
+              </p>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item?.dyeLot || "NA" }}
+              </p>
+            </td>
+
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.plant }} {{ item.plantDescription ? " - " : "" }}
+                {{ item.plantDescription ? item.plantDescription : "" }}
+              </p>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{
+                  item?.estimatedDeliveryDate?.trim().toLowerCase() ===
+                    "in process" || !item?.estimatedDeliveryDate
+                    ? "In Process"
+                    : dateConvert(item?.estimatedDeliveryDate)
+                    ? (dateConvert(item?.estimatedDeliveryDate)
+                      | date : "MM/dd/yyyy")
+                    : "In Process"
+                }}
+              </p>
+            </td>
+          </ng-template>
+        </ngx-table>
+      </div>
+    </ng-container>
+
+    <ng-container
+      *ngIf="
+        !!availableSolutionData?.length &&
+        entry?.product?.erpProductCategory == 'S' &&
+        entry?.product?.subProductType === 'CARPET_TILE'
+      "
+    >
+      <div class="avl-s-container">
+        <h2>Available Solutions</h2>
+        <p>
+          Requested Order Quantity <br />
+          {{ entry?.quantity }}
+          {{ "CT" }}
+        </p>
+      </div>
+      <div class="table-responsive">
+        <ngx-table
+          [configuration]="config"
+          [data]="availableSolutionData || []"
+          [columns]="columnsHSCarpetTile"
+        >
+          <ng-template let-row let-i="index" let-isFirst="first">
+            <td>
+              <label class="ngx-form-checkbox">
+                <xchange-radio-button
+                  classNames="size-22"
+                  [name]="'name-' + row.solutionID"
+                  [value]="row.solutionID"
+                  [id]="row.solutionID"
+                  [checked]="selectedSolution?.solutionID === row.solutionID"
+                  (change)="openBalanceModal(row, balanceTemplate)"
+                ></xchange-radio-button>
+              </label>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.requestedQty }}
+                {{
+                  item?.requestedUOM === "CT" ? "Carton" : item?.requestedUOM
+                }}
+              </p>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.rollAssignedInSY }}
+              </p>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item?.dyeLot || "NA" }}
+              </p>
+            </td>
+
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.plant }} {{ item.plantDescription ? " - " : "" }}
+                {{ item.plantDescription ? item.plantDescription : "" }}
+              </p>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{
+                  item?.estimatedDeliveryDate?.trim().toLowerCase() ===
+                    "in process" || !item?.estimatedDeliveryDate
+                    ? "In Process"
+                    : dateConvert(item?.estimatedDeliveryDate)
+                    ? (dateConvert(item?.estimatedDeliveryDate)
+                      | date : "MM/dd/yyyy")
+                    : "In Process"
+                }}
+              </p>
+            </td>
+          </ng-template>
+        </ngx-table>
+      </div>
+    </ng-container>
+    <ng-container
+      *ngIf="
+        !!availableSolutionData?.length &&
+        solutionType === 'RO' &&
+        entry?.product?.subProductType != 'CUSHION_PAD' &&
+        entry?.product?.erpProductCategory != 'S'
+      "
+    >
+      <div class="avl-s-container">
+        <h2>Available Solutions</h2>
+        <p>
+          Requested Order Quantity <br />
+          {{ entry?.quantity }}
+          {{ getUomDesc(entry?.checkUom) }}
+        </p>
+      </div>
+      <ngx-table
+        [configuration]="config"
+        [data]="availableSolutionData || []"
+        [columns]="columnsRoll"
+      >
+        <ng-template let-row let-i="index" let-isFirst="first">
+          <td>
+            <label class="ngx-form-checkbox">
+              <xchange-radio-button
+                classNames="size-22"
+                [name]="'name-' + row.solutionID"
+                [value]="row.solutionID"
+                [id]="row.solutionID"
+                [checked]="selectedSolution?.solutionID === row.solutionID"
+                (change)="openBalanceModal(row, balanceTemplate)"
+              ></xchange-radio-button>
+            </label>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.rollAssignment }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.rollAssignedInFeet }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.dyeLot }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.rollNumber }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.plant }} {{ item.plantDescription ? " - " : "" }}
+              {{ item.plantDescription ? item.plantDescription : "" }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{
+                item?.estimatedDeliveryDate?.trim().toLowerCase() ===
+                  "in process" || !item?.estimatedDeliveryDate
+                  ? "In Process"
+                  : dateConvert(item?.estimatedDeliveryDate)
+                  ? (dateConvert(item?.estimatedDeliveryDate)
+                    | date : "MM/dd/yyyy")
+                  : "In Process"
+              }}
+            </p>
+          </td>
+        </ng-template>
+      </ngx-table>
+    </ng-container>
+
+    <ng-container
+      *ngIf="
+        !!availableSolutionData?.length &&
+        entry?.product?.subProductType === 'CUSHION_PAD' &&
+        entry?.product?.erpProductCategory != 'S'
+      "
+    >
+      <div class="avl-s-container">
+        <h2>Available Solutions</h2>
+        <p>
+          Requested Order Quantity <br />
+          {{ entry?.quantity }}
+          {{ getUomDesc(entry?.checkUom) }}
+        </p>
+      </div>
+      <ngx-table
+        [configuration]="config"
+        [data]="availableSolutionData || []"
+        [columns]="columnsPad"
+      >
+        <ng-template let-row let-i="index" let-isFirst="first">
+          <td>
+            <label class="ngx-form-checkbox">
+              <xchange-radio-button
+                classNames="size-22"
+                [name]="'name-' + row.solutionID"
+                [value]="row.solutionID"
+                [id]="row.solutionID"
+                [checked]="selectedSolution?.solutionID === row.solutionID"
+                (change)="openBalanceModal(row, balanceTemplate)"
+              ></xchange-radio-button>
+            </label>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.rollAssignment }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.rollAssignedInSY }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.dyeLot }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.rollNumber }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.plant }} {{ item.plantDescription ? " - " : "" }}
+              {{ item.plantDescription ? item.plantDescription : "" }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{
+                item?.estimatedDeliveryDate?.trim().toLowerCase() ===
+                  "in process" || !item?.estimatedDeliveryDate
+                  ? "In Process"
+                  : dateConvert(item?.estimatedDeliveryDate)
+                  ? (dateConvert(item?.estimatedDeliveryDate)
+                    | date : "MM/dd/yyyy")
+                  : "In Process"
+              }}
+            </p>
+          </td>
+        </ng-template>
+      </ngx-table>
+    </ng-container>
+
+    <ng-container
+      *ngIf="
+        !!backorderSolutionData?.length &&
+        solutionType != 'RO' &&
+        entry?.product?.subProductType != 'CUSHION_PAD' &&
+        entry?.product?.erpProductCategory == 'B'
+      "
+    >
+      <div class="avl-s-container" class="mt-4">
+        <h2>BACKORDER OPTIONS</h2>
+        <p>
+          Requested Order Quantity <br />
+          {{ entry?.quantity }}
+          {{ getUomDesc(entry?.checkUom) }}
+        </p>
+      </div>
+      <ngx-table
+        [configuration]="config"
+        [data]="backorderSolutionData || []"
+        [columns]="bkcolumns"
+        [filtersTemplate]="toggleRollTemplate"
+      >
+        <ng-template let-row>
+          <td>
+            <label class="ngx-form-checkbox">
+              <xchange-radio-button
+                classNames="size-22"
+                [name]="'name-' + row.solutionID"
+                [value]="row.solutionID"
+                [id]="row.solutionID"
+                [checked]="selectedSolution?.solutionID === row.solutionID"
+                (change)="openBalanceModal(row, balanceTemplate)"
+              ></xchange-radio-button>
+            </label>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item?.type || "NA" }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{
+                !item.rollAssignedInFeet ||
+                item.rollAssignedInFeet.trim() === ""
+                  ? "NA"
+                  : item.rollAssignedInFeet
+              }}
+            </p>
+          </td>
+          <td class="dymica-length-column">
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{
+                toggleLengthColumn
+                  ? item.rollAssignedInSF
+                  : item.rollAssignedInSY
+              }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{
+                item?.plannedDeliveryDate?.trim().toLowerCase() ===
+                  "in process" || !item?.plannedDeliveryDate
+                  ? item?.estimatedDeliveryDate?.trim().toLowerCase() ===
+                      "in process" || !item?.estimatedDeliveryDate
+                    ? "In Process"
+                    : dateConvert(item?.estimatedDeliveryDate)
+                    ? (dateConvert(item?.estimatedDeliveryDate)
+                      | date : "MM/dd/yyyy")
+                    : "In Process"
+                  : dateConvert(item?.plannedDeliveryDate)
+                  ? (dateConvert(item?.plannedDeliveryDate)
+                    | date : "MM/dd/yyyy")
+                  : "In Process"
+              }}
+            </p>
+          </td>
+        </ng-template>
+      </ngx-table>
+    </ng-container>
+    <ng-container
+      *ngIf="
+        !!backorderSolutionData?.length &&
+        entry?.product?.erpProductCategory == 'S' &&
+        entry?.product?.subProductType != 'CARPET_TILE' &&  entry?.product?.subProductType !== 'CUSHION_PAD'
+      "
+    >
+      <div class="avl-s-container" class="mt-4">
+        <h2>BACKORDER OPTIONS</h2>
+        <p>
+          Requested Order Quantity <br />
+          {{ entry?.quantity }}
+          {{ getUomDesc(entry?.checkUom) }}
+        </p>
+      </div>
+      <ngx-table
+        [configuration]="config"
+        [data]="backorderSolutionData || []"
+        [columns]="bkcolumnsHS"
+      >
+        <ng-template let-row>
+          <td>
+            <label class="ngx-form-checkbox">
+              <xchange-radio-button
+                classNames="size-22"
+                [name]="'name-' + row.solutionID"
+                [value]="row.solutionID"
+                [id]="row.solutionID"
+                [checked]="selectedSolution?.solutionID === row.solutionID"
+                (change)="openBalanceModal(row, balanceTemplate)"
+              ></xchange-radio-button>
+            </label>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item?.type || "NA" }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.rollAssigned }} {{ item.assignedUom }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.rollAssignedInSF }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{
+                item?.plannedDeliveryDate?.trim().toLowerCase() ===
+                  "in process" || !item?.plannedDeliveryDate
+                  ? item?.estimatedDeliveryDate?.trim().toLowerCase() ===
+                      "in process" || !item?.estimatedDeliveryDate
+                    ? "In Process"
+                    : dateConvert(item?.estimatedDeliveryDate)
+                    ? (dateConvert(item?.estimatedDeliveryDate)
+                      | date : "MM/dd/yyyy")
+                    : "In Process"
+                  : dateConvert(item?.plannedDeliveryDate)
+                  ? (dateConvert(item?.plannedDeliveryDate)
+                    | date : "MM/dd/yyyy")
+                  : "In Process"
+              }}
+            </p>
+          </td>
+        </ng-template>
+      </ngx-table>
+    </ng-container>
+    <ng-container
+      *ngIf="
+        !!backorderSolutionData?.length &&
+        entry?.product?.erpProductCategory == 'S' &&
+        entry?.product?.subProductType === 'CARPET_TILE'
+      "
+    >
+      <div class="avl-s-container" class="mt-4">
+        <h2>BACKORDER OPTIONS</h2>
+        <p>
+          Requested Order Quantity <br />
+          {{ entry?.quantity }}
+          {{ getUomDesc(entry?.checkUom) }}
+        </p>
+      </div>
+      <ngx-table
+        [configuration]="config"
+        [data]="backorderSolutionData || []"
+        [columns]="bkcolumnsHSCarpetTile"
+      >
+        <ng-template let-row>
+          <td>
+            <label class="ngx-form-checkbox">
+              <xchange-radio-button
+                classNames="size-22"
+                [name]="'name-' + row.solutionID"
+                [value]="row.solutionID"
+                [id]="row.solutionID"
+                [checked]="selectedSolution?.solutionID === row.solutionID"
+                (change)="openBalanceModal(row, balanceTemplate)"
+              ></xchange-radio-button>
+            </label>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item?.type || "NA" }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.rollAssigned }} {{ item.assignedUom }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.rollAssignedInSY }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{
+                item?.plannedDeliveryDate?.trim().toLowerCase() ===
+                  "in process" || !item?.plannedDeliveryDate
+                  ? item?.estimatedDeliveryDate?.trim().toLowerCase() ===
+                      "in process" || !item?.estimatedDeliveryDate
+                    ? "In Process"
+                    : dateConvert(item?.estimatedDeliveryDate)
+                    ? (dateConvert(item?.estimatedDeliveryDate)
+                      | date : "MM/dd/yyyy")
+                    : "In Process"
+                  : dateConvert(item?.plannedDeliveryDate)
+                  ? (dateConvert(item?.plannedDeliveryDate)
+                    | date : "MM/dd/yyyy")
+                  : "In Process"
+              }}
+            </p>
+          </td>
+        </ng-template>
+      </ngx-table>
+    </ng-container>
+    <ng-container
+      *ngIf="
+        !!backorderSolutionData?.length &&
+        entry?.product?.subProductType === 'CUSHION_PAD'
+      "
+    >
+      <div class="avl-s-container" class="mt-4">
+        <h2>BACKORDER OPTIONS</h2>
+        <p>
+          Requested Order Quantity <br />
+          {{ entry?.quantity }}
+          {{ getUomDesc(entry?.checkUom) }}
+        </p>
+      </div>
+      <ngx-table
+        [configuration]="config"
+        [data]="backorderSolutionData || []"
+        [columns]="bkcolumnsPad"
+        [filtersTemplate]="toggleRollTemplate"
+      >
+        <ng-template let-row>
+          <td>
+            <label class="ngx-form-checkbox">
+              <xchange-radio-button
+                classNames="size-22"
+                [name]="'name-' + row.solutionID"
+                [value]="row.solutionID"
+                [id]="row.solutionID"
+                [checked]="selectedSolution?.solutionID === row.solutionID"
+                (change)="openBalanceModal(row, balanceTemplate)"
+              ></xchange-radio-button>
+            </label>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.requestedUOM }}
+            </p>
+          </td>
+          <td class="dymica-length-column">
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{
+                toggleLengthColumn
+                  ? item.rollAssignedInSF
+                  : item.rollAssignedInSY
+              }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{
+                item?.plannedDeliveryDate?.trim().toLowerCase() ===
+                  "in process" || !item?.plannedDeliveryDate
+                  ? item?.estimatedDeliveryDate?.trim().toLowerCase() ===
+                      "in process" || !item?.estimatedDeliveryDate
+                    ? "In Process"
+                    : dateConvert(item?.estimatedDeliveryDate)
+                    ? (dateConvert(item?.estimatedDeliveryDate)
+                      | date : "MM/dd/yyyy")
+                    : "In Process"
+                  : dateConvert(item?.plannedDeliveryDate)
+                  ? (dateConvert(item?.plannedDeliveryDate)
+                    | date : "MM/dd/yyyy")
+                  : "In Process"
+              }}
+            </p>
+          </td>
+        </ng-template>
+      </ngx-table>
+    </ng-container>
+    <ng-container
+      *ngIf="
+        !!backorderSolutionData?.length &&
+        solutionType === 'RO' &&
+        entry?.product?.subProductType != 'CUSHION_PAD' && entry?.product?.subProductType != 'HERO_RUBBER'
+      "
+    >
+      <div class="avl-s-container" class="mt-4">
+        <h2>BACKORDER OPTIONS</h2>
+        <p>
+          Requested Order Quantity <br />
+          {{ entry?.quantity }}
+          {{ getUomDesc(entry?.checkUom) }}
+        </p>
+      </div>
+      <ngx-table
+        [configuration]="config"
+        [data]="backorderSolutionData || []"
+        [columns]="bkcolumnsRoll"
+      >
+        <ng-template let-row>
+          <td>
+            <label class="ngx-form-checkbox">
+              <xchange-radio-button
+                classNames="size-22"
+                [name]="'name-' + row.solutionID"
+                [value]="row.solutionID"
+                [id]="row.solutionID"
+                [checked]="selectedSolution?.solutionID === row.solutionID"
+                (change)="openBalanceModal(row, balanceTemplate)"
+              ></xchange-radio-button>
+            </label>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.requestedUOM }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.requestedQty }}
+              {{ item.requestedUOM === "Roll" ? "RL" : "" }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.orderMin }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.orderMax }}
+            </p>
+          </td>
+
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{
+                item?.plannedDeliveryDate?.trim().toLowerCase() ===
+                  "in process" || !item?.plannedDeliveryDate
+                  ? item?.estimatedDeliveryDate?.trim().toLowerCase() ===
+                      "in process" || !item?.estimatedDeliveryDate
+                    ? "In Process"
+                    : dateConvert(item?.estimatedDeliveryDate)
+                    ? (dateConvert(item?.estimatedDeliveryDate)
+                      | date : "MM/dd/yyyy")
+                    : "In Process"
+                  : dateConvert(item?.plannedDeliveryDate)
+                  ? (dateConvert(item?.plannedDeliveryDate)
+                    | date : "MM/dd/yyyy")
+                  : "In Process"
+              }}
+            </p>
+          </td>
+        </ng-template>
+      </ngx-table>
+    </ng-container>
+
+    <div class="row">
+      <p>1 Date(s) subject to change.</p>
+    </div>
+
+    <div class="row mt-4 mb-4 full-btns p-50">
+      <div class="col-md-3">
+        <button
+          class="btn btn-outline-secondary mb-3"
+          (click)="backButtonClicked()"
+        >
+          Back
+        </button>
+      </div>
+      <div class="col-md-3" *ngIf="solutionsAreFromReserves">
+        <button class="btn btn-primary mb-3" (click)="skipReserves()">
+          Skip Reserves
+        </button>
+      </div>
+      <div class="col-md-3">
+        <button
+          *ngIf="!showContinue && !quantityChangeModal"
+          class="btn btn-primary mb-3"
+          (click)="addToQuote()"
+          [disabled]="!selectedSolution"
+        >
+          Add to Quote
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #balanceTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">You Save</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body text-center">
+    ${{ balance }}<br />
+    Ordering Discount Inventroy
+  </div>
+  <div class="mt-4 mb-4 pt-4 d-flex full-btns p-50 align-center change-date">
+    <div class="">
+      <button class="btn btn-outline-secondary me-2" (click)="modalRef?.hide()">
+        Close
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #toggleRollTemplate>
+  <th
+    *ngFor="
+      let item of !!this.availableSolutions?.length && this.solutionType != 'RO'
+        ? columns
+        : entry?.product?.subProductType === 'CUSHION_PAD'
+        ? bkcolumnsPad
+        : bkcolumns
+    "
+  >
+    <ng-container
+      *ngIf="item.key == 'rollAssignedInSY' || item.key == 'rollAssignedInSF'"
+    >
+      <div class="solution-table-column-switch d-flex align-item-center mx-2">
+        <p class="mx-2 my-0">SqYd</p>
+        <label class="switch">
+          <input
+            type="checkbox"
+            [(ngModel)]="toggleLengthColumn"
+            [checked]="toggleLengthColumn"
+            (change)="handleColumnToggle(toggleLengthColumn)"
+          />
+          <span class="slider round"></span>
+        </label>
+        <p class="mx-2 my-0">SqFt</p>
+      </div>
+    </ng-container>
+  </th>
+</ng-template>

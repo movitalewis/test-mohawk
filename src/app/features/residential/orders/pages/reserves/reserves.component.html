@@ -1,0 +1,167 @@
+<app-loader *ngIf="spinnerLoading"></app-loader>
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <h2 class="text-center mb-4">Reserved Items</h2>
+  <div class="mb-3">
+    <alert
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="showErrorMessage"
+    >
+      <div class="container">
+        {{ errorMessage }}
+      </div>
+    </alert>
+  </div>
+  <div class="mb-3">
+    <alert
+      type="success"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="showSuccessMessage"
+    >
+      <div class="container">
+        {{ successMessage }}
+      </div>
+    </alert>
+  </div>
+  <div class="_card-container">
+    <form #searchForm="ngForm">
+      <div class="row">
+        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 col-12">
+          <h4>Search By</h4>
+          <ng-select
+            placeholder="Reserve #"
+            class="mb-3"
+            (change)="searchString = ''"
+            [(ngModel)]="searchBy"
+            name="searchBy"
+          >
+            <ng-option [value]="item.key" *ngFor="let item of searchByData">{{
+              item.value
+            }}</ng-option>
+          </ng-select>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 col-12">
+          <h4>Search For</h4>
+          <input
+            type="text"
+            placeholder="Please Select Search By"
+            [(ngModel)]="searchString"
+            class="form-control mb-3"
+            [disabled]="searchBy == null"
+            name="searchFor"
+          />
+        </div>
+
+        <div class="col-xl-2 col-lg-2 col-md-4  col-sm-6 col-12 cta mb-3">
+          <button
+            class="btn btn-primary w-100 new-claim"
+            (click)="searchFlag = true; getReserveDetails(0)"
+            [disabled]="searchBy == null"
+          >
+            SEARCH
+          </button>
+        </div>
+        <div class="col-xl-2 col-lg-2 col-md-4  col-sm-6 col-12 cta mb-3">
+          <button
+            class="btn btn-secondary w-100 new-claim"
+            [disabled]="searchBy == null && !searchForm?.dirty"
+            (click)="
+              searchBy = null;
+              searchString = '';
+              searchFlag = false;
+              sortBy = 'desc';
+              sortDataBy = 'CODE';
+              searchForm.form.markAsPristine();
+              getReserveDetails(0)
+            "
+          >
+            CLEAR
+          </button>
+        </div>
+        <div></div>
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+          <h4>Sort</h4>
+          <ng-select
+            name="sortBy"
+            placeholder="Sort By"
+            class="mb-3"
+            [(ngModel)]="sortBy"
+            (change)="getReserveDetails(0)"
+          >
+            <ng-option [value]="item.key" *ngFor="let item of sortData">{{
+              item.value
+            }}</ng-option>
+          </ng-select>
+        </div>
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+          <h4>Sort By</h4>
+          <ng-select
+            placeholder="Sort By"
+            class="mb-3"
+            [(ngModel)]="sortDataBy"
+            (change)="getReserveDetails(0)"
+            name="sortDataBy"
+          >
+            <ng-option [value]="item.key" *ngFor="let item of sortByData">{{
+              item.value
+            }}</ng-option>
+          </ng-select>
+        </div>
+        <div
+          class="col-12 col-sm-4 col-md-5 col-lg-4 col-xl-3 d-grid align-items-end"
+        ></div>
+      </div>
+    </form>
+
+    <div class="col-12 mt-4">
+      <ngx-table
+        [configuration]="configuration"
+        [columns]="columnss"
+        [data]="
+          reservesData
+            | paginate
+              : {
+                  itemsPerPage: tableItemsSize,
+                  currentPage: pageIndex,
+                  id: 'resrvesPagination',
+                  totalItems: totalReservesLength
+                }
+        "
+        (event)="sortingByColumns($event)"
+      >
+        <ng-template let-row>
+          <td>
+            <a
+              (click)="navigateToReserveDetails(row)"
+              href="javascript:void(0)"
+            >
+              {{ row?.code }}
+            </a>
+          </td>
+          <td>
+            {{ row?.projectName }}
+          </td>
+          <td>
+            {{ row?.submittedBy }}
+          </td>
+        </ng-template>
+      </ngx-table>
+    </div>
+  </div>
+  <div class="row mb-4 mt-4">
+    <div class="d-flex justify-content-center" *ngIf="totalReservesLength > 10">
+      <pagination-controls
+        id="resrvesPagination"
+        [maxSize]="5"
+        [responsive]="true"
+        [nextLabel]="''"
+        [previousLabel]="''"
+        (pageChange)="onTableDataChange($event)"
+      >
+      </pagination-controls>
+    </div>
+  </div>
+</div>

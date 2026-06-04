@@ -1,0 +1,171 @@
+<div class="container">
+  <app-loader *ngIf="loadingFlag"></app-loader>
+  <div class="mt-2">
+    <alert
+      type="danger"
+      class="dashboard-page-alert "
+      [dismissible]="true"
+      *ngIf="errorMessage"
+    >
+      <div class="container">
+        {{ errorMessage }}
+      </div>
+    </alert>
+    </div>
+    <!-- Dashboard Header -->
+    <div class="row mt-3">
+      <div class="col-xs-12 col-md-12 col-sm-12 d-flex mohawk-icon-logo">
+        <img src="/assets/images/dashboard-icons/Xchange_wave_icon.png" alt="Mohawk Xchange">
+        <div class="hello-text">
+          <small>{{currentDate}}</small>
+          <h2>Hello, {{storageService.userInfo?.orgUnit?.name}}</h2>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Sections -->
+     <ng-container *ngIf="hasOrderPermissions">
+  <section class="dashboard-page-search-section">
+    <div class="">
+      <div class="row">
+        <div class="col-xl-6 col-md-12 mb-3" *ngIf="!storageService?.userInfo?.isMtMarketing">
+          <xchange-home-search
+            label="Start a new order"
+            [type]="'residentialNewOrder'"
+            (searchTextChanged)="onSearchTextEntered($event)"
+            [searchFlag] ="true"
+          ></xchange-home-search>
+        </div>
+        <div
+          class="col-xl-6 col-md-12" *ngIf="!storageService?.userInfo?.isMtMarketing"
+        >
+          <xchange-home-search
+            label="Search an Order, Invoice, or Claim"
+            [type]="selectedValue "
+            [searchBy]="true"
+            (searchTextChanged)="onSearchTextEntered($event)"
+            (selectedText)="onSelectChanged($event)"
+          ></xchange-home-search>
+        </div>
+      </div>
+    </div>
+  </section>
+</ng-container>
+<section class="dashboard-page-search-section" *ngIf="!hasOrderPermissions">
+  <div class="row">
+    <div class="col-12">
+      <div class="welcome-message-card">
+        <h3>Welcome to Mohawk Xchange</h3>
+        <p>Explore Mohawk Xchange resources and our brand websites below.</p>
+      </div>
+    </div>
+  </div>
+</section>
+    <div class="container">
+      <div class="row mt-3 flex-cards">
+        <!-- Mohawk Xchange -->
+        <div class="search-box-widget new-dash-list-container col-sm-12 col-xs-12 col-md-3"
+        *ngIf="dashboardData?.mohawkXchange?.length > 0 && checkDisplayItems(dashboardData?.mohawkXchange)">
+            <label class="ex-landpage-heading m-b-20">Mohawk Xchange</label>
+            <div class="new-dash-list">
+              <ng-container *ngFor="let item of dashboardData?.mohawkXchange">
+                <a  href="javascript:void(0)" *ngIf="item.isShow === true">
+                  <img [src]="'/assets/images/dashboard-icons/' + item.icon" alt="{{item.name}}">
+                  <p (click)="routerTo(item)">{{item.name}}</p>
+                  <span *ngIf="item.name === 'Claims Approval' && item.count !== undefined && item.count !== null" class="count-badge"> {{ item.count > 99 ? '99+' : item.count }}</span>
+                </a>
+              </ng-container>
+          </div>
+        </div>
+    
+        <!-- Mohawk Today -->
+        <div class="search-box-widget new-dash-list-container col-sm-12 col-xs-12 col-md-3 mt-3 mt-md-0"
+        *ngIf="hasOrderPermissions && dashboardData?.mohawkToday?.length > 0">
+            <label class="ex-landpage-heading m-b-20">Mohawk Today</label>
+            <div class="new-dash-list">
+              <ng-container *ngFor="let item of dashboardData?.mohawkToday">
+              <a href="javascript:void(0)">
+                <img [src]="'/assets/images/dashboard-icons/' + item.icon" alt="{{item.name}}">
+                <p (click)="routerTo(item)">{{item.name}}</p>
+              </a>
+            </ng-container>
+          </div>
+        </div>
+    
+        <!-- Edge -->
+        <div class="search-box-widget new-dash-list-container col-sm-12 col-xs-12 col-md-3 mt-3 mt-md-0"
+        *ngIf="hasOrderPermissions && dashboardData?.edge?.length > 0">
+            <label class="ex-landpage-heading m-b-20">Edge</label>
+            <div class="new-dash-list">
+              <ng-container *ngFor="let item of dashboardData?.edge">
+              <a href="javascript:void(0)" >
+                <img [src]="'/assets/images/dashboard-icons/' + item.icon" alt="{{item.name}}">
+                <p (click)="routerTo(item)">{{item.name}}</p>
+              </a>
+            </ng-container>
+          </div>
+        </div>
+    
+        <!-- Quick Links -->
+        <div class="search-box-widget new-dash-list-container col-sm-12 col-xs-12 col-md-3 mt-3 mt-md-0"
+        *ngIf="hasOrderPermissions && dashboardData?.quickLinks?.length > 0 && checkDisplayItems(dashboardData?.quickLinks)">
+            <label class="ex-landpage-heading m-b-20">Quick Links</label>
+            <div class="new-dash-list">
+              <ng-container *ngFor="let item of dashboardData?.quickLinks">
+              <a href="javascript:void(0)" *ngIf="item.isShow === true">
+                <img [src]="'/assets/images/dashboard-icons/' + item.icon" alt="{{item.name}}">
+                <p (click)="routerTo(item)">{{item.name}}</p>
+              </a>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="row mt-3 mb-3">
+        <div class="col-sm-12 col-md-12 col-sm-12">
+            <div class="search-box-widget">
+                <label class=" ex-landpage-heading mb-4">Brand Website Links</label>
+                <div class="carousel-div mb-4">
+                    <owl-carousel-o [options]="customOptions">
+                        <ng-template carouselSlide >
+                            <a href="https://www.mohawkflooring.com/" target="_blank">
+                                <img src="https://s7d4.scene7.com/is/image/MohawkResidential/mohawk_color_logo?fmt=png-alpha" alt="MohawkFlooring">
+                            </a>
+                        </ng-template>
+                        <ng-template carouselSlide>
+                            <a href="https://www.karastan.com/" target="_blank">
+                                <img src="https://s7d4.scene7.com/is/content/MohawkResidential/kar_black_logo?fmt=png-alpha" alt="Karastan">
+                            </a>
+                        </ng-template>
+                        <ng-template carouselSlide>
+                            <a href="https://www.pergoflooring.com/" target="_blank">
+                                <img src="https://s7d4.scene7.com/is/image/MohawkResidential/PERGO_Logo_new?fmt=png-alpha" alt="Pergo">
+                            </a>
+                        </ng-template>
+                        <ng-template carouselSlide>
+                            <a href="https://www.aladdincommercial.com/" target="_blank">
+                                <img src="https://s7d4.scene7.com/is/image/MohawkResidential/aladdin_color_logo?fmt=png-alpha" alt="AladdinCommercial">
+                            </a>
+                        </ng-template>
+                        <ng-template carouselSlide>
+                            <a href="https://www.flooringaccessories.com/" target="_blank">
+                                <img src="https://s7d4.scene7.com/is/image/MohawkResidential/performance%20accessories_color_logo?fmt=png-alpha" alt="FlooringAccessories">
+                            </a>
+                        </ng-template>
+                        <ng-template carouselSlide>
+                            <a href="https://www.mohawkbuild.com/" target="_blank">
+                                <img src="https://s7d4.scene7.com/is/image/MohawkResidential/mhk_bmf_color_logo?fmt=png-alpha" alt="MohawkBuild">
+                            </a>
+                        </ng-template>
+                        <ng-template carouselSlide>
+                            <a href="https://www.godfreyhirst.com/na" target="_blank">
+                                <img src="https://s7d4.scene7.com/is/image/MohawkResidential/godfrey_hirst_black_logo?fmt=png-alpha" alt="Godfrey Hirst">
+                            </a>
+                        </ng-template>
+                      </owl-carousel-o>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

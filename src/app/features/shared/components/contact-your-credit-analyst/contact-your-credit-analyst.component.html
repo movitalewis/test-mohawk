@@ -1,0 +1,36 @@
+<div class="container">
+    <div class="row mb-4 mt-4">
+        <div class="col-md-4">
+            <button type="button" class="btn btn-primary" (click)="openModal(template)">Contact your credit analyst modal</button>
+        </div>
+    </div>
+</div>
+
+<ng-template #template>
+<div class="modal-body">
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 p0 f-img">
+                <img src="/assets/images/credit-1.png">
+            </div>
+            <div class="col-md-6">
+                <div class="box-text">
+                    <h1>Contact Your Credit Analyst</h1>
+                    <p><b>Name:</b>  Rick JOHNSON</p>
+                    <p><b>Phone:</b>  123-456-7891</p>
+                    <p><b>Fax</b>  N/A</p>
+                    <p><b>Email:</b> rick_johnson@mohawkind.com</p>
+
+                    <div class="p-20 text-right">
+                        <button type="button" class="btn btn-outline-secondary" (click)="modalRef?.hide()">Close </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+</ng-template>

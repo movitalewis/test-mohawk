@@ -1,0 +1,675 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+@import "/src/styles/table";
+
+.cart_conatiner {
+  ::ng-deep {
+    .reinspect {
+      span {
+        font-size: 15px;
+      }
+    }
+    .tab-container {
+      .nav-tabs {
+        .nav-item.disabled:hover {
+          cursor: not-allowed;
+        }
+      }
+    }
+    .tab-content {
+      padding: 0px !important;
+    }
+    .mohawk-logo {
+      text-align: right;
+      img {
+        // width: 65%;
+        // @include breakpoint-range($min: sm) {
+        //   width: 35%;
+        // }
+        width: 150px;
+      }
+    }
+    .tooltip.show {
+      position: absolute;
+      margin: -30px 0px 0px 85px !important;
+      --mx-tooltip-bg: #ce0e2d;
+      font-size: 12px;
+    }
+    .bs-tooltip-top .tooltip-arrow::before {
+      left: 15px;
+      top: 38px;
+    }
+  }
+}
+
+.card {
+  @include breakpoint-range($max: xs) {
+    margin: 0 -1rem;
+  }
+}
+.shipping-container{
+  padding : 0px 10px
+}
+.card-header {
+  background-color: $color-dark-gray;
+  padding: 1%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: $color-white;
+  .text-white {
+    margin: 0;
+    text-decoration: none;
+  }
+  .text-white:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  @media (max-width: 990px) {
+    padding: 2%;
+  }
+  @media (max-width: 770px) {
+    padding: 3%;
+  }
+}
+.card-body {
+  .card-img-top {
+    &:hover {
+      cursor: pointer;
+    }
+    &.sample-prod-img:hover {
+      cursor: unset;
+    }
+  }
+  .image-overlay-container{
+    position: relative;
+  }
+  .ribbon-wrapper-preview {
+    width: 150px;
+    height: 150px;
+    overflow: hidden;
+    position: absolute;
+    top: 0px;
+    z-index: 1;
+    border-radius: 0px;
+    .ribbon {
+      color: $color-white;
+      text-align: center;
+      -webkit-transform: rotate(-45deg);
+      -moz-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+      -o-transform: rotate(-45deg);
+      position: relative;
+      padding: 2px 0;
+      top: 15px;
+      left: -40px;
+      width: 140px;
+      background-color: #ce0e2d;
+    }
+    .preferred-stock{
+      top: 11px;
+      left: -38px;
+      font-size: 11px;
+    }
+  }
+}
+.creategroup {
+  display: flex;
+  align-items: baseline;
+}
+.mohawk-logo {
+  text-align: right;
+}
+.cart {
+  .imgs {
+    //height: 9.125rem;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+}
+
+.btn-align {
+  margin-left: 15px;
+  margin-right: 15px;
+  @include breakpoint-range($max: xs) {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+}
+.modal-header {
+  border: none;
+
+  h4 {
+    font-size: 20px;
+  }
+}
+.modal-body {
+  padding: 0 30px;
+
+  @include breakpoint-range($max: sm) {
+    padding: 0 20px;
+  }
+}
+.checkout-card {
+  border-color: $color-medium-gray;
+  .file-upload {
+    button {
+      background-color: $color-red;
+      margin-bottom: 10px;
+      &:hover {
+        color: $color-white;
+      }
+    }
+  }
+  .remove-upload {
+    button {
+      background-color: $color-white;
+      margin-bottom: 10px;
+    }
+    margin: 10px 0;
+
+    ul {
+      list-style-type: disc;
+
+      padding-left: 15px;
+
+      li {
+        span {
+          text-decoration: underline;
+        }
+        .po-list {
+          text-decoration: none;
+        }
+
+        .btn-close {
+          width: 6px;
+
+          height: 6px;
+
+          position: relative;
+
+          top: -5px;
+
+          left: 10px;
+        }
+      }
+    }
+  }
+  button {
+    text-decoration: none;
+    //  text-transform: capitalize;
+    // background-color: $color-white;
+    @include breakpoint-range($max: xs) {
+      width: 100%;
+      margin-top: 15px;
+    }
+  }
+  .down-icon {
+    transform: rotate(-270deg);
+    display: inline-flex;
+    font-size: 0.625rem;
+    margin-left: 0.313rem;
+  }
+  .up-icon {
+    transform: rotate(-90deg);
+    display: inline-flex;
+    font-size: 0.75rem;
+    margin-left: 0.625rem;
+  }
+}
+// .checkout-card-header {
+//   background-color: $color-medium-gray;
+//   border-color: $color-medium-gray;
+// }
+.show-hide-btn {
+  height: 35px;
+}
+.hide-w-100 {
+  width: auto;
+  @include breakpoint-range($max: xs) {
+    width: 100%;
+  }
+}
+.line {
+  border-top: 1px solid $color-gray;
+}
+.text-f-line h1 {
+  @include breakpoint-range($max: xs) {
+    font-size: 25px;
+  }
+}
+.help-info {
+  color: $color-red;
+}
+.radio-label {
+  padding-left: 10px;
+  margin-top: -1px;
+}
+.link {
+  color: $color-red;
+  cursor: pointer;
+}
+.align-center {
+  justify-content: center;
+  text-align: center;
+}
+.p-50 {
+  padding: 0 50px;
+  @include breakpoint-range($max: sm) {
+    padding: 0;
+  }
+}
+.change-date {
+  display: flex;
+  gap: 20px;
+}
+.down-icon {
+  transform: rotate(-90deg);
+  transition: transform 0.3s ease-in-out;
+  display: inline-flex;
+  font-size: 0.75rem;
+  margin-left: 14px;
+}
+.up-icon {
+  transform: rotate(-270deg);
+  transition: transform 0.3s ease-in-out;
+  display: inline-flex;
+  font-size: 14px;
+  margin-left: 0.313rem;
+}
+.table-view-data {
+  ::ng-deep {
+    .margin-bottom {
+      margin-bottom: 0px !important;
+      height: 39px;
+    }
+  }
+}
+.text-bold {
+  font-weight: bolder;
+}
+// .change-pricing {
+//   .buttons {
+//     gap: 20px;
+//   }
+// }
+.buttons {
+  gap: 20px;
+}
+.text-red {
+  color: #ce0e2d;
+}
+.red-question-mark {
+  padding-left: 20px;
+  cursor: pointer;
+  position: relative;
+}
+
+::ng-deep .mdc-switch__icons {
+  display: none;
+}
+
+.cart-action-cta {
+  max-width: 240px;
+}
+
+.icon-sec {
+  color: $color-red;
+  display: flex;
+  cursor: pointer;
+  div {
+    margin-right: 8px;
+  }
+}
+
+ng-select:disabled,
+ng-select[disabled] {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.btn {
+  font-size: clamp(12px, 1vw, 0.03rem) !important;
+}
+
+@media (max-width: 770px) {
+  .mobile-view {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-view {
+    .below-margin {
+      margin-bottom: 0.5rem !important;
+    }
+  }
+  .text-end {
+    text-align: left !important;
+  }
+  .cart-action-cta {
+    margin-bottom: 6px !important;
+    margin-top: 0.5rem !important;
+  }
+
+  .add-remove-btns {
+    margin-left: 15px;
+  }
+  .mobile-view.details {
+    margin-top: 20px;
+  }
+  .add-remove-btns {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+.endUser-suggestions {
+  position: relative;
+  input {
+    padding-right: 39px;
+  }
+  ::ng-deep {
+    typeahead-container {
+      width: 100%;
+      .dropdown-item {
+        &:active {
+          // text-decoration: underline !important;
+          color: inherit !important;
+          background-color: #e9ecef !important;
+        }
+        &.active {
+          // text-decoration: underline !important;
+          color: inherit !important;
+          background-color: #e9ecef !important;
+        }
+      }
+    }
+    .mx-clear-input-brn {
+      background: transparent;
+    }
+  }
+  button {
+    position: absolute;
+    //  background: transparent;
+    border: none;
+    top: 8px;
+    right: 6px;
+    img {
+      height: 8px;
+    }
+  }
+}
+
+.po-attachments {
+  list-style-type: disc;
+  padding-left: 15px;
+  li {
+    span {
+      text-decoration: underline;
+    }
+  }
+}
+
+::ng-deep {
+  app-confirmation-dialog {
+    .ul-upload {
+      list-style: disc;
+      margin: 0 25px;
+      text-align: left;
+    }
+  }
+}
+.background-yellow1 {
+  background-color: #fffdeb;
+  border: 1px solid #d9c400;
+  border-radius: 6px;
+  padding: 15px;
+  flex-grow: 1; 
+  align-self: flex-start
+  // @include breakpoint-range($max : md){
+  //   margin-right: 2px;
+  // margin-left: auto;
+  // width: 609px;
+  // }
+  // @include breakpoint-range($max : lg){
+  //   margin-right: 2px;
+  // margin-left: auto;
+  // width: 609px;
+  // }
+}
+.background-yellow {
+  background-color: #fffdeb;
+  border: 1px solid #d9c400;
+  border-radius: 6px;
+  padding: 15px;
+  flex-grow: 1; 
+  align-self: flex-start
+}
+.limited-height {
+  max-height: 212px;
+}
+.order-body-sec {
+  padding: 15px;
+  margin-bottom: 15px;
+  // border: 1px solid #e8e8e8;
+  border-radius: 6px;
+
+  // @include breakpoint-range($max: md) {
+  //   padding: 0rem;
+  // }
+}
+.orderID{
+  h5{
+    display: flex;
+  }
+  .order-number {
+    font-weight: bold;
+  }
+}
+.right-positioned {
+  @include breakpoint-range($min: xl) {
+    margin-right: 15px;
+    margin-left: auto;
+    width: 491px;
+  }
+}
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+}
+.shipbutton {
+  background-color: $color-black;
+}
+.col-xs-12.freight-charge {
+  @include breakpoint-range($min: xl) {
+    display: flex;
+    gap: 25px;
+  }
+  ::ng-deep xchange-custom-checkbox {
+    .xchange-checkbox {
+      .xchange-checkbox-label {
+        .checkbox {
+          margin-right: 8px;
+        }
+        span {
+          font-size: 15px;
+        }
+      }
+    }
+    @include breakpoint-range($max: xs) {
+      display: inline-block;
+      width: 50%;
+    }
+  }
+}
+sup,
+sub {
+  font-style: normal;
+  padding-left: 5px;
+}
+.text-f-s {
+  font-size: 0.75rem;
+}
+.change-shipping-options {
+  width: 200px !important;
+}
+.text-center-change-shipping-options {
+  display: flex;
+  justify-content: center;
+}
+.toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.switch {
+  cursor: pointer;
+}
+::ng-deep app-alerts.dashboard-page-alert-cart {
+  alert {
+    .alert.alert-danger.alert-dismissible {
+      margin: auto;
+    }
+  }
+}
+.print-element {
+  display: none;
+}
+// .camel-case {
+//   text-transform: lowercase;
+// }
+.invalid-info {
+  color: $color-red;
+  margin-bottom: 10px;
+}
+
+span.space-normalizer.text-f-s {
+  font-size: unset;
+  display: unset;
+  color: unset;
+  margin-bottom: unset;
+}
+
+.specifiedDye {
+  font-size: 15px;
+}
+
+.sameDye {
+  margin-top: -7px;
+}
+
+
+::ng-deep{
+  .ng-select {
+      .ng-invalid.ng-untouched{
+          .ng-select-container {
+              .ng-value-container {
+                  .ng-placeholder {
+                      color: $color-red;
+                  }
+              }
+          }
+      }
+      &.invalid {
+        color: $color-red;
+        border: 1px solid $color-red;
+        border-radius:6px;
+      }
+      &.error,
+      &:invalid,
+      &.ng-invalid,
+      &.ng-untouched.ng-invalid,
+      &.ng-invalid:focus {
+          color: $color-red;
+          border: 1px solid $color-red;
+          border-radius:6px;
+      }
+      
+  }
+
+  .form-control {
+    &.error,
+    &:invalid,
+    &.ng-invalid,
+    &.ng-untouched.ng-invalid,
+    &.ng-invalid:focus {
+        color: $color-red;
+        border: 1px solid $color-red;
+    }
+  }
+}
+
+.request-price-btn{
+  height: 32px;
+  min-width: 72px;
+}
+
+::ng-deep{
+  .shipvia-change{
+    .shipvia.ng-select-single .ng-select-container .ng-value-container .ng-input > input{
+      text-transform: uppercase;
+    }
+    .shipvia div, .shipvia input, .shipvia span{
+      text-transform: uppercase;
+      .span-preferred{
+        text-transform: capitalize;
+      }
+    }
+  }
+}
+.not-allowed{
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+
+.cams-order-header{
+  padding: 12px;
+  background-color: #f8f8f8;
+  border-radius: 12px;
+  align-items: center;
+  display: flex;
+  .change-shipping-options{
+    width: 80px !important;
+  }
+}
+.yellow-border{
+  border: #D9C400 solid 1px;
+  border-radius: 12px;
+}
+.cams-order-border{
+  margin: 0px;
+  height: 2px;
+}
+.light-blue-bg{
+  background-color: #def1ff;
+  height: auto;
+  border: #A8CCE6 solid 1px;
+  border-radius: 8px;
+  margin-top: 8px;
+  padding: 15px;
+  flex-grow: 1; 
+  align-self: flex-start
+}
+
+.radio-invalid::before{
+  content: "";
+  width: 14px;
+  height: 14px;
+  position: absolute;
+  border-radius: 10px;
+  background-color: transparent;
+  border: 2px solid $color-red;
+}
+.charge{
+  ::ng-deep xchange-custom-checkbox {
+    .xchange-checkbox {
+      .xchange-checkbox-label {
+        span {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}

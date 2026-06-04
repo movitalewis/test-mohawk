@@ -1,0 +1,704 @@
+<app-loader *ngIf="spinnerLoading"></app-loader>
+<div class="container custom-order-tabs">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <!-- <div class="mb-3" *ngIf="alertData?.showAlert">
+    <app-alerts
+    [alertData]="alertData"
+    *ngIf="alertData?.showAlert"
+    [alertType]="alertData.type"
+  ></app-alerts> 
+  </div> -->
+  <h2 class="text-center mb-4" id="orderHistory">ORDER HISTORY</h2>
+  <tabset responsiveTabs [justified]="true" #staticTabs>
+    <tab
+      class="tab-content"
+      (selectTab)="selectTab(0)"
+      *ngIf="
+        storageService.userInfo?.userPermissions.includes(
+          'Existing Order Inquiry'
+        )
+      "
+      [active]="tabId == 0"
+    >
+      <ng-template tabHeading>Current Orders</ng-template>
+      <div class="_card-container mt-3">
+        <div class="row mb-4">
+          <ng-container 
+            *ngIf="salesPersonInHouseFlag"
+          >
+            <div
+              class="field-container col-12 col-md-4 col-lg-4 col-xl-4"
+              *ngFor="let account of salesHierarchyList"
+            >
+              <h4>
+                {{
+                  account?.key == "TM"
+                    ? "All Territory Manager"
+                    : account?.key == "DM"
+                    ? "All District Manager"
+                    : account?.key == "SVP"
+                    ? "All SVP Manager"
+                    : "All RVP Manager"
+                }}
+              </h4>
+              <ng-select
+                (change)="getSalesFilterData($event , 'currentOrders', account?.key)"
+                [(ngModel)]="selectedFilter[account?.key]"
+                placeholder="Select Option"
+                [clearable]="false"
+              >
+                <ng-option value="All" *ngIf="account.value?.salesHierarchyUserAssignmentList?.length > 1"> {{account?.key == 'TM'
+                  ? "Select All TM's"
+                  : account?.key == 'DM'
+                  ? "Select All DM's"
+                  : account?.key == 'SVP'
+                  ? "Select All SVP's"
+                  : "Select All RVP's"}}</ng-option>
+                <ng-option
+                  [value]="salesHierchy?.salesHierarchyCode"
+                  *ngFor="
+                    let salesHierchy of account.value
+                      .salesHierarchyUserAssignmentList
+                  "
+                  >{{ salesHierchy?.salesManDescription }} -
+                  {{ salesHierchy?.salesHierarchyCode }}</ng-option
+                >
+              </ng-select>
+            </div>
+          </ng-container>
+          <!-- <div class="row my-4"> -->
+          <div class="field-container col-12 col-md-4 col-lg-4 col-xl-3">
+            <h4>Status</h4>
+            <ng-select
+            [disabled]="true"
+              (change)="onStatusChange($event, 'currentOrders')"
+              placeholder="All Orders"
+              [items]="orderStatusList"
+              bindLabel="name"
+              bindValue="id"
+              [(ngModel)]="payload.status"
+              class="mb-3"
+            >
+            </ng-select>
+          </div>
+          <div class="field-container col-12 col-md-4 col-lg-4 col-xl-3">
+            <h4>Product Type</h4>
+            <ng-select
+              (change)="onProductTypeChange($event, 'currentOrders')"
+              placeholder="All Products Type"
+              [items]="productTypeList"
+              bindLabel="name"
+              bindValue="id"
+              [(ngModel)]="payload.productType"
+              class="mb-3"
+            >
+            </ng-select>
+          </div>
+          <div class="field-container col-12 col-md-4 col-lg-4 col-xl-3">
+            <h4>Product Sub Type</h4>
+            <ng-select
+              (change)="onSubProductTypeChange($event, 'currentOrders')"
+              placeholder="All Product Sub Type"
+              [items]="subProductTypeList"
+              bindLabel="name"
+              bindValue="id"
+              [(ngModel)]="payload.subProductType"
+              [disabled]="!payload.productType"
+              class="mb-3"
+            >
+            </ng-select>
+          </div>
+          <div
+            class="row-container col-12 col-md-4 col-lg-4 dateRange col-xl-3"
+          >
+            <h4>Date Range</h4>
+            <div class="drp">
+              <input
+                type="text"
+                (ngModelChange)="dateRangeCreated($event, 'currentOrders')"
+                placeholder="Date Range Picker"
+                [bsConfig]="{
+                  dateInputFormat: 'MM/DD/YYYY',
+                  showWeekNumbers: false,
+                  containerClass: 'theme-red',
+                  showClearButton: true
+                }"
+                class="form-control"
+                bsDaterangepicker
+                [(ngModel)]="dateValue"
+                [maxDate]="maxDate"
+              />
+              <span
+                class="ng-clear-wrapper span-clear"
+                title="Clear "
+                *ngIf="dateValue"
+                (click)="clearDate('currentOrders')"
+                ><span aria-hidden="true" class="ng-clear">×</span></span
+              >
+            </div>
+          </div>
+          <div class="container">
+            <div class="row">
+              <div class="field-container col-12 col-md-4 col-lg-4 col-xl-3">
+                <h4>Search By</h4>
+                <ng-select
+                  placeholder="Order #"
+                  (change)="onSearchBy($event, 'currentOrders')"
+                  [(ngModel)]="searchBy"
+                >
+                  <ng-option
+                    *ngFor="let search of searchByList"
+                    value="{{ search.id }}"
+                    >{{ search.name }}</ng-option
+                  >
+                </ng-select>
+              </div>
+              <div
+                class="field-container col-12 col-md-4 col-lg-4 col-xl-3 d-grid align-items-end"
+              >
+                <span *ngIf="orderSearchHelperMsg" class="color-red">{{ orderSearchHelperMsg }}</span>
+                <xchange-search-control
+                  [id]="'currentOdersIp'"
+                  [disabled]="searchBy ? false : true"
+                  placeholder="Type Here"
+                  class="{{ searchOrderError && orderSearchHelperMsg ? 'order-search-red-border' : '' }}"
+                  [isGlobalSearchEnabled]="false"
+                  (sendValue)="onSearch($event, 'currentOrders')"
+                  (input)="searchTextValidation($event)"
+                  [searchKey]="searchText"
+                ></xchange-search-control>
+                <!-- [searchByIcon]="true" -->
+              </div>
+              <div class="field-container col-12 col-md-4 col-lg-4 col-xl-3 d-grid align-items-center search-bar">
+                <xchange-custom-checkbox
+                    type="checkbox"
+                    [id]="'xyz1'"
+                    [checked]="payload.showAllSoldTo"
+                    (model)="showSoldToOders($event, 'currentOrders')"
+                    label="View Sold To Orders Only"
+                  >
+                </xchange-custom-checkbox>
+              </div>
+            </div>
+          </div>
+          <!-- </div> -->
+        </div>
+        <div class="col-12 mt-4">
+          <!-- <alert type="warning" class="dashboard-page-alert" [dismissible]="false">
+            <div class="container">
+              For the most accurate delivery dates related to your order, please click into the order to retrieve details.
+            </div>
+          </alert> -->
+          <div class="overflow-auto">
+            <ngx-table
+              [configuration]="configuration"
+              [data]="
+                data
+                  | paginate
+                    : {
+                        id: 'pg1',
+                        itemsPerPage: tableItemsSize,
+                        currentPage: pageIndex,
+                        totalItems: totalOrdersLength
+                      }
+              "
+              [columns]="columns"
+              [noResultsTemplate]="noResultsTemplate"
+              (event)="sortingByColumns($event, 'currentOrders')"
+            >
+              <ng-template let-row>
+                <td *ngIf="storageService?.userInfo?.isSalesPerson == true || storageService?.userInfo?.isSalesOps == true">
+                  {{ row.camsAccountNumber }}
+                </td>
+                <td *ngIf="storageService?.userInfo?.isSalesPerson == true || storageService?.userInfo?.isSalesOps == true">
+                  {{ row.companyCode }}
+                </td>
+                <td *ngIf="storageService?.userInfo?.isSalesPerson == true || storageService?.userInfo?.isSalesOps == true">
+                  {{ row.companyName }}
+                </td>
+                <td>
+                  <a
+                    (click)="navigateToHistoryDetails(row.orderCode, pageIndex)"
+                    href="javascript:void(0)"
+                  >
+                    {{ row.orderCode }}</a
+                  >
+                </td>
+                <td>
+                  {{ row.oldOrderCode }}
+                </td>
+                <td>
+                  {{ dateConvert(row.placed) | date : "MM/dd/yyyy" }}
+                </td>
+                <td>
+                  {{ row.poNumber }}
+                </td>
+                <td>
+                  {{ formatDateMessage(row.requestedDeliveryDate) || "NA" }}
+                </td>
+                <!-- <td>
+                  {{ row.eddMessage }}
+                </td> -->
+                <!-- <td>
+                  See Line Detail
+              
+                </td> -->
+                <td>
+                  {{ row.accountExecutive }}
+                </td>
+                <td>
+                  <ng-container *ngIf="row.sideMark?.length > 20; else noReadMore">
+                    <span *ngIf="!row.showFullSideMark">
+                      {{ row.sideMark | slice: 0:20 }}...
+                      <br>
+                      <a href="javascript:void(0)" (click)="toggleSideMark(row)">Read More</a>
+                    </span>
+                    <span *ngIf="row.showFullSideMark">
+                      {{ row.sideMark }}
+                      <br>
+                      <a href="javascript:void(0)" (click)="toggleSideMark(row)">Read Less</a>
+                    </span>
+                  </ng-container>
+                  <ng-template #noReadMore>
+                    {{ row.sideMark }}
+                  </ng-template>
+                </td>
+                <td>
+                  {{ row.quoteId || "N/A" }}
+                </td>
+              </ng-template>
+            </ngx-table>
+          </div>
+          <ng-template #noResultsTemplate>
+            <td [attr.colspan]="columns.length" class="no-results">
+              Order Not Found
+            </td>
+          </ng-template>
+        </div>
+      </div>
+      <div class="row mb-4 mt-4">
+        <div class="d-flex justify-content-center" *ngIf="data.length > 0">
+          <pagination-controls
+            id="pg1"
+            [maxSize]="maxSize"
+            [responsive]="true"
+            [nextLabel]="''"
+            [previousLabel]="''"
+            (pageChange)="onTableDataChange($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div class="col-md-12">
+          <p class="text-center mb-4">
+            {{ totalOrdersLength > 0 ? startValue : 0 }} -
+            {{ lastValue > totalOrdersLength ? totalOrdersLength : lastValue }}
+            OF {{ totalOrdersLength > 0 ? totalOrdersLength : 0 }} ORDERS
+          </p>
+        </div>
+      </div>
+    </tab>
+    <tab
+      (selectTab)="selectTab(1)"
+      [active]="tabId == 1"
+      *ngIf="
+        storageService.userInfo?.userPermissions.includes(
+          'Existing Order Inquiry'
+        ) && commercialSiteSelectorService?.selectedSite !== 'I' && commercialSiteSelectorService?.selectedSite !== 'H'
+      "
+    >
+      <ng-template tabHeading
+        >Today's Shipments
+        <span
+          tooltip="Today’s Shipment displays Orders out for delivery today by Mohawk Truck."
+          class="mohawak-icon help-icon"
+        ></span>
+      </ng-template>
+      <div class="_card-container mt-3">
+        <div class="col-12 col-md-12 col-lg-12 col-xl-12 mb-3 align-items-center">
+          <xchange-custom-checkbox
+              type="checkbox"
+              [id]="'xyz1'"
+              [checked]="payloadShip.showAllSoldTo"
+              (model)="showSoldToOders($event, 'todayShipments')"
+              label="View Sold To Orders Only"
+            >
+          </xchange-custom-checkbox>
+        </div>
+        <div class="col-12 mt-4">
+          <ngx-table
+            [configuration]="configuration"
+            [data]="
+              shipmentsOrdersData
+                | paginate
+                  : {
+                      id: 'pg2',
+                      itemsPerPage: tableItemsSize2,
+                      currentPage: pageIndex2,
+                      totalItems: totalShipmentsLength
+                    }
+            "
+            [columns]="scolumns"
+            [noResultsTemplate]="noResultsShipTemplate"
+            (event)="sortingByColumns($event, 'todayShipments')"
+          >
+            <ng-template let-row>
+              <td *ngIf="storageService?.userInfo?.isSalesPerson == true || storageService?.userInfo?.isSalesOps == true">
+                {{ row.companyCode }}
+              </td>
+              <td *ngIf="storageService?.userInfo?.isSalesPerson == true || storageService?.userInfo?.isSalesOps == true">
+                {{ row.companyName }}
+              </td>
+              <td>
+                <a
+                  href="javascript:void(0)"
+                  (click)="navigateToHistoryDetails(row.orderCode, pageIndex2)"
+                >
+                  {{ row.orderCode }}</a
+                >
+              </td>
+              <td>
+                {{ dateConvert(row.placed) | date : "MM/dd/yyyy" }}
+              </td>
+              <td>
+                {{ row.poNumber }}
+              </td>
+              <!-- <td>
+                {{ formatDateMessage(row.requestedDeliveryDate) || "NA" }}
+              </td> -->
+              <td>
+                {{ row.submittedFor }}
+              </td>
+              <td>
+                {{ row.sideMark }}
+              </td>
+              <td>
+                {{ row.status }}
+                <a
+                  href="javascript:void(0)"
+                  (click)="
+                    trackingRequestModal(trackingTemplate, row.trackingURL)
+                  "
+                    *ngIf="row?.trackingURL && row?.trackingURL != 'See Order Details'"
+                >
+                  <img
+                    src="/assets/icons/truck-icon.svg"
+                    alt="Truck"
+                    height="30"
+                    width="30"
+                  />
+                </a>
+              </td>
+            </ng-template>
+          </ngx-table>
+          <ng-template #noResultsShipTemplate>
+            <td [attr.colspan]="scolumns.length" class="no-results">
+              Order Not Found
+            </td>
+          </ng-template>
+        </div>
+      </div>
+      <div class="row mb-4 mt-4">
+        <div
+          class="d-flex justify-content-center"
+          *ngIf="shipmentsOrdersData.length > 0"
+        >
+          <pagination-controls
+            id="pg2"
+            [maxSize]="7"
+            [responsive]="true"
+            [nextLabel]="''"
+            [previousLabel]="''"
+            (pageChange)="onTableDataChange2($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div class="col-md-12">
+          <p class="text-center mb-4">
+            {{ totalShipmentsLength > 0 ? startValue2 : 0 }} -
+            {{
+              this.lastValue2 > totalShipmentsLength
+                ? totalShipmentsLength
+                : this.lastValue2
+            }}
+            OF {{ totalShipmentsLength > 0 ? totalShipmentsLength : 0 }} ORDERS
+          </p>
+        </div>
+      </div>
+    </tab>
+    <tab
+      (selectTab)="selectTab(2)"
+      *ngIf="
+        storageService.userInfo?.userPermissions.includes(
+          'Existing Sample Order Inquiry'
+        ) && commercialSiteSelectorService?.selectedSite !== 'I' && commercialSiteSelectorService?.selectedSite !== 'H'
+      "
+      [active]="tabId == 2"
+    >
+      <ng-template tabHeading>Samples</ng-template>
+      <div class="_card-container mt-3">
+        <div class="row">
+          <ng-container 
+            *ngIf="salesPersonInHouseFlag"
+          >
+            <div
+              class="field-container col-12 col-md-4 col-lg-4 col-xl-3"
+              *ngFor="let account of salesHierarchyList"
+            >
+              <h4>
+                {{
+                  account?.key == "TM"
+                    ? "All Territory Manager"
+                    : account?.key == "DM"
+                    ? "All District Manager"
+                    : account?.key == "SVP"
+                    ? "All SVP Manager"
+                    : "All RVP Manager"
+                }}
+              </h4>
+              <div class="col-12">
+                <ng-select
+                  (change)="getSalesFilterData($event , 'sampleOrders', account?.key)"
+                  [(ngModel)]="selectedFilter[account?.key]"
+                  placeholder="Select Option"
+                  [clearable]="false"
+                >
+                  <ng-option value="All"  *ngIf="account.value?.salesHierarchyUserAssignmentList?.length > 1"> {{account?.key == 'TM'
+                    ? "Select All TM's"
+                    : account?.key == 'DM'
+                    ? "Select All DM's"
+                    : account?.key == 'SVP'
+                    ? "Select All SVP's"
+                    : "Select All RVP's"}}</ng-option>
+                  <ng-option
+                    [value]="salesHierchy?.salesHierarchyCode"
+                    *ngFor="
+                      let salesHierchy of account.value
+                        .salesHierarchyUserAssignmentList
+                    "
+                    >{{ salesHierchy?.salesManDescription }} -
+                    {{ salesHierchy?.salesHierarchyCode }}</ng-option
+                  >
+                </ng-select>
+              </div>
+            </div>
+          </ng-container>
+          <!-- <div class="row mb-4 mt-4"> -->
+          <div class="field-container col-12 col-md-4 col-lg-4 col-xl-3">
+            <h4>Status</h4>
+            <ng-select
+            [disabled]="true"
+              (change)="onStatusChange($event, 'sampleOrders')"
+              placeholder="All Orders"
+              [items]="orderStatusList"
+              bindLabel="name"
+              bindValue="id"
+              [(ngModel)]="samplePayload.status"
+              class="mb-3"
+            >
+            </ng-select>
+          </div>
+          <!-- <div class="col-md-4 col-lg-2">
+              <h4>Product Type</h4>
+              <ng-select
+                (change)="onProductTypeChange($event, 'sampleOrders')"
+                placeholder="All Products Type"
+                [items]="sampleProductTypeList"
+                bindLabel="name"
+                bindValue="id"
+                [(ngModel)]="samplePayload.productType"
+              >
+              </ng-select>
+            </div> -->
+          <div class="col-12 col-md-4 col-lg-4 dateRange col-xl-3">
+            <h4>Date Range</h4>
+            <div class="drp">
+              <input
+                type="text"
+                (ngModelChange)="dateRangeCreated($event, 'sampleOrders')"
+                placeholder="Date Range Picker"
+                [bsConfig]="{
+                  dateInputFormat: 'MM/DD/YYYY',
+                  showWeekNumbers: false,
+                  containerClass: 'theme-red',
+                  showClearButton: true
+                }"
+                class="form-control"
+                bsDaterangepicker
+                [(ngModel)]="sampleDateValue"
+                [maxDate]="maxDate"
+              />
+              <span
+                class="ng-clear-wrapper span-clear"
+                title="Clear"
+                *ngIf="sampleDateValue"
+                (click)="clearDate('sampleOrders')"
+                ><span aria-hidden="true" class="ng-clear">×</span></span
+              >
+            </div>
+          </div>
+          <div class="container">
+            <div class="row">
+              <div
+                class="field-container col-12 col-md-4 col-lg-4 col-xl-3"
+              >
+                <h4>Search By</h4>
+                <ng-select
+                  placeholder="Order #"
+                  (change)="onSearchBy($event, 'sampleOrders')"
+                  [(ngModel)]="sampleSearchBy"
+                  (clear)="clearSearchBy('sampleOrders')"
+                >
+                  <ng-option
+                    *ngFor="let search of sampleSearchByList"
+                    value="{{ search.id }}"
+                    >{{ search.name }}</ng-option
+                  >
+                </ng-select>
+              </div>
+              <div
+                class="field-container col-12 col-md-4 col-lg-4 col-xl-3 d-grid align-items-end"
+              >
+                <span *ngIf="orderSearchHelperMsg" class="color-red">{{ orderSearchHelperMsg }}</span>
+                <xchange-search-control
+                  [id]="'sampleOdersIp'"
+                  [disabled]="sampleSearchBy ? false : true"
+                  placeholder="Type Here"
+                  class="{{ searchOrderError && orderSearchHelperMsg ? 'order-search-red-border' : '' }}"
+                  [isGlobalSearchEnabled]="false"
+                  (sendValue)="onSearch($event, 'sampleOrders')"
+                  (input)="searchTextValidation($event)"
+                  [searchKey]="sampleSearchText"
+                ></xchange-search-control>
+                <!-- [searchByIcon]="true" -->
+              </div>
+              <div class="d-grid align-items-end search-bar mb-3 field-container col-12 col-md-4 col-lg-4 col-xl-3">
+                <xchange-custom-checkbox
+                    type="checkbox"
+                    [id]="'xyz1'"
+                    [checked]="samplePayload.showAllSoldTo"
+                    (model)="showSoldToOders($event, 'sampleOrders')"
+                    label="View Sold To Orders Only"
+                  >
+                </xchange-custom-checkbox>
+              </div>
+            </div>
+          </div>
+          <!-- </div> -->
+        </div>
+        <div class="col-12 mt-4">
+          <!-- <alert type="warning" class="dashboard-page-alert" [dismissible]="false">
+            <div class="container">
+              For the most accurate delivery dates related to your order, please click into the order to retrieve details.
+            </div>
+          </alert> -->
+          <ngx-table
+            [configuration]="configuration"
+            [data]="
+              sampleOrdersData
+                | paginate
+                  : {
+                      id: 'pg3',
+                      itemsPerPage: tableItemsSize3,
+                      currentPage: pageIndex3,
+                      totalItems: totalSampleOrdersLength
+                    }
+            "
+            [columns]="samplecolumns"
+            [noResultsTemplate]="noResultsSampleTemplate"
+            (event)="sortingByColumns($event, 'sampleOrders')"
+          >
+            <ng-template let-row>
+              <td *ngIf="storageService?.userInfo?.isSalesPerson == true || storageService?.userInfo?.isSalesOps == true">
+                {{ row.camsAccountNumber }}
+              </td>
+              <td *ngIf="storageService?.userInfo?.isSalesPerson == true || storageService?.userInfo?.isSalesOps == true">
+                {{ row.companyCode }}
+              </td>
+              <td>
+                {{ row.companyName }}
+              </td>
+              <td>
+                <a
+                  href="javascript:void(0)"
+                  (click)="navigateToHistoryDetails(row.orderCode, pageIndex3)"
+                >
+                  {{ row.orderCode }}</a
+                >
+              </td>
+              <td>
+                {{ row.oldOrderCode }}
+              </td>
+              <td>
+                {{ dateConvert(row.placed) | date : "MM/dd/yyyy" }}
+              </td>
+              <td>
+                {{ row.poNumber }}
+              </td>
+              <!-- <td>
+      
+                See Line Detail
+              </td> -->
+              <td>
+                {{ row.submittedFor }}
+              </td>
+              <td>
+                {{ row.marketSegmentName }}
+              </td>
+            </ng-template>
+          </ngx-table>
+          <ng-template #noResultsSampleTemplate>
+            <td [attr.colspan]="samplecolumns.length" class="no-results">
+              Order Not Found
+            </td>
+          </ng-template>
+        </div>
+      </div>
+      <div class="row mb-4 mt-4">
+        <div
+          class="d-flex justify-content-center"
+          *ngIf="totalSampleOrdersLength > 0"
+        >
+          <pagination-controls
+            id="pg3"
+            [maxSize]="7"
+            [responsive]="true"
+            [nextLabel]="''"
+            [previousLabel]="''"
+            (pageChange)="onTableDataChange3($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div class="col-md-12">
+          <p class="text-center mb-4">
+            {{ totalSampleOrdersLength > 0 ? startValue3 : 0 }} -
+            {{
+              this.lastValue3 > totalSampleOrdersLength
+                ? totalSampleOrdersLength
+                : this.lastValue3
+            }}
+            OF
+            {{ totalSampleOrdersLength > 0 ? totalSampleOrdersLength : 0 }}
+            ORDERS
+          </p>
+        </div>
+      </div>
+    </tab>
+  </tabset>
+</div>
+
+<ng-template #trackingTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100 text-center">Estimated time of arrival:</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <iframe id="iframe" [src]="trackingURL" height="100%" width="100%"></iframe>
+  </div>
+</ng-template>

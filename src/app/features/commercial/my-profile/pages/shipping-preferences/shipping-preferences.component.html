@@ -1,0 +1,86 @@
+<div class="profile-section" #scrollToTop>
+  <section class="w-100">
+    <header class="page-header w-100">
+      <h2>Shipping Preferences</h2>
+    </header>
+    <app-alerts
+      [alertData]="alertData"
+      [alertType]="alertType"
+      *ngIf="alertTrigger"
+    >
+    </app-alerts>
+    <!-- <app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader> -->
+    <p class="mt-4" *ngIf="!spinnerLoading">Please choose a default shipping preference.</p>
+    <div class="row">
+      <ul
+        class="address-list col-md-4"
+        *ngFor="
+          let address of addresses
+            | paginate
+              : {
+                  id: 'prea',
+                  itemsPerPage: pageSize,
+                  currentPage: currentPage,
+                  totalItems: totalLength
+                };
+          let i = index
+        "
+      >
+        <li>
+          <div class="address-container">
+            <h3>{{ address.companyName }}</h3>
+            <p>
+              Ship To # ({{address?.id && address?.id.split("_")[0]}}) <br/>
+              {{ address?.line2 }} {{ address?.line1 }}
+              {{ address?.building ? ", "+address.building+" " : "" }}<br />
+              {{ address?.town }}, {{ address?.region?.isocodeShort }} {{ address?.postalCode }}
+            </p>
+            
+            <div class="mt-2">
+              <xchange-custom-radio
+                [type]="'radio'"
+                [id]="'profile-address-' + i"
+                label="{{ address.defaultShippingMethod }} - {{
+                  address.defaultShippingConditionDesc
+                }}"
+                [value]="address.pk"
+                [checked]="selectedPk == address.pk ? true : false"
+                (model)="selectRecord(address.pk)"
+              >
+              </xchange-custom-radio>
+            </div>
+            <p *ngIf="address.defaultShippingMethod" class="smethod">
+              (SHIPPING METHOD)
+            </p>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="row my-4">
+      <div class="d-flex justify-content-center" *ngIf="totalLength > 0">
+        <pagination-controls
+          id="prea"
+          [maxSize]="7"
+          [responsive]="true"
+          [nextLabel]="''"
+          [previousLabel]="''"
+          (pageChange)="pageChangeEvent($event)"
+        >
+        </pagination-controls>
+      </div>
+      <div class="col-md-12" *ngIf="!spinnerLoading">
+        <p class="text-center mb-1">
+          {{
+            totalLength > 0 ? (startValue > totalLength ? 1 : startValue) : 0
+          }}
+          -
+          {{ lastValue > totalLength ? totalLength : lastValue }}
+          OF {{ totalLength > 0 ? totalLength : 0 }} ADDRESSES
+        </p>
+      </div>
+    </div>
+    <button class="btn btn-primary save-btn mt-4" *ngIf="!spinnerLoading" (click)="onSubmitRecords()">
+      SAVE CHANGES
+    </button>
+  </section>
+</div>

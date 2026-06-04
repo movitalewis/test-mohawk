@@ -1,0 +1,110 @@
+<div class="container">
+  <!-- <app-loader *ngIf="service?.productListLoading"></app-loader> -->
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <alert
+    type="danger"
+    class="dashboard-page-alert"
+    [dismissible]="true"
+    *ngIf="errorMessage !== ''"
+  >
+    <div class="container">
+      {{ errorMessage }}
+    </div>
+  </alert>
+  <div class="selected-fliters">
+    <div class="selected-fliters__chips" *ngFor="let item of selectedFilters">
+      <span> {{ item }} </span>
+      <button
+        type="button"
+        class="btn-close close pull-right"
+        aria-label="Close"
+        (click)="clearIndividualFilter(item)"
+      >
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+  </div>
+  <div class="sort-filters-container row">
+    <div class="col-lg-4 col-xl-3 mb-3 mb-lg-0">
+      <div class="h-100 d-flex align-items-center">
+        <button
+          class="btn btn-outline-secondary w-100"
+          (click)="clearFilter(true)"
+          [disabled]="service.filters.size == 0"
+        >
+          Clear Filters
+        </button>
+      </div>
+    </div>
+    <div class="col-lg-8 col-xl-9">
+      <div class="row">
+        <div class="col-lg-6 mb-3 mb-lg-0">
+          <div
+            class="h-100 d-flex align-items-center justify-content-lg-center"
+          >
+            <h3 class="m-0">
+              {{ totalProducts }} Results Found for
+              <span class="color-red">{{ pageName }}</span>
+              <!-- Residential Broadloom< -->
+            </h3>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="h-100 d-flex align-items-center justify-content-sm-end">
+            <div class="d-none d-lg-block">
+              <ng-container [ngTemplateOutlet]="sortDropdown"></ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-4">
+    <div class="col-lg-4 col-xl-3 filters-section">
+      <xchange-product-filters
+        (clearFilterClick)="clearFilter($event)"
+        [data]="filterList"
+      ></xchange-product-filters>
+
+      <div class="d-block w-100 d-lg-none">
+        <ng-container [ngTemplateOutlet]="sortDropdown"></ng-container>
+      </div>
+    </div>
+    <div class="col-lg-8 col-xl-9" *ngIf="dataList.length > 0">
+      <xchange-products-list
+        #productref
+        [productList]="dataList"
+        [isPostOrder]="true"
+        [orderNumber]="order_number"
+        [postModificationOrders]="postModificationOrders"
+      ></xchange-products-list>
+    </div>
+    <div
+      class="col-lg-8 col-xl-9"
+      *ngIf="dataList.length == 0 && (service.productListLoading$ | async) === false"
+    >
+      <div class="d-flex justify-content-center h-100 align-items-center">
+        No Product Available
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <button class="btn" (click)="test()">Next</button> -->
+<ng-template #sortDropdown>
+  <div class="sort-dropdown-container">
+    <label for="">Sort By</label>
+    <ng-select
+      placeholder="Select One"
+      [(ngModel)]="service.sort"
+      (ngModelChange)="getPlpData()"
+      [clearable]="false"
+      [editableSearchTerm]="false"
+      [multiple]="false"
+      [searchable]="false"
+    >
+      <ng-option [value]="'name-asc'">Name ( Ascending )</ng-option>
+      <ng-option [value]="'name-desc'">Name ( Descending )</ng-option>
+      <ng-option [value]="'newest'">Newest</ng-option>
+    </ng-select>
+  </div>
+</ng-template>

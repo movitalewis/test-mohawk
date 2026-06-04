@@ -1,0 +1,153 @@
+<div class="product">
+  <figure (click)="routeToProductDetails(product.firstVariantCode)">
+    <div class="ribbon-wrapper-plp" *ngIf="product?.droppedFlag">
+      <div class="ribbon">DROPPED</div>
+    </div>
+    <div class="ribbon-wrapper-plp" *ngIf="product?.preferredStock">
+      <div class="ribbon preferred-stock">PREFERRED <br/> STOCKING</div>
+    </div>
+    <img
+      [src]="
+        product.productImageURL
+          ? getImage(product.productImageURL)
+          : default_image
+      "
+      [alt]="product.styleName ? product.styleName : 'N/A'"
+    />
+  </figure>
+  <div class="product-content">
+    <h3
+      class="product-name"
+      (click)="routeToProductDetails(product.firstVariantCode)"
+    >
+      <!-- [queryParams]="{ type: product.type ? product.type : '' }"> -->
+      {{ product.styleName ? product.styleName : "N/A" }}
+    </h3>
+    <ul class="product-info-list">
+      <li>
+        {{ product.styleId ? product.styleId : "N/A" }}
+      </li>
+
+      <li>
+        {{ product?.categoryName && (product?.categoryName?.includes("MERCHANDISING") || product?.categoryName?.includes("merchandising") )? "" :siezeColor(product) }}
+        <span *ngIf="product?.categoryName?.includes('MERCHANDISING') || product?.categoryName?.includes('merchandising') ? '':product?.subCategoryName != 'Powders' && product?.subCategoryName != 'Tools'">{{ siezeColor(product) == 1 ? "Color" : "Colors" }}</span>
+        <span *ngIf="product?.subCategoryName == 'Powders' ||  product?.subCategoryName == 'Tools'">{{ siezeColor(product) == 1 ? "Option" : "Options" }}</span>
+      </li>
+    </ul>
+    <ul class="product-info-list">
+      <li>
+        {{ product.brand === "MHG" ? "MohawkGroup" : product.brand }}
+      </li>
+      <li *ngIf="this.userService?.isShowPrice()">
+        <div class="cssload-container" *ngIf="product.isLoading">
+          <div class="cssload-loading"><i></i><i></i><i></i><i></i></div>
+        </div>
+        {{ product.priceTag }}
+      </li>
+    </ul>
+    <ul class="product-info-list">
+      <li>
+        {{ product.styleId ? product.subCategoryName : "N/A" }}
+      </li>
+      <li *ngIf="product?.subCategoryName != 'Powders' && product?.subCategoryName != 'Tools'">
+        <xchange-custom-checkbox
+          type="checkbox"
+          (change)="onChangeCompare($event, product)"
+          [id]="product.firstVariantCode"
+          [label]="'Compare'"
+        >
+        </xchange-custom-checkbox>
+      </li>
+    </ul>
+    <ul class="product-info-list mb-1" *ngIf="isSalesPerson && !inHouseAccount && !isSalesManager">
+      <li *ngIf="updateEntitlementLoading">
+        <div class="cssload-loading"><i></i><i></i><i></i><i></i></div>
+      </li>
+      <ng-container *ngIf="!updateEntitlementLoading">
+        <li *ngIf="moduleName == '/residential'">
+          <a
+            class="small-all-blocked-btn entitlement  {{
+              moduleName == '/residential' ? (product.styleBlocked == false ? 'color-green-bg' : 'color-red-bg') :
+              (moduleName == '/commercial' && isSalesOps ? (product.styleBlocked == false ? 'color-red-bg' : 'color-green-bg') : '')
+           }}"
+            (click)="
+              updateCustEntitlement(
+                product,
+                product.styleBlocked == false ? 'B' : 'U',
+                ''
+              )
+            "
+          >
+           {{ product.styleBlocked == false ? "UnBlocked" : "Blocked" }}</a>
+        </li>
+        <li *ngIf="moduleName == '/commercial' && isSalesOps && uid != 'EMPTY_B2BUNIT' && !isShipToUser">
+          <a
+            class="small-all-blocked-btn entitlement  {{
+              moduleName == '/residential' ? (product.styleBlocked == false ? 'color-green-bg' : 'color-red-bg') :
+              (moduleName == '/commercial' && isSalesOps ? (product.styleBlocked == false ? 'color-red-bg' : 'color-green-bg') : '')
+           }}"
+            (click)="
+              updateCustEntitlement(
+                product,
+                product.styleBlocked == false ? 'B' : 'U',
+                ''
+              )
+            "
+          >
+           {{ 
+              product.styleBlocked == false 
+                ? (uid == 'EMPTY_B2BUNIT' ? "HIDE ALL CUSTOMERS" : "HIDE")
+                : (uid == 'EMPTY_B2BUNIT' ? "UNHIDE ALL CUSTOMERS" : "UNHIDE")
+            }}
+          </a>
+        </li>
+        <!-- <li>
+          <a
+            class="small-all-blocked-btn entitlement"
+            (click)="
+              updateCustEntitlement(
+                product,
+                product.styleBlocked == false ? 'B' : 'U',
+                'All'
+              )
+            "
+            *ngIf="isSalesOps"
+            >{{
+              product.styleBlocked == false ? "UnBlocked All" : "Blocked All"
+            }}</a
+          >
+        </li> -->
+      </ng-container>
+    </ul>
+    <!-- *ngIf="product?.enableOrderSample" -->
+    <div
+      class="d-flex order-button"
+      *ngIf="
+        moduleName == '/residential' ||
+        (moduleName == '/commercial' && !inHouseAccount)
+      "
+    >
+      <button
+        class="btn btn-secondary w-100 {{ isSalesPerson ? '' : 'mx-1' }}"
+        (click)="orderSample()"
+        *ngIf="product?.preOrderFlag"
+      >
+        Pre Order Sample
+      </button>
+
+      <button
+        class="btn btn-secondary w-100 {{ isSalesPerson ? '' : 'mx-1' }}"
+        (click)="orderSample()"
+        *ngIf="!product?.preOrderFlag && !(
+          (!product.enableOrderSample && 
+          storageService.userInfo?.userPermissions.includes('Sample Order Entry')) || 
+          (product.styleBlocked && moduleName == '/residential') || 
+          (product?.migratedBuilderProduct && isCustomer)
+        )"
+        [disabled]="isMohawkOneuser || userService.salesBlocked"
+      >
+       {{"Order Sample"}}
+      </button>
+    </div>
+  </div>
+</div>

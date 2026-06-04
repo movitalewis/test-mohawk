@@ -1,0 +1,60 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+
+.product-features-section {
+  width: 100%;
+  padding-top: 15px;
+}
+
+// Product Features List
+.product-features-list {
+  display: flex;
+  flex-wrap: wrap;
+  //justify-content: space-between;
+  gap: 11px;
+  @include breakpoint-range($max: sm) {
+    gap: 16px;
+  }
+
+  & > li {
+    width: calc(33.33% - 7.5px);
+    margin-bottom: 15px;
+    display: block;
+    cursor: pointer;
+    border-radius: 8px;
+    border: solid 0.5px $color-gray;
+    text-align: center;
+    min-height: 170px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    background: $color-white;
+    @include breakpoint-range($max: sm) {
+      width: calc(49.5% - 7.5px);
+    }
+    .icon {
+      margin-bottom: 8px;
+    }
+    .name {
+      font-size: 24px;
+      font-weight: 500;
+      letter-spacing: -0.12px;
+      text-align: center;
+      color: $color-dark-gray;
+      width: 100%;
+      margin: 0;
+      @include breakpoint-range($max: sm) {
+        font-size: 18px;
+      }
+    }
+    .class-red {
+      color: red;
+    }
+    img {
+      width: 90px;
+      height: 90px;
+    }
+  }
+}

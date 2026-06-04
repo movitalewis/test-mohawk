@@ -1,0 +1,294 @@
+
+<app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+
+<div class="modal-header text-center" id="scrollTop">
+  <h4 class="modal-title f-w w-100">Recommended Accessories</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="closeModal()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body p-20">
+  <div class="text-center">
+    <alert
+      [type]="alertType"
+      class="alert-info-v1"
+      [dismissible]="true"
+      *ngIf="showSuccessAlert"
+    >
+      <p class="mb-0">{{ alertData?.message }}</p>
+    </alert>
+    <ng-container *ngIf="!navigateToCheckoutAfter">
+      <!-- <div *ngFor="let item of accessoryDetails">
+        <h4>{{ item?.key }}</h4>
+       
+        <div class="mb-2 overflow-auto">
+          <ngx-table
+            *ngIf="item?.value?.references.length > 0"
+            [configuration]="configuration"
+            [data]="item?.value?.references"
+            [columns]="columns"
+            class="d-inline-table"
+          >
+            <ng-template let-row>
+             
+
+              <td *ngFor="let column of columns; let i = index">
+                <ng-container *ngIf="column.key === 'qty'">
+                  <input
+                  class="form-control"
+                    type="number"
+                    placeholder="0"
+                    min="1"
+                    step="1"
+                    [(ngModel)]="row.quantity"
+                    [ngClass]="{
+                      errorBorder: myForm.controls['qtyrolls'].invalid
+                    }"
+                    (change)="addtoQuote($event, row?.code, row?.inventoryUOM, row)"
+                  >
+                  <p class="m-0 text-center pt-1">{{ row?.inventoryUOM }}</p>
+                </ng-container>
+                <img
+                  *ngIf="column.key === 'colorImgURL'"
+                  [src]="row?.colorImgURL"
+                  alt=""
+                  class=""
+                />
+                <p *ngIf="column.key !== 'colorImgURL' && column.key !== 'qty'">
+                  {{ row[column.key] }}
+                </p>
+              </td>
+            </ng-template>
+          </ngx-table>
+        </div>
+      </div> -->
+      <tabset
+        responsiveTabs
+        [justified]="true"
+        [class.changeCursor]="accessoryDetails.length == 1"
+        *ngIf="accessoryDetails.length > 0"
+      >
+        <ng-container *ngFor="let item of accessoryDetails">
+          <tab class="tab-content" [active]="activeTab  === item.key" (selectTab)="activeTab = item.key; setColumns()">
+            <ng-template tabHeading>{{ getTabHeadingName(item) }}</ng-template>
+            <div class="row mt-3">
+              <ngx-table
+                *ngIf="item?.value?.references.length > 0"
+                [configuration]="configuration"
+                [data]="item?.value?.references"
+                [columns]="columns"
+                class="d-inline-table ref-table"
+              >
+                <ng-template let-row>
+                  <td *ngFor="let column of columns">
+                    <ng-container *ngIf="column.key === 'qty'">
+                      <input
+                      class="form-control"
+                        type="number"
+                        placeholder="0"
+                        [(ngModel)]="row.quantity"
+                        (keypress)="keyPressNumbers($event)"
+                        [ngClass]="{'errorBorder': myForm.controls['qtyrolls'].invalid}"
+                        min="1"
+                        step="1" 
+                      />
+                      <p class="m-0 text-center pt-1">{{ row?.inventoryUOM }}</p>
+                    </ng-container>
+                    <img
+                      *ngIf="column.key === 'colorImgURL'"
+                      [src]="
+                        row?.colorImgURL ||
+                        'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                      "
+                      alt=""
+                      class=""
+                    />
+                    <p
+                      *ngIf="
+                        column.key !== 'colorImgURL' &&
+                        column.key !== 'qty' &&
+                        column.key !== 'price'
+                      "
+                    >
+                      {{ row[column.key] }}
+                    </p>
+                    <ng-container *ngIf="column.key === 'price' && this.userService?.isShowPrice()">
+                      <div class="cssload-container" *ngIf="row.isLoading">
+                        <div class="cssload-loading"><i></i><i></i><i></i><i></i></div>
+                      </div>
+                      <p *ngIf="!row.isLoading">
+                        {{
+                          row[column.key] === "0" || row[column.key] === "NA"
+                            ? "NA"
+                            : "$" + row[column.key] + "/ ea."
+                        }}
+                      </p>
+                    </ng-container>
+                  </td>
+                </ng-template>
+              </ngx-table>
+            </div>
+          </tab>
+        </ng-container>
+      </tabset>
+
+
+
+
+
+
+      <!-- <ng-container *ngFor="let item of accessoryDetails">
+       
+        <h4>{{ item?.key }}</h4>
+          <div class="row mt-3 ref-div-table overflow-auto">
+            <ngx-table
+              *ngIf="item?.value?.references.length > 0"
+              [configuration]="configuration"
+              [data]="item?.value?.references"
+              [columns]="columns"
+              class="d-inline-table ref-table"
+            >
+              <ng-template let-row>
+                <td *ngFor="let column of columns">
+                  <ng-container *ngIf="column.key === 'qty'">
+                    <input
+                    class="form-control"
+                      type="number"
+                      placeholder="0"
+                      [(ngModel)]="row.quantity"
+                      (input)="checkValue($event, row)"
+                      [ngClass]="{'errorBorder': myForm.controls['qtyrolls'].invalid}"
+                      min="1"
+                      step="1" 
+                    />
+                    <p class="m-0 text-center pt-1">{{ row?.inventoryUOM }}</p>
+                  </ng-container>
+                  <img
+                    *ngIf="column.key === 'colorImgURL'"
+                    [src]="
+                      row?.colorImgURL ||
+                      'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                    "
+                    alt=""
+                    class=""
+                  />
+                  <p
+                    *ngIf="
+                      column.key !== 'colorImgURL' &&
+                      column.key !== 'qty' &&
+                      column.key !== 'price'
+                    "
+                  >
+                    {{ row[column.key] }}
+                  </p>
+                  <!-- <ng-container *ngIf="column.key === 'price'">
+                    <div class="cssload-container" *ngIf="row.isLoading">
+                      <div class="cssload-loading"><i></i><i></i><i></i><i></i></div>
+                    </div>
+                    <p *ngIf="!row.isLoading">
+                      {{
+                        row[column.key] === "0" || row[column.key] === "NA"
+                          ? "NA"
+                          : "$" + row[column.key] + "/ ea."
+                      }}
+                    </p>
+                  </ng-container> --
+                </td>
+              </ng-template>
+            </ngx-table>
+          </div>
+    
+      </ng-container> -->
+    </ng-container>
+
+    <div *ngIf="navigateToCheckoutAfter">
+      <div class="mb-2 overflow-auto">
+        <ngx-table
+          *ngIf="accessoryDetails.length > 0"
+          [configuration]="configuration"
+          [data]="accessoryDetails"
+          [columns]="columns"
+          class="d-inline-table"
+        >
+          <ng-template let-row>
+            <td *ngFor="let column of columns; let i = index">
+              <ng-container *ngIf="column.key === 'qty'">
+                <input
+                class="form-control"
+                  type="number"
+                  min="1"
+                  step="1"
+                  placeholder="0"
+                  [(ngModel)]="row.quantity"
+                  [ngClass]="{
+                    errorBorder: myForm.controls['qtyrolls'].invalid
+                  }"
+                  (input)="addtoQuote($event, row?.code, row?.inventoryUOM,row)"
+                >
+                <p class="m-0 text-center pt-1">{{ row?.inventoryUOM }}</p>
+              </ng-container>
+              <img
+                *ngIf="column.key === 'colorImgURL'"
+                [src]="
+                  row?.colorImgURL ||
+                  'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                "
+                alt=""
+                class=""
+              />
+              <p
+                *ngIf="
+                  column.key !== 'colorImgURL' &&
+                  column.key !== 'qty' &&
+                  column.key !== 'price'
+                "
+              >
+                {{ row[column.key] }}
+              </p>
+              <ng-container *ngIf="column.key === 'price' && this.userService?.isShowPrice()">
+                <div class="cssload-container" *ngIf="row.isLoading">
+                  <div class="cssload-loading"><i></i><i></i><i></i><i></i></div>
+                </div>
+                <p *ngIf="!row.isLoading">
+                  {{
+                    row[column.key] === "0" || row[column.key] === "NA"
+                      ? "NA"
+                      : "$" + row[column.key] + "/ ea."
+                  }}
+                </p>
+              </ng-container>
+            </td>
+          </ng-template>
+        </ngx-table>
+      </div>
+    </div>
+    <div class="row mt-3 full-btns">
+      <div class="col-md-5 col-lg-3" *ngIf="showContinueShopping">
+        <button class="btn btn-outline-secondary mb-3" (click)="continueShopping()">
+          Continue Shopping
+        </button>
+      </div>
+      <div class="col-md-5 col-lg-3">
+        <button class="btn btn-secondary mb-3" (click)="closeModal();">
+          Return to Edit Quote
+        </button>
+      </div>
+      <div class="col-md-5 col-lg-3">
+        <button
+          class="btn btn-primary mb-3"
+          (click)="addProduct()"
+          [disabled]="disableButton()"
+        >
+          {{ buttonName == null ? "Add to Quote" : buttonName && hasPrice ? buttonName : 'Add to Quote' }}
+        </button>
+      </div>
+    </div>
+    <!-- </form> -->
+  </div>
+</div>

@@ -1,0 +1,576 @@
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <h2 class="text-center mb-4">Add Bank Account</h2>
+  <app-loader *ngIf="spinnerLoading"></app-loader>
+  <div class="mb-3">
+    <alert
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="showErrorMessage"
+    >
+      <div class="container">
+        {{ errorMessage }}
+      </div>
+    </alert>
+  </div>
+  <form [formGroup]="addAccountForm">
+    <div class="row mb-3">
+      <div
+        class="col-6 col-sm-6 back-to"
+        routerLink="/commercial/finance/bank/accounts-list"
+      >
+        <span class="mohawak-icon angle-left-icon back-i"></span>Back To Bank
+        Accounts
+      </div>
+    </div>
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="_card-container">
+          <div class="row mb-4">
+            <div class="col-md-4">
+              <h4>Name on Account*</h4>
+              <input
+                type="text"
+                maxlength="30"
+                placeholder="Name Or Company Name"
+                class="form-control"
+                formControlName="accountName"
+                [class.is-invalid]="
+                  addAccountForm.controls['accountName'].touched &&
+                  (addAccountForm.controls['accountName'].hasError(
+                    'required'
+                  ) ||
+                    addAccountForm.controls['accountName'].hasError('pattern'))
+                "
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  addAccountForm.controls['accountName'].hasError('required')
+                "
+              >
+                Account Name is required.
+              </div>
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  addAccountForm.controls['accountName'].hasError('pattern')
+                "
+              >
+                Please enter a valid account name
+              </div>
+            </div>
+            <div class="col-md-4">
+              <h4>Account Type*</h4>
+              <ng-select
+                placeholder="Select Amount Type"
+                formControlName="accountType"
+              >
+                <ng-option value="Checking">Checking</ng-option>
+                <ng-option value="Saving">Saving</ng-option>
+              </ng-select>
+            </div>
+            <div class="col-md-4">
+              <h4>Currency</h4>
+              <input
+                type="text"
+                [disabled]="true"
+                readonly
+                [placeholder]="priceLabel"
+                class="form-control"
+                formControlName="currency"
+              />
+            </div>
+          </div>
+          <div class="row mb-4" *ngIf="priceLabel == 'USD'">
+            <div class="col-md-4">
+              <h4>Bank Routing #*</h4>
+              <input
+                type="text"
+                placeholder="Enter Routing #"
+                class="form-control"
+                formControlName="bankRoutingNumber"
+                (keypress)="keyPressNumbers($event)"
+                maxlength="9"
+                [ngClass]="
+                  addAccountForm.controls['bankRoutingNumber'].touched &&
+                  (addAccountForm.controls['bankRoutingNumber'].hasError(
+                    'required'
+                  ) ||
+                    addAccountForm.controls['bankRoutingNumber'].hasError(
+                      'minlength'
+                    ) ||
+                    addAccountForm.controls['bankRoutingNumber'].hasError(
+                      'maxlength'
+                    ) ||
+                    addAccountForm.controls['bankRoutingNumber'].hasError(
+                      'pattern'
+                    ))
+                    ? 'is-invalid'
+                    : ''
+                "
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  addAccountForm.controls['bankRoutingNumber'].touched ||
+                  addAccountForm.controls['bankRoutingNumber'].invalid
+                "
+              >
+                <div
+                  *ngIf="
+                    addAccountForm.controls['bankRoutingNumber'].hasError(
+                      'required'
+                    )
+                  "
+                >
+                  Bank Routing is required.
+                </div>
+                <div
+                  *ngIf="
+                    addAccountForm.controls['bankRoutingNumber'].hasError(
+                      'minlength'
+                    )
+                  "
+                >
+                  Bank Routing minimum 9 digit.
+                </div>
+                <div
+                  *ngIf="
+                    addAccountForm.controls['bankRoutingNumber'].hasError(
+                      'maxlength'
+                    )
+                  "
+                >
+                  Bank Routing maxLength 9 digit.
+                </div>
+                <div
+                  *ngIf="
+                    addAccountForm.controls['bankRoutingNumber'].hasError(
+                      'pattern'
+                    )
+                  "
+                >
+                  Enter valid bank routing.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <h4>Confirm Bank Routing #*</h4>
+              <input
+                type="text"
+                placeholder="Enter Routing #"
+                class="form-control"
+                formControlName="cnfrmBankRoutingNumber"
+                (keypress)="keyPressNumbers($event)"
+                maxlength="9"
+                [ngClass]="
+                  addAccountForm.controls['cnfrmBankRoutingNumber'].touched &&
+                  (addAccountForm.controls['bankRoutingNumber'].hasError(
+                    'required'
+                  ) ||
+                    addAccountForm.controls['cnfrmBankRoutingNumber'].hasError(
+                      'pattern'
+                    ) ||
+                    addAccountForm.value.bankRoutingNumber !==
+                      addAccountForm.value.cnfrmBankRoutingNumber ||
+                    addAccountForm.controls['cnfrmBankRoutingNumber'].hasError(
+                      'required'
+                    ))
+                    ? 'is-invalid'
+                    : ''
+                "
+                preventPaste
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  addAccountForm.controls['cnfrmBankRoutingNumber'].touched &&
+                  addAccountForm.value.cnfrmBankRoutingNumber &&
+                    addAccountForm.value.bankRoutingNumber !==
+                      addAccountForm.value.cnfrmBankRoutingNumber
+                "
+              >
+                Bank Routing do not match
+              </div>
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  addAccountForm.controls['cnfrmBankRoutingNumber'].hasError(
+                    'required'
+                  )
+                "
+              >
+                Confirm Bank Routing is required.
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-4" *ngIf="priceLabel == 'CAD'">
+            <div class="col-md-4">
+              <h4>Bank Transit #*</h4>
+              <input
+                type="text"
+                placeholder="Enter Bank Transit #"
+                class="form-control"
+                formControlName="bankTransitNumber"
+                (keypress)="keyPressNumbers($event)"
+                maxlength="5"
+                [ngClass]="
+                  addAccountForm.controls['bankTransitNumber'].touched &&
+                  (addAccountForm.controls['bankTransitNumber'].hasError(
+                    'required'
+                  ) ||
+                    addAccountForm.controls['bankTransitNumber'].hasError(
+                      'minlength'
+                    ) ||
+                    addAccountForm.controls['bankTransitNumber'].hasError(
+                      'maxlength'
+                    ) ||
+                    addAccountForm.controls['bankTransitNumber'].hasError(
+                      'pattern'
+                    ))
+                    ? 'is-invalid'
+                    : ''
+                "
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  addAccountForm.controls['bankTransitNumber'].touched ||
+                  addAccountForm.controls['bankTransitNumber'].invalid
+                "
+              >
+                <div
+                  *ngIf="
+                    addAccountForm.controls['bankTransitNumber'].hasError(
+                      'required'
+                    )
+                  "
+                >
+                  Bank Transit is required.
+                </div>
+                <div
+                  *ngIf="
+                    addAccountForm.controls['bankTransitNumber'].hasError(
+                      'minlength'
+                    )
+                  "
+                >
+                  Bank Transit minimum 1 digit.
+                </div>
+                <div
+                  *ngIf="
+                    addAccountForm.controls['bankTransitNumber'].hasError(
+                      'maxlength'
+                    )
+                  "
+                >
+                  Bank Transit maxLength 5 digit.
+                </div>
+                <div
+                  *ngIf="
+                    addAccountForm.controls['bankTransitNumber'].hasError(
+                      'pattern'
+                    )
+                  "
+                >
+                  Enter valid Bank Transit.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <h4>Confirm Bank Transit #*</h4>
+              <input
+                type="text"
+                placeholder="Enter Bank Transit #"
+                class="form-control"
+                formControlName="cnfrmBankTransitNumber"
+                (keypress)="keyPressNumbers($event)"
+                maxlength="5"
+                [ngClass]="
+                  addAccountForm.controls['cnfrmBankTransitNumber'].touched &&
+                  (addAccountForm.controls['cnfrmBankTransitNumber'].hasError(
+                    'required'
+                  ) ||
+                    addAccountForm.controls['cnfrmBankTransitNumber'].hasError(
+                      'pattern'
+                    ) ||
+                    addAccountForm.value.bankTransitNumber !==
+                      addAccountForm.value.cnfrmBankTransitNumber)
+                    ? 'is-invalid'
+                    : ''
+                "
+                preventPaste
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  addAccountForm.controls['cnfrmBankTransitNumber'].touched &&
+                  addAccountForm.value.cnfrmBankTransitNumber &&
+                    addAccountForm.value.bankTransitNumber !==
+                      addAccountForm.value.cnfrmBankTransitNumber
+                "
+              >
+                Bank Transit do not match
+              </div>
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  addAccountForm.controls['cnfrmBankTransitNumber'].hasError(
+                    'required'
+                  )
+                "
+              >
+                Confirm Bank Transit is required.
+              </div>
+            </div>
+          </div>
+          <div class="row mb-4" *ngIf="priceLabel == 'CAD'">
+            <div class="col-md-4">
+              <h4>Bank Institution #*</h4>
+              <input
+                type="text"
+                placeholder="Enter Bank Institution #"
+                class="form-control"
+                formControlName="bankInstitutionNumber"
+                (keypress)="keyPressNumbers($event)"
+                maxlength="4"
+                [ngClass]="
+                  addAccountForm.controls['bankInstitutionNumber'].touched &&
+                  (addAccountForm.controls['bankInstitutionNumber'].hasError(
+                    'required'
+                  ) ||
+                    addAccountForm.controls['bankInstitutionNumber'].hasError(
+                      'minlength'
+                    ) ||
+                    addAccountForm.controls['bankInstitutionNumber'].hasError(
+                      'maxlength'
+                    ) ||
+                    addAccountForm.controls['bankInstitutionNumber'].hasError(
+                      'pattern'
+                    ))
+                    ? 'is-invalid'
+                    : ''
+                "
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  addAccountForm.controls['bankInstitutionNumber'].touched ||
+                  addAccountForm.controls['bankInstitutionNumber'].invalid
+                "
+              >
+                <div
+                  *ngIf="
+                    addAccountForm.controls['bankInstitutionNumber'].hasError(
+                      'required'
+                    )
+                  "
+                >
+                  Bank Institution is required.
+                </div>
+                <div
+                  *ngIf="
+                    addAccountForm.controls['bankInstitutionNumber'].hasError(
+                      'minlength'
+                    )
+                  "
+                >
+                  Bank Institution minimum 1 digit.
+                </div>
+                <div
+                  *ngIf="
+                    addAccountForm.controls['bankInstitutionNumber'].hasError(
+                      'maxlength'
+                    )
+                  "
+                >
+                  Bank Routing maxLength 4 digit.
+                </div>
+                <div
+                  *ngIf="
+                    addAccountForm.controls['bankInstitutionNumber'].hasError(
+                      'pattern'
+                    )
+                  "
+                >
+                  Enter valid bank Institution.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <h4>Confirm Bank Institution #*</h4>
+              <input
+                type="text"
+                placeholder="Enter Bank Institution #"
+                class="form-control"
+                formControlName="cnfrmBankInstitutionNumber"
+                (keypress)="keyPressNumbers($event)"
+                maxlength="4"
+                [ngClass]="
+                  addAccountForm.controls['cnfrmBankInstitutionNumber']
+                    .touched &&
+                  (addAccountForm.controls[
+                    'cnfrmBankInstitutionNumber'
+                  ].hasError('required') ||
+                    addAccountForm.controls[
+                      'cnfrmBankInstitutionNumber'
+                    ].hasError('pattern') ||
+                    addAccountForm.value.bankInstitutionNumber !==
+                      addAccountForm.value.cnfrmBankInstitutionNumber)
+                    ? 'is-invalid'
+                    : ''
+                "
+                preventPaste
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  addAccountForm.controls['cnfrmBankInstitutionNumber']
+                    .touched &&
+                  addAccountForm.value.cnfrmBankInstitutionNumber &&
+                    addAccountForm.value.bankInstitutionNumber !==
+                      addAccountForm.value.cnfrmBankInstitutionNumber
+                "
+              >
+                Bank Institution do not match
+              </div>
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  addAccountForm.controls[
+                    'cnfrmBankInstitutionNumber'
+                  ].hasError('required')
+                "
+              >
+                Confirm Bank Institution is required.
+              </div>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-4">
+              <h4>Bank Account #*</h4>
+              <input
+                type="text"
+                placeholder="Enter Account #"
+                class="form-control"
+                formControlName="accountNumber"
+                (keypress)="keyPressNumbers($event)"
+                [ngClass]="
+                  addAccountForm.controls['accountNumber'].touched &&
+                  (addAccountForm.controls['accountNumber'].hasError(
+                    'required'
+                  ) ||
+                    addAccountForm.controls['accountNumber'].hasError(
+                      'minlength'
+                    ) ||
+                    addAccountForm.controls['accountNumber'].hasError(
+                      'maxlength'
+                    ) ||
+                    addAccountForm.controls['accountNumber'].hasError(
+                      'required'
+                    ))
+                    ? 'is-invalid'
+                    : ''
+                "
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  addAccountForm.controls['accountNumber'].hasError(
+                    'minlength'
+                  ) ||
+                  addAccountForm.controls['accountNumber'].hasError('maxlength')
+                "
+              >
+                Bank Account # should be a 17 digits
+              </div>
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  addAccountForm.controls['accountNumber'].hasError('required')
+                "
+              >
+                Bank Account is required.
+              </div>
+            </div>
+            <div class="col-md-4">
+              <h4>Confirm Bank Account #*</h4>
+              <input
+                type="text"
+                placeholder="Enter Account #"
+                class="form-control"
+                formControlName="cnfrmaccountNumber"
+                (keypress)="keyPressNumbers($event)"
+                [ngClass]="
+                  addAccountForm.controls['cnfrmaccountNumber'].touched &&
+                  (addAccountForm.controls['cnfrmaccountNumber'].hasError(
+                    'required'
+                  ) ||
+                    addAccountForm.value.accountNumber !==
+                      addAccountForm.value.cnfrmaccountNumber)
+                    ? 'is-invalid'
+                    : ''
+                "
+                preventPaste
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  addAccountForm.controls['cnfrmaccountNumber'].touched &&
+                  addAccountForm.value.cnfrmaccountNumber &&
+                    addAccountForm.value.accountNumber !==
+                      addAccountForm.value.cnfrmaccountNumber
+                "
+              >
+                Bank Account do not match
+              </div>
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  addAccountForm.controls['cnfrmaccountNumber'].hasError(
+                    'required'
+                  )
+                "
+              >
+                Confirm Bank Account is required.
+              </div>
+            </div>
+          </div>
+          <div class="row align-center">
+            <div class="col-md-3 btn-grid">
+              <button
+                class="btn btn-outline-secondary"
+                routerLink="/commercial/finance/bank/accounts-list"
+              >
+                Cancel
+              </button>
+            </div>
+            <div class="col-md-3 mb-3 btn-grid">
+              <button
+                class="btn btn-primary"
+                (click)="saveAccount()"
+                [disabled]="
+                  !addAccountForm.valid ||
+                  addAccountForm.value.accountNumber !==
+                    addAccountForm.value.cnfrmaccountNumber ||
+                  addAccountForm.value.bankRoutingNumber !==
+                    addAccountForm.value.cnfrmBankRoutingNumber
+                "
+                *ngIf="
+                  storageService.userInfo?.userPermissions.includes(
+                    'Bank Account Setup'
+                  )
+                "
+              >
+                Add Account
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

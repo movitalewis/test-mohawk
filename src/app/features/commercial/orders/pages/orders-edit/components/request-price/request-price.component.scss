@@ -1,0 +1,11 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+@import 'src/styles/mixins/box-shadow.mixin';
+
+
+.p-50{
+    padding: 0 30px;
+    @include breakpoint-range($max: sm) {
+        padding: 0;
+    }
+}

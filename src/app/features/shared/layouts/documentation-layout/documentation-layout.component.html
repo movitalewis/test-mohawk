@@ -1,0 +1,58 @@
+<!-- Container for sidebar(s) + page content -->
+<ng-sidebar-container [allowSidebarBackdropControl]="true" class="page">
+    <!-- A sidebar -->
+    <ng-sidebar [(opened)]="_opened" [showBackdrop]="sidebarConfig['showBackdrop']" [closeOnClickBackdrop]="true"
+        [mode]="sidebarConfig['mode']" [sidebarClass]="'doc-side-menu'" [dock]="false" [mode]="sidebarConfig['mode']">
+        <ul class="doc-side-nav">
+            <li (click)="onSelectMenu('logos')">
+                01. LOGOS
+            </li>
+            <li (click)="onSelectMenu('typeface')">
+                02. TYPEFACE
+            </li>
+            <li (click)="onSelectMenu('fields')">
+                03. FIELDS
+            </li>
+            <li (click)="onSelectMenu('buttons')">
+                04. BUTTONS
+            </li>
+            <li (click)="onSelectMenu('owl')">
+                05. OWL-CAROUSEL
+            </li>
+            <li (click)="onSelectMenu('icons')">
+                06. CUSTOM ICONS
+            </li>
+
+            <li (click)="onSelectMenu('breadcrumb')">
+                07. BREADCRUMBS
+            </li>
+            <li (click)="onSelectMenu('checkboxes')">
+                08. checkboxes
+            </li>
+            <li (click)="onSelectMenu('tabs')">
+                09. Tabs
+            </li>
+            <li (click)="onSelectMenu('datePicker')">
+                10. Date Picker
+            </li>
+            <li (click)="onSelectMenu('tables')">
+                11. Data Tables
+            </li>
+            <li (click)="onSelectMenu('popup')">
+                12. Modal / Popup / Lightbox
+            </li>
+            <li (click)="onSelectMenu('iconBtn')">
+                13. Icon Buttons
+            </li>
+            <li (click)="onSelectMenu('collapseBtn')">
+                14. Collapse
+            </li>
+        </ul>
+    </ng-sidebar>
+
+    <!-- Page content -->
+    <div ng-sidebar-content>
+        <router-outlet></router-outlet>
+    </div>
+
+</ng-sidebar-container>

@@ -1,0 +1,21 @@
+<div class="site-message-container">
+    <div class="site-message-l1-content">
+        <div class="site-message-content">
+            <header>{{ Data.header }}</header>
+            <p>
+                <span *ngIf="!isEditMode">{{ Data.content }}</span>
+                <textarea *ngIf="isEditMode" #editMessageInput class="edit-message-input"
+                    [value]="Data.content"> </textarea>
+            </p>
+        </div>
+        <div class="site-message-btns">
+            <button class="btn btn-secondary w50" *ngIf="!isEditMode" (click)="isEditMode = true">EDIT</button>
+            <button class="btn btn-secondary w50" *ngIf="!isEditMode">DELETE</button>
+            <button class="btn btn-secondary w100 white-space-nowrap" (click)="onEditMessage()" *ngIf="isEditMode">SAVE
+                CHANGES</button>
+        </div>
+    </div>
+    <div class="new-message-btn">
+        <button class="btn btn-primary">NEW MESSAGE</button>
+    </div>
+</div>

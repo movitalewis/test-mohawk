@@ -1,0 +1,109 @@
+<div class="product-filters-container">
+  <!-- <button
+    class="btn btn-outline-secondary mb-3 w-100"
+    (click)="clearProductFilters()"
+    [disabled]=" this.productList.filters.size===0"
+  >
+    Clear Filters
+  </button> -->
+  <button
+    class="btn btn-secondary w-100 filter-btn"
+    (click)="
+      screenWidth && screenWidth <= 993
+        ? openFilterModal(filterTemplate)
+        : expandAll()
+    "
+  >
+    <span
+      class="mohawak-icon"
+      [ngClass]="accordionGroupExpanded ? 'close-icon' : 'bars-icon'"
+    ></span>
+    Product Filters
+  </button>
+  <div class="d-none w-100 d-lg-block" *ngIf="showFilters" >
+    <ng-container [ngTemplateOutlet]="filters"></ng-container>
+  </div>
+</div>
+
+<ng-template #filters>
+  <accordion
+    *ngFor="let filter of data; let z = index"
+    [closeOthers]="true"
+    #filterAccordion
+    class="xchange-accordion"
+    [isAnimated]="true"
+  >
+    <accordion-group [heading]="filter.name">
+      <ul class="filters-list">
+        <li *ngFor="let value of filter.values; let i = index">
+          <xchange-custom-checkbox
+            (model)="modelChange($event)"
+            [group]="filter.code"
+            type="checkbox"
+            [id]="(z * 100 + i).toString()"
+            [label]="value.name + ' ' + '(' + value.count + ')'"
+            [value]="value.code"
+            [checked]="value?.selected"
+          >
+          </xchange-custom-checkbox>
+        </li>
+      </ul>
+    </accordion-group>
+  </accordion>
+</ng-template>
+
+<ng-template #filterTemplate>
+  <div class="filters-popup">
+    <h4 class="filter-modal-header">
+      <span (click)="modalRef?.hide()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="25"
+          height="25"
+          viewBox="0 0 25 25"
+        >
+          <circle
+            id="Ellipse_150"
+            data-name="Ellipse 150"
+            cx="12.5"
+            cy="12.5"
+            r="12.5"
+            fill="#383838"
+          />
+          <g
+            id="Group_1643"
+            data-name="Group 1643"
+            transform="translate(6.522 6.522)"
+          >
+            <line
+              id="Line_230"
+              data-name="Line 230"
+              x1="11.593"
+              y1="11.593"
+              fill="none"
+              stroke="#fff"
+              stroke-width="1"
+            />
+            <line
+              id="Line_231"
+              data-name="Line 231"
+              y1="11.593"
+              x2="11.593"
+              fill="none"
+              stroke="#fff"
+              stroke-width="1"
+            />
+          </g>
+        </svg>
+      </span>
+      Product Filters
+    </h4>
+    <ng-container [ngTemplateOutlet]="filters"></ng-container>
+    <div class="d-flex w-100 mt-4 justify-content-center">
+      <button class="btn btn-outline-secondary m-2" (click)="clearFilter()">
+        Clear Filters
+      </button>
+      <button class="btn btn-primary m-2">Apply Filters</button>
+    </div>
+  </div>
+</ng-template>

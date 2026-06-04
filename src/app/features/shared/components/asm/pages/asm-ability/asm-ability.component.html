@@ -1,0 +1,122 @@
+<app-loader *ngIf="spinnerLoading"></app-loader>
+<div [ngClass]="{'hidden': !isFormVisible, 'visible': isFormVisible}" class="transition"
+(mouseover)="toggleFocus(true)" (mouseleave)="toggleFocus(false)"
+>
+  <ng-container *ngIf="isASMUser">
+    <div class="background">
+      <form [formGroup]="myForm" class="container">
+        <div class="row asm">
+          <div class="mb-2" *ngIf="errorMessage">
+            <alert
+              type="danger"
+              class="dashboard-page-alert"
+              [dismissible]="true"
+              *ngIf="showErrorMessage"
+            >
+              <div class="error">
+                {{ errorMessage }}
+              </div>
+            </alert>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3">
+            <input
+              type="text"
+              placeholder="Customer Name/ Email Address"
+              class="form-control"
+              formControlName="email"
+              (input)="onChangeValue(myForm.get('email'))"
+              (blur)="inputBlur()"
+            />
+            <div *ngIf="showSuggestions" class="suggestions">
+              <div class="dropdown">
+                <div
+                  class="dropdown-menu w-100"
+                  aria-labelledby="suggestionDropdown"
+                >
+                  <ng-container *ngIf="!apiLoading">
+                  <ng-container *ngIf="suggestions!==undefined && suggestions.length > 0 && suggestions[0]?.email; else noSuggestions">
+                    <div
+                      *ngFor="let suggestion of suggestions"
+                      class="dropdown-item suggestion-item"
+                      (click)="selectSuggestion(suggestion,$event)"
+                    >
+                      <div class="name">{{ suggestion?.fullName }}</div>
+                      <div class="email">{{ suggestion?.email }}</div>
+                    </div>
+                  </ng-container>
+                  <ng-template #noSuggestions>
+                    <div class="dropdown-item-error suggestion-item">
+                      <div class="error">No email or name found</div>
+                    </div>
+                  </ng-template>
+                  </ng-container>
+                  <ng-container *ngIf="apiLoading">                  
+                    <div class="cssload-container">
+                      <div class="cssload-loading"><i></i><i></i><i></i><i></i></div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3 clear-input-container">
+            <input
+              formControlName="cart"
+              (input)="onChangeCartValue(myForm.get('cart'))"
+              (input)="onCartInput(myForm.get('cart'))"
+              [readOnly]="startSession"
+              class="form-control"
+              placeholder="Enter Cart Id"
+              #cartInput
+            />
+            <button
+              class="mx-clear-input-brn"
+              (click)="clearCartinput()"
+              *ngIf="this.myForm.value?.cart?.length > 0 && !startSession"
+            >
+              <img
+                src="/assets/images/icons/close-primary.svg"
+                alt="Search Input Clear"
+              />
+            </button>
+            <div *ngIf="showCart" class="suggestions">
+              <div class="dropdown">
+                <div
+                  class="dropdown-menu w-100"
+                  aria-labelledby="suggestionDropdown"
+                >
+                  <ng-container *ngIf="cartData?.length && !startSession">
+                    <div
+                      *ngFor="let key of cartData"
+                      class="dropdown-item suggestion-item"
+                      (click)="selectCart(key)"
+                    >
+                      <div class="email">{{ key }}</div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="!cartData?.length && !startSession">
+                    <div class="dropdown-item-error suggestion-item">
+                      <div class="error">*No cart exists for this user</div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3 d-flex search-button cta-align">
+            <button
+              type="button"
+              [disabled]="startSession ? (myForm.valid && isSuggestionSelected) : !(myForm.valid && isSuggestionSelected)"
+              class="btn btn-primary w-100"
+              [ngClass]="{ 'red-submit-button': startSession }"
+              (click)="onFormSubmit()"
+            >
+              {{ startSession ? "Stop Session" : "Start Session" }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </ng-container>
+</div>
+

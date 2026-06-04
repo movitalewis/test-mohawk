@@ -1,0 +1,26 @@
+
+
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w w-100">Oops!</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="onConfirm()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p class="modal-title f-w w-100">
+        This user is currently disabled. Please try different login credentials or check with your representative.
+      </p>
+      <div class="mt-4 mb-4 d-flex justify-content-evenly w-50 mx-auto">
+        <button class="btn btn-secondary" (click)="onConfirm()">
+          OK
+        </button>
+        
+      </div>
+    </div>
+  </div>

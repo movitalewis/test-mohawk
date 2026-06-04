@@ -1,0 +1,8 @@
+<div class="sg-image-container">
+    <img [src]="imageUrl" alt="">
+</div>
+<div class="sg-switch-container">
+    <xchange-switch-button className="fw" *ngIf="switchBtnConfig" [config]="switchBtnConfig"
+        (onValueOutput)="onSwitch($event)">
+    </xchange-switch-button>
+</div>

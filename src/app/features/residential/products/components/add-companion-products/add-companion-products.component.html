@@ -1,0 +1,1609 @@
+<!-- <app-loader
+  [fullScreen]="true"
+  *ngIf="spinnerLoading || isLoading"
+></app-loader> -->
+<ng-container>
+  <!-- [ngStyle]="spinnerLoading ? { display: 'none' } : {}" -->
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w w-100">Choose a Solution</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="onHideModal('AddCompanionProductsComponent')"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  
+  <div class="modal-body p-20" #scrollToTop>
+    <ng-container *ngIf="addtoCartFailed">
+      <div class="mb-3" *ngIf="addtoCartErrorMessage">
+        <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+          <div class="container">
+            {{ addtoCartErrorMessage }}
+          </div>
+        </alert>
+      </div>
+    </ng-container>
+
+    <div class="container position-relative">
+      <div class="row mt-4 pt-2 mb-4">
+        <div class="col-md-12 col-xs-12">
+          <ng-container *ngIf="solutions?.length > 0">
+            <div class="card mt-2" *ngFor="let item of solutions">
+              <div class="card-header mb-2 dark">
+                <h4 class="text-white d-inline">
+                  {{ item?.sellingStyleName }} - {{ item?.sellingStyleId }}
+                </h4>
+                <div class="float-end mohawk-logo text-end">
+                  <xchange-logo-pdp
+                    id="choose-solution-product-logo"
+                    type="commercial"
+                    theme="light"
+                    [selectedPdpData]="item"
+                    [isInverted]="true"
+                  ></xchange-logo-pdp>
+                </div>
+              </div>
+
+              <div class="card-body">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-12 mt-2">
+                  <div class="row">
+                    <div class="col-sm-3 col-md-4 col-lg-3 col-xl-2 mb-4">
+                      <div class="col-6 col-sm-12 image-overlay-container">
+                        <!-- <div class="shadow-lg "> -->
+                        <img
+                          class="card-img-top rounded img"
+                          [src]="
+                            item?.img ||
+                            'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                          "
+                        />
+                         <div class="ribbon-wrapper-preview" *ngIf="preferredStock">
+                            <div class="ribbon preferred-stock">
+                                PREFERRED <br/> STOCKING
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+
+                    <div class="col-sm-9 col-md-8 col-lg-9 col-xl-10">
+                      <div class="box-flex">
+                        <div class="info-text">
+                          <h4>Color #</h4>
+                          <p>{{ item?.sellingColorId || "NA" }}</p>
+                        </div>
+                        <div class="info-text">
+                          <h4>Color</h4>
+                          <p>{{ item?.sellingColorName || "NA" }}</p>
+                        </div>
+                        <div class="info-text">
+                          <h4>Size</h4>
+                          <p>
+                            {{
+                              item?.sellingSizeDescription ||
+                                item?.sellingSizeId ||
+                                "NA"
+                            }}
+                          </p>
+                        </div>
+                        <div class="info-text">
+                          <h4>Backing</h4>
+                          <p>
+                            {{ item?.sellingBackingId }} -
+                            {{ item?.sellingBackingName || "NA" }}
+                          </p>
+                        </div>
+                        <div class="info-text">
+                          <h4>Shipping Address</h4>
+                          <p *ngIf="shippingAddress?.oneTimeShippingAddress || shippingAddress?.isOneTimeShipTo">
+                            {{
+                              shippingAddress?.companyName
+                                ? shippingAddress?.companyName
+                                : shippingAddress?.addressName || ""
+                            }}<br />
+                            <!-- *ngIf="shippingAddress.companyName !== ''" />
+                            {{ shippingAddress?.id ? "Ship To #" : ""
+                            }}{{
+                              shippingAddress?.id
+                                ? shippingAddress?.id.split("_")[0]
+                                : ""
+                            }} -->
+                            {{ shippingAddress?.addressLine1 || shippingAddress?.line1}}  {{ shippingAddress?.addressLine2  || shippingAddress?.line2 }} <br />
+                            {{ shippingAddress?.city || shippingAddress?.town }},
+                            {{ shippingAddress?.region?.isocodeShort || shippingAddress?.region?.countryIso
+                            }}{{ shippingAddress?.zipCode || shippingAddress?.postalCode }} <br />
+                          </p>
+                          <p *ngIf="!shippingAddress?.oneTimeShippingAddress && !shippingAddress?.isOneTimeShipTo">
+                            {{
+                              shippingAddress?.addressName
+                                ? shippingAddress?.addressName
+                                : ""
+                            }}<br *ngIf="shippingAddress?.addressName"/>
+                            {{ shippingAddress?.id ? "Ship To #" : ""
+                            }}{{
+                              shippingAddress?.id
+                                ? shippingAddress?.id.split("_")[0]
+                                : ""
+                            }}
+                            {{ shippingAddress?.line2 }} {{ shippingAddress?.line1 }}{{ shippingAddress?.building ? ", " : "" }}{{ shippingAddress?.building }}<br />
+                            {{ shippingAddress?.town }},
+                            {{ shippingAddress?.region?.isocodeShort }}
+                            {{ shippingAddress?.postalCode }} <br />
+                          </p>
+
+                          <h4>Shipping Method</h4>
+                          <p *ngIf="!atpFromCart">
+                            {{ shippingOptions?.defaultShippingMethod || "NA" }}
+                            {{
+                              shippingOptions?.defaultShippingConditionDesc ||
+                              shippingOptions?.shippingConditionDesc || defaultMiniCartShippingDesc
+                                ? "-"
+                                : ""
+                            }}
+                            {{
+                              defaultMiniCartShippingDesc || shippingOptions?.defaultShippingConditionDesc ||
+                                shippingOptions?.shippingConditionDesc
+                            }}
+                          </p>
+                          <p *ngIf="atpFromCart">
+                            {{
+                              shippingOptions?.defaultShippingMethod ||
+                                shippingOptions?.shippingCondition ||
+                                "NA"
+                            }}
+                            {{
+                              shippingOptions?.defaultShippingMethod ||
+                              shippingOptions?.shippingConditionDesc || defaultMiniCartShippingDesc
+                                ? "-"
+                                : ""
+                            }}
+                            {{
+                              defaultMiniCartShippingDesc || shippingOptions?.defaultShippingConditionDesc ||
+                                shippingOptions?.shippingConditionDesc
+                            }}
+                          </p>
+                        
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <hr />
+      <!-- Backorder solutions tables -->
+      
+      <ng-container
+        *ngIf="!!backorderSolutions?.length && (solutionType != 'RO' && solSubProductType != 'PAD_CUSHION') && erpProductCategory == 'B'"
+      >
+        <div class="avl-s-container" class="mt-4">
+          <h2>BACKORDER OPTIONS</h2>
+          <p>
+            Requested Order Quantity <br />
+            <!-- 1' 0" (1.33 Sq Yds) -->
+            <!-- {{ feetYardFormData | json }} -->
+              <ng-container *ngIf="!multicutIndicator">
+                {{ feetYardFormData?.requestedQty | number : "1.1-2" }}
+                {{ getUomDesc(feetYardFormData?.unit) }}
+              </ng-container>
+              <ng-container *ngIf="multicutIndicator">
+                {{backorderSolutions[0]?.convertedRollAssignedInFeet}}
+                {{backorderSolutions[0]?.solutionEntries[0]?.requestedUOM}}
+              </ng-container>
+
+            <!-- {{data?.originalQuantity}} {{data?.originalUOM}} -->
+            <!-- {{ requestedOrderQuantityLabel }} -->
+          </p>
+        </div>
+        <ng-container *ngTemplateOutlet="backorderSolHeaderTpl"></ng-container>
+        <ngx-table
+          [configuration]="config"
+          [data]="backorderSolutions || []"
+          [columns]="bkcolumns"
+          [filtersTemplate]="toggleRollTemplate"
+        >
+          <ng-template let-row>
+            <td>
+              <label class="ngx-form-checkbox">
+                <!-- <input type="checkbox" /> -->
+                <xchange-radio-button
+                  *ngIf="!fromViewInventory"
+                  classNames="size-22"
+                  [name]="'name-' + row.solutionID"
+                  [value]="'b-' +row.solutionID"
+                  [id]="row.solutionID"
+                  [checked]="selectedSolution?.solutionID === row.solutionID && selectedSolution?.solutionEntries[0]?.backOrder == true"
+                  (change)="openBalanceModal(row, balanceTemplate)"
+                ></xchange-radio-button>
+                <xchange-custom-checkbox
+                  *ngIf="fromViewInventory"
+                  [id]="row.solutionID"
+                  (change)="handleMultiSelect($event, row, balanceTemplate)"
+                ></xchange-custom-checkbox>
+                <!-- <i class="ngx-form-icon custom-checkbox-color"></i> -->
+              </label>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                <!-- {{ item.requestedUOM }} -->
+                {{ item?.type || 'NA'}}
+              </p>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                <!-- {{ item.requestedOrderQuantityLabel }} -->
+                {{
+                  !item.rollAssignedInFeet ||
+                  item.rollAssignedInFeet.trim() === ""
+                    ? "NA"
+                    : item.rollAssignedInFeet
+                }}
+              </p>
+            </td>
+            <td class="dymica-length-column">
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{
+                  toggleLengthColumn
+                    ? item.rollAssignedInSF
+                    : item.rollAssignedInSY
+                }}
+              </p>
+            </td>
+            <!-- <td>
+                  <p *ngFor="let item of row.solutionEntries ">{{ handleUserQty(item) }}</p>
+              </td> -->
+            <!-- <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.orderMinInFeet }}
+              </p>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.orderMaxInFeet }}
+              </p>
+            </td> -->
+
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ 
+                  (item?.plannedDeliveryDate?.trim().toLowerCase() === 'in process' || !item?.plannedDeliveryDate)
+                    ? (
+                        (item?.estimatedDeliveryDate?.trim().toLowerCase() === 'in process' || !item?.estimatedDeliveryDate)
+                          ? 'In Process'
+                          : (dateConvert(item?.estimatedDeliveryDate) ? (dateConvert(item?.estimatedDeliveryDate) | date:'MM/dd/yyyy') : 'In Process')
+                      )
+                    : (dateConvert(item?.plannedDeliveryDate) ? (dateConvert(item?.plannedDeliveryDate) | date:'MM/dd/yyyy') : 'In Process')
+                }}
+              </p>
+            </td>
+          </ng-template>
+        </ngx-table>
+      </ng-container>
+
+      <ng-container
+      *ngIf="!!backorderSolutions?.length &&  erpProductCategory == 'S' && solSubProductType != 'CARPET_TILE' &&  solSubProductType !== 'PAD_CUSHION'"
+    >
+      <div class="avl-s-container" class="mt-4">
+        <h2>BACKORDER OPTIONS</h2>
+        <p>
+          Requested Order Quantity <br />
+          <!-- 1' 0" (1.33 Sq Yds) -->
+          <!-- {{ feetYardFormData | json }} -->
+            <ng-container *ngIf="!multicutIndicator">
+              {{ feetYardFormData?.requestedQty }}
+              {{ backorderSolutions[0]?.solutionEntries[0]?.assignedUom }}
+            </ng-container>
+            <ng-container *ngIf="multicutIndicator">
+              {{backorderSolutions[0]?.convertedRollAssignedInFeet}}
+              {{backorderSolutions[0]?.solutionEntries[0]?.requestedUOM}}
+            </ng-container>
+
+          <!-- {{data?.originalQuantity}} {{data?.originalUOM}} -->
+          <!-- {{ requestedOrderQuantityLabel }} -->
+        </p>
+      </div>
+      <ng-container *ngTemplateOutlet="backorderSolHeaderTpl"></ng-container>
+      <ngx-table
+        [configuration]="config"
+        [data]="backorderSolutions || []"
+        [columns]="bkcolumnsHS"
+      
+      >
+        <ng-template let-row>
+          <td>
+            <label class="ngx-form-checkbox">
+              <!-- <input type="checkbox" /> -->
+              <xchange-radio-button
+                *ngIf="!fromViewInventory"
+                classNames="size-22"
+                [name]="'name-' + row.solutionID"
+                [value]="'b-' +row.solutionID"
+                [id]="row.solutionID"
+                [checked]="selectedSolution?.solutionID === row.solutionID && selectedSolution?.solutionEntries[0]?.backOrder == true"
+                (change)="openBalanceModal(row, balanceTemplate)"
+              ></xchange-radio-button>
+              <xchange-custom-checkbox
+                *ngIf="fromViewInventory"
+                [id]="row.solutionID"
+                (change)="handleMultiSelect($event, row, balanceTemplate)"
+              ></xchange-custom-checkbox>
+              <!-- <i class="ngx-form-icon custom-checkbox-color"></i> -->
+            </label>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              <!-- {{ item.requestedUOM }} -->
+              {{ item?.type || 'NA'}}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              <!-- {{ item.requestedOrderQuantityLabel }} -->
+              {{
+                item.assignedUom === 'CT' ? (item.rollAssigned | number : '1.0-0') : item.rollAssigned
+              }} {{ item.assignedUom
+                }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              <!-- {{ item.requestedOrderQuantityLabel }} -->
+              {{
+                item.rollAssignedInSY
+              }}
+            </p>
+          </td>
+         
+
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ 
+                (item?.plannedDeliveryDate?.trim().toLowerCase() === 'in process' || !item?.plannedDeliveryDate)
+                  ? (
+                      (item?.estimatedDeliveryDate?.trim().toLowerCase() === 'in process' || !item?.estimatedDeliveryDate)
+                        ? 'In Process'
+                        : (dateConvert(item?.estimatedDeliveryDate) ? (dateConvert(item?.estimatedDeliveryDate) | date:'MM/dd/yyyy') : 'In Process')
+                    )
+                  : (dateConvert(item?.plannedDeliveryDate) ? (dateConvert(item?.plannedDeliveryDate) | date:'MM/dd/yyyy') : 'In Process')
+              }}
+            </p>
+          </td>
+        </ng-template>
+      </ngx-table>
+      </ng-container>
+
+      <ng-container
+      *ngIf="!!backorderSolutions?.length &&  erpProductCategory == 'S' && solSubProductType === 'CARPET_TILE'" 
+    >
+      <div class="avl-s-container" class="mt-4">
+        <h2>BACKORDER OPTIONS</h2>
+        <p>
+          Requested Order Quantity <br />
+          <!-- 1' 0" (1.33 Sq Yds) -->
+          <!-- {{ feetYardFormData | json }} -->
+            <ng-container *ngIf="!multicutIndicator">
+              {{ feetYardFormData?.requestedQty }}
+              {{ backorderSolutions[0]?.solutionEntries[0]?.assignedUom }}
+            </ng-container>
+            <ng-container *ngIf="multicutIndicator">
+              {{backorderSolutions[0]?.convertedRollAssignedInFeet}}
+              {{backorderSolutions[0]?.solutionEntries[0]?.requestedUOM}}
+            </ng-container>
+
+          <!-- {{data?.originalQuantity}} {{data?.originalUOM}} -->
+          <!-- {{ requestedOrderQuantityLabel }} -->
+        </p>
+      </div>
+      <ng-container *ngTemplateOutlet="backorderSolHeaderTpl"></ng-container>
+      <ngx-table
+        [configuration]="config"
+        [data]="backorderSolutions || []"
+        [columns]="bkcolumnsHSCarpetTile"
+      
+      >
+        <ng-template let-row>
+          <td>
+            <label class="ngx-form-checkbox">
+              <!-- <input type="checkbox" /> -->
+              <xchange-radio-button
+                *ngIf="!fromViewInventory"
+                classNames="size-22"
+                [name]="'name-' + row.solutionID"
+                [value]="'b-' +row.solutionID"
+                [id]="row.solutionID"
+                [checked]="selectedSolution?.solutionID === row.solutionID && selectedSolution?.solutionEntries[0]?.backOrder == true"
+                (change)="openBalanceModal(row, balanceTemplate)"
+              ></xchange-radio-button>
+              <xchange-custom-checkbox
+                *ngIf="fromViewInventory"
+                [id]="row.solutionID"
+                (change)="handleMultiSelect($event, row, balanceTemplate)"
+              ></xchange-custom-checkbox>
+              <!-- <i class="ngx-form-icon custom-checkbox-color"></i> -->
+            </label>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              <!-- {{ item.requestedUOM }} -->
+              {{ item?.type || 'NA'}}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              <!-- {{ item.requestedOrderQuantityLabel }} -->
+              {{
+                item.assignedUom === 'CT' ? (item.rollAssigned | number : '1.0-0') : item.rollAssigned
+              }} {{ item.assignedUom
+                }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              <!-- {{ item.requestedOrderQuantityLabel }} -->
+              {{
+                item.rollAssignedInSY
+              }}
+            </p>
+          </td>
+        
+
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ 
+                (item?.plannedDeliveryDate?.trim().toLowerCase() === 'in process' || !item?.plannedDeliveryDate)
+                  ? (
+                      (item?.estimatedDeliveryDate?.trim().toLowerCase() === 'in process' || !item?.estimatedDeliveryDate)
+                        ? 'In Process'
+                        : (dateConvert(item?.estimatedDeliveryDate) ? (dateConvert(item?.estimatedDeliveryDate) | date:'MM/dd/yyyy') : 'In Process')
+                    )
+                  : (dateConvert(item?.plannedDeliveryDate) ? (dateConvert(item?.plannedDeliveryDate) | date:'MM/dd/yyyy') : 'In Process')
+              }}
+            </p>
+          </td>
+        </ng-template>
+      </ngx-table>
+      </ng-container>
+
+      <ng-container
+      *ngIf="!!backorderSolutions?.length && ( solSubProductType === 'PAD_CUSHION')"
+    >
+      <div class="avl-s-container" class="mt-4">
+        <h2>BACKORDER OPTIONS</h2>
+        <p>
+          Requested Order Quantity <br />
+          <!-- 1' 0" (1.33 Sq Yds) -->
+          <!-- {{ feetYardFormData | json }} -->
+            <ng-container *ngIf="!multicutIndicator">
+              {{ feetYardFormData?.requestedQty | number : "1.1-2" }}
+              {{ getUomDesc(feetYardFormData?.unit) }}
+            </ng-container>
+            <ng-container *ngIf="multicutIndicator">
+              {{backorderSolutions[0]?.convertedRollAssignedInFeet}}
+              {{backorderSolutions[0]?.solutionEntries[0]?.requestedUOM}}
+            </ng-container>
+
+          <!-- {{data?.originalQuantity}} {{data?.originalUOM}} -->
+          <!-- {{ requestedOrderQuantityLabel }} -->
+        </p>
+      </div>
+      <ng-container *ngTemplateOutlet="backorderSolHeaderTpl"></ng-container>
+      <ngx-table
+        [configuration]="config"
+        [data]="backorderSolutions || []"
+        [columns]="bkcolumnsPad"
+        [filtersTemplate]="toggleRollTemplate"
+      >
+        <ng-template let-row>
+          <td>
+            <label class="ngx-form-checkbox">
+              <!-- <input type="checkbox" /> -->
+              <xchange-radio-button
+                *ngIf="!fromViewInventory"
+                classNames="size-22"
+                [name]="'name-' + row.solutionID"
+                [value]="'b-' +row.solutionID"
+                [id]="row.solutionID"
+                [checked]="selectedSolution?.solutionID === row.solutionID && selectedSolution?.solutionEntries[0]?.backOrder == true"
+                (change)="openBalanceModal(row, balanceTemplate)"
+              ></xchange-radio-button>
+              <xchange-custom-checkbox
+                *ngIf="fromViewInventory"
+                [id]="row.solutionID"
+                (change)="handleMultiSelect($event, row, balanceTemplate)"
+              ></xchange-custom-checkbox>
+              <!-- <i class="ngx-form-icon custom-checkbox-color"></i> -->
+            </label>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.requestedUOM }}
+            </p>
+          </td>
+          <td class="dymica-length-column">
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{
+                toggleLengthColumn
+                  ? item.rollAssignedInSF
+                  : item.rollAssignedInSY
+              }}
+            </p>
+          </td>
+          <!-- <td>
+                <p *ngFor="let item of row.solutionEntries ">{{ handleUserQty(item) }}</p>
+            </td> -->
+          <!-- <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.orderMinInFeet }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.orderMaxInFeet }}
+            </p>
+          </td> -->
+
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ 
+                (item?.plannedDeliveryDate?.trim().toLowerCase() === 'in process' || !item?.plannedDeliveryDate)
+                  ? (
+                      (item?.estimatedDeliveryDate?.trim().toLowerCase() === 'in process' || !item?.estimatedDeliveryDate)
+                        ? 'In Process'
+                        : (dateConvert(item?.estimatedDeliveryDate) ? (dateConvert(item?.estimatedDeliveryDate) | date:'MM/dd/yyyy') : 'In Process')
+                    )
+                  : (dateConvert(item?.plannedDeliveryDate) ? (dateConvert(item?.plannedDeliveryDate) | date:'MM/dd/yyyy') : 'In Process')
+              }}
+            </p>
+          </td>
+        </ng-template>
+      </ngx-table>
+      </ng-container>
+
+      <ng-container
+        *ngIf="!!backorderSolutions?.length && solutionType === 'RO' && solSubProductType != 'PAD_CUSHION'"
+      >
+        <div class="avl-s-container" class="mt-4">
+          <h2>BACKORDER OPTIONS</h2>
+          <p>
+            Requested Order Quantity <br />
+            <!-- 1' 0" (1.33 Sq Yds) -->
+            <!-- {{ feetYardFormData | json }} -->
+            {{ feetYardFormData?.requestedQty | number : "1.1-2" }}
+            {{ getUomDesc(feetYardFormData?.unit) }}
+
+            <!-- {{data?.originalQuantity}} {{data?.originalUOM}} -->
+            <!-- {{ requestedOrderQuantityLabel }} -->
+          </p>
+        </div>
+        <ng-container *ngTemplateOutlet="backorderSolHeaderTpl"></ng-container>
+        <ngx-table
+          [configuration]="config"
+          [data]="backorderSolutions || []"
+          [columns]="bkcolumnsRoll"
+        >
+          <ng-template let-row>
+            <td>
+              <label class="ngx-form-checkbox">
+                <!-- <input type="checkbox" /> -->
+                <xchange-radio-button
+                  *ngIf="!fromViewInventory"
+                  classNames="size-22"
+                  [name]="'name-' + row.solutionID"
+                  [value]="'b-' +row.solutionID"
+                  [id]="row.solutionID"
+                  [checked]="selectedSolution?.solutionID === row.solutionID && 
+                              selectedSolution?.solutionEntries[0]?.backOrder == true"
+                  (change)="openBalanceModal(row, balanceTemplate)"
+                ></xchange-radio-button>
+                <xchange-custom-checkbox
+                  *ngIf="fromViewInventory"
+                  [id]="row.solutionID"
+                  (change)="handleMultiSelect($event, row, balanceTemplate)"
+                ></xchange-custom-checkbox>
+                <!-- <i class="ngx-form-icon custom-checkbox-color"></i> -->
+              </label>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.requestedUOM }}
+              </p>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                <!-- {{ item.requestedOrderQuantityLabel }} -->
+                {{ item.requestedQty }}
+                {{ item.requestedUOM === "Roll" ? "RL" : "" }}
+              </p>
+            </td>
+            <!-- <td class="dymica-length-column">
+              <p *ngFor="let item of row.solutionEntries">
+                {{ item.rollAssignedInSY }}
+              </p>
+            </td> -->
+            <!-- <td>
+                  <p *ngFor="let item of row.solutionEntries ">{{ handleUserQty(item) }}</p>
+              </td> -->
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.orderMin }}
+              </p>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.orderMax }}
+              </p>
+            </td>
+
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ 
+                  (item?.plannedDeliveryDate?.trim().toLowerCase() === 'in process' || !item?.plannedDeliveryDate)
+                    ? (
+                        (item?.estimatedDeliveryDate?.trim().toLowerCase() === 'in process' || !item?.estimatedDeliveryDate)
+                          ? 'In Process'
+                          : (dateConvert(item?.estimatedDeliveryDate) ? (dateConvert(item?.estimatedDeliveryDate) | date:'MM/dd/yyyy') : 'In Process')
+                      )
+                    : (dateConvert(item?.plannedDeliveryDate) ? (dateConvert(item?.plannedDeliveryDate) | date:'MM/dd/yyyy') : 'In Process')
+                }}
+              </p>
+            </td>
+          </ng-template>
+        </ngx-table>
+      </ng-container>
+
+      <!-- Available solutions tables -->
+      
+      <ng-container
+        *ngIf="availableSolutions && (availableSolutions | keyvalue).length > 0 && solutionType != 'RO' && solSubProductType != 'PAD_CUSHION' && erpProductCategory != 'S'" 
+      >
+        <ng-container *ngTemplateOutlet="availableSolHeaderTpl"></ng-container>
+        <div
+          *ngIf="!multicutIndicator && selectedPDPTab != 'Inventory'"
+          class="avl-s-container mt-4"
+        >
+          <h2>Available Solutions</h2>
+
+          <p>
+            Requested Order Quantity <br />
+            {{ feetYardFormData?.requestedQty | number : "1.1-2" }}
+            {{ getUomDesc(feetYardFormData?.unit) }}
+          </p>
+        </div>
+        <div *ngIf="multicutIndicator" class="avl-s-container mt-4">
+          <h2>Available Solutions</h2>
+          <p>
+            Requested Order Quantity <br />
+            {{ availableSolutions?.MULTICUT?.[0]?.convertedRollAssignedInFeet}}
+            {{ availableSolutions?.MULTICUT?.[0]?.solutionEntries[0]?.requestedUOM }}
+          </p>
+        </div>
+        <div
+          *ngIf="!multicutIndicator && selectedPDPTab == 'Inventory'"
+          class="avl-s-container mt-4"
+        >
+          <h2>Available Solutions</h2>
+          <p>
+            Requested Order Quantity <br />
+            1 RL
+          </p>
+        </div>
+        
+        <div class="table-responsive mt-4" *ngFor="let availableSol of availableSolutions | keyvalue">
+          <ngx-table
+            [configuration]="config"
+            [data]="availableSol && availableSol?.value"
+            [columns]="columns"
+            [filtersTemplate]="toggleRollTemplate">
+            <ng-template let-row let-i="index" let-isFirst="first">
+              <td>
+                <label class="ngx-form-checkbox">
+                  <!-- <input type="checkbox" /> -->
+                  <xchange-radio-button
+                    *ngIf="!fromViewInventory"
+                    classNames="size-22"
+                    [name]="'name-' + row.solutionID"
+                    [value]="row.solutionID"
+                    [id]="row.solutionID"
+                    [checked]="selectedSolution?.solutionID === row.solutionID"
+                    (change)="openBalanceModal(row, balanceTemplate)"
+                  ></xchange-radio-button>
+                  <xchange-custom-checkbox
+                    *ngIf="fromViewInventory"
+                    [id]="row.solutionID"
+                    (change)="handleMultiSelect($event, row, balanceTemplate)"
+                  ></xchange-custom-checkbox>
+                  <!-- <i class="ngx-form-icon custom-checkbox-color"></i> -->
+                </label>
+              </td>
+              <td>
+                <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                  {{ item.rollAssignment }}
+                </p>
+              </td>
+              <td>
+                <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                  {{ item.rollAssignedInFeet }}
+                </p>
+              </td>
+              <td class="dymica-length-column">
+                <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                  {{
+                    toggleLengthColumn
+                      ? item.rollAssignedInSF
+                      : item.rollAssignedInSY
+                  }}
+                </p>
+              </td>
+              <!--  <td>
+                  <p *ngFor="let item of row.solutionEntries ">{{ handleUserQty(item) }}</p> 
+              </td> -->
+              <td>
+                <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                  {{ item.dyeLot }}
+                </p>
+              </td>
+              <td>
+                <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                  {{ item.rollNumber }}
+                </p>
+              </td>
+              <td>
+                <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                  {{ item.plant }} {{ item.plantDescription ? " - " : "" }}
+                  {{ item.plantDescription ? item.plantDescription : "" }}
+                </p>
+              </td>
+              <!-- <td *ngIf="!fromViewInventory">
+                <p
+                  class="mb-0"
+                  *ngFor="
+                    let item of row.solutionEntries;
+                    let isRowFirst = first
+                  "
+                >
+                  <ng-container *ngIf="isRowFirst; else emptyCell">
+                    {{
+                      item.saving == 0
+                        ? savingLabel == true
+                          ? ""
+                          : "NA"
+                        : "$ " + item.saving
+                    }}
+                  </ng-container>
+                  <ng-template #emptyCell><span></span></ng-template>
+                </p>
+              </td> -->
+              <td>
+                <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                  {{ (item?.estimatedDeliveryDate?.trim().toLowerCase() === 'in process' || !item?.estimatedDeliveryDate)
+                  ? 'In Process'
+                  : (dateConvert(item?.estimatedDeliveryDate) ? (dateConvert(item?.estimatedDeliveryDate) | date:'MM/dd/yyyy') : 'In Process')}}
+                </p>
+              </td>
+            </ng-template>
+          </ngx-table>
+        </div>
+      </ng-container>
+
+      <ng-container
+      *ngIf="availableSolutions && (availableSolutions | keyvalue).length > 0 && erpProductCategory == 'S' && solSubProductType != 'CARPET_TILE'  &&  solSubProductType !== 'PAD_CUSHION'"
+    >
+      <ng-container *ngTemplateOutlet="availableSolHeaderTpl"></ng-container>
+      <div
+        *ngIf="!multicutIndicator && selectedPDPTab != 'Inventory'"
+        class="avl-s-container mt-4"
+      >
+        <h2>Available Solutions</h2>
+
+        <p>
+          Requested Order Quantity <br />
+       {{ feetYardFormData?.requestedQty | number : '1.0-0' }} 
+       {{"CT" }}
+        </p>
+      </div>
+      <div *ngIf="multicutIndicator" class="avl-s-container mt-4">
+        <h2>Available Solutions</h2>
+        <p>
+          Requested Order Quantity <br />
+          {{ availableSolutions?.MULTICUT?.[0]?.convertedRollAssignedInFeet}}
+          {{ availableSolutions?.MULTICUT?.[0]?.solutionEntries[0]?.requestedUOM }}
+        </p>
+      </div>
+      <div
+        *ngIf="!multicutIndicator && selectedPDPTab == 'Inventory'"
+        class="avl-s-container mt-4"
+      >
+        <h2>Available Solutions</h2>
+        <p>
+          Requested Order Quantity <br />
+          1 RL
+        </p>
+      </div>
+      
+      <div class="table-responsive mt-4" *ngFor="let availableSol of availableSolutions | keyvalue">
+       <ngx-table
+        [configuration]="config"
+        [data]="availableSol && availableSol?.value"
+        [columns]="columnsHS">
+     
+
+        <ng-template let-row let-i="index" let-isFirst="first">
+          <td>
+            <label class="ngx-form-checkbox">
+              <xchange-radio-button
+              *ngIf="!fromViewInventory"
+              classNames="size-22"
+              [name]="'name-' + row.solutionID"
+              [value]="row.solutionID"
+              [id]="row.solutionID"
+              [checked]="selectedSolution?.solutionID === row.solutionID"
+              (change)="openBalanceModal(row, balanceTemplate)"
+            ></xchange-radio-button>
+            </label>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item?.requestedUOM ==='CT' ? (item.requestedQty | number : '1.0-0') : item.requestedQty }} {{ item?.requestedUOM ==='CT' ? 'Carton': item?.requestedUOM}}
+            </p>
+            
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item?.rollAssignedInSY }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item?.dyeLot || 'NA' }}
+            </p>
+          </td>
+         
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.plant }} {{ item.plantDescription ? " - " : "" }}
+              {{ item.plantDescription ? item.plantDescription : "" }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ (item?.estimatedDeliveryDate?.trim().toLowerCase() === 'in process' || !item?.estimatedDeliveryDate)
+              ? 'In Process'
+              : (dateConvert(item?.estimatedDeliveryDate) ? (dateConvert(item?.estimatedDeliveryDate) | date:'MM/dd/yyyy') : 'In Process')}}
+            </p>
+          </td>
+        </ng-template>
+        </ngx-table>
+      </div>
+      </ng-container>
+
+      <ng-container
+      *ngIf="availableSolutions && (availableSolutions | keyvalue).length > 0 && erpProductCategory == 'S' && solSubProductType === 'CARPET_TILE'" 
+    >
+      <ng-container *ngTemplateOutlet="availableSolHeaderTpl"></ng-container>
+      <div
+        *ngIf="!multicutIndicator && selectedPDPTab != 'Inventory'"
+        class="avl-s-container mt-4"
+      >
+        <h2>Available Solutions</h2>
+
+        <p>
+          Requested Order Quantity <br />
+      {{ initialState?.requestedQty | number : '1.0-0' }} 
+      {{"CT" }}
+        </p>
+      </div>
+      <div *ngIf="multicutIndicator" class="avl-s-container mt-4">
+        <h2>Available Solutions</h2>
+        <p>
+          Requested Order Quantity <br />
+          {{ availableSolutions?.MULTICUT?.[0]?.convertedRollAssignedInFeet}}
+          {{ availableSolutions?.MULTICUT?.[0]?.solutionEntries[0]?.requestedUOM }}
+        </p>
+      </div>
+      <div
+        *ngIf="!multicutIndicator && selectedPDPTab == 'Inventory'"
+        class="avl-s-container mt-4"
+      >
+        <h2>Available Solutions</h2>
+        <p>
+          Requested Order Quantity <br />
+          1 RL
+        </p>
+      </div>
+      
+      <div class="table-responsive mt-4" *ngFor="let availableSol of availableSolutions | keyvalue">
+      <ngx-table
+        [configuration]="config"
+        [data]="availableSol && availableSol?.value"
+        [columns]="columnsHSCarpetTile">
+     
+
+        <ng-template let-row let-i="index" let-isFirst="first">
+          <td>
+            <label class="ngx-form-checkbox">
+              <xchange-radio-button
+              *ngIf="!fromViewInventory"
+              classNames="size-22"
+              [name]="'name-' + row.solutionID"
+              [value]="row.solutionID"
+              [id]="row.solutionID"
+              [checked]="selectedSolution?.solutionID === row.solutionID"
+              (change)="openBalanceModal(row, balanceTemplate)"
+            ></xchange-radio-button>
+            </label>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item?.requestedUOM ==='CT' ? (item.requestedQty | number : '1.0-0') : item.requestedQty }} {{ item?.requestedUOM ==='CT' ? 'Carton': item?.requestedUOM}}
+            </p>
+            
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.rollAssignedInSY }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item?.dyeLot || 'NA' }}
+            </p>
+          </td>
+        
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.plant }} {{ item.plantDescription ? " - " : "" }}
+              {{ item.plantDescription ? item.plantDescription : "" }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ (item?.estimatedDeliveryDate?.trim().toLowerCase() === 'in process' || !item?.estimatedDeliveryDate)
+              ? 'In Process'
+              : (dateConvert(item?.estimatedDeliveryDate) ? (dateConvert(item?.estimatedDeliveryDate) | date:'MM/dd/yyyy') : 'In Process')}}
+            </p>
+          </td>
+        </ng-template>
+        </ngx-table>
+      </div>
+      </ng-container>
+      <ng-container
+        *ngIf="availableSolutions && (availableSolutions | keyvalue).length > 0 && solutionType === 'RO' && solSubProductType != 'PAD_CUSHION' && erpProductCategory != 'S'"
+      >
+        <ng-container *ngTemplateOutlet="availableSolHeaderTpl"></ng-container>
+        <div *ngIf="multicutIndicator" class="avl-s-container mt-4">
+          <h2>Available Solutions</h2>
+          <p>
+            Requested Order Quantity<br />
+            {{ availableSolutions?.MULTICUT?.[0]?.convertedRollAssignedInFeet}}
+            {{ availableSolutions?.MULTICUT?.[0]?.solutionEntries[0]?.requestedUOM }}
+          </p>
+        </div>
+        <div
+          *ngIf="!multicutIndicator && selectedPDPTab == 'Inventory'"
+          class="avl-s-container mt-4"
+        >
+          <h2>Available Solutions</h2>
+
+          <p>
+            Requested Order Quantity <br />
+            1 RL
+          </p>
+        </div>
+        <div
+          *ngIf="!multicutIndicator && selectedPDPTab != 'Inventory'"
+          class="avl-s-container mt-4"
+        >
+          <h2>Available Solutions</h2>
+
+          <p>
+            Requested Order Quantity <br />
+            {{ feetYardFormData?.requestedQty | number : "1.1-2" }}
+            {{ getUomDesc(feetYardFormData?.unit) }}
+          </p>
+        </div>
+        
+        <div class="table-responsive mt-4" *ngFor="let availableSol of availableSolutions | keyvalue">
+        <ngx-table
+          [configuration]="config"
+          [data]="availableSol && availableSol?.value"
+          [columns]="columnsRoll">
+
+            <ng-template let-row let-i="index" let-isFirst="first">
+              <td>
+                <label class="ngx-form-checkbox">
+                  <!-- <input type="checkbox" /> -->
+                  <xchange-radio-button
+                    *ngIf="!fromViewInventory"
+                    classNames="size-22"
+                    [name]="'name-' + row.solutionID"
+                    [value]="row.solutionID"
+                    [id]="row.solutionID"
+                    [checked]="selectedSolution?.solutionID === row.solutionID"
+                    (change)="openBalanceModal(row, balanceTemplate)"
+                  ></xchange-radio-button>
+                  <xchange-custom-checkbox
+                    *ngIf="fromViewInventory"
+                    [id]="row.solutionID"
+                    (change)="handleMultiSelect($event, row, balanceTemplate)"
+                  ></xchange-custom-checkbox>
+                  <!-- <i class="ngx-form-icon custom-checkbox-color"></i> -->
+                </label>
+              </td>
+              <td>
+                <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                  {{ item.rollAssignment }}
+                </p>
+              </td>
+              <td>
+                <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                  {{ item.rollAssignedInFeet }}
+                </p>
+              </td>
+
+              <!--  <td>
+                    <p *ngFor="let item of row.solutionEntries ">{{ handleUserQty(item) }}</p> 
+                </td> -->
+              <td>
+                <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                  {{ item.dyeLot }}
+                </p>
+              </td>
+              <td>
+                <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                  {{ item.rollNumber }}
+                </p>
+              </td>
+              <td>
+                <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                  {{ item.plant }} {{ item.plantDescription ? " - " : "" }}
+                  {{ item.plantDescription ? item.plantDescription : "" }}
+                </p>
+              </td>
+              <!-- <td *ngIf="!fromViewInventory">
+                <p
+                  class="mb-0"
+                  *ngFor="let item of row.solutionEntries; let isRowFirst = first"
+                >
+                  <ng-container *ngIf="isRowFirst; else emptyCell">
+                    {{ item.saving == 0 ? "NA" : "$ " + item.saving }}
+                  </ng-container>
+                  <ng-template #emptyCell><span></span></ng-template>
+                </p>
+              </td> -->
+              <td>
+                <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ (item?.estimatedDeliveryDate?.trim().toLowerCase() === 'in process' || !item?.estimatedDeliveryDate)
+                          ? 'In Process'
+                          : (dateConvert(item?.estimatedDeliveryDate) ? (dateConvert(item?.estimatedDeliveryDate) | date:'MM/dd/yyyy') : 'In Process')}}
+                </p>
+              </td>
+            </ng-template>
+          </ngx-table>
+        </div>
+      </ng-container>
+
+      <ng-container
+      *ngIf="availableSolutions && (availableSolutions | keyvalue).length > 0 && solutionType === 'RO' && solSubProductType === 'PAD_CUSHION' && erpProductCategory != 'S'"
+    >
+      <ng-container *ngTemplateOutlet="availableSolHeaderTpl"></ng-container>
+      <div *ngIf="multicutIndicator" class="avl-s-container mt-4">
+        <h2>Available Solutions</h2>
+        <p>
+          Requested Order Quantity<br />
+          {{ availableSolutions?.MULTICUT?.[0]?.convertedRollAssignedInFeet}}
+          {{ availableSolutions?.MULTICUT?.[0]?.solutionEntries[0]?.requestedUOM }}
+        </p>
+      </div>
+      <div
+        *ngIf="!multicutIndicator && selectedPDPTab == 'Inventory'"
+        class="avl-s-container mt-4"
+      >
+        <h2>Available Solutions</h2>
+
+        <p>
+          Requested Order Quantity <br />
+          1 RL
+        </p>
+      </div>
+      <div
+        *ngIf="!multicutIndicator && selectedPDPTab != 'Inventory'"
+        class="avl-s-container mt-4"
+      >
+        <h2>Available Solutions</h2>
+
+        <p>
+          Requested Order Quantity <br />
+          {{ feetYardFormData?.requestedQty | number : "1.1-2" }}
+          {{ getUomDesc(feetYardFormData?.unit) }}
+        </p>
+      </div>
+      
+      <div class="table-responsive mt-4" *ngFor="let availableSol of availableSolutions | keyvalue">
+       <ngx-table
+          [configuration]="config"
+          [data]="availableSol && availableSol?.value "
+          [columns]="columnsHSCarpetTile"
+          [filtersTemplate]="toggleRollTemplate">
+          <ng-template let-row let-i="index" let-isFirst="first">
+            <td>
+              <label class="ngx-form-checkbox">
+                <!-- <input type="checkbox" /> -->
+                <xchange-radio-button
+                  *ngIf="!fromViewInventory"
+                  classNames="size-22"
+                  [name]="'name-' + row.solutionID"
+                  [value]="row.solutionID"
+                  [id]="row.solutionID"
+                  [checked]="selectedSolution ? selectedSolution.solutionID === row.solutionID : false"
+                  (change)="openBalanceModal(row, balanceTemplate)"
+                ></xchange-radio-button>
+                <xchange-custom-checkbox
+                  *ngIf="fromViewInventory"
+                  [id]="row.solutionID"
+                  (change)="handleMultiSelect($event, row, balanceTemplate)"
+                ></xchange-custom-checkbox>
+                <!-- <i class="ngx-form-icon custom-checkbox-color"></i> -->
+              </label>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.requestedQty }}
+              </p>
+            </td>
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ toggleLengthColumn ? item.rollAssignedInSF : item.rollAssignedInSY }}
+              </p>
+            </td>
+
+            <!--  <td>
+                  <p *ngFor="let item of row.solutionEntries ">{{ handleUserQty(item) }}</p> 
+              </td> -->
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.dyeLot }}
+              </p>
+            </td>
+            <!-- <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.rollNumber }}
+              </p>
+            </td> -->
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ item.plant }} {{ item.plantDescription ? " - " : "" }}
+                {{ item.plantDescription ? item.plantDescription : "" }}
+              </p>
+            </td>
+            <!-- <td *ngIf="!fromViewInventory">
+              <p
+                class="mb-0"
+                *ngFor="let item of row.solutionEntries; let isRowFirst = first"
+              >
+                <ng-container *ngIf="isRowFirst; else emptyCell">
+                  {{ item.saving == 0 ? "NA" : "$ " + item.saving }}
+                </ng-container>
+                <ng-template #emptyCell><span></span></ng-template>
+              </p>
+            </td> -->
+            <td>
+              <p class="mb-0" *ngFor="let item of row.solutionEntries">
+                {{ 
+                  
+                        (item?.estimatedDeliveryDate?.trim().toLowerCase() === 'in process' || !item?.estimatedDeliveryDate)
+                          ? 'In Process'
+                          : (dateConvert(item?.estimatedDeliveryDate) ? (dateConvert(item?.estimatedDeliveryDate) | date:'MM/dd/yyyy') : 'In Process')
+                      
+                  
+                }}
+              </p>
+            </td>
+          </ng-template>
+        </ngx-table>
+      </div>
+      </ng-container>
+
+    
+      <div class="row">
+        <p>1 Date(s) subject to change.</p>
+      </div>
+
+      <div class="row mt-4 mb-4 full-btns p-50">
+        <div class="col-md-3" *ngIf="atpFromCart != true">
+          <button
+            class="btn btn-outline-secondary mb-3"
+            (click)="onHideModal('AddCompanionProductsComponent')"
+          >
+            Back
+          </button>
+        </div>
+        <div class="col-md-3">
+          <button
+            *ngIf="!showContinue && !quantityChangeModal"
+            class="btn btn-primary mb-3"
+            (click)="addToCart()"
+            [disabled]="!selectedSolution"
+          >
+            Add to Cart
+          </button>
+          <button
+            class="btn btn-primary mb-3"
+            (click)="continueFromOrders()"
+            *ngIf="showContinue && !quantityChangeModal"
+            [disabled]="!selectedSolution"
+          >
+            Continue
+          </button>
+          <button
+            class="btn btn-primary mb-3"
+            (click)="updateQuantity()"
+            *ngIf="quantityChangeModal && !showContinue"
+            [disabled]="!selectedSolution"
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #balanceTemplate>
+    <div class="modal-header text-center">
+      <h4 class="modal-title w-100">You Save</h4>
+      <button
+        type="button"
+        class="btn-close close pull-right"
+        aria-label="Close"
+        (click)="modalRef?.hide()"
+      >
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body text-center">
+      ${{ balance }}<br />
+      Ordering Discount Inventroy
+    </div>
+    <div class="mt-4 mb-4 pt-4 d-flex full-btns p-50 align-center change-date">
+      <div class="">
+        <button
+          class="btn btn-outline-secondary me-2"
+          (click)="modalRef?.hide()"
+        >
+          Close
+        </button>
+      </div>
+      <!-- <div class="">
+      <button
+        type="button"
+        class="btn btn-primary"
+        id="confirmCommentChange"
+        (click)="updateComment()"
+      >
+        Confirm
+      </button>
+    </div> -->
+    </div>
+  </ng-template>
+
+  <!-- <ng-template #toggleLengthTemplate>
+    <div class="solution-table-column-switch d-flex align-item-center">
+      <p class="mx-2 my-0">SqYd</p>
+      <label class="switch">
+        <input
+          type="checkbox"
+          [(ngModel)]="toggleLengthColumn"
+          [checked]="toggleLengthColumn"
+          (change)="handleColumnToggle(toggleLengthColumn)"
+        />
+        <span class="slider round"></span>
+      </label>
+      <p class="mx-2 my-0">SqFt</p>
+    </div>
+  </ng-template>
+</ng-container> -->
+  <ng-template #toggleRollTemplate>
+    <th
+      *ngFor="
+      let item of availableSolutions && (availableSolutions | keyvalue).length > 0 &&
+        solutionType != 'RO'
+          ? columns
+          : solSubProductType === 'PAD_CUSHION'  ?bkcolumnsPad: bkcolumns
+      "
+    >
+      <ng-container
+        *ngIf="item.key == 'rollAssignedInSY' || item.key == 'rollAssignedInSF'"
+      >
+        <div class="solution-table-column-switch d-flex align-item-center mx-2">
+          <p class="mx-2 my-0">SqYd</p>
+          <label class="switch">
+            <input
+              type="checkbox"
+              [(ngModel)]="toggleLengthColumn"
+              [checked]="toggleLengthColumn"
+              (change)="handleColumnToggle(toggleLengthColumn)"
+            />
+            <span class="slider round"></span>
+          </label>
+          <p class="mx-2 my-0">SqFt</p>
+        </div>
+      </ng-container>
+    </th>
+  </ng-template>
+
+  <ng-template #availableSolHeaderTpl>
+    <div class="row mt-4" *ngIf="atpResponseData?.isSubstitution">
+      <div class="col-md-12 col-xs-12">
+        <ng-container *ngFor="let key of solutionObjectKeys(availableSolutions)">
+          <ng-container *ngFor="let item of availableSolutions[key][0]?.solutionEntries">
+            <div class="card mt-2" *ngIf="item?.substitutionSKU && item?.showSubstitution">
+              <div class="card-header mb-2 dark">
+                <h4 class="text-white d-inline">
+                  {{ item?.substitutionProductData?.styleName }} - {{ item?.substitutionProductData?.style }}
+                </h4>
+              </div>
+              <div class="card-body">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-12 mt-2">
+                  <div class="row">
+                    <div class="col-sm-3 col-md-4 col-lg-3 col-xl-2 mb-4">
+                      <div class="col-6 col-sm-12 image-overlay-container">
+                        <!-- <div class="shadow-lg "> -->
+                        <img
+                          class="card-img-top rounded img"
+                          [src]="
+                            item?.substitutionProductData?.colorImgURL ||
+                            'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                          "
+                        />
+                          <div class="ribbon-wrapper-preview" *ngIf="preferredStock">
+                            <div class="ribbon preferred-stock">
+                                PREFERRED <br/> STOCKING
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+
+                    <div class="col-sm-9 col-md-8 col-lg-9 col-xl-10">
+                      <div class="box-flex">
+                        <div class="info-text">
+                          <h4>Color #</h4>
+                          <p>{{ item?.substitutionProductData?.color || "NA" }}</p>
+                        </div>
+                        <div class="info-text">
+                          <h4>Color</h4>
+                          <p>{{ item?.substitutionProductData?.colorName || "NA" }}</p>
+                        </div>
+                        <div class="info-text">
+                          <h4>Size</h4>
+                          <p>
+                            {{
+                              item?.substitutionProductData?.sizeName ||
+                                item?.substitutionProductData?.size ||
+                                "NA"
+                            }}
+                          </p>
+                        </div>
+                        <div class="info-text">
+                          <h4>Backing</h4>
+                          <p>
+                            {{ item?.substitutionProductData?.sellingBackingId }} -
+                            {{ item?.substitutionProductData?.sellingBackingName || "NA" }}
+                          </p>
+                        </div>
+                        <div class="info-text">
+                          <h4>Shipping Address</h4>
+                          <p *ngIf="shippingAddress?.oneTimeShippingAddress || shippingAddress?.isOneTimeShipTo">
+                            {{
+                              shippingAddress?.companyName
+                                ? shippingAddress?.companyName
+                                : shippingAddress?.addressName || ""
+                            }}<br />
+                            {{ shippingAddress?.addressLine1 || shippingAddress?.line1}}  {{ shippingAddress?.addressLine2  || shippingAddress?.line2 }} <br />
+                            {{ shippingAddress?.city || shippingAddress?.town }},
+                            {{ shippingAddress?.region?.isocodeShort || shippingAddress?.region?.countryIso
+                            }}{{ shippingAddress?.zipCode || shippingAddress?.postalCode }} <br />
+                          </p>
+                          <p *ngIf="!shippingAddress?.oneTimeShippingAddress && !shippingAddress?.isOneTimeShipTo">
+                            {{
+                              shippingAddress?.addressName
+                                ? shippingAddress?.addressName
+                                : ""
+                            }}<br *ngIf="shippingAddress?.addressName"/>
+                            {{ shippingAddress?.id ? "Ship To #" : ""
+                            }}{{
+                              shippingAddress?.id
+                                ? shippingAddress?.id.split("_")[0]
+                                : ""
+                            }}
+                            {{ shippingAddress?.line2 }} {{ shippingAddress?.line1 }}{{ shippingAddress?.building ? ", " : "" }}{{ shippingAddress?.building }}<br />
+                            {{ shippingAddress?.town }},
+                            {{ shippingAddress?.region?.isocodeShort }}
+                            {{ shippingAddress?.postalCode }} <br />
+                          </p>
+
+                          <h4>Shipping Method</h4>
+                          <p *ngIf="!atpFromCart">
+                            {{ shippingOptions?.defaultShippingMethod || "NA" }}
+                            {{
+                              shippingOptions?.defaultShippingConditionDesc ||
+                              shippingOptions?.shippingConditionDesc || defaultMiniCartShippingDesc
+                                ? "-"
+                                : ""
+                            }}
+                            {{
+                              defaultMiniCartShippingDesc || shippingOptions?.defaultShippingConditionDesc ||
+                                shippingOptions?.shippingConditionDesc
+                            }}
+                          </p>
+                          <p *ngIf="atpFromCart">
+                            {{
+                              shippingOptions?.defaultShippingMethod ||
+                                shippingOptions?.shippingCondition ||
+                                "NA"
+                            }}
+                            {{
+                              shippingOptions?.defaultShippingMethod ||
+                              shippingOptions?.shippingConditionDesc || defaultMiniCartShippingDesc
+                                ? "-"
+                                : ""
+                            }}
+                            {{
+                              defaultMiniCartShippingDesc || shippingOptions?.defaultShippingConditionDesc ||
+                                shippingOptions?.shippingConditionDesc
+                            }}
+                          </p>
+                        
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          
+        </ng-container>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #backorderSolHeaderTpl>
+    <div class="row" *ngIf="atpResponseData?.isSubstitution">
+      <div class="col-md-12 col-xs-12">
+        <ng-container *ngFor="let entries of backorderSolutions">
+          <ng-container *ngFor="let item of entries?.solutionEntries">
+            <div class="card mt-2" *ngIf="item?.substitutionSKU && item?.showSubstitution">
+              <div class="card-header mb-2 dark">
+                <h4 class="text-white d-inline">
+                  {{ item?.substitutionProductData?.styleName }} - {{ item?.substitutionProductData?.style }}
+                </h4>
+              </div>
+              <div class="card-body">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-12 mt-2">
+                  <div class="row">
+                    <div class="col-sm-3 col-md-4 col-lg-3 col-xl-2 mb-4">
+                      <div class="col-6 col-sm-12 image-overlay-container">
+                        <!-- <div class="shadow-lg "> -->
+                        <img
+                          class="card-img-top rounded img"
+                          [src]="
+                            item?.substitutionProductData?.colorImgURL ||
+                            'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                          "
+                        />
+                        <div class="ribbon-wrapper-preview" *ngIf="preferredStock">
+                            <div class="ribbon preferred-stock">
+                                PREFERRED <br/> STOCKING
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+
+                    <div class="col-sm-9 col-md-8 col-lg-9 col-xl-10">
+                      <div class="box-flex">
+                        <div class="info-text">
+                          <h4>Color #</h4>
+                          <p>{{ item?.substitutionProductData?.color || "NA" }}</p>
+                        </div>
+                        <div class="info-text">
+                          <h4>Color</h4>
+                          <p>{{ item?.substitutionProductData?.colorName || "NA" }}</p>
+                        </div>
+                        <div class="info-text">
+                          <h4>Size</h4>
+                          <p>
+                            {{
+                              item?.substitutionProductData?.sizeName ||
+                                item?.substitutionProductData?.size ||
+                                "NA"
+                            }}
+                          </p>
+                        </div>
+                        <div class="info-text">
+                          <h4>Backing</h4>
+                          <p>
+                            {{ item?.substitutionProductData?.sellingBackingId }} -
+                            {{ item?.substitutionProductData?.sellingBackingName || "NA" }}
+                          </p>
+                        </div>
+                        <div class="info-text">
+                          <h4>Shipping Address</h4>
+                          <p *ngIf="shippingAddress?.oneTimeShippingAddress || shippingAddress?.isOneTimeShipTo">
+                            {{
+                              shippingAddress?.companyName
+                                ? shippingAddress?.companyName
+                                : shippingAddress?.addressName || ""
+                            }}<br />
+                            {{ shippingAddress?.addressLine1 || shippingAddress?.line1}}  {{ shippingAddress?.addressLine2  || shippingAddress?.line2 }} <br />
+                            {{ shippingAddress?.city || shippingAddress?.town }},
+                            {{ shippingAddress?.region?.isocodeShort || shippingAddress?.region?.countryIso
+                            }}{{ shippingAddress?.zipCode || shippingAddress?.postalCode }} <br />
+                          </p>
+                          <p *ngIf="!shippingAddress?.oneTimeShippingAddress && !shippingAddress?.isOneTimeShipTo">
+                            {{
+                              shippingAddress?.addressName
+                                ? shippingAddress?.addressName
+                                : ""
+                            }}<br *ngIf="shippingAddress?.addressName"/>
+                            {{ shippingAddress?.id ? "Ship To #" : ""
+                            }}{{
+                              shippingAddress?.id
+                                ? shippingAddress?.id.split("_")[0]
+                                : ""
+                            }}
+                            {{ shippingAddress?.line2 }} {{ shippingAddress?.line1 }}{{ shippingAddress?.building ? ", " : "" }}{{ shippingAddress?.building }}<br />
+                            {{ shippingAddress?.town }},
+                            {{ shippingAddress?.region?.isocodeShort }}
+                            {{ shippingAddress?.postalCode }} <br />
+                          </p>
+
+                          <h4>Shipping Method</h4>
+                          <p *ngIf="!atpFromCart">
+                            {{ shippingOptions?.defaultShippingMethod || "NA" }}
+                            {{
+                              shippingOptions?.defaultShippingConditionDesc ||
+                              shippingOptions?.shippingConditionDesc || defaultMiniCartShippingDesc
+                                ? "-"
+                                : ""
+                            }}
+                            {{
+                              defaultMiniCartShippingDesc || shippingOptions?.defaultShippingConditionDesc ||
+                                shippingOptions?.shippingConditionDesc
+                            }}
+                          </p>
+                          <p *ngIf="atpFromCart">
+                            {{
+                              shippingOptions?.defaultShippingMethod ||
+                                shippingOptions?.shippingCondition ||
+                                "NA"
+                            }}
+                            {{
+                              shippingOptions?.defaultShippingMethod ||
+                              shippingOptions?.shippingConditionDesc || defaultMiniCartShippingDesc
+                                ? "-"
+                                : ""
+                            }}
+                            {{
+                              defaultMiniCartShippingDesc || shippingOptions?.defaultShippingConditionDesc ||
+                                shippingOptions?.shippingConditionDesc
+                            }}
+                          </p>
+                        
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          
+        </ng-container>
+      </div>
+    </div>
+  </ng-template>
+</ng-container>

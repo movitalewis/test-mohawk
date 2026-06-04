@@ -1,0 +1,111 @@
+<div class="modal-header text-center">
+  <h4 class="modal-title f-w">Change the Shipping Address for Your Order</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="onHideModal('ChangeShippingAddressComponent')"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body p-20">
+  <div class="row mb-4 full-btns p-50">
+    <div class="col-lg-5 col-md-8">
+      <xchange-search-control
+        #searchCtrlRef
+        [searchByIcon]="true"
+        [isGlobalSearchEnabled]="false"
+        placeholder="Search address#"
+        (sendValue)="onChange($event)"
+      ></xchange-search-control>
+    </div>
+  </div>
+  <div class="text-center">
+    <div class="mb-2">
+      <div class="loader-for-address">
+        <app-loader *ngIf="tableLoading"></app-loader>
+      </div>
+
+      <ngx-table
+        *ngIf="!tableLoading"
+        #table
+        [configuration]="configuration"
+        [data]="
+          allAddressData
+            | paginate
+              : {
+                  id: 'pg1',
+                  itemsPerPage: tableItemsSize,
+                  currentPage: pageIndex,
+                  totalItems: totlRecords
+                }
+        "
+        [columns]="columns"
+        class="d-inline-table"
+        (event)="eventEmitted($event)"
+      >
+        <ng-template let-row let-index="index">
+          <td>
+            <xchange-custom-radio
+              [type]="'radio'"
+              [id]="'radio-' + index"
+              [checked]="row.selected"
+              [value]="row"
+              (model)="rowSelected($event, index)"
+            ></xchange-custom-radio>
+          </td>
+          <td>
+            {{ row?.companyName }}({{row?.id.split("_")[0]}})
+          </td> 
+          <td>
+            {{ row?.formattedAddress || "NA" }}
+          </td>
+          <td>
+            {{ row?.defaultShippingMethod }}
+            {{ row?.shippingConditionDesc ? "-" : ""
+            }}{{ row?.shippingConditionDesc }}
+          </td>
+          <!-- <td>
+            <xchange-icon-button
+              icon="share"
+              label="Delete"
+            ></xchange-icon-button>
+          </td> -->
+        </ng-template>
+      </ngx-table>
+    </div>
+    <pagination-controls
+      *ngIf="totlRecords > 0"
+      id="pg1"
+      [maxSize]="maxSize"
+      [responsive]="true"
+      [nextLabel]="''"
+      [previousLabel]="''"
+      (pageChange)="onTablePageChange($event, searchCtrlRef)"
+    >
+    </pagination-controls>
+  </div>
+  <div class="row mt-4 mb-4 pt-4 full-btns p-50">
+    <div class="col-md-3"></div>
+    <div class="col-md-3">
+      <button
+        _ngcontent-nke-c166=""
+        class="btn btn-outline-secondary mb-2"
+        (click)="onHideModal('ChangeShippingAddressComponent')"
+      >
+        Cancel
+      </button>
+    </div>
+    <div class="col-md-3">
+      <button
+        _ngcontent-nke-c166=""
+        class="btn btn-primary mb-2"
+        (click)="onSubmitModal('ChangeShippingAddressComponent')"
+        [disabled]="!selectedAddress"
+      >
+        DONE
+      </button>
+    </div>
+  </div>
+</div>

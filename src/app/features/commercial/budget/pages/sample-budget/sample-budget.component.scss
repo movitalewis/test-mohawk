@@ -1,0 +1,263 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+@import "src/styles/mixins/box-shadow.mixin";
+
+::ng-deep {
+  .tab-content {
+    padding: 0px !important;
+  }
+}
+.tab-content {
+  .currency {
+    display: inline-flex;
+    padding-top: 20px;
+    p {
+      margin-bottom: 0;
+      color: $color-dark-gray;
+    }
+    xchange-custom-radio {
+      padding-left: 5px;
+      color: $color-dark-gray;
+    }
+  }
+
+  .card {
+    .card-header {
+      background-color: $color-dark-gray;
+      padding: 10px 0px;
+      h4 {
+        color: $color-white;
+        padding-left: 10px;
+        margin-bottom: 0;
+      }
+    }
+
+    .card-body {
+      border: none;
+      margin-bottom: 0px !important;
+      padding-bottom: 0px !important;
+      padding-top: 10px;
+
+      .search-section {
+        justify-content: space-between;
+        .entry {
+          @include breakpoint-range($max: sm) {
+            width: 140px;
+          }
+        }
+        .searchInput {
+          @include breakpoint-range($max: sm) {
+            width: 200px;
+          }
+        }
+      }
+
+      .index-showing {
+        float: left;
+        margin-top: 15px;
+        font-size: 14px;
+      }
+
+      .btn {
+        margin-top: 2px;
+        width: 100%;
+      }
+      
+      .error-info {
+        color: $color-red;
+      }
+    }
+
+    &.card-transfer {
+      margin-bottom: 1.5rem;
+      border-radius: 5px;
+      .card-header2 {
+        background-color: $color-red;
+        padding: 10px 0px;
+        border-radius: 5px 5px 0px 0px;
+        h4 {
+          color: $color-white;
+          padding-left: 10px;
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+/** ngx-pagination styling **/
+
+::ng-deep {
+  pagination-controls {
+    pagination-template {
+      ul {
+        border-radius: unset !important;
+        li {
+          border: none !important;
+          border-radius: 0 5px 5px 0;
+          box-shadow: inset 0px 5px 6px #00000014;
+          &:nth-child(3) {
+            &.current {
+              border-radius: 5px 0px 0px 5px;
+            }
+          }
+          &:nth-last-child(2) {
+            &.current {
+              border-radius: 0px 5px 5px 0px;
+            }
+          }
+          &.current {
+            display: flex !important;
+            box-shadow: unset;
+          }
+          a {
+            text-decoration: unset !important;
+            height: 100%;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+          }
+          &.pagination-next,
+          &.pagination-previous {
+            a {
+              color: $color-red;
+              font-size: 24px;
+              &::after,
+              &::before {
+                margin-left: 0px !important;
+                margin-bottom: 3px !important;
+              }
+            }
+          }
+        }
+        &.ngx-pagination.responsive {
+          li:not(.small-screen):not(.pagination-previous):not(
+              .pagination-next
+            ) {
+            display: inline-block;
+          }
+          li.small-screen {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+.tm-suggestions{
+  position: relative;
+  input{
+    padding-right: 39px;
+  }
+  ::ng-deep{
+    typeahead-container{
+      width: 93.2%;
+      max-height: 200px;
+      overflow-y: auto;
+      .dropdown-item{
+        &:active{
+          // text-decoration: underline !important;
+          color: inherit !important;
+          background-color: #e9ecef !important;
+        }
+        &.active{
+          // text-decoration: underline !important;
+          color: inherit !important;
+          background-color: #e9ecef !important;
+        }
+      }
+    }
+  }
+  button{
+    position: absolute;
+    background: transparent;
+    border: none;
+    top: 8px;
+    right: 6px;
+    img{
+      height: 8px;
+    }
+  }
+}
+
+::ng-deep {
+  .sorting-arrow {
+    .pointer {
+      position: relative;
+      display: block !important;
+      &::after {
+        content: "";
+        width: 22px;
+        height: 22px;
+        background: url("../../../../../../assets/icons/sort.png") no-repeat;
+        top: 14px;
+        bottom: 0px;
+        right: 0px;
+        position: absolute;
+        display: inline-block;
+      }
+      .ngx-table__header-title {
+        .ngx-icon {
+          display: none;
+        }
+      }
+    }
+  }
+  .sorting-arrow-active {
+    .pointer {
+      position: relative;
+      display: block !important;
+      &::after {
+        content: "";
+        width: 22px;
+        height: 22px;
+        background: url("../../../../../../assets/icons/sort-ascending-icon.svg")
+          no-repeat;
+        top: 8px;
+        bottom: 0px;
+        right: 0px;
+        position: absolute;
+        display: inline-block;
+        -webkit-transform: scaleY(-1);
+        transform: scaleY(-1);
+      }
+      .ngx-table__header-title {
+        .ngx-icon {
+          display: none;
+        }
+      }
+    }
+  }
+  .sorting-arrow-down-icon {
+    .pointer {
+      position: relative;
+      display: block !important;
+      &::after {
+        content: "";
+        width: 22px;
+        height: 22px;
+        background: url("../../../../../../assets/icons/sort-descending-icon.svg")
+          no-repeat;
+        top: 14px;
+        bottom: 0px;
+        right: 0px;
+        position: absolute;
+        display: inline-block;
+        // -webkit-transform: scaleY(-1);
+        // transform: scaleY(-1);
+      }
+      .ngx-table__header-title {
+        .ngx-icon {
+          display: none;
+        }
+      }
+    }
+  }
+  .ngx-table__header-title {
+    padding: 10px 25px 10px 10px;
+  }
+  .ngx-table__table--normal > thead > tr > th {
+    vertical-align: top;
+  }
+}

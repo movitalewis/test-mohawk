@@ -1,0 +1,469 @@
+<section class="doc-section">
+    <div class="container">
+        <h3 class="doc-title" id="logos">01. Logos (Commercial & Residential)</h3>
+        <ul class="logo-list">
+            <li>
+                <xchange-logo type="commercial" theme="dark"></xchange-logo>
+                <code class="code-block"
+                    [innerText]="'<xchange-logo type=\'commercial\' theme=\'dark\'></xchange-logo>'">
+                </code>
+            </li>
+            <li>
+                <xchange-logo type="commercial" class="dark" theme="light"></xchange-logo>
+                <code class="code-block"
+                    [innerText]="'<xchange-logo type=\'commercial\' theme=\'light\'></xchange-logo>'">
+                </code>
+            </li>
+            <li>
+                <xchange-logo type="residential" theme="dark"></xchange-logo>
+                <code class="code-block"
+                    [innerText]="'<xchange-logo type=\'residential\' theme=\'dark\'></xchange-logo>'">
+                </code>
+            </li>
+            <li>
+                <xchange-logo type="residential" class="dark" theme="light"></xchange-logo>
+                <code class="code-block"
+                    [innerText]="'<xchange-logo type=\'residential\' theme=\'light\'></xchange-logo>'">
+                </code>
+            </li>
+            <li>
+                <xchange-logo type="residential" class="dark" theme="mix"></xchange-logo>
+                <code class="code-block"
+                    [innerText]="'<xchange-logo type=\'residential\' theme=\'mix\'></xchange-logo>'">
+                </code>
+            </li>
+        </ul>
+        <h3 class="doc-title" id="typeface">02. TYPEFACE (Commercial & Residential)</h3>
+        <h1>H1 – Proxima Nova Semibold (30 px)</h1>
+        <h2>H2 Page Title – Proxima Nova Regular Caps (20 px)</h2>
+        <h3>H3 Section Title – Proxima Nova Semibold (18 px)</h3>
+        <h4>H4 Filter Title – Proxima Nova Semibold (16 px)</h4>
+        <p>Search, Field, Body Copy – Proxima Nova Regular (16 px)</p>
+        <h3>Header Name</h3>
+        <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
+            dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
+            clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        </p>
+        <h3 class="doc-title" id="fields">03. FIELDS</h3>
+        <h3>SEARCH</h3>
+        <ul class="logo-list">
+            <li>
+                <h4>Search Control</h4>
+                <xchange-search-control></xchange-search-control>
+                <code class="code-block" [innerText]="'<xchange-search-control></xchange-search-control>'">
+                </code>
+            </li>
+            <li>
+                <h4>Search Control Disabled</h4>
+                <xchange-search-control [disabled]="true"></xchange-search-control>
+                <code class="code-block" [innerText]="searchControlDisabled">
+                </code>
+            </li>
+        </ul>
+        <div class="d-flex">
+            <table class="table mw400">
+                <thead>
+                    <tr>
+                        <th colspan="2">Events </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>(change)</td>
+                        <td>On change value</td>
+                    </tr>
+                    <tr>
+                        <td>(input)</td>
+                        <td>On input</td>
+                    </tr>
+                    <tr>
+                        <td>(keypress)</td>
+                        <td>On Keypress</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            (keydown)
+                        </td>
+                        <td>
+                            On Keydown
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>(keyup)</td>
+                        <td>On keyup</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table mw400 ml-3">
+                <thead>
+                    <tr>
+                        <th colspan="2">Attributes </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>value</td>
+                        <td>Default value for control.</td>
+                    </tr>
+                    <tr>
+                        <td>disabled</td>
+                        <td>true / false.</td>
+                    </tr>
+                    <tr>
+                        <td>placeholder</td>
+                        <td>placeholder for search control.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="mt-2">TEXT FIELD</h3>
+        <ul class="logo-list">
+            <li>
+                <h4>Empty Input Control Disabled</h4>
+                <input type="text" placeholder="Empty Field" class="form-control">
+                <code class="code-block" [innerText]="inputEmpty">
+                </code>
+            </li>
+            <li>
+                <h4>Input Control Disabled</h4>
+                <input type='text' [disabled]='true' placeholder='Empty Field' class='form-control'>
+                <code class="code-block" [innerText]="inputDisabled">
+                </code>
+            </li>
+            <li>
+                <h4>Input Control Error</h4>
+                <input type='text' [value]="'Err Input'" placeholder='Empty Field' class='form-control error'>
+                <code class="code-block" [innerText]="inputError">
+                </code>
+            </li>
+        </ul>
+
+        <h3 class="mt-2">Dropdown</h3>
+        <ul class="logo-list">
+            <li>
+                <h4>Dropdown</h4>
+                <ng-select placeholder="Select One">
+                    <ng-option *ngFor="let car of cars" [value]="car.id">{{car.name}}</ng-option>
+                </ng-select>
+                <code class="code-block" [innerText]="dropdown">
+                </code>
+                <p>For more info/documentation visit :
+                    <a href="https://ng-select.github.io/ng-select#/data-sources" target="_blank">ng select docs</a>
+                </p>
+            </li>
+        </ul>
+
+        <h3 class="doc-title" id="buttons">04. BUTTONS</h3>
+        <button class="btn btn-primary mb-2">Primary </button> <br />
+        <button class="btn btn-secondary mb-2">Secondary </button> <br />
+        <button class="btn btn-outline-primary mb-2">Primary Outline </button> <br />
+        <button class="btn btn-outline-secondary mb-2">Secondary Outline </button> <br />
+        <button class="btn btn-primary" disabled>Primary </button> <br />
+        <h3 class="doc-title" id="buttons">04.a) BUTTONS</h3>
+        <button class="btn btn-tbl-outline-primary mb-2">Delete </button> <br />
+        <button class="btn btn-tbl-outline-secondary mb-2">Edit</button> <br />
+
+        <h3 class="doc-title" id="owl">05. OWL-CAROUSEL</h3>
+        <owl-carousel-o [options]="sliderOptions">
+            <ng-template carouselSlide> <img src="/assets/images/png/mohawak.png" width="100%" alt=""></ng-template>
+            <ng-template carouselSlide> <img src="/assets/images/png/karastan.png" width="100%" alt=""></ng-template>
+            <ng-template carouselSlide> <img src="/assets/images/png/pergo.png" width="100%" alt=""></ng-template>
+            <ng-template carouselSlide> <img src="/assets/images/png/pergo.png" width="100%" alt=""></ng-template>
+        </owl-carousel-o>
+        <code class="code-block" [innerText]="slider">
+        </code>
+        <p>For more info/documentation visit :
+            <a href="https://github.com/vitalii-andriiovskyi/ngx-owl-carousel-o" target="_blank">ngx-owl-carousel-o</a>
+        </p>
+
+
+        <h3 class="doc-title" id="icons">06. CUSTOM ICONS</h3>
+        <ul class="logo-list">
+            <li>
+                <h4>Search Control</h4>
+                <xchange-custom-icon icon="user" [bgColor]="'#fafafa'"></xchange-custom-icon>
+                <xchange-custom-icon [bgColor]="'#fafafa'" icon="cart"></xchange-custom-icon>
+                <code class="code-block" [innerText]="'<xchange-custom-icon icon=user></xchange-custom-icon>'">
+                </code>
+
+            </li>
+            <li style="width: auto;">
+                <table class="table mt-2">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Attributes </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>icon</td>
+                            <td>icon image name. Default is "user"</td>
+                        </tr>
+                        <tr>
+                            <td>bgColor</td>
+                            <td>background color. default is "#fff"</td>
+                        </tr>
+                        <tr>
+                            <td>borderRadius</td>
+                            <td>border radius. default is "100%"</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                width
+                            </td>
+                            <td>
+                                icon outer width. default is "44px"
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                height
+                            </td>
+                            <td>
+                                icon outer height. default is "44px"
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                iconExt
+                            </td>
+                            <td>
+                                icon image ext. default is ".svg"
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                path
+                            </td>
+                            <td>
+                                icon image path. default is "/assets/images/icons/"
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </li>
+        </ul>
+
+        <h3 class="doc-title" id="breadcrumb">07. SITE BREADCRUMBS / LINKS</h3>
+        <ul class="logo-list">
+            <li>
+                <nav aria-label="breadcrumb">
+                    <p><strong>Size 16</strong></p>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">Library</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Data</li>
+                    </ol>
+                    <p><strong>Size 14</strong></p>
+                    <ol class="breadcrumb size14">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">Library</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Data</li>
+                    </ol>
+                </nav>
+            </li>
+        </ul>
+
+        <h3 class="doc-title" id="checkboxes">08. Checkboxes</h3>
+        <ul class="logo-list">
+            <li>
+                <p class="mb-0">Left Control</p>
+                <xchange-custom-checkbox type="checkbox" [id]="'xyz1'" label="Checkbox Label"></xchange-custom-checkbox>
+                <p class="mb-0 mt-2">Right Control</p>
+                <xchange-custom-checkbox type="checkbox" [id]="'abc1'" [rtl]="true" label="Checkbox Label">
+                </xchange-custom-checkbox>
+            </li>
+            <li>
+                <p class="mb-0">Left Control</p>
+                <xchange-custom-radio type="radio" [id]="'xyz'" [name]="'123'" label="Radio Button Label">
+                </xchange-custom-radio>
+                <p class="mb-0 mt-2">Right Control</p>
+                <xchange-custom-radio type="radio" [id]="'abc'" [name]="'123'" [rtl]="true" label="Radio Button Label">
+                </xchange-custom-radio>
+            </li>
+        </ul>
+
+        <h3 class="doc-title" id="tabs">09. Tabs</h3>
+        <ul class="logo-list">
+            <li style="width: 100%;">
+                <!-- mobile tab code starts here -->
+                <div *ngIf="isMobile">
+                    <button *ngIf="!menuState" (click)="showTab = !showTab;menuState = !menuState"
+                        class="mohawak-icon bars-icon menu-bars"></button>
+                    <button *ngIf="menuState" (click)="showTab = !showTab;menuState = !menuState"
+                        class="mohawak-icon close-icon menu-bars"></button>
+                </div>
+                <!-- mobile tab code ends here -->
+                <!-- mobile tab code add "<tabset [vertical]="ismobile" [justified]="true" [class.nav-tab-mobile]="ismobile && !showTab">" in all tabs -->
+                <tabset [vertical]="isMobile" [justified]="true" [class.nav-tab-mobile]="isMobile && !showTab">
+                    <tab>
+                        <ng-template tabHeading>
+                            FULL SPECIFICATIONS
+                        </ng-template>
+                        Tab 1 content
+
+                        <code class="code-block" [innerText]="tabs">
+                        </code>
+                        <p class="mt-2">For more info/documentation visit :
+                            <a href="https://valor-software.com/ngx-bootstrap/#/components/tabs?tab=overview"
+                                target="_blank">Tabs Doc</a>
+                        </p>
+
+                    </tab>
+                    <tab>
+                        <ng-template tabHeading>
+                            FULL SPECIFICATIONS
+                        </ng-template>
+                        Tab 2 content
+                    </tab>
+                    <tab>
+                        <ng-template tabHeading>
+                            FULL SPECIFICATIONS
+                        </ng-template>
+                        Tab 3 content
+                    </tab>
+                </tabset>
+            </li>
+        </ul>
+
+        <h3 class="doc-title" id="datePicker">10. Date Picker</h3>
+        <ul class="logo-list">
+            <li style="width: 100%;">
+                <div class="row">
+                    <div class="col-xs-12 col-12 col-md-4 form-group mb-3">
+                        <input type="text" [bsConfig]="{ containerClass: 'theme-red' }" containerClass="theme-red"
+                            placeholder="Datepicker" class="form-control" bsDatepicker>
+                    </div>
+                    <div class="col-xs-12 col-12 col-md-4 form-group mb-3">
+                        <input type="text" placeholder="Daterangepicker" [bsConfig]="{ containerClass: 'theme-red' }"
+                            class="form-control" bsDaterangepicker>
+                    </div>
+                </div>
+                <p class="mb-0 mt-2">Date Picker</p>
+                <code class="code-block" [innerText]="datePicker">
+                </code>
+                <p class="mb-0 mt-2">Date Range Picker</p>
+                <code class="code-block" [innerText]="dateRange">
+                </code>
+
+                <p class="mt-2">For more info/documentation visit :
+                    <a href="https://valor-software.com/ngx-bootstrap/#/components/datepicker?tab=overview"
+                        target="_blank">Tabs Doc</a>
+                </p>
+            </li>
+        </ul>
+
+
+        <h3 class="doc-title" id="tables">11. Data Tables</h3>
+        <ul class="logo-list">
+            <li style="width: 100%;">
+
+                <h3>Table with buttons</h3>
+                <ngx-table [configuration]="configuration" [data]="data" [columns]="columns">
+                    <ng-template let-row>
+                        <td>
+                            <label class="ngx-form-checkbox">
+                                <input type="checkbox" />
+                                <i class="ngx-form-icon custom-checkbox-color"></i>
+                            </label>
+                        </td>
+                        <td>
+                            {{ row.company }}
+                        </td>
+                        <td>
+                            <a href="#"> {{ row.document }}</a>
+                        </td>
+                        <td>
+                            {{ row.documentDate }}
+                        </td>
+                        <td>
+                            {{ row.order }}
+                        </td>
+                        <td>
+                            <!-- <button class="btn btn-primary">{{ row.total }}</button> -->
+                            <button class="btn btn-tbl-outline-primary me-2">Delete </button>
+                            <button class="btn btn-tbl-outline-secondary">Edit</button>
+                        </td>
+                    </ng-template>
+                </ngx-table>
+
+                <ngx-table [configuration]="configuration" [data]="data" [columns]="columns">
+                </ngx-table>
+
+                <code class="code-block" [innerText]="dataTableCode">
+                </code>
+
+
+                <p class="mt-2">For more info/documentation visit :
+                    <a href="https://ngx-easy-table.eu/#/" target="_blank">ngx easy tables Doc</a>
+                </p>
+            </li>
+        </ul>
+
+        <h3 class="doc-title" id="popup">12. Modal / Popup / Lightbox</h3>
+        <ul class="logo-list">
+            <li style="width: 100%;">
+
+                <button type="button" class="btn btn-primary" (click)="openModal(template)">Create template
+                    modal</button>
+
+                <ng-template #template>
+                    <div class="modal-header">
+                        <h4 class="modal-title pull-left">Modal</h4>
+                        <button type="button" class="btn-close close pull-right" aria-label="Close"
+                            (click)="modalRef?.hide()">
+                            <span aria-hidden="true" class="visually-hidden">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        This is a modal.
+                    </div>
+                </ng-template>
+
+                <code class="code-block" [innerText]="modalCode">
+                </code>
+
+                <p class="mt-2">For more info/documentation visit :
+                    <a href="https://valor-software.com/ngx-bootstrap/#/components/modals?tab=overview"
+                        target="_blank">Modal Component Docs</a>
+                </p>
+            </li>
+        </ul>
+
+        <h3 class="doc-title" id="iconBtn">13. Icon Buttons</h3>
+        <ul class="logo-list">
+            <li style="width: 100%;">
+                <xchange-icon-button icon="share" label="Share"></xchange-icon-button>
+                <xchange-icon-button icon="view-pdf" label="View PDF"></xchange-icon-button>
+                <code class="code-block" [innerText]="iconBtns">
+                </code>
+            </li>
+        </ul>
+
+        <h3 class="doc-title" id="collapseBtn">14. Collapse </h3>
+        <ul class="logo-list">
+            <li style="width: 100%;">
+                <div class="card">
+                    <div class="card-header mb-2">
+                        <button type="button" class="btn" (click)="isCollapsed = !isCollapsed"
+                            [attr.aria-expanded]="!isCollapsed" aria-controls="collapseBasic">
+                            <h4 *ngIf="isCollapsed"> Show Solution Details <span
+                                    class="mohawak-icon angle-left-icon down-icon"></span></h4>
+                            <h4 *ngIf="!isCollapsed"> Hide Solution Details<span
+                                    class="mohawak-icon angle-left-icon up-icon"></span></h4>
+                        </button>
+                    </div>
+
+                    <div id="collapseBasic" [collapse]="isCollapsed" [isAnimated]="true">
+                        <ngx-table [configuration]="configuration" [data]="data" [columns]="columns"></ngx-table>
+                    </div>
+                </div>
+                <p class="mt-2">For more info/documentation visit :
+                    <a href="https://valor-software.com/ngx-bootstrap/#/components/collapse?tab=overview"
+                        target="_blank">Modal Component Docs</a>
+                </p>
+            </li>
+        </ul>
+    </div>
+</section>

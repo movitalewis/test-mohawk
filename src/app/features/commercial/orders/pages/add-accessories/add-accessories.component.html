@@ -1,0 +1,401 @@
+<app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+
+<div class="modal-header text-center">
+  <h4 class="modal-title f-w w-100">Recommended Accessories</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="closeModal()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body p-20">
+  <div class="text-center">
+    <tabset
+      responsiveTabs
+      [justified]="true"
+      [class.changeCursor]="accessoryDetails.length == 1"
+      *ngIf="accessoryDetails.length > 0"
+    >
+      <ng-container *ngFor="let item of accessoryDetails">
+        <tab class="tab-content" [active]="activeTab  === item?.key" (selectTab)="activeTab = item?.key">
+          <ng-template tabHeading>{{ item?.key }}</ng-template>
+          <div class="row mt-3">
+            <ngx-table
+              *ngIf="item?.value?.references.length > 0"
+              [configuration]="configuration"
+              [data]="item?.value?.references"
+              [columns]="columns"
+              class="d-inline-table ref-table"
+            >
+              <ng-template let-row>
+                <td *ngFor="let column of columns; let i = index">
+                  <!-- <ng-container *ngIf="column.key === 'qty'">
+                    <ng-select
+                      placeholder="0"
+                      [(ngModel)]="row.quantity"
+                      [ngClass]="{
+                        errorBorder: myForm.controls['qtyrolls'].invalid
+                      }"
+                      
+                      (change)="addtoOrders($event,row?.code,row?.inventoryUOM, i)"
+                    >
+                      <ng-option
+                        *ngFor="let dropItem of quantityDropdownData"
+                        value="{{ dropItem?.value }}"
+                        >{{ dropItem?.label }}</ng-option
+                      >
+                    </ng-select>
+                    <p class="m-0 text-center pt-1">{{ row?.inventoryUOM }}</p>
+                  </ng-container> -->
+                  <ng-container *ngIf="column.key === 'qty'">
+                    <input
+                    class="form-control"
+                      type="number"
+                      placeholder="0"
+                      min="1"
+                      step="1"
+                      [(ngModel)]="row.quantity"
+                      [ngClass]="{
+                        errorBorder: myForm.controls['qtyrolls'].invalid
+                      }"
+                      (change)="addtoOrders($event, row?.code, row?.inventoryUOM, row)"
+                    >
+                    <p class="m-0 text-center pt-1">
+                      {{ (row?.erpProductCategory == "S" || item?.key == 'Cushion') && row?.rollOnly == true ? "RO" : row?.inventoryUOM }}
+                    </p>
+                  </ng-container>
+                  <img
+                    *ngIf="column.key === 'colorImgURL'"
+                    [src]="row?.colorImgURL"
+                    alt=""
+                    class="d-block mx-auto"
+                  />
+                  <p 
+                    *ngIf="
+                      column.key !== 'colorImgURL' &&
+                      column.key !== 'qty' &&
+                      column.key !== 'price'
+                    "
+                  >
+                    {{ row[column.key] }}
+                  </p>
+                  <ng-container *ngIf="column.key === 'price' && this.userService?.isShowPrice()">
+                    <div class="cssload-container" *ngIf="row.isLoading">
+                      <div class="cssload-loading"><i></i><i></i><i></i><i></i></div>
+                    </div>
+                    <p *ngIf="!row.isLoading">
+                      {{
+                        row[column.key] === "0" || row[column.key] === "NA"
+                          ? "NA"
+                          : "$" + row[column.key] + "/ ea."
+                      }}
+                    </p>
+                  </ng-container>
+                </td>
+              </ng-template>
+            </ngx-table>
+          </div>
+        </tab>
+      </ng-container>
+    </tabset> 
+    <div class="row mt-4 full-btns align-center">
+      <div class="col-md-5 col-lg-3">
+        <button class="btn btn-outline-secondary mb-3" (click)="closeModal()">
+          Continue Shopping
+        </button>
+      </div>
+      <div class="col-md-5 col-lg-3">
+        <button
+          class="btn btn-primary mb-3"
+          *ngIf="accessoryDetails[0]?.value?.references.length > 0"
+          (click)="openShippingOptions()"
+          [disabled]="disableAddToCartBtn()"
+        >
+         Add Accessories
+        </button>
+      </div>
+    </div>
+    <!-- </form> -->
+  </div>
+</div>
+
+<ng-template #shippingOption>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Shipping Options</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeShippingOptionsModalModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing">
+    <app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+    <alert
+    type="danger"
+    class="dashboard-page-alert"
+    [dismissible]="true"
+    *ngIf="showValidationError"
+  >
+    <div class="container">{{ validationErrorMessage }}</div>
+  </alert>
+    <div class="row p-3">
+      <div class="col-md-6 col-lg-6 col-sm-12 mt-2 left-details border-right">
+        <div class="w-100">
+          <h3 class="modal-title f-w">Shipping Method</h3>
+          <p class="mb-0 address-text">
+            {{ defaultShippingMethod }}
+            {{ defaultShippingConditionDesc ? "-" : "" }}
+            {{
+              defaultShippingConditionDesc ? defaultShippingConditionDesc : ""
+            }}
+          </p>
+        </div>
+        <div class="w-100 mt-2">
+          <h3 class="modal-title f-w">Shipping WareHouse</h3>
+          <p class="mb-0">
+            {{ defaultShippingWarehouse }}
+            {{ defaultShippingWarehouseDesc ? "-" : "" }}
+            {{
+              defaultShippingWarehouseDesc ? defaultShippingWarehouseDesc : ""
+            }}
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-6 col-sm-12 mt-2 left-details">
+        <div class="w-100">
+          <h3 class="modal-title f-w">Inco Terms</h3>
+          <p class="mb-0">
+            {{ defaultIncoTerms }}
+            {{ defaultIncoTermsDesc ? "-" : "" }}
+            {{ defaultIncoTermsDesc }}
+          </p>
+        </div>
+        <div class="w-100 mt-2">
+          <h3 class="modal-title f-w">Ship Via</h3>
+          <p class="mb-0">
+            {{ defaultShipVia }}
+          </p>
+        </div>
+      </div>
+      <!-- <div class="col-6 mt-2">
+          
+                 </div>
+        <div class="col-6 mt-2">
+          
+        
+        </div> -->
+    </div>
+    <!-- <div class="row mb-2 left-details">
+        <div class="col-6 mt-2">
+          
+        
+        </div>
+        <div class="col-6 mt-2">
+          
+         
+        </div>
+      </div> -->
+
+    <div class="row text-center">
+      <div class="col-12 mt-2">
+        <button
+          (click)="closeShippingOptionsModalModal()"
+          class="btn btn-secondary m-2 btn-w-100"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="shippingOptionsModal(shippingOptionTemplate)"
+          class="btn btn-outline-primary m-2 btn-w-100"
+        >
+          Change Shipping Options
+        </button>
+        <button
+          (click)="validateShipViaAddress('chooseSolution')"
+          class="btn btn-primary m-2 btn-w-100"
+          [disabled]="showValidationError"
+        >
+          Update Order
+        </button>
+      </div>
+      <!-- <div class="col-4 mt-3">
+      
+    </div> 
+    <div class="col-4 mt-3">
+      
+    </div>  -->
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #shippingOptionTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Change Shipping Options</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeChangeShippingOptionModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing">
+    <alert
+    type="danger"
+    class="dashboard-page-alert"
+    [dismissible]="true"
+    *ngIf="showValidationError"
+  >
+    <div class="container">{{ validationErrorMessage }}</div>
+  </alert>
+    <form #form="ngForm">
+      <div class="row">
+        <div class="col-md-6 col-sm-12">
+          <h4>Shipping Methods* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="
+              changeshipViaOptions($event); incoTermsSelectedOption = null
+            "
+            [(ngModel)]="shipViaSelectedOption"
+            [clearable]="false"
+            name="ShipVia"
+            required
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of shipViaOptions"
+              >{{ item.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <h4>Inco Terms* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="changeincoTermsOptions($event)"
+            [(ngModel)]="incoTermsSelectedOption"
+            name="IncoTerms"
+            [clearable]="false"
+            required
+            [disabled]="!shipViaSelectedOption"
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of incoTermsOptions"
+              >{{ item.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-6 col-sm-12 mt-3">
+          <h4>Shipping WareHouse* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="
+              changeShippingWareHouseOptions($event);
+              incoTermsLoc2SelectedOption = null
+            "
+            [(ngModel)]="shippingWareHouseSelectedOption"
+            name="shippingWareHouse"
+            [clearable]="false"
+            required
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of shippingWareHouseOptions"
+              >{{ item.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-6 col-sm-12 mt-3 shipvia-change">
+          <h4>Ship Via* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            [(ngModel)]="incoTermsLoc2SelectedOption"
+            class="shipvia"
+            name="incoTermsLoc2"
+            [required]="userInfo?.isCSR ? true : ((userInfo?.isCustomer || userInfo?.isSalesPerson || userInfo?.isSalesOps) && shipViaSelectedOption !='MA') ? false : true"
+            [disabled]="!shippingWareHouseSelectedOption"
+            [addTag]="userInfo?.isCSR ? true : ((userInfo?.isCustomer || userInfo?.isSalesPerson || userInfo?.isSalesOps) && shipViaSelectedOption !='MA') ? true : false"
+            [clearable]="false"
+            (ngModelChange)="validateShipVia($event)"
+          >
+            <ng-option
+              [value]="item?.label"
+              *ngFor="let item of incoTermsLoc2Options"
+              >{{ item?.label }} <span class="span-preferred" *ngIf="item?.preferred == true">(Preferred)</span> </ng-option
+            >
+          </ng-select>
+        </div>
+      </div>
+    </form>
+
+    <div class="row text-center">
+      <div class="col-12 mt-4">
+        <button
+          class="btn btn-outline-secondary m-2 btn-w-100"
+          (click)="closeChangeShippingOptionModal()"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary m-2 btn-w-100"
+          id="confirmShippingWareHouseChange"
+          (click)="validateShipViaAddress('changeShippingOption')"
+          [disabled]="!form.dirty || !form.valid || showValidationError"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #changeDeliveryType>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Delivery Information Changed</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeInfoChanges()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing text-center">
+    <div class="row">
+      <!-- <h4>Do you wish to Continue</h4> -->
+      <p>{{ this.shippingInfoMessage }}</p>
+    </div>
+
+    <div class="row text-center">
+      <div class="col-12">
+        <button
+          class="btn btn-outline-secondary m-2 btn-w-100"
+          (click)="closeInfoChanges()"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary m-2 btn-w-100"
+          id="confirmShippingWareHouseChange"
+          (click)="continueChanges()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+

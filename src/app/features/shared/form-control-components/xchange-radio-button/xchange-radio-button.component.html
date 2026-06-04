@@ -1,0 +1,17 @@
+<!-- <div class="xchange-checkbox" [ngClass]="className">
+    <input [type]="type" class="xchange-checkbox-input" [id]="id" [value]="value" [attr.name]="name"
+        [disabled]="disabled" [ngModel]="checked" (ngModelChange)="onControlChange($event)">
+    <label class="xchange-checkbox-label" [ngClass]="classNames" [for]="id"> {{ label }} </label>
+</div> -->
+<div class="xchange-checkbox" [ngClass]="className">
+    <input
+        class="xchange-checkbox-input"
+        [type]="type"
+        [id]="value || id"
+        [value]="value"
+        [name]="name"
+        [disabled]="disabled"
+        [checked]="isChecked"
+    >
+    <label class="xchange-checkbox-label" [ngClass]="classNames" [for]="value || id"> {{ label }} </label>
+</div>

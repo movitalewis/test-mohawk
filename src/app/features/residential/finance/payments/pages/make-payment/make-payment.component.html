@@ -1,0 +1,247 @@
+<!-- Loading Spinner -->
+<!-- <app-loader *ngIf="loadingFlag"></app-loader> -->
+<!-- Make a Payment Page -->
+<div class="container">
+<!-- Page Header -->
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <div class="row">
+    <h2 class="text-center mb-4">MAKE A PAYMENT</h2>
+    <div class="col-md-6 col-lg-6 align-center">
+      <p class="mb-2">
+        <b>Total Scheduled Amount</b> = ${{
+          !!tableData
+            ? totalScheduledAmount(tableData)
+            : 0
+        }}
+      </p>
+    </div>
+  </div>
+<!-- Alert -->
+  <div class="mb-4">
+    <alert
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="errorMessage"
+    >
+      <div class="container">
+        {{ errorMessage }}
+      </div>
+    </alert>
+  </div>
+<!-- Page Body -->
+  <div class="_card-container">
+<!-- Body Controls -->
+    <div class="row mb-2 justify-content-between w">
+<!-- Bank Account Dropdown -->
+      <div class="col-md-5 col-lg-3 mb-2">
+        <h4>Bank Account #</h4>
+        <ng-select
+          placeholder="Please Select"
+          (clear)="onClearSelectedAccount($event)"
+          (change)="selectedAccountDetail($event)"
+          [ngModel]="selectedBankAcc"
+        >
+          <ng-option *ngFor="let option of accountDetails" [value]="option?.accountNumber">{{
+            option?.accountNumber
+          }}</ng-option>
+        </ng-select>
+      </div>
+<!-- Manage Deduction / Add Documents / Remove Documents Buttons -->
+      <div class="col-md-12 col-lg-9 mb-2 row justify-content-end">
+        <div class="col-md-4 col-lg-4 col-xl-3 d-flex align-items-end">
+          <button
+            class="btn btn-outline-secondary mb-2 f-w"
+            (click)="manageDeductionsModal(manageDeductionsTemplate)"
+            [disabled]="selected.size === 0"
+          >
+            Manage Deductions
+          </button>
+        </div>
+        <div class="col-md-4 col-lg-4 col-xl-3 d-flex align-items-end">
+          <button
+            class="btn btn-outline-secondary mb-2 f-w"
+            (click)="removeDocumentModal(removeDocumentTemplate)"
+            [disabled]="selected.size === 0"
+          >
+            Remove Documents
+          </button>
+        </div>
+        <div class="col-md-4 col-lg-4 col-xl-3 d-flex align-items-end">
+          <button
+            class="btn btn-outline-secondary mb-2 f-w"
+            (click)="addDocuments()"
+          >
+            Add Documents
+          </button>
+        </div>
+      </div>
+    </div>
+<!-- Table -->
+    <div class="table-data">
+      <table>
+        <thead>
+          <tr>
+            <th>
+            </th>
+            <th *ngFor="let item of columns">
+              {{ item?.title || "" }}
+              <img
+                [class.active]="previousKey.active == item.key"
+                [ngClass]="{
+                  rotate:
+                    previousKey.active == item.key &&
+                    previousKey.direction == 'desc'
+                }"
+                src="/assets/images/dropdown.svg"
+                alt=""
+              />
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="
+              let item of tableData
+                | paginate
+                  : {
+                      itemsPerPage: tableItemsSize,
+                      currentPage: pageIndex1
+                    };
+              let i = index
+            "
+          >
+            <td>
+              <xchange-custom-radio
+                [type]="'radio'"
+                [id]="'radio-' + i"
+                [checked]="item?.checked"
+                [value]="item"
+                (model)="selectedPayment($event)"
+              ></xchange-custom-radio>
+            </td>
+            <td>
+              {{ item?.company || "" }}
+            </td>
+            <td>
+              {{ item?.type || "" }}
+            </td>
+            <td>In Process</td>
+            <td>
+              {{ item?.documentNumber || "" }}
+            </td>
+            <td>
+              {{ item?.poNumber || "" }}
+            </td>
+            <td>
+              {{ item?.documentDate | date : "MM/dd/yyyy" || "" }}
+            </td>
+            <td>
+              {{
+                item?.openAmount
+                  | currency : priceLabel : "symbol" : "1.2-2" || ""
+              }}
+            </td>
+            <td>
+              {{
+                item?.discountAmount
+                  | currency : priceLabel : "symbol" : "1.2-2" || ""
+              }}
+            </td>
+            <td>
+              {{
+                item?.scheduledAmount
+                  | currency : priceLabel : "symbol" : "1.2-2" || ""
+              }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<!-- Page Footer -->
+  <div class="row mb-4 mt-4">
+<!-- Pagination Controls -->
+    <div class="d-flex justify-content-center" *ngIf="tableData?.length > 10">
+      <pagination-controls
+        [maxSize]="maxSize"
+        [responsive]="true"
+        [nextLabel]="''"
+        [previousLabel]="''"
+        (pageChange)="onTableDataChange($event)"
+      >
+      </pagination-controls>
+    </div>
+    <div class="col-md-12">
+      <p class="text-center mb-4">
+        {{ startValue > 0 ? startValue : 0 }} -
+        {{
+          !!tableData?.length
+            ? tableData?.length > tableItemsSize
+              ? startValue + tableItemsSize - 1
+              : tableData?.length
+            : 0
+        }}
+        OF
+        {{
+          !!tableData?.length && tableData?.length > 0 ? tableData?.length : 0
+        }}
+        INVOICES
+      </p>
+    </div>
+<!-- Buttons -->
+    <div class="col-md-12 text-center">
+      <button
+        class="btn btn-outline-secondary mr-10"
+        (click)="dropSelection()"
+        [routerLink]="['/residential/finance/payments/receivables']"
+      >
+        Cancel
+      </button>
+      <button
+        class="btn btn-primary"
+        (click)="continueToReview()"
+      >
+        Continue
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Manage Deductions Popup -->
+<ng-template #manageDeductionsTemplate>
+  <xchange-manage-deductions
+    [receivableData]="tableData[selectedIndex]"
+    [priceLabel]="priceLabel"
+    (receivableDataChange)="onUpdateData($event)"
+  ></xchange-manage-deductions>
+</ng-template>
+
+<!-- Remove Document Popup -->
+<ng-template #removeDocumentTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w">Remove Document</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>Are you sure you want to remove this document from this payment?</p>
+      <div class="mt-4 mb-4">
+        <button
+          class="btn btn-outline-secondary mr-10"
+          (click)="modalRef?.hide()"
+        >
+          No
+        </button>
+        <button class="btn btn-primary" (click)="removeDocuments()">Yes</button>
+      </div>
+    </div>
+  </div>
+</ng-template>

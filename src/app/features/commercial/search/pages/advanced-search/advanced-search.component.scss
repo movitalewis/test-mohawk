@@ -1,0 +1,45 @@
+@import "src/styles/mixins/box-shadow.mixin";
+@import 'src/styles/mixins/breakpoints';
+
+.align-center {
+    justify-content: center;
+}
+
+.btn-grid {
+    display: grid;
+}
+.back-to {
+    color: #{$color-red};
+    display: flex;
+    cursor: pointer;
+}
+
+@include breakpoint-range($max : xs) {
+    .mb-15 {
+        margin-bottom: 15px;
+    }
+    .col-6{
+        width: 50%;
+    }
+}
+.img {
+    @include breakpoint-range($max : sm) {
+        margin-right: 5px;
+    }    
+    position: relative;
+    top: 2px;
+    margin-right: 5px;
+}
+.close{
+
+    cursor: pointer;
+    float: right;
+    background: transparent; 
+    border: none; 
+    font-size: 21px ; 
+    font-weight: 600;
+    line-height: 1;
+    color: #000; 
+    text-shadow: 0 1px 0 #fff;
+    opacity: 0.2;
+}

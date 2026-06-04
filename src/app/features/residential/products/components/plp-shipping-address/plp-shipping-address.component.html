@@ -1,0 +1,209 @@
+<div class="modal-header text-center">
+    <h4 class="modal-title f-w">Shipping Address</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="onHideModal()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+</div>
+<div class="modal-body p-20 px-5">
+    <div class="custom-order-tabs">
+        <tabset responsiveTabs [justified]="true">
+            <tab class="tab-content" (selectTab)="changeTab(1)">
+                <ng-template tabHeading>Default Shipping Address</ng-template>
+                <div class="_card-container">
+                    <h4 class="modal-title f-w">Default Shipping Address</h4>
+                    <div class="container m-0 p-0">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-5">
+                                <div class="border-box">
+                                    <div class="address-text">
+                                      
+                                        <span>({{shippingAddress?.companyName}})</span>
+                                        <span><br>
+                                            {{shippingAddress?.line1}}<br>
+                                            {{shippingAddress?.region?.isocodeShort}}, {{shippingAddress?.region?.isocodeShort}} {{shippingAddress?.postalCode}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2 mb- full-btns">
+                            <div class="col-md-5"><button (click)="openSavedAddressModal()"
+                                    class="btn btn-secondary mb-2">CHOOSE A
+                                    SAVED ADDRESS</button></div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row mt-4 mb-4 pt-4 full-btns p-50">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4"><button _ngcontent-nke-c166=""
+                            class="btn btn-outline-secondary mb-2" (click)="onHideModal()">Cancel</button></div>
+                    <div class="col-md-4"><button (click)="openOrderSamplesModal()" class="btn btn-primary mb-2">Order
+                            Samples</button></div>
+                </div>
+            </tab>
+            <tab (selectTab)="changeTab(2)">
+                <ng-template tabHeading>Enter a One-Time Shipping Address</ng-template>
+                <form [formGroup]="reactiveForm">
+                    <div class="_card-container">
+                      <p>
+                        To save this address, visit
+                        <a href="" class="link">My Account</a>.
+                      </p>
+                      <p>* = Required input</p>
+                      <div class="row mt-2">
+                        <div class="col-md-6 col-xs-12 mb-4">
+                          <h4>Name * Req.</h4>
+                          <input
+                            type="text"
+                            placeholder="Required"
+                            class="form-control"
+                            formControlName="name"
+                            onkeydown="return /[a-z]/i.test(event.key)"
+                          />
+          
+                          <div
+                            *ngIf="f['name'].errors && submitted"
+                            class="invalid-feedback d-block"
+                          >
+                            <div *ngIf="f['name'].errors['required']">Name is Req.</div>
+                          </div>
+                        </div>
+                        <div class="col-md-6 col-xs-12 mb-4">
+                          <h4>Street Address 1* Req.</h4>
+                          <input
+                            type="text"
+                            placeholder="Required"
+                            class="form-control"
+                            formControlName="streetAddress"
+                          />
+                          <div
+                            *ngIf="f['streetAddress'].errors && submitted"
+                            class="invalid-feedback d-block"
+                          >
+                            <div *ngIf="f['streetAddress'].errors['required']">
+                              Street Address is Req.
+                            </div>
+                          </div>
+                        </div>
+          
+                        <div class="col-md-6 col-xs-12 mb-4">
+                          <h4>City * Req.</h4>
+                          <input
+                            type="text"
+                            placeholder="Required"
+                            class="form-control"
+                            formControlName="city"
+                            onkeydown="return /[a-z]/i.test(event.key)"
+                          />
+                          <div
+                            *ngIf="f['city'].errors && submitted"
+                            class="invalid-feedback d-block"
+                          >
+                            <div *ngIf="f['city'].errors['required']">City is Req.</div>
+                          </div>
+                        </div>
+          
+                        <div class="col-md-6 col-xs-12 mb-4">
+                          <h4>Street Address 2</h4>
+                          <input
+                            type="text"
+                            placeholder="Required"
+                            class="form-control"
+                            formControlName="streetAddress2"
+                          />
+                          <div
+                            *ngIf="f['streetAddress2'].errors && submitted"
+                            class="invalid-feedback d-block"
+                          >
+                            <div *ngIf="f['streetAddress2'].errors['required']">
+                              Street Address 2 is Req.
+                            </div>
+                          </div>
+                        </div>
+          
+                        <div class="col-md-6 col-xs-12 mb-4">
+                          <h4>State * Req.</h4>
+                          <ng-select
+                            placeholder="Select"
+                            formControlName="state"
+                            onkeydown="return /[a-z]/i.test(event.key)"
+                            [ngClass]="{'error': (f['state'].errors && reactiveForm.controls['state'].touched)}"
+                          >
+                          <ng-option value="AK">AK</ng-option>
+                          <ng-option value="AL">AL</ng-option>
+                          <ng-option value="AR">AR </ng-option>
+                          <ng-option value="AS">AS</ng-option>
+                          <ng-option value="AZ">AZ</ng-option>
+                          <ng-option value="CA">CA </ng-option>
+                          <ng-option value="CO">CO </ng-option>
+                          </ng-select>
+                          <div
+                            *ngIf="f['state'].errors && submitted"
+                            class="invalid-feedback d-block"
+                          >
+                            <div *ngIf="f['state'].errors['required']">State is Req.</div>
+                          </div>
+                        </div>
+          
+                        <div class="col-md-6 col-xs-12 mb-4">
+                          <h4>ZIP Code * Req.</h4>
+                          <input
+                            type="text"
+                            placeholder="Required"
+                            class="form-control"
+                            formControlName="zipCode"
+                            (keypress)="validateNo($event)"
+                            maxlength="5"
+                            minlength="5"
+                          />
+                          <div
+                            *ngIf="f['zipCode'].errors && submitted"
+                            class="invalid-feedback d-block"
+                          >
+                            <div *ngIf="f['zipCode'].errors['required']">
+                              ZipCode is Req.
+                            </div>
+                          </div>
+                        </div>
+          
+                        <div class="col-md-6 col-xs-12">
+                          <h4>Phone * Required</h4>
+                          <input
+                            type="text"
+                            placeholder="Required"
+                            class="form-control"
+                            formControlName="phone"
+                            (keypress)="validateNo($event)"
+                            maxlength="10"
+                            minlength="10"
+                          />
+                          <div
+                            *ngIf="f['phone'].errors && submitted"
+                            class="invalid-feedback d-block"
+                          >
+                            <div *ngIf="f['phone'].errors['required']">Phone is Req.</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row justify-content-center full-btns my-4 mx-auto">
+                        <!-- <div class="col-md-2"></div> -->
+                        <div class="col-md-4">
+                          <button
+                            class="btn btn-outline-secondary"
+                            (click)="onHideModal()"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                        <div class="col-md-4">
+                          <button class="btn btn-primary" (click)="onSubmit()" [disabled]="!reactiveForm.valid">
+                            Order Samples
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+            </tab>
+        </tabset>
+    </div>
+</div>

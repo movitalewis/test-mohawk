@@ -1,0 +1,44 @@
+<div class="registration-layout-section">
+  <div class="registration-layout-left">
+    <xchange-registration-banner
+      [logoType]="'residential'"
+    ></xchange-registration-banner>
+  </div>
+  <div class="registration-layout-right">
+    <xchange-logo
+      type="residential"
+      theme="mix"
+      className="layout-logo"
+    ></xchange-logo>
+    <div class="registration-container">
+      <h2 class="heading mb-4">
+        <strong>How would you like to register?</strong>
+      </h2>
+
+      <div class="box-container">
+        <div class="boxes" routerLink="/registration">
+          <fa-icon [icon]="lock" class="icon"></fa-icon>
+          <span class="box-heading">I have a Mohawk account number</span>
+        </div>
+        <div class="boxes" routerLink="/registration-mt">
+          <fa-icon [icon]="lock" class="icon"></fa-icon>
+          <span class="box-heading">I don't have a Mohawk account number</span>
+        </div>
+
+        <!-- <div class="boxes" routerLink="/">
+          <fa-icon [icon]="computer" class="icon"></fa-icon>
+          <span class="box-heading"
+            >I want to create a new invoicing account (Contact Us)</span
+          >
+        </div> -->
+      </div>
+      <div class="return-section">
+        <a routerLink="/">
+          <fa-icon [icon]="arrow" class="icon"></fa-icon>
+          Return to Sign In
+        </a>
+      </div>
+    </div>
+    <xchange-custom-footer></xchange-custom-footer>
+  </div>
+</div>

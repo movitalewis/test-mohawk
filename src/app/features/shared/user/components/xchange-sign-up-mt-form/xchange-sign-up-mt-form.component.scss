@@ -1,0 +1,121 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+
+:host {
+  width: 100%;
+}
+h2,
+a,
+h3 {
+  color: $color-white;
+}
+.disabled-select {
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+.sign-up-form-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  & > li {
+    width: calc(50% - 12px);
+    margin-bottom: 1em;
+
+    &.phone-field {
+      display: flex;
+
+      .ext {
+        margin-left: 24px;
+        width: 85px;
+        margin-right: 24px;
+      }
+
+      .phone-number {
+        width: 300px;
+      }
+    }
+
+    @include breakpoint-range($max: lg) {
+      width: 100%;
+
+      &.phone-field {
+        display: flex;
+        flex-wrap: wrap;
+
+        .ext {
+          margin-right: 0;
+        }
+
+        .phone-number {
+          margin-top: 1em;
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+.sign-up-actions {
+  @include breakpoint-range($max: md) {
+    flex-direction: column-reverse;
+
+    .submit-btn {
+      margin-bottom: 10px;
+      width: 100%;
+    }
+  }
+}
+
+@include breakpoint-range($min: xxxl) {
+  .sign-up-form {
+    padding: 0 80px;
+  }
+}
+.form-control.error,
+.form-control:invalid,
+.form-control.ng-invalid.ng-pristine,
+.form-control.ng-invalid:focus {
+  border: 1px solid $color-gray;
+  color: $color-light-black;
+}
+.form-control.ng-invalid.ng-touched:blur {
+  border: 1px solid $color-red;
+  color: $color-red;
+}
+
+.registration {
+  color: #dc3545;
+}
+
+.alert-message {
+  color: #1f2223;
+}
+
+.form-fields-container {
+  .instructions {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+}
+
+.password-field {
+  position: relative;
+  .show-eye,
+  .hide-eye {
+    position: absolute;
+    right: 20px;
+    top: 43px;
+    font-size: 15px;
+    color: $color-gray;
+    cursor: pointer;
+  }
+  .show-eye {
+    color: $color-red;
+    // opacity: 0.7;
+  }
+  .form-control.is-invalid {
+    background: unset;
+  }
+}

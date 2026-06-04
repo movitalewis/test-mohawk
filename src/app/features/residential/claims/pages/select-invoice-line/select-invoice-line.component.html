@@ -1,0 +1,126 @@
+<!-- <app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader> -->
+<div class="modal-header">
+  <h4 class="modal-title text-center w-100">Select Invoice Line(s)</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="modalService.hide()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="col-md-12 my-3" *ngIf="showAlert">
+    <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+      <div class="container">
+        {{ showMessage }}
+      </div>
+    </alert>
+  </div>
+  <div class="row">
+    <div class="col-lg-12 col-md-12">
+      <ngx-table
+        [configuration]="configuration"
+        [data]="
+          data
+            | paginate
+              : {
+                  id: 'invline',
+                  itemsPerPage: tableItemsSize,
+                  currentPage: pageIndex,
+                  totalItems: totalRecords
+                }
+        "
+        [columns]="columns"
+        (event)="sortingByColumn($event)"
+      >
+        <ng-template let-row let-index="index">
+          <td>
+            <xchange-custom-radio
+              [type]="'radio'"
+              [id]="'radio-' + index"
+              [checked]="
+                (row.selected && hasRecordSelected(row)) ||
+                hasRecordSelected(row)
+              "
+              [value]="row"
+              (model)="onSubmitModal($event, row)"
+            ></xchange-custom-radio>
+          </td>
+          <td (click)="onSubmitModal(null, row, false)">
+            <p>
+              {{ row?.invoiceNumber }}
+            </p>
+          </td>
+          <td (click)="onSubmitModal(null, row, false)">
+            <p>{{ row?.invoiceDate }}</p>
+          </td>
+          <td (click)="onSubmitModal(null, row, false)">
+            <p>{{ row?.orderNumber }}</p>
+          </td>
+          <td (click)="onSubmitModal(null, row, false)">
+            <p>{{ row?.orderDate }}</p>
+          </td>
+          <td (click)="onSubmitModal(null, row, false)">
+            <p>{{ row?.poNumber }}</p>
+          </td>
+          <td (click)="onSubmitModal(null, row, false)">
+            <p>{{ row?.invoiceTotal }}</p>
+          </td>
+          <td>
+            <span (click)="downloadInvoicePdf(row)">
+              <img
+                class="inv-pdf-icon"
+                src="/assets/images/icons/pdf-icon-red.svg"
+                alt="pdf_icon"
+              />
+            </span>
+          </td>
+        </ng-template>
+      </ngx-table>
+      <div class="row mb-4 mt-4">
+        <div class="d-flex justify-content-center" *ngIf="totalRecords > 10">
+          <pagination-controls
+            id="invline"
+            [maxSize]="maxSize"
+            [responsive]="true"
+            [nextLabel]="''"
+            [previousLabel]="''"
+    
+            (pageChange)="onTableDataChange($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div class="col-md-12">
+          <p class="text-center mb-0">
+            {{ startValue }} -
+            {{ totalRecords > lastValue ? lastValue : totalRecords }}
+            OF {{ totalRecords }} INVOICES
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center full-btns mt-4">
+    <div class="col-md-3 btn-grid">
+      <button class="btn btn-outline-secondary mb-3" (click)="cancelModal()">
+        CANCEL
+      </button>
+    </div>
+    <div class="col-md-3 btn-grid">
+      <button class="btn btn-outline-secondary mb-3" (click)="hideModal()">
+        NEW SEARCH
+      </button>
+    </div>
+    <div class="col-md-3 btn-grid">
+      <button
+        class="btn btn-primary mb-3"
+        (click)="openClaimsModal()"
+        [disabled]="selectedRecords.length == 0 || selectedRecords.length > 1"
+      >
+        CONTINUE
+      </button>
+    </div>
+  </div>
+</div>

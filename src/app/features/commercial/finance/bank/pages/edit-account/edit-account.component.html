@@ -1,0 +1,85 @@
+<div class="container">
+  <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+  <h2 class="text-center mb-4">Edit Bank Account</h2>
+  <app-loader *ngIf="spinnerLoading"></app-loader>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      <div class="_card-container">
+        <div class="col-md-12">
+          <h3 class="reqr mb-0">* = Required Input</h3>
+          <form [formGroup]="editForm">
+            <div class="mb-4">
+              <div class="row mt-4">
+                <div class="col-md-4 mb-4">
+                  <h3>Name on Account*</h3>
+                  <input
+                    formControlName="accountName"
+                    type="text"
+                    placeholder="John Doe"
+                    class="form-control"
+                    [ngClass]="
+                      editForm.controls['accountName'].touched &&
+                      editForm.controls['accountName'].hasError('pattern')
+                        ? 'is-invalid'
+                        : ''
+                    "
+                  />
+                  <div class="invalid-feedback">Please enter a valid name</div>
+                </div>
+                <div class="col-6 col-sm-2 mb-4">
+                  <h4>Account Type*</h4>
+                  <label class="margin-top-3">{{
+                    bankAccountDetails?.accountType
+                  }}</label>
+                </div>
+                <div class="col-6 col-sm-2 mb-4">
+                  <h4>Currency</h4>
+                  <label class="margin-top-3 mts">{{
+                    bankAccountDetails?.currency
+                  }}</label>
+                </div>
+                <div class="col col-md-2 mb-4" *ngIf="priceLabel == 'USD'">
+                  <h4>Bank Routing #*</h4>
+                  <label class="margin-top-3">{{
+                    bankAccountDetails?.bankRoutingNumber
+                  }}</label>
+                </div>
+                <div class="col col-md-2 mb-4" *ngIf="priceLabel == 'CAD'">
+                  <h4>Bank Institution #*</h4>
+                  <label class="margin-top-3">{{ splitString(bankAccountDetails?.bankRoutingNumber,0,4)
+                  }}</label>
+                </div>
+                <div class="col col-md-2 mb-4" *ngIf="priceLabel == 'CAD'">
+                  <h4>Bank Transit #*</h4>
+                  <label class="margin-top-3">{{ splitString(bankAccountDetails?.bankRoutingNumber,4,9)
+                  }}</label>
+                </div>
+                <div class="col col-md-2 mb-4">
+                  <h4>Bank Account #*</h4>
+                  <label class="margin-top-3">{{
+                    bankAccountDetails?.accountNumber
+                  }}</label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="mb-12 mt-12 text-center">
+          <button
+            class="btn btn-outline-secondary continue-btn-mrg-right"
+            (click)="navigateToBankList()"
+          >
+            Cancel
+          </button>
+          <button
+            class="col btn btn-primary"
+            [disabled]="!editForm.valid"
+            (click)="saveClick()"
+          >
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

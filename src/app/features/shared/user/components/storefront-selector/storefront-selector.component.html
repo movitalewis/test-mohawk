@@ -1,0 +1,54 @@
+<app-loader [fullScreen]="true" *ngIf="loading"></app-loader>
+<div class="modal-header text-center">
+  <h4 class="modal-title f-w w-100">Default Storefront</h4>
+</div>
+<div class="modal-body p-20">
+  <div class="_card white-bg">
+    <div class="row">
+      <div class="col-md-12 mb-3">
+        <p>
+          Mohawk Flooring (Residential) and Mohawk Group (Commercial)
+          storefronts can be selected at the top left of the screen
+        </p>
+        <p>Which storefront would you like to set as your default?</p>
+        <ul class="subscribe-list w-100">
+          <li>
+            <xchange-custom-radio
+              type="radio"
+              [id]="'MohawkResidentialFlooring'"
+              label="Mohawk Flooring (Residential)"
+              [group]="'Residential'"
+              [value]="'R'"
+              (model)="changeStorefront($event)"
+              [checked]="selectResidential"
+            >
+            </xchange-custom-radio>
+          </li>
+          <li>
+            <xchange-custom-radio
+              type="radio"
+              [id]="'MohawkGroup'"
+              label="Mohawk Group (Commercial)"
+              [group]="'Commercial'"
+              [value]="'C'"
+              (model)="changeStorefront($event)"
+              [checked]="selectCommercial"
+            >
+            </xchange-custom-radio>
+          </li>
+        </ul>
+      </div>
+      <div class="mt-4 mb-4 d-flex justify-content-evenly w-50 mx-auto">
+        <button class="btn btn-primary" (click)="onSave()">
+          SET AS DEFAULT
+        </button>
+      </div>
+      <app-alerts
+        [alertData]="alertData"
+        [alertType]="alertType"
+        *ngIf="alertTrigger"
+      >
+      </app-alerts>
+    </div>
+  </div>
+</div>

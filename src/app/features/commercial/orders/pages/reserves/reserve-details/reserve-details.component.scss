@@ -1,0 +1,156 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+
+@import "/src/styles/table";
+:host ::ng-deep {
+  .mohawk-logo img {
+    width: 150px !important;
+  }
+}
+
+.back-to {
+  display: flex;
+  color: #{$color-red};
+  cursor: pointer;
+
+  .back-icon {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    position: relative;
+    margin-right: 5px;
+    font-size: 12px;
+    top: -6px;
+  }
+}
+.back-i {
+  @include breakpoint-range($max: sm) {
+    margin-right: 5px;
+  }
+  margin-right: 5px;
+  top: 4px;
+  position: relative;
+}
+.claim-text {
+  border-radius: 5px;
+  border: none;
+  padding-left: 15px;
+  padding-bottom: 10px;
+}
+.card-header {
+  background-color: $color-dark-gray;
+}
+.line {
+  border-bottom: 1px solid $color-gray;
+  padding-bottom: 5px;
+}
+
+.show-card {
+  .card-header {
+    background-color: $color-medium-gray;
+    border: none;
+    padding: 0px;
+
+    button {
+      text-decoration: none;
+      text-transform: capitalize;
+      border: none !important;
+      padding-top: 0.75rem;
+      margin-bottom: 0rem;
+    }
+    .down-icon {
+      transform: rotate(-90deg);
+      display: inline-flex;
+      font-size: 0.625rem;
+      margin-left: 0.313rem;
+    }
+    .up-icon {
+      transform: rotate(-270deg);
+      display: inline-flex;
+      font-size: 0.625rem;
+      margin-left: 0.625rem;
+    }
+  }
+}
+.card-img-top {
+  &:hover {
+    cursor: pointer;
+  }
+}
+.text-f-s {
+  font-size: 0.75rem;
+  // padding-left: 15px;
+}
+.card-body {
+  padding-bottom: 0px;
+  padding-top: 0px;
+}
+.card-img-top {
+  border-radius: 0px;
+}
+.img {
+  height: 9.125rem;
+  object-fit: cover;
+  border-radius: 5px;
+}
+.down-icon {
+  transform: rotate(-90deg);
+  transition: transform 0.3s ease-in-out;
+  display: inline-flex;
+  font-size: 0.75rem;
+  margin-left: 14px;
+}
+.up-icon {
+  transform: rotate(-270deg);
+  transition: transform 0.3s ease-in-out;
+  display: inline-flex;
+  font-size: 14px;
+  margin-left: 0.313rem;
+}
+.table-view-data {
+  ::ng-deep {
+    .margin-bottom {
+      margin-bottom: 0px !important;
+      height: 39px;
+    }
+  }
+}
+.text-bold {
+  font-weight: bolder;
+}
+.buttons {
+  gap: 20px;
+}
+.text-red {
+  color: #ce0e2d;
+}
+.image-overlay-container{
+    position: relative;
+  }
+  .ribbon-wrapper-preview {
+    width: 150px;
+    height: 150px;
+    overflow: hidden;
+    position: absolute;
+    top: 0px;
+    z-index: 1;
+    border-radius: 0px;
+    .ribbon {
+      color: $color-white;
+      text-align: center;
+      -webkit-transform: rotate(-45deg);
+      -moz-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+      -o-transform: rotate(-45deg);
+      position: relative;
+      padding: 2px 0;
+      top: 15px;
+      left: -40px;
+      width: 140px;
+      background-color: #ce0e2d;
+    }
+    .preferred-stock{
+      top: 11px;
+      left: -38px;
+      font-size: 11px;
+    }
+  }

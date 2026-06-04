@@ -1,0 +1,68 @@
+<div id="product-dropDown">
+  <div class="mx-search-box" [ngClass]="{ active: searchDefaultValue }">
+    <input
+      [disabled]="disabled"
+      [placeholder]="placeholder"
+      type="text"
+      #searchBoxInput
+      (input)="onInputEvent($event)"
+      (keypress)="onKeypress($event)"
+      [(ngModel)]="searchKey"
+      (keydown)="onKeydown($event)"
+      (keyup)="onKeyup($event)"
+      (blur)="onBlurEvent($event)"
+      class="form-control"
+      (keyup.enter)="onEnter()"
+      (keydown.backspace)="onKeypress($event)"
+      (focus)="onFocus()"
+    />
+    <div
+      *ngIf="showSpinner"
+      class="spinner-border ms-auto d-flex align-items-center searchspinner"
+      role="searchstatus"
+      aria-hidden="true"
+    ></div>
+    <button [disabled]="disabled" type="button" class="mx-search-btn" (click)="onSearch()">
+      <img
+        src="/assets/images/icons/search-primary.svg"
+        alt="Search Button"
+      />
+    </button>
+    <button
+      [disabled]="disabled"
+      type="button"
+      class="mx-clear-input-brn"
+      *ngIf="searchKey?.length > 0"
+      (click)="onClearInput()"
+    >
+      <img
+        src="/assets/images/icons/close-primary.svg"
+        alt="Search Input Clear"
+      />
+    </button>
+  </div>
+  <div class="invalid-msg" *ngIf="!searchKey?.length && clearFlag && searchFlag">
+    Please enter a value
+  </div>
+  <div
+    class="mx-search-suggestions"
+    *ngIf="showDropdown"
+    [style.display]="isGlobalSearchEnabled ? 'block' : 'none'"
+  >
+    <p
+      *ngIf="
+        searchKey.length < 1 && searchKey.length != 0 && isGlobalSearchEnabled
+      "
+      class="text-left suggestion-p"
+    >
+      Enter 3 or more chars
+    </p>
+    <div *ngIf="this.searchKey.length > 0">
+      <span *ngFor="let product of filteredProducts">
+        <ul (click)="onSuggestionClick(product.firstVariantCode)">
+          <a> {{ product.styleName }} - {{ product.styleId }}</a>
+        </ul>
+      </span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,178 @@
+<div class="profile-section">
+  <header class="page-header">
+    <h2>Your Profile</h2>
+    <button
+      class="edit-profile-btn"
+      *ngIf="!isEditMode"
+      (click)="onEditProfile()"
+    >
+      Edit Profile
+    </button>
+    <button
+    class="edit-profile-btn"
+    *ngIf="isEditMode"
+    (click)="onBack()"
+    >
+      < Back
+    </button>
+  </header>
+  <form [formGroup]="profile" (ngSubmit)="onSubmit()">
+    <app-alerts
+      [alertData]="alertData"
+      [alertType]="alertType"
+      *ngIf="alertTrigger"
+    ></app-alerts>
+    <section class="mt-2 profile-content-section w-100">
+      <header>User Info</header>
+      <div class="fields-container">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <h4>First Name*</h4>
+
+            <input
+              type="text"
+              [ngClass]="isEditMode ? 'form-control' : 'data-input'"
+              [readOnly]="!isEditMode"
+              [value]="firstName"
+              formControlName="firstName"
+            />
+          </div>
+          <div class="col-md-4 mb-3">
+            <h4>Last Name*</h4>
+            <input
+              type="text"
+              [ngClass]="isEditMode ? 'form-control' : 'data-input'"
+              [readOnly]="!isEditMode"
+              [value]="lastName"
+              formControlName="lastName"
+            />
+          </div>
+          <div class="col-md-4 mb-3">
+            <h4>Email/Username*</h4>
+            <input
+              type="text"
+              [disabled]="true"
+              [ngClass]="isEditMode ? 'form-control' : 'data-input'"
+              [readOnly]="!isEditMode"
+              [value]="email"
+              formControlName="email"
+              *ngIf="isEditMode"
+            /> 
+            <!-- [ngClass]="isEditMode ? 'form-control' : 'data-input'"  -->
+            <p class="data-input textWrap" *ngIf="!isEditMode">{{email}}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="profile-content-section w-100">
+      <header>Phone</header>
+      <div class="fields-container">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <h4>Work Phone*</h4>
+            <input #inputRef
+              type="text"
+              [readOnly]="!isEditMode"
+              [value]="phone"
+              formControlName="workPhone"
+              [ngClass]="
+                profile.controls['workPhone'].touched &&
+                profile.controls['workPhone'].hasError('required')
+                  ? 'is-invalid form-control'
+                  : (isEditMode ? 'form-control' : 'data-input')
+              "
+             [maxlength]="inputRef.value.includes('+') ? '17' : '14'"
+             (input)="formateWorkPhone($event);checkWorkPhoneValidation($event)"
+            />
+          </div>
+          <div class="col-md-4 mb-3">
+            <h4>Ext</h4>
+            <input
+              type="text"
+              [ngClass]="isEditMode ? 'form-control' : 'data-input'"
+              [readOnly]="!isEditMode"
+              [value]="extension"
+              formControlName="extension"
+              maxlength="10"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+            />
+          </div>
+          <div class="col-md-4 mb-3">
+            <h4>Mobile Phone</h4>
+            <input #inputRef
+              type="text"
+              [readOnly]="!isEditMode"
+              [value]="mobilePhone"
+              formControlName="mobilePhone"
+              [ngClass]="
+                profile.controls['mobilePhone'].touched &&
+                profile.controls['mobilePhone'].hasError('pattern')
+                  ? 'is-invalid form-control'
+                  : (isEditMode ? 'form-control' : 'data-input')
+              "
+              [maxlength]="inputRef.value.includes('+') ? '17' : '14'"
+              (input)="formateWorkPhone($event);checkMobilePhoneValidation($event)"
+            />
+          </div>
+          <!-- <div class="col-md-4 mb-3">
+          <h4>Fax</h4>
+          <input
+            type="text"
+            [ngClass]="isEditMode ? 'form-control' : 'data-input'"
+            [readOnly]="!isEditMode"
+            [value]="fax"
+            formControlName="fax"
+          />
+        </div> -->
+        </div>
+      </div>
+    </section>
+
+    <section class="profile-content-section w-100">
+      <header>Primary Role and Location</header>
+      <div class="fields-container">
+        <div class="row mb-4">
+          <div class="col-md-4 mb-3">
+            <h4>Primary Role*</h4>
+            <!-- <input
+              type="text"
+              [class.form-field-disable]="profile?.value?.role === ''"
+              [ngClass]="isEditMode ? 'form-control' : 'data-input'"
+              [readOnly]="!isEditMode"
+              [value]="role"
+              formControlName="role"
+            /> -->
+            <ng-select
+            placeholder="Please Select Account"
+            formControlName="role"
+            [class.form-field-disable]="!isEditMode || (isEditMode && !(profile.value?.role === '' || profile.value?.role === null))"
+            [ngClass]="
+              !profile.controls['role'].value ? 'is-invalid' : ''
+            "
+          >
+            <ng-option *ngFor="let role of roles" [value]="role.value">{{
+              role.name
+            }}</ng-option>
+          </ng-select>
+           
+          </div>
+          <!-- <div class="col-md-4 mb-3">
+            <h4>Primary Location*</h4>
+            <input
+              type="text"
+              [class.form-field-disable]="isEditMode"
+              [ngClass]="isEditMode ? 'form-control' : 'data-input'"
+              [readOnly]="!isEditMode"
+              [value]="location"
+              formControlName="location"
+            />
+          </div> -->
+        </div>
+        <button [disabled]="!profile.dirty || profile.invalid" *ngIf="isEditMode" class="btn btn-primary save-btn mt-4">
+          SAVE CHANGES
+        </button>
+      </div>
+    </section>
+  </form>
+</div>

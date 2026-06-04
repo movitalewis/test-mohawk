@@ -1,0 +1,215 @@
+@import "src/styles/mixins/box-shadow.mixin";
+@import 'src/styles/mixins/breakpoints';
+@import 'src/styles/colors';
+
+.modal-body {
+    padding: 0 30px;
+
+    @include breakpoint-range($max : sm) {
+        padding: 0 20px;
+    }
+}
+
+.f-w {
+    width: 100%;
+}
+
+.btn-full-width {
+    @include breakpoint-range($max : md) {
+        flex-direction: column;
+    }
+
+    .btn {
+        @include breakpoint-range($max : sm) {
+            width: 100%;
+        }
+
+        @include breakpoint-range($max : md) {
+            margin-bottom: 15px;
+            margin-right: 0px;
+        }
+
+        svg {
+            margin-right: 10px;
+
+            path {
+                fill: $color-white;
+            }
+        }
+
+        &:disabled {
+            svg {
+                path {
+                    fill: $color-gray;
+                }
+            }
+        }
+
+        &:hover {
+            svg {
+                path {
+                    fill: $color-red;
+                }
+            }
+        }
+
+        .d-flex {
+            @include breakpoint-range($max : md) {
+                justify-content: center;
+            }
+        }
+    }
+}
+
+.payment-details {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #e8e8e8;
+
+    ul {
+        @include breakpoint-range($max : sm) {
+            display: block;
+        }
+
+        list-style-type: none;
+        padding: 0;
+        display: flex;
+
+        li {
+            @include breakpoint-range($max : sm) {
+                width: 50%;
+                padding: 10px 0;
+                display: inline-block;
+            }
+
+            text-align: center;
+            width: 33.33%;
+
+            span {
+                font-size: 12px;
+            }
+
+            p {
+                margin: 0;
+
+                b {
+                    color: #CE0E2D;
+                }
+            }
+        }
+    }
+}
+
+.add-deduction {
+    p {
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+}
+
+.add-deduction-mobile {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #e8e8e8;
+
+    ul {
+        @include breakpoint-range($max : sm) {
+            display: block;
+        }
+
+        list-style-type: none;
+        padding: 0;
+        display: flex;
+
+        li {
+            @include breakpoint-range($max : sm) {
+                width: 100%;
+                padding: 5px 0;
+                display: inline-block;
+            }
+
+            .form-control,
+            .ng-select {
+                @include breakpoint-range($max : sm) {
+                    margin-bottom: 0;
+                }
+
+            }
+
+            .btn-50 {
+                .btn {
+                    @include breakpoint-range($max : xl) {
+                        width: 48%;
+                        margin-right: 5px;
+                    }
+                }
+
+            }
+
+            text-align: left;
+
+            span {
+                font-size: 12px;
+            }
+
+            p {
+                margin: 0;
+
+                b {
+                    color: #CE0E2D;
+                }
+            }
+        }
+    }
+}
+
+.desk-view {
+    @include breakpoint-range($max : xl) {
+        display: none;
+    }
+}
+
+.m-view {
+    display: none;
+
+    @include breakpoint-range($max : xl) {
+        display: block;
+    }
+}
+
+.mr-10 {
+    margin-right: 10px;
+}
+
+.flex-direction-column {
+    flex-direction: column;
+}
+
+::ng-deep {
+    .manage-deduction {
+        .ng-dropdown-panel {
+            border: none !important;
+        }
+
+        .ng-dropdown-panel .scroll-host {
+            position: fixed !important;
+            width: 215px;
+            height: 94px;
+            border-radius: 2px;
+            border: 1px solid #b1b1b1;
+
+            @include breakpoint-range($max: xl) {
+                width: 80% !important;
+                height: auto;
+            }
+
+            @include breakpoint-range($min: lg, $max: xl) {
+                width: 70% !important;
+                height: auto;
+            }
+
+        }
+    }
+}

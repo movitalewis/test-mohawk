@@ -1,0 +1,1918 @@
+<app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+<div [ngStyle]="spinnerLoading ? { display: 'none' } : {}">
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w w-100">Choose a Shipping Address</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="onHideModal('ChooseAddressModal')"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body p-20">
+    <ng-container *ngIf="addtoCartFailed || addtoCartErrorMessage?.length>0">
+      <div class="mb-3" *ngFor="let item of addtoCartErrorMessage">
+        <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+          <div class="container ps-0">
+            {{ item?.message }}
+          </div>
+        </alert>
+      </div>
+    </ng-container>
+    <div class="custom-order-tabs p-50" #scrollToTop>
+      <tabset
+        responsiveTabs
+        [justified]="true"
+        class="choose-address-lightbox-tabset"
+      >
+        <tab class="tab-content" (selectTab)="changeTab(1)">
+          <ng-template tabHeading>Default Shipping Address</ng-template>
+          <form [formGroup]="reactiveForm">
+            <div class="_card-container">
+              <div class="row default-addr">
+                <div class="col-md-6 default-addr-left">
+                  <!-- <p class="mb-2">* = Required input</p> -->
+                  <h4 class="modal-title f-w">Default Address</h4>
+                  <div class="dsa-container">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
+                      <div class="border-box position-relative">
+                        <div
+                          class="address-text"
+                          *ngIf="!addressSpinnerLoading"
+                        >
+                          <span class="mb-0"
+                            >({{ shippingAddress?.companyName }}) <br />
+                            Ship To # ( {{ shippingAddress?.id.split("_")[0] }})
+                          </span>
+
+                          <span>
+                            <!--  {{ shippingAddress?.formattedAddress }}<br /> -->
+                            {{ shippingAddress?.line2 }} {{ shippingAddress?.line1 }}{{ shippingAddress?.building ? ", " : "" }}{{ shippingAddress?.building ? shippingAddress?.building : "" }}<br />
+                            {{ shippingAddress?.town ? shippingAddress?.town+", " : "" }}
+                            {{ shippingAddress?.region?.isocodeShort }}
+                            {{ shippingAddress?.postalCode }}
+                          </span>
+                        </div>
+                        <div
+                          class="loader-for-address"
+                          *ngIf="addressSpinnerLoading"
+                        >
+                          <app-loader [fullScreen]="true"></app-loader>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- <div class="row mt-3 mb-2 full-btns"> -->
+                    <div
+                      class="col-xs-12 col-sm-12 col-md-12 col-lg-11 col-xl-8 mt-4"
+                    >
+                      <button
+                        (click)="openChangeShippingAddress()"
+                        class="btn btn-secondary mb-2 w-100"
+                        *ngIf="totalRecords > 1"
+                      >
+                        Change Shipping Address
+                      </button>
+                    </div>
+                    <div
+                      class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-8 my-4"
+                      *ngIf="totalRecords == 0 && ctaSpinnerFlag"
+                    >
+                      <div
+                        class="spinner-border ms-auto d-flex align-items-center searchspinner"
+                        role="searchstatus"
+                        aria-hidden="true"
+                      ></div>
+                    </div>
+                    <!-- </div> -->
+                  </div>
+                </div>
+                <div class="col-md-6 default-addr-right">
+                  <h4 class="modal-title f-w">Shipping Options</h4>
+                  <div class="dsa-container">
+                    <div class="row mb-2">
+                      <div class="col-6 mt-2">
+                        <h4>Shipping Method</h4>
+                        <p class="mb-0 address-text">
+                          {{ shippingAddress?.defaultShippingMethod }}
+                          {{
+                            shippingAddress?.defaultShippingConditionDesc
+                              ? "-"
+                              : ""
+                          }}
+                          {{ shippingAddress?.defaultShippingConditionDesc }}
+                        </p>
+                        <!-- <a
+                      href="javascript:void(0)"
+                      (click)="shipViaModal(shipViaTemplate, 'shippingMethod')"
+                      >Change</a
+                    > -->
+                      </div>
+                      <div class="col-6 mt-2">
+                        <h4>Inco Terms* Req.</h4>
+                        <p class="mb-0">
+                          {{ shippingAddress?.defaultIncoTerms }}
+                          {{ shippingAddress?.defaultIncoTermsDesc ? "-" : "" }}
+                          {{ shippingAddress?.defaultIncoTermsDesc }}
+                        </p>
+                        <!-- <a
+                      href="javascript:void(0)"
+                      (click)="shipViaModal(shipViaTemplate, 'incoTerms')"
+                      >Change</a
+                    > -->
+                      </div>
+                      <div class="col-6 mt-2">
+                        <h4>Shipping WareHouse* Req.</h4>
+                        <p class="mb-0">
+                          {{ shippingAddress?.defaultShippingWarehouse }}
+                          {{
+                            shippingAddress?.defaultShippingWarehouseDesc
+                              ? "-"
+                              : ""
+                          }}
+                          {{
+                            shippingAddress?.defaultShippingWarehouseDesc
+                              ? shippingAddress?.defaultShippingWarehouseDesc
+                              : ""
+                          }}
+                        </p>
+                        <!-- <a
+                      href="javascript:void(0)"
+                      (click)="
+                        shipingWareHouseModal(
+                          shippingWareHouseTemplate,
+                          'shippingWareHouse'
+                        )
+                      "
+                      >Change</a
+                    > -->
+                      </div>
+                      <div class="col-6 mt-2">
+                        <h4>Ship Via* Req.</h4>
+                        <p class="mb-0">
+                          {{ shippingAddress?.defaultShipVia }}
+                          {{ shippingAddress?.defaultShipViaDesc ? "-" : "" }}
+                          {{
+                            shippingAddress?.defaultShipViaDesc
+                              ? shippingAddress?.defaultShipViaDesc
+                              : ""
+                          }}
+                       
+                        </p>
+                        <!-- <a
+                      href="javascript:void(0)"
+                      (click)="
+                        shipingWareHouseModal(
+                          shippingWareHouseTemplate,
+                          'incoTermsLoc2'
+                        )
+                      "
+                      >Change</a
+                    > -->
+                      </div>
+                    </div>
+                    <div
+                      class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-8 mt-4 mx-auto"
+                    >
+                      <button
+                        (click)="shippingOptionsModal(shippingOptionTemplate)"
+                        class="btn btn-secondary mb-2 w-100"
+                      >
+                        Change Shipping Options
+                      </button>
+                    </div>
+                  </div>
+                  <!-- <div class="col-6 mt-2">
+                    <h4>Request Delivery Date* Req.</h4>
+                   
+                    <input
+                      formControlName="rdd"
+                      type="text"
+                      placeholder="Select Date"
+                      class="form-control"
+                      bsDatepicker
+                      [datesEnabled]="daysToBeEnabled"
+                      [daysDisabled]="disabledDate"
+                    />
+                   
+                  </div> -->
+                </div>
+              </div>
+              <div class="container m-0 p-0">
+                <div class="row mt-2">
+                  <div class="col-md-12 col-xs-12">
+                    <!-- <div class="address-check">
+                    <xchange-custom-checkbox
+                      type="checkbox"
+                      [id]="'xyz1'"
+                      label="Replacement Order"
+                      [checked]="reactiveForm.value.replacementOrder"
+                      (model)="changeEvent($event)"
+                    >
+                    </xchange-custom-checkbox>
+                    <p>
+                      Replacement orders are re-inspected within 24 hours of
+                      order placement to prevent potential duplicate claim
+                      issues.
+                    </p>
+                  </div> -->
+                  </div>
+                </div>
+                <!-- <div class="row" *ngIf="reactiveForm?.value?.replacementOrder">
+                <div class="col-md-12 col-xs-12">
+                  <div class="address-check">
+                    <h4 class="modal-title">Has a claim been submitted? *</h4>
+                    <div class="mt-2">
+                      <xchange-custom-radio
+                        type="radio"
+                        [id]="'c123'"
+                        [name]="'123'"
+                        label="Yes"
+                        [checked]="reactiveForm.value.hasClaimSubmitted"
+                        (model)="changeEventClaim($event, 1, 'c123', 'd123')"
+                        class="c-r"
+                      >
+                      </xchange-custom-radio>
+                      <xchange-custom-radio
+                        type="radio"
+                        [id]="'d123'"
+                        [name]="'123'"
+                        label="No"
+                        [checked]="
+                          reactiveForm.value.hasClaimSubmitted != null
+                            ? !reactiveForm.value.hasClaimSubmitted
+                            : false
+                        "
+                        (model)="changeEventClaim($event, 2, 'c123', 'd123')"
+                        class="c-r"
+                      >
+                      </xchange-custom-radio>
+                    </div>
+                  </div>
+                </div>
+              </div> -->
+                <!-- Has a claim been submitted?  Yes -->
+                <div
+                  class="row mb-2"
+                  *ngIf="
+                    reactiveForm?.value?.replacementOrder &&
+                    reactiveForm.value.hasClaimSubmitted
+                  "
+                >
+                  <div class="col-md-4 col-xs-12">
+                    <h4>Claim # *</h4>
+                    <input
+                      type="text"
+                      placeholder="Empty Field"
+                      class="form-control"
+                      formControlName="Claim"
+                      (keypress)="validateNo($event)"
+                    />
+                    <div
+                      *ngIf="f['Claim'].errors && submitted"
+                      class="invalid-feedback d-block"
+                    >
+                      <div *ngIf="f['Claim'].errors['required']">
+                        Claim is Req.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-xs-12">
+                    <h4>Replacement Reason *</h4>
+                    <ng-select
+                      placeholder="Select"
+                      formControlName="replacementReason"
+                      onkeydown="return /[a-z]/i.test(event.key)"
+                      [ngClass]="{
+                        error:
+                          f['replacementReason'].errors &&
+                          reactiveForm.controls['replacementReason'].touched
+                      }"
+                    >
+                      <ng-option value="ZE1">Wrong Product</ng-option>
+                      <ng-option value="ZE2">Wrong Quantity</ng-option>
+                      <ng-option value="ZE3">Damaged </ng-option>
+                      <ng-option value="ZE4"
+                        >Customer Choice / Accommodation Return</ng-option
+                      >
+                      <ng-option value="ZE5">Quality Concern </ng-option>
+                    </ng-select>
+                    <div
+                      *ngIf="f['replacementReason'].errors && submitted"
+                      class="invalid-feedback d-block"
+                    >
+                      <div *ngIf="f['replacementReason'].errors['required']">
+                        Replacement Reason is Req.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Has a claim been submitted?  No -->
+                <div
+                  class="row mt-2 mb-4"
+                  *ngIf="
+                    reactiveForm?.value?.replacementOrder &&
+                    !reactiveForm.value.hasClaimSubmitted &&
+                    reactiveForm.value.hasClaimSubmitted != null
+                  "
+                >
+                  <div class="col-md-6 col-xs-12">
+                    <h4>Replacement Reason *</h4>
+                    <ng-select
+                      placeholder="Select"
+                      formControlName="replacementReason"
+                      [ngClass]="{
+                        error:
+                          f['replacementReason'].errors &&
+                          reactiveForm.controls['replacementReason'].touched
+                      }"
+                      onkeydown="return /[a-z]/i.test(event.key)"
+                    >
+                      <ng-option value="ZE1">Wrong Product</ng-option>
+                      <ng-option value="ZE2">Wrong Quantity</ng-option>
+                      <ng-option value="ZE3">Damaged </ng-option>
+                      <ng-option value="ZE4"
+                        >Customer Choice / Accommodation Return</ng-option
+                      >
+                      <ng-option value="ZE5">Quality Concern </ng-option>
+                    </ng-select>
+                    <div
+                      *ngIf="f['replacementReason'].errors && submitted"
+                      class="invalid-feedback d-block"
+                    >
+                      <div *ngIf="f['replacementReason'].errors['required']">
+                        Replacement Reason is Req.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="row mt-2 mb-4"
+                  *ngIf="
+                    reactiveForm?.value?.replacementOrder &&
+                    !reactiveForm.value.hasClaimSubmitted &&
+                    reactiveForm.value.hasClaimSubmitted != null
+                  "
+                >
+                  <div class="col-md-4 col-xs-12">
+                    <h4>PO #</h4>
+                    <input
+                      type="text"
+                      placeholder="Empty Field"
+                      class="form-control"
+                      formControlName="PO"
+                      (keypress)="validatePO($event)"
+                    />
+                    <div
+                      *ngIf="f['PO'].errors && submitted"
+                      class="invalid-feedback d-block"
+                    >
+                      <div *ngIf="f['PO'].errors['required']">PO is Req.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-xs-12">
+                    <h4>Order #</h4>
+                    <input
+                      type="text"
+                      placeholder="Empty Field"
+                      class="form-control"
+                      formControlName="Order"
+                      (keypress)="validateNo($event)"
+                    />
+
+                    <div
+                      *ngIf="f['Order'].errors && submitted"
+                      class="invalid-feedback d-block"
+                    >
+                      <div *ngIf="f['Order'].errors['required']">
+                        Order is Req.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-xs-12">
+                    <h4>Invoice #</h4>
+                    <input
+                      type="text"
+                      placeholder="Empty Field"
+                      class="form-control"
+                      formControlName="Invoice"
+                      (keypress)="validateNo($event)"
+                    />
+
+                    <div
+                      *ngIf="f['Invoice'].errors && submitted"
+                      class="invalid-feedback d-block"
+                    >
+                      <div *ngIf="f['Invoice'].errors['required']">
+                        Invoice is Req.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <p class="mt-2">
+                    <strong>Notice</strong> <br />
+                    Ship complete orders and orders with pick up dates greater
+                    than 7 days are subject to inventory deallocation. Assigned
+                    CPU orders that are not picked up or released to ship,
+                    within 14 days of your requested pick update, will be
+                    cancelled and applicable penalties will be invoiced.
+                  </p>
+                </div>
+                <div class="row mt-4 full-btns justify-content-center">
+                  <div class="col-md-5 col-lg-3">
+                    <button
+                      class="btn btn-outline-secondary mb-3"
+                      (click)="onHideModal('ChooseAddressModal')"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+
+                  <div class="col-md-5 col-lg-4 col-xl-3" *ngIf="isAtpCheck">
+                    <button
+                      class="btn btn-primary mb-3"
+                      (click)="onSubmit()"
+                      [disabled]="
+                        !reactiveForm.valid ||
+                        (reactiveForm.value.hasClaimSubmitted == false &&
+                          reactiveForm.value.PO == '' &&
+                          reactiveForm.value.Order == '' &&
+                          reactiveForm.value.Invoice == '') ||
+                        isPoBoxFlag
+                      "
+                    >
+                      Choose Solution
+                    </button>
+                  </div>
+                  <div class="col-md-5 col-lg-3" *ngIf="!isAtpCheck">
+                    <button
+                      _ngcontent-nke-c166=""
+                      class="btn btn-primary mb-3"
+                      (click)="addToQuoteClick()"
+                      [disabled]="
+                        !reactiveForm.valid ||
+                        (reactiveForm.value.hasClaimSubmitted == false &&
+                          reactiveForm.value.PO == '' &&
+                          reactiveForm.value.Order == '' &&
+                          reactiveForm.value.Invoice == '')
+                      "
+                    >
+                      ADD TO QUOTE
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </tab>
+        <tab (selectTab)="changeTab(2)" *ngIf="priceLabel != 'CAD'">
+          <ng-template tabHeading
+            >Enter a One-Time Shipping Address</ng-template
+          >
+          <form [formGroup]="reactiveForm">
+            <div class="_card-container">
+              <alert
+                type="warning"
+                class="dashboard-page-alert"
+                [dismissible]="true"
+                *ngIf="errorMessage"
+              >
+                <div class="container ps-0">
+                  {{ errorMessage }}
+                </div>
+              </alert>
+              <p class="mt-2">
+                Please provide your shipping information below.
+              </p>
+              <p>* = Required input</p>
+              <div class="row mt-2">
+                <div class="col-md-6 col-xs-12 mb-4">
+                  <h4>Name * Req.</h4>
+                  <input
+                    type="text"
+                    placeholder="Required"
+                    class="form-control"
+                    formControlName="name"
+                    maxlength="40"
+                    onkeydown="return /[a-zA-Z0-9- ]/.test(event.key)"
+                  />
+                  <div
+                    *ngIf="f['name'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['name'].errors['required']">Name is Req.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="row mb-4">
+                <div class="col-md-6 col-xs-12 mb-4">
+                  <h4>Street Address 1* Req.</h4>
+                  <input
+                    type="text"
+                    placeholder="Required"
+                    class="form-control"
+                    formControlName="streetAddress"
+                    (blur)="validateAddressOnFormChange()"
+                  />
+                  <div
+                    *ngIf="f['streetAddress'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['streetAddress'].errors['required']">
+                      Street Address is Req.
+                    </div>
+                  </div>
+                  <div
+                    class="text-danger"
+                    *ngIf="
+                      reactiveForm.controls['streetAddress'].errors &&
+                      reactiveForm.controls['streetAddress'].errors['incorrect']
+                    "
+                  >
+                    Cannot ship to a P.O. Box.
+                  </div>
+                </div>
+                <div class="col-md-6 col-xs-12 mb-4">
+                  <h4>Street Address 2</h4>
+                  <input
+                    type="text"
+                    placeholder="Optional"
+                    class="form-control"
+                    formControlName="streetAddress2"
+                    (blur)="validateAddressOnFormChange()"
+                  />
+                  <div
+                    *ngIf="f['streetAddress2'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['streetAddress2'].errors['required']">
+                      Street Address 2 is Req.
+                    </div>
+                  </div>
+                  <div
+                    class="text-danger"
+                    *ngIf="
+                      reactiveForm.controls['streetAddress2'].errors &&
+                      reactiveForm.controls['streetAddress2'].errors[
+                        'incorrect'
+                      ]
+                    "
+                  >
+                    Cannot ship to a P.O. Box.
+                  </div>
+                </div>
+                <div class="col-md-6 col-xs-12 mb-4">
+                  <h4>City * Req.</h4>
+                  <input
+                    type="text"
+                    placeholder="Required"
+                    class="form-control"
+                    formControlName="city"
+                    onkeydown="return /[a-zA-Z- ]/.test(event.key)"
+                    (blur)="validateAddressOnFormChange()"
+                  />
+                  <div
+                    *ngIf="f['city'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['city'].errors['required']">City is Req.</div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12 mb-4">
+                  <h4>State * Req.</h4>
+                  <ng-select
+                    [ngClass]="{
+                      error:
+                        f['state'].errors &&
+                        reactiveForm.controls['state'].touched
+                    }"
+                    placeholder="Select"
+                    formControlName="state"
+                    onkeydown="return /[a-z]/i.test(event.key)"
+                    (change)="validateAddressOnFormChange()"
+                  >
+                    <ng-option
+                      [value]="state?.abbreviation"
+                      *ngFor="let state of states"
+                      >{{ state?.name }}</ng-option
+                    >
+                  </ng-select>
+                  <div
+                    *ngIf="f['state'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['state'].errors['required']">
+                      State is Req.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12 mb-4">
+                  <h4>ZIP Code * Req.</h4>
+                  <input
+                    type="text"
+                    placeholder="Required"
+                    class="form-control"
+                    formControlName="zipCode"
+                    (keypress)="keyPressForZip($event)"
+                    maxlength="7"
+                    (blur)="validateAddressOnFormChange()"
+                  />
+                  <div
+                    *ngIf="f['zipCode'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['zipCode'].errors['required']">
+                      ZipCode is Req.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-4 mb-2">
+                <hr />
+              </div>
+              <div class="row mt-3">
+                <div class="col-md-6 col-xs-12">
+                  <h4>Shipping Method * Req.</h4>
+                  <ng-select
+                    placeholder="Select"
+                    formControlName="ShipVia"
+                    onkeydown="return /[a-z]/i.test(event.key)"
+                    [disabled]="shippingMethodDropdownData.length == 0"
+                    [class.ng-select-disabled]="
+                      shippingMethodDropdownData.length == 0
+                    "
+                    (change)="shippingMethodChange()"
+                  >
+                    <ng-option
+                      [value]="item?.value"
+                      *ngFor="let item of shippingMethodDropdownData"
+                      >{{ item?.value }} - {{ item?.label }}</ng-option
+                    >
+                  </ng-select>
+
+                  <div
+                    *ngIf="f['ShipVia'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['ShipVia'].errors['required']">
+                      Shipping Method is Req.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-xs-12" *ngIf="f['ShipVia'].value">
+                  <h4>Inco Terms * Req.</h4>
+                  <ng-select
+                    placeholder="Select"
+                    formControlName="IncoTerms"
+                    onkeydown="return /[a-z]/i.test(event.key)"
+                  >
+                    <ng-option
+                      [value]="item?.value"
+                      *ngFor="let item of shippingIncoTermsData"
+                      >{{ item?.value }} - {{ item?.label }}</ng-option
+                    >
+                  </ng-select>
+
+                  <div
+                    *ngIf="f['IncoTerms'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['IncoTerms'].errors['required']">
+                      Inco Terms is Req.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mt-3">
+                <div class="col-md-6 col-xs-12">
+                  <!-- *ngIf="shippingMethodDropdownData.length > 0" -->
+                  <h4>Shipping WareHouse * Req.</h4>
+                  <ng-select
+                    placeholder="Select"
+                    formControlName="shippingWareHouse"
+                    onkeydown="return /[a-z]/i.test(event.key)"
+                    [disabled]="shippingWareHouseDropdownData.length == 0"
+                    [class.ng-select-disabled]="
+                      shippingWareHouseDropdownData.length == 0
+                    "
+                    (change)="shippingWareHouseChange()"
+                  >
+                    <ng-option
+                      [value]="item?.value"
+                      *ngFor="let item of shippingWareHouseDropdownData"
+                      >{{ item?.value }} - {{ item?.label }}</ng-option
+                    >
+                  </ng-select>
+
+                  <div
+                    *ngIf="f['shippingWareHouse'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['shippingWareHouse'].errors['required']">
+                      Shipping WareHouse is Req.
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="col-md-6 col-xs-12 shipvia-change"
+                  *ngIf="f['shippingWareHouse'].value"
+                >
+                  <h4>ShipVia * Req.</h4>
+                  <!-- <ng-select
+                    placeholder="Select"
+                    formControlName="incoTermsLoc2"
+                    onkeydown="return /[a-z]/i.test(event.key)"
+
+                  > -->
+                  <ng-select
+                  placeholder="Select"
+                  class="shipvia"
+                  formControlName="incoTermsLoc2"
+                  [(ngModel)]="incoTermsLoc2SelectedOption"
+                  name="incoTermsLoc2"
+                  [required]="userInfo?.isCSR ? true : ((userInfo?.isCustomer || userInfo?.isSalesPerson || userInfo?.isSalesOps) && reactiveForm.value.ShipVia !='MA') ? false : true"
+                  [disabled]="!shippingWareHouseSelectedOption"
+                  [addTag]="userInfo?.isCSR ? true : ((userInfo?.isCustomer || userInfo?.isSalesPerson || userInfo?.isSalesOps) && reactiveForm.value.ShipVia !='MA') ? true : false"
+                  (add)="validateShipVia($event)"
+                  (ngModelChange)="validateShipViaOneTime($event)"
+                >
+                <ng-option
+                [value]="item?.value"
+                *ngFor="let item of shippingIncoTermsLoc2Data"
+                >{{ item?.value }} - {{ item?.label }}</ng-option
+              >
+            </ng-select>
+                    <!-- <ng-option
+                      [value]="item?.value"
+                      *ngFor="let item of shippingIncoTermsLoc2Data"
+                      >{{ item?.label }}</ng-option
+                    >
+                  </ng-select> -->
+
+                  <div
+                    *ngIf="f['incoTermsLoc2'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['incoTermsLoc2'].errors['required']">
+                      ShipVia is Req.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mt-4">
+                <div class="col-md-12 col-xs-12">
+                  <!-- <div class="address-check">
+                  <xchange-custom-checkbox
+                    type="checkbox"
+                    [id]="'xyz17'"
+                    label="Replacement Order"
+                    [checked]="reactiveForm.value.replacementOrder"
+                    (model)="changeEvent($event)"
+                  >
+                  </xchange-custom-checkbox>
+                  <p>
+                    Replacement orders are re-inspected within 24 hours of order
+                    placement to prevent potential duplicate claim issues.
+                  </p>
+                </div> -->
+                </div>
+              </div>
+              <div class="row" *ngIf="reactiveForm?.value?.replacementOrder">
+                <div class="col-md-12 col-xs-12">
+                  <div class="address-check">
+                    <h4 class="modal-title">Has a claim been submitted?</h4>
+                    <div class="mt-2">
+                      <xchange-custom-radio
+                        type="radio"
+                        [id]="'c1234'"
+                        [name]="'123'"
+                        label="Yes"
+                        [checked]="reactiveForm.value.hasClaimSubmitted"
+                        (model)="changeEventClaim($event, 1, 'c1234', 'd1234')"
+                        class="c-r"
+                      >
+                      </xchange-custom-radio>
+                      <xchange-custom-radio
+                        type="radio"
+                        [id]="'d1234'"
+                        [name]="'123'"
+                        label="No"
+                        [checked]="
+                          reactiveForm.value.hasClaimSubmitted != null
+                            ? !reactiveForm.value.hasClaimSubmitted
+                            : false
+                        "
+                        (model)="changeEventClaim($event, 2, 'c1234', 'd1234')"
+                        class="c-r"
+                      >
+                      </xchange-custom-radio>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="row mt-2 mb-4"
+                *ngIf="
+                  reactiveForm?.value?.replacementOrder &&
+                  reactiveForm.value.hasClaimSubmitted
+                "
+              >
+                <div class="col-md-4 col-xs-12">
+                  <h4>Claim # *</h4>
+                  <input
+                    type="text"
+                    placeholder="Empty Field"
+                    class="form-control"
+                    formControlName="Claim"
+                    (keypress)="validateNo($event)"
+                  />
+                  <div
+                    *ngIf="f['Claim'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['Claim'].errors['required']">
+                      Claim is Req.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-xs-12">
+                  <h4>Replacement Reason *</h4>
+                  <ng-select
+                    placeholder="Select"
+                    formControlName="replacementReason"
+                    [ngClass]="{
+                      error:
+                        f['replacementReason'].errors &&
+                        reactiveForm.controls['replacementReason'].touched
+                    }"
+                    onkeydown="return /[a-z]/i.test(event.key)"
+                  >
+                    <ng-option value="ZE1">Wrong Product</ng-option>
+                    <ng-option value="ZE2">Wrong Quantity</ng-option>
+                    <ng-option value="ZE3">Damaged </ng-option>
+                    <ng-option value="ZE4"
+                      >Customer Choice / Accommodation Return</ng-option
+                    >
+                    <ng-option value="ZE5">Quality Concern </ng-option>
+                  </ng-select>
+                  <div
+                    *ngIf="f['replacementReason'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['replacementReason'].errors['required']">
+                      Replacement Reason is Req.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="row mt-2 mb-4"
+                *ngIf="
+                  reactiveForm?.value?.replacementOrder &&
+                  !reactiveForm.value.hasClaimSubmitted &&
+                  reactiveForm.value.hasClaimSubmitted != null
+                "
+              >
+                <div class="col-md-6 col-xs-12">
+                  <h4>Replacement Reason *</h4>
+                  <ng-select
+                    placeholder="Select"
+                    formControlName="replacementReason"
+                    [ngClass]="{
+                      error:
+                        f['replacementReason'].errors &&
+                        reactiveForm.controls['replacementReason'].touched
+                    }"
+                    onkeydown="return /[a-z]/i.test(event.key)"
+                  >
+                    <ng-option value="ZE1">Wrong Product</ng-option>
+                    <ng-option value="ZE2">Wrong Quantity</ng-option>
+                    <ng-option value="ZE3">Damaged </ng-option>
+                    <ng-option value="ZE4"
+                      >Customer Choice / Accommodation Return</ng-option
+                    >
+                    <ng-option value="ZE5">Quality Concern </ng-option>
+                  </ng-select>
+                  <div
+                    *ngIf="f['replacementReason'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['replacementReason'].errors['required']">
+                      Replacement Reason is Req.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="row mt-2 mb-4"
+                *ngIf="
+                  reactiveForm?.value?.replacementOrder &&
+                  !reactiveForm.value.hasClaimSubmitted &&
+                  reactiveForm.value.hasClaimSubmitted != null
+                "
+              >
+                <div class="col-md-4 col-xs-12">
+                  <h4>PO #</h4>
+                  <input
+                    type="text"
+                    placeholder="Empty Field"
+                    class="form-control"
+                    formControlName="PO"
+                    (keypress)="validatePO($event)"
+                  />
+                  <div
+                    *ngIf="f['PO'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['PO'].errors['required']">PO is Req.</div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-xs-12">
+                  <h4>Order #</h4>
+                  <input
+                    type="text"
+                    placeholder="Empty Field"
+                    class="form-control"
+                    formControlName="Order"
+                    (keypress)="validateNo($event)"
+                  />
+
+                  <div
+                    *ngIf="f['Order'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['Order'].errors['required']">
+                      Order is Req.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-xs-12">
+                  <h4>Invoice #</h4>
+                  <input
+                    type="text"
+                    placeholder="Empty Field"
+                    class="form-control"
+                    formControlName="Invoice"
+                    (keypress)="validateNo($event)"
+                  />
+
+                  <div
+                    *ngIf="f['Invoice'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['Invoice'].errors['required']">
+                      Invoice is Req.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <hr />
+              <div class="row mt-4">
+                <div class="col-md-12 col-xs-12">
+                  <h4 class="modal-title f-w">SITE INFORMATION</h4>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-md-12 col-xs-12">
+                  <div class="address-check"></div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <h4>Contact Name* Req.</h4>
+                  <input
+                    type="text"
+                    placeholder="Required"
+                    class="form-control"
+                    formControlName="ContactName"
+                    maxlength="35"
+                    onkeydown="return /[a-zA-Z- ]/.test(event.key)"
+                  />
+                  <div
+                    *ngIf="f['ContactName'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['ContactName'].errors['required']">
+                      Contact Name is Req.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <h4>Phone #* Req.</h4>
+                  <input
+                    type="text"
+                    placeholder="Required"
+                    class="form-control"
+                    formControlName="Phone"
+                    (input)="checkPhoneValidation($event)"
+                    (keypress)="validateNo($event)"
+                    maxlength="10"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').charAt(0)+this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1').slice(1).replace(/\s+/g, ' ')"
+                  />
+                  <div
+                    *ngIf="f['Phone'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['Phone'].errors['required']">
+                      Phone Number is Req.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <hr />
+              <div class="row">
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <h4>Loading Dock Onsite?* Req.</h4>
+                  <p class="m0 fs-12">(i.e. storage container, garage, etc)</p>
+                </div>
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <div>
+                    <xchange-custom-radio
+                      type="radio"
+                      [id]="'xyz9'"
+                      [name]="'123'"
+                      label="Yes"
+                      class="c-r"
+                      [checked]="reactiveForm.value.loading"
+                      (model)="
+                        changeTickMark(
+                          !reactiveForm.value.loading,
+                          'xyz9',
+                          'xyz10',
+                          'loading'
+                        )
+                      "
+                    >
+                    </xchange-custom-radio>
+                    <xchange-custom-radio
+                      type="radio"
+                      [id]="'xyz10'"
+                      [name]="'123'"
+                      label="No"
+                      class="c-r"
+                      [checked]="
+                        reactiveForm.value.loading != null
+                          ? !reactiveForm.value.loading
+                          : false
+                      "
+                      (model)="
+                        changeTickMark(
+                          reactiveForm.value.loading != null
+                            ? !reactiveForm.value.loading
+                            : false,
+                          'xyz9',
+                          'xyz10',
+                          'loading'
+                        )
+                      "
+                    >
+                    </xchange-custom-radio>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <h4>Pole Lift Onsite?* Req.</h4>
+                </div>
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <div>
+                    <xchange-custom-radio
+                      type="radio"
+                      [id]="'xyz11'"
+                      [name]="'123'"
+                      label="Yes"
+                      [checked]="reactiveForm.value.poleLift"
+                      (model)="
+                        changeTickMark(
+                          !reactiveForm.value.poleLift,
+                          'xyz11',
+                          'xyz12',
+                          'poleLift'
+                        )
+                      "
+                      class="c-r"
+                    >
+                    </xchange-custom-radio>
+                    <xchange-custom-radio
+                      type="radio"
+                      [id]="'xyz12'"
+                      [name]="'123'"
+                      label="No"
+                      class="c-r"
+                      [checked]="
+                        reactiveForm.value.poleLift != null
+                          ? !reactiveForm.value.poleLift
+                          : false
+                      "
+                      (model)="
+                        changeTickMark(
+                          reactiveForm.value.poleLift != null
+                            ? !reactiveForm.value.poleLift
+                            : false,
+                          'xyz11',
+                          'xyz12',
+                          'poleLift'
+                        )
+                      "
+                    >
+                    </xchange-custom-radio>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <h4>Fork Lift Onsite? * Req.</h4>
+                </div>
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <div>
+                    <xchange-custom-radio
+                      type="radio"
+                      [id]="'xyz13'"
+                      [name]="'123'"
+                      label="Yes"
+                      [checked]="reactiveForm.value.accomodate"
+                      (model)="
+                        changeTickMark(
+                          !reactiveForm.value.accomodate,
+                          'xyz13',
+                          'xyz14',
+                          'accomodate'
+                        )
+                      "
+                      class="c-r"
+                    >
+                    </xchange-custom-radio>
+                    <xchange-custom-radio
+                      type="radio"
+                      [id]="'xyz14'"
+                      [name]="'123'"
+                      label="No"
+                      class="c-r"
+                      [checked]="
+                        reactiveForm.value.accomodate != null
+                          ? !reactiveForm.value.accomodate
+                          : false
+                      "
+                      (model)="
+                        changeTickMark(
+                          reactiveForm.value.accomodate != null
+                            ? !reactiveForm.value.accomodate
+                            : false,
+                          'xyz13',
+                          'xyz14',
+                          'accomodate'
+                        )
+                      "
+                    >
+                    </xchange-custom-radio>
+                  </div>
+                </div>
+              </div>
+              <hr />
+              <div class="row mt-4">
+                <div class="col-12 col-sm-6 col-lg-6">
+                  <h4>
+                    What is the largest truck size your ship to can accept?
+                  </h4>
+
+                  <ng-select
+                    onkeydown="return /[a-z]/i.test(event.key)"
+                    formControlName="truckSize"
+                  >
+                    <ng-option value="1">STP Box-Truck</ng-option>
+                    <ng-option value="2">Pup Trailer 26'</ng-option>
+                    <ng-option value="3">Pup Trailer 28’</ng-option>
+                    <ng-option value="4">32’ Trailer</ng-option>
+                    <ng-option value="5">40’ Trailer</ng-option>
+                    <ng-option value="6">45' Trailer</ng-option>
+                    <ng-option value="7">48' Trailer</ng-option>
+                    <ng-option value="8">53’ Trailer</ng-option>
+                  </ng-select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <h4>Jobsite Delivery? (Additional fees may apply) * Req.</h4>
+                </div>
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <div>
+                    <xchange-custom-radio
+                      type="radio"
+                      [id]="'xyz151'"
+                      [name]="'123'"
+                      label="Yes"
+                      [checked]="reactiveForm.value.jobsiteDelivery"
+                      (model)="
+                        changeTickMark(
+                          !reactiveForm.value.jobsiteDelivery,
+                          'xyz151',
+                          'xyz161',
+                          'jobsiteDelivery'
+                        )
+                      "
+                      class="c-r"
+                    >
+                    </xchange-custom-radio>
+                    <xchange-custom-radio
+                      type="radio"
+                      [id]="'xyz161'"
+                      [name]="'123'"
+                      label="No"
+                      class="c-r"
+                      [checked]="
+                        reactiveForm.value.jobsiteDelivery != null
+                          ? !reactiveForm.value.jobsiteDelivery
+                          : false
+                      "
+                      (model)="
+                        changeTickMark(
+                          reactiveForm.value.jobsiteDelivery != null
+                            ? !reactiveForm.value.jobsiteDelivery
+                            : false,
+                          'xyz151',
+                          'xyz161',
+                          'jobsiteDelivery'
+                        )
+                      "
+                    >
+                    </xchange-custom-radio>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <h4>Appointment Needed prior to Delivery?* Req.</h4>
+                </div>
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <div>
+                    <xchange-custom-radio
+                      type="radio"
+                      [id]="'xyz171'"
+                      [name]="'123'"
+                      label="Yes"
+                      [checked]="reactiveForm.value.appoinment"
+                      (model)="
+                        changeTickMark(
+                          !reactiveForm.value.appoinment,
+                          'xyz171',
+                          'xyz181',
+                          'appoinment'
+                        )
+                      "
+                      class="c-r"
+                    >
+                    </xchange-custom-radio>
+                    <xchange-custom-radio
+                      type="radio"
+                      [id]="'xyz181'"
+                      [name]="'123'"
+                      label="No"
+                      class="c-r"
+                      [checked]="
+                        reactiveForm.value.appoinment != null
+                          ? !reactiveForm.value.appoinment
+                          : false
+                      "
+                      (model)="
+                        changeTickMark(
+                          reactiveForm.value.appoinment != null
+                            ? !reactiveForm.value.appoinment
+                            : false,
+                          'xyz171',
+                          'xyz181',
+                          'appoinment'
+                        )
+                      "
+                    >
+                    </xchange-custom-radio>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <h4>
+                    Lift Gate and Pallet Jack Required? (Additional fees may
+                    apply)* Req.
+                  </h4>
+                </div>
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <div>
+                    <xchange-custom-radio
+                      type="radio"
+                      [id]="'xyz191'"
+                      [name]="'123'"
+                      label="Yes"
+                      [checked]="reactiveForm.value.liftGateAndPallet"
+                      (model)="
+                        changeTickMark(
+                          !reactiveForm.value.liftGateAndPallet,
+                          'xyz191',
+                          'xyz201',
+                          'liftGateAndPallet'
+                        )
+                      "
+                      class="c-r"
+                    >
+                    </xchange-custom-radio>
+                    <xchange-custom-radio
+                      type="radio"
+                      [id]="'xyz201'"
+                      [name]="'123'"
+                      label="No"
+                      class="c-r"
+                      [checked]="
+                        reactiveForm.value.liftGateAndPallet != null
+                          ? !reactiveForm.value.liftGateAndPallet
+                          : false
+                      "
+                      (model)="
+                        changeTickMark(
+                          reactiveForm.value.liftGateAndPallet != null
+                            ? !reactiveForm.value.liftGateAndPallet
+                            : false,
+                          'xyz191',
+                          'xyz201',
+                          'liftGateAndPallet'
+                        )
+                      "
+                    >
+                    </xchange-custom-radio>
+                  </div>
+                </div>
+              </div>
+            
+
+              <div class="row">
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <h4>Store Number</h4>
+                  <input
+                    type="text"
+                    placeholder="Required"
+                    class="form-control"
+                    formControlName="storeNumber"
+                    (keypress)="validateNo($event)"
+                  />
+                  <div
+                    *ngIf="f['storeNumber'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['storeNumber'].errors['required']">
+                      Store Number is Required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <h4>Latest Accept Date* Req.</h4>
+                  <input
+                    formControlName="lastestacceptDate"
+                    type="text"
+                    placeholder="Select Date"
+                    class="form-control"
+                    bsDatepicker
+                    [datesEnabled]="daysToBeEnabled"
+                    [daysDisabled]="disabledDate"
+                  />
+                  <div
+                    *ngIf="f['lastestacceptDate'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['lastestacceptDate'].errors['required']">
+                      Latest Accept Date is required
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- <div class="row mt-4">
+                <div class="col-12 col-sm-6 col-lg-6">
+                  <h4>Request Delivery Date</h4>
+                 
+                  <input
+                    formControlName="rdd"
+                    type="text"
+                    placeholder="Select Date"
+                    class="form-control"
+                    bsDatepicker
+                    [datesEnabled]="daysToBeEnabled"
+                    [daysDisabled]="disabledDate"
+                  />
+                
+                  <br />
+                  <span #hidden> Date(s) subject to change.</span>
+                </div>
+              </div> -->
+
+              <div class="row">
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <h4>Notification requested prior to delivery?* Req.</h4>
+                  <p class="m0 fs-12">
+                    (For specific delivery time / additional arrangements)
+                  </p>
+                </div>
+                <div class="col-md-6 col-xs-12 mt-4">
+                  <div>
+                    <xchange-custom-radio
+                      type="radio"
+                      [id]="'xyz7'"
+                      [name]="'123'"
+                      label="Yes"
+                      class="c-r"
+                      [checked]="reactiveForm.value.notification"
+                      (model)="
+                        changeTickMark(
+                          !reactiveForm.value.notification,
+                          'xyz7',
+                          'xyz8',
+                          'notification'
+                        )
+                      "
+                    >
+                    </xchange-custom-radio>
+                    <xchange-custom-radio
+                      type="radio"
+                      [id]="'xyz8'"
+                      [name]="'123'"
+                      label="No"
+                      class="c-r"
+                      [checked]="
+                        reactiveForm.value.notification != null
+                          ? !reactiveForm.value.notification
+                          : false
+                      "
+                      (model)="
+                        changeTickMark(
+                          reactiveForm.value.notification != null
+                            ? !reactiveForm.value.notification
+                            : false,
+                          'xyz7',
+                          'xyz8',
+                          'notification'
+                        )
+                      "
+                    >
+                    </xchange-custom-radio>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mt-2 mb-4">
+                <div class="col-md-6 col-xs-12">
+                  <h4>Please describe the location.</h4>
+                </div>
+                <div class="col-md-6 col-xs-12">
+                  <ng-select
+                    onkeydown="return /[a-z]/i.test(event.key)"
+                    formControlName="Location"
+                    placeholder="Select"
+                  >
+                    <ng-option value="Church">Church</ng-option>
+                    <ng-option value="School">School</ng-option>
+                    <ng-option value="Construction Site "
+                      >Construction Site
+                    </ng-option>
+                    <ng-option vaalue="Military Base / Installations"
+                      >Military Base / Installations</ng-option
+                    >
+                    <ng-option value="Quality Concern"
+                      >Quality Concern</ng-option
+                    >
+                    <ng-option
+                      value="Rural route or out of town highway access locations"
+                      >Rural route or out of town highway access
+                      locations</ng-option
+                    >
+                    <ng-option value="Business located in residential area"
+                      >Business located in residential area</ng-option
+                    >
+                    <ng-option
+                      value="Site requiring Security Inspections prior to delivery"
+                      >Site requiring Security Inspections prior to
+                      delivery</ng-option
+                    >
+                    <ng-option
+                      value="Commercial establishments not open to the walk-in public during"
+                      >Commercial establishments not open to the walk-in public
+                      during</ng-option
+                    >
+                  </ng-select>
+                  <div
+                    *ngIf="f['Location'].errors && submitted"
+                    class="invalid-feedback d-block"
+                  >
+                    <div *ngIf="f['Location'].errors['required']">
+                      Location is Req.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-12 col-xs-12">
+                  <p class="m0">
+                    Contact will receive communication 24 hours prior to
+                    delivery to set arrival time or window.
+                  </p>
+                  <p class="m0">
+                    A $75 / hour fee will be charged if truck wait time exceeds
+                    1 hour after arrival.
+                  </p>
+                </div>
+                <div>
+                  <xchange-custom-checkbox
+                    type="checkbox"
+                    [id]="'xy98'"
+                    [checked]="reactiveForm.value?.acknowledge"
+                    (model)="changeEventAcknowledge($event)"
+                    label="I acknowledge and understand that freight pricing varies when using a one-time shipping address (versus a stored address). * Req."
+                  >
+                  </xchange-custom-checkbox>
+                </div>
+              </div>
+              <div>
+                <p class="mt-2">
+                  ***Please Note*** <br />
+                  Ship complete orders and orders with pick up dates greater
+                  than 7 days are subject to inventory deallocation. Assigned
+                  CPU orders that are not picked up or released to ship, within
+                  14 days of your requested pick update, will be cancelled and
+                  applicable penalties will be invoiced.
+                </p>
+              </div>
+              <div class="buttons-modal mt-4 mb-4 full-btns">
+                <div class="">
+                  <button
+                    class="btn btn-outline-secondary mb-3"
+                    (click)="onHideModal('ChooseAddressModal')"
+                  >
+                    Cancel
+                  </button>
+                </div>
+                <!-- <div class="">
+                <button
+                  class="btn btn-primary mb-3"
+                  (click)="chooseAsolutionClick()"
+                  [disabled]="
+                    reactiveForm.invalid ||
+                    (reactiveForm.value.hasClaimSubmitted == false &&
+                      reactiveForm.value.PO == '' &&
+                      reactiveForm.value.Order == '' &&
+                      reactiveForm.value.Invoice == '')
+                  "
+                >
+                  Choose A Solution
+                </button>
+              </div> -->
+
+                <div class="">
+                  <button
+                    *ngIf="isAtpCheck"
+                    class="btn btn-primary mb-3"
+                    (click)="onSubmitOnetimeShipping(false)"
+                    [disabled]="
+                      !reactiveForm.valid || !isAddressValid || 
+                      (reactiveForm.value.hasClaimSubmitted == false &&
+                        reactiveForm.value.PO == '' &&
+                        reactiveForm.value.Order == '' &&
+                        reactiveForm.value.Invoice == '')
+                    "
+                  >
+                    Choose A Solution
+                  </button>
+                  <button
+                    *ngIf="!isAtpCheck"
+                    _ngcontent-nke-c166=""
+                    class="btn btn-primary mb-3"
+                    (click)="addToQuoteClick()"
+                    [disabled]="
+                      !reactiveForm.valid || !isAddressValid ||
+                      (reactiveForm.value.hasClaimSubmitted == false &&
+                        reactiveForm.value.PO == '' &&
+                        reactiveForm.value.Order == '' &&
+                        reactiveForm.value.Invoice == '')
+                    "
+                  >
+                    ADD TO QUOTE
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </tab>
+      </tabset>
+    </div>
+  </div>
+</div>
+
+<ng-template #shipViaTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100" *ngIf="shipViaType !== 'incoTerms'">
+      Change Shipping Method
+    </h4>
+    <h4 class="modal-title w-100" *ngIf="shipViaType == 'incoTerms'">
+      Change Inco Terms
+    </h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing">
+    <form #form="ngForm">
+      <div class="">
+        <h4>Available Shipping Methods</h4>
+        <ng-select
+          placeholder="Select"
+          (change)="
+            changeshipViaOptions($event); incoTermsSelectedOption = null
+          "
+          [(ngModel)]="shipViaSelectedOption"
+          [disabled]="shipViaType == 'incoTerms'"
+          name="shipVia"
+          required
+        >
+          <ng-option
+            [value]="item?.value"
+            *ngFor="let item of shipViaOptions"
+            >{{ item?.label }}</ng-option
+          >
+        </ng-select>
+      </div>
+      <div class="mt-3" *ngIf="shipViaSelectedOption">
+        <h4>Inco Terms</h4>
+        <ng-select
+          placeholder="Select"
+          (change)="changeincoTermsOptions($event)"
+          [(ngModel)]="incoTermsSelectedOption"
+          name="inco"
+          required
+        >
+          <ng-option
+            [value]="item?.value"
+            *ngFor="let item of incoTermsOptions"
+            >{{ item?.label }}</ng-option
+          >
+        </ng-select>
+      </div>
+    </form>
+
+    <div class="mt-4 mb-4 pt-4 full-btns p-50 align-center change-date">
+      <div class="">
+        <button
+          class="btn btn-outline-secondary me-2"
+          (click)="onHideModal('shipViaModal')"
+        >
+          Cancel
+        </button>
+      </div>
+      <div class="">
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="confirmPoChange"
+          (click)="shipViaModalSubmit('shipViaModal')"
+          [disabled]="!form.dirty || !form.valid"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #shippingWareHouseTemplate>
+  <div class="modal-header text-center">
+    <h4
+      class="modal-title w-100"
+      *ngIf="shippingWareHouseType !== 'incoTermsLoc2'"
+    >
+      Change Shipping WareHouse
+    </h4>
+    <h4
+      class="modal-title w-100"
+      *ngIf="shippingWareHouseType == 'incoTermsLoc2'"
+    >
+      Change ShipVia
+    </h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeShippingWareHouseModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing">
+    <form #form="ngForm">
+      <div class="">
+        <h4>Available Shipping WareHouse</h4>
+        <ng-select
+          placeholder="Select"
+          (change)="
+            changeShippingWareHouseOptions($event);
+            incoTermsLoc2SelectedOption = null
+          "
+          [(ngModel)]="shippingWareHouseSelectedOption"
+          [disabled]="shippingWareHouseType == 'incoTermsLoc2'"
+          name="shippingWareHouse"
+          required
+        >
+          <ng-option
+            [value]="item?.value"
+            *ngFor="let item of shippingWareHouseOptions"
+            >{{ item?.label }}</ng-option
+          >
+        </ng-select>
+      </div>
+      <div class="mt-3" *ngIf="shippingWareHouseSelectedOption">
+        <h4>Ship Via</h4>
+        <ng-select
+          placeholder="Select"
+          (change)="changeIncoTermsLoc2Options($event)"
+          [(ngModel)]="incoTermsLoc2SelectedOption"
+          name="incoTermsLoc2"
+          required
+
+          [addTag]="true"
+          (add)="changeIncoTermsLoc2Options($event)"
+          (ngModelChange)="changeIncoTermsLoc2Options($event)"
+        >
+          <ng-option
+            [value]="item?.value"
+            *ngFor="let item of incoTermsLoc2Options"
+            >{{ item?.value }} - {{ item?.label }} <span class="span-preferred" *ngIf="item?.preferred == true">(Preferred)</span> </ng-option
+          >
+        </ng-select>
+      </div>
+    </form>
+
+    <div class="mt-4 mb-4 pt-4 full-btns p-50 align-center change-date">
+      <div class="">
+        <button
+          class="btn btn-outline-secondary me-2"
+          (click)="closeShippingWareHouseModal()"
+        >
+          Cancel
+        </button>
+      </div>
+      <div class="">
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="confirmShippingWareHouseChange"
+          (click)="
+            shippingWareHouseModalSubmit(); closeShippingWareHouseModal()
+          "
+          [disabled]="!form.dirty || !form.valid"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #shippingOptionTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Change Shipping Options</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeShippingOptionModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing">
+    <alert
+    type="danger"
+    class="dashboard-page-alert"
+    [dismissible]="true"
+    *ngIf="showValidationError"
+  >
+    <div class="container">{{ validationErrorMessage }}</div>
+  </alert>
+    <form #form="ngForm">
+      <div class="row">
+        <div class="col-md-6 col-sm-12">
+          <h4>Shipping Methods* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="
+              changeshipViaOptions($event); incoTermsSelectedOption = null
+            "
+            [(ngModel)]="shipViaSelectedOption"
+            name="ShipVia"
+            required
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of shipViaOptions"
+              >{{item?.value}} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div
+          class="col-md-6 col-sm-12"
+          [class.disabled-div]="!shipViaSelectedOption"
+        >
+          <h4>Inco Terms* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="changeincoTermsOptions($event)"
+            [(ngModel)]="incoTermsSelectedOption"
+            name="IncoTerms"
+            required
+            [disabled]="!shipViaSelectedOption || userInfo?.isCustomer || userInfo?.isSalesPerson || userInfo?.isSalesOps"
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of incoTermsOptions"
+              >{{item?.value}} - {{ item?.label}}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-6 col-sm-12 mt-3">
+          <h4>Shipping WareHouse* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="
+              changeShippingWareHouseOptions($event);
+              incoTermsLoc2SelectedOption = null
+            "
+            [(ngModel)]="shippingWareHouseSelectedOption"
+            name="shippingWareHouse"
+            required
+            [disabled]="userInfo?.isCustomer"
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of shippingWareHouseOptions"
+              >{{item?.value}} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div
+          class="col-md-6 col-sm-12 mt-3 shipvia-change"
+          [class.disabled-div]="!shippingWareHouseSelectedOption"
+        >
+          <h4>Ship Via* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            class="shipvia"
+            [(ngModel)]="incoTermsLoc2SelectedOption"
+            name="incoTermsLoc2"
+            required
+            [disabled]="!shippingWareHouseSelectedOption || userInfo?.isCustomer || userInfo?.isSalesPerson || userInfo?.isSalesOps"
+            [addTag]="true"
+            (add)="validateShipVia($event)"
+            (ngModelChange)="validateShipVia($event)"
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of incoTermsLoc2Options"
+              >{{item?.value}} - {{ item?.label }} <span class="span-preferred" *ngIf="item?.preferred == true">(Preferred)</span> </ng-option
+            >
+          </ng-select>
+        </div>
+      </div>
+    </form>
+
+    <div class="mt-4 mb-4 pt-4 full-btns p-50 align-center change-date">
+      <div class="">
+        <button
+          class="btn btn-outline-secondary me-2"
+          (click)="closeShippingOptionModal()"
+        >
+          Cancel
+        </button>
+      </div>
+      <div class="">
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="confirmShippingWareHouseChange"
+          (click)="validateShipViaAddress('changeShippingOption')"
+          [disabled]="!form.dirty || !form.valid || showValidationError"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

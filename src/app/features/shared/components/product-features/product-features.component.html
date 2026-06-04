@@ -1,0 +1,21 @@
+<section class="product-features-section">
+  <app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+  <div class="container">
+    <ul class="product-features-list" >
+      <ng-container *ngFor="let item of list">
+        <li (click)="navigation(item)" *ngIf="item.isShow === true" [ngClass]="{'mx-auto': commercialSiteSelectorService.selectedSite == 'I'}">
+          <div class="icon">
+            <img
+              [src]="'/assets/images/icons/' + item.icon + item.iconExt"
+              [alt]="item.name"
+            />
+          </div>
+          <h6 class="name class-red" *ngIf="countFlag">
+            {{ getCount(item.key) }}
+          </h6>
+          <h6 class="name">{{ item.name }}</h6>
+        </li>
+      </ng-container>
+    </ul>
+  </div>
+</section>

@@ -1,0 +1,166 @@
+<!-- <xchange-browser-alert></xchange-browser-alert>
+
+<owl-carousel-o
+  [options]="mainSliderOptions"
+  class="banner-height banner-index"
+>
+  <ng-template carouselSlide>
+    <img
+      [src]="
+        'https://s7d4.scene7.com/is/image/MohawkResidential/per_timbercraft_elite_hero_graphic?scl=.95&wid=2000&hei=600&align=0,.1&fmt=png-alpha'
+      "
+      class="banner-image"
+      alt="flooring banner image"
+    />
+  </ng-template>
+</owl-carousel-o>
+
+<section
+  class="dashboard-page-search-section"
+  *ngIf="storageService?.userInfo?.orgUnit?.accountType !== 'ZMSH'"
+>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 mx-auto my-3">
+        <xchange-home-search
+          label="Start a New Order"
+          [type]="'residentialNewOrder'"
+          (searchTextChanged)="onSearchTextEntered($event)"
+        ></xchange-home-search>
+      </div>
+      <div class="col-md-6 mx-auto my-3">
+        <div class="well well-sm">
+          <div>
+            <img src="/assets/images/icons/edge_logo_white.svg" alt="Edge Select" width="80px">
+            <tabset responsiveTabs [justified]="true" #salesTabs >
+              <tab (selectTab)="selectTab(0)">
+                <ng-template tabHeading>Sales</ng-template>
+                  <div class="mt-4">
+                    <div class="edge-select">
+                      <div class="mt-db-ev-popover-trigger-area">
+                        <div class="mt-db-edge-vis-name">Sales</div>
+                        <div class="mt-db-edge-vis-bar">
+                          <div class="mt-db-edge-vis-bar-section-container" style="width: 30.303%;">
+                            <div class="mt-db-edge-vis-bar-section mt-db-edge-vis-bar-section-achieved mt-db-edge-vis-bar-section-achieved-last" [class.removeBorders]="(100000 < saleValue)" [style.width]="(100000 >= saleValue) ? (saleValue*100/100000)+'%': 100+'%' " >
+                              <div class="mt-db-edge-vis-bar-current mt-db-edge-vis-bar-current-outside-bar" *ngIf="(100000 >= saleValue && 0 < saleValue)">${{saleValue/1000}}K</div>
+                            </div>
+                          </div>
+                          <div class="mt-db-edge-vis-bar-section-container" style="width: 30.303%;">
+                            <div class="mt-db-edge-vis-bar-section mt-db-edge-vis-bar-section-achieved mt-db-edge-vis-bar-section-achieved-last" [class.removeBorders]="(200000 < saleValue)" [style.width]="(200000 >= saleValue) ? ((saleValue-100000)*100/100000)+'%': 100+'%' " >
+                              <div class="mt-db-edge-vis-bar-current mt-db-edge-vis-bar-current-outside-bar" *ngIf="(200000 >= saleValue && 100000 < saleValue)">${{saleValue/1000}}K</div>
+                            </div>
+                          </div>
+                          <div class="mt-db-edge-vis-bar-section-container" style="width: 30.303%;">
+                            <div class="mt-db-edge-vis-bar-section mt-db-edge-vis-bar-section-achieved mt-db-edge-vis-bar-section-achieved-last" [class.removeBorders]="(400000 < saleValue)" [style.width]="(400000 >= saleValue) ? ((saleValue-200000)*100/200000)+'%': 100+'%' " >
+                              <div class="mt-db-edge-vis-bar-current mt-db-edge-vis-bar-current-outside-bar" *ngIf="(400000 <= saleValue || 200000 < saleValue)" [class.premierType]="((saleValue-200000)*100/200000)>90">${{saleValue/1000}}K</div>
+                            </div>
+                          </div>
+                          <div class="mt-db-edge-vis-bar-section-container mt-db-edge-vis-bar-section-container-tail" style="width: 8.0909%;">
+                            <div class="mt-db-edge-vis-bar-section mt-db-edge-vis-bar-section-achieved mt-db-edge-vis-bar-section-achieved-last" [style.width]="(400000 < saleValue) ? 30+'%': 0+'%' " >
+                            </div>
+          `								</div>
+                        </div>
+                      </div>
+                      <div class="mt-db-edge-vis-statuses">
+                        <div class="mt-db-edge-vis-status-container" style="width: 30.303%;">
+                          <div class="mt-db-evsc-goal">$100K</div>
+                          <div class="mt-db-evsc-status">Preferred</div>
+                        </div>
+                        <div class="mt-db-edge-vis-status-container" style="width: 30.303%;">
+                          <div class="mt-db-evsc-goal">$200K</div>
+                          <div class="mt-db-evsc-status">Select</div>
+                        </div>
+                        <div class="mt-db-edge-vis-status-container" style="width: 30.303%;">
+                          <div class="mt-db-evsc-goal">$400K</div>
+                          <div class="mt-db-evsc-status">Premier</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </tab> 
+              <tab (selectTab)="selectTab(1)">
+                <ng-template tabHeading>Flooring Rebate</ng-template>
+                <div class="">
+                </div>
+              </tab>
+             <tab (selectTab)="selectTab(2)">              
+                <ng-template tabHeading>Cushion Rebate</ng-template>
+                <div class="">
+                </div>
+              </tab>
+            </tabset>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<ng-container *ngIf="!isProductManager">
+  <app-product-features [list]="productFeaturesList"></app-product-features>
+  <section class="dashboard-page-search-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <xchange-home-search
+            label="Order Search"
+            [type]="'residentialOrder'"
+            (searchTextChanged)="onSearchTextEntered($event)"
+          ></xchange-home-search>
+        </div>
+        <div
+          class="col-md-6"
+          *ngIf="storageService?.userInfo?.orgUnit?.accountType !== 'ZMSH'"
+        >
+          <xchange-home-search
+            label="Invoice Search"
+            [type]="'residentialInvoices'"
+            (searchTextChanged)="onSearchTextEntered($event)"
+          ></xchange-home-search>
+        </div>
+      </div>
+    </div>
+  </section>
+</ng-container>
+<section class="bottom-banner my-3">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <a href="https://www.mohawkflooring.com" target="_blank">
+          <img
+            src="https://s7d4.scene7.com/is/image/MohawkResidential/xchange_mohawk_hero?wid=940"
+            width="100%"
+            alt=""
+          />
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="https://www.karastan.com" target="_blank">
+          <img
+            src="https://s7d4.scene7.com/is/image/MohawkResidential/xchange_karastan_hero?wid=940"
+            width="100%"
+            alt=""
+          />
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="https://www.pergoflooring.com" target="_blank">
+          <img
+            src="https://s7d4.scene7.com/is/image/MohawkResidential/xchange_pergo_hero?wid=940"
+            width="100%"
+            alt=""
+          />
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+ -->
+
+ <div class="container">
+  <app-loader *ngIf="spinnerLoading"></app-loader>
+  <ng-container class="row mb-5 margin-0">
+    <app-salesops-dashboard [dashboardData]="selectedDashboardData" [name]='username'></app-salesops-dashboard>
+  </ng-container>
+  
+</div>

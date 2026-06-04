@@ -1,0 +1,861 @@
+<app-loader *ngIf="spinnerLoading"></app-loader>
+<div class="container" #scrollToTop>
+  <div class="banner-height mt-4 mb-4">
+    <img
+      class="rounded w-100"
+      [src]="
+        'https://s7d4.scene7.com/is/image/MohawkResidential/better_together?scl=1'
+      "
+      alt=""
+    />
+  </div>
+
+  <xchange-browser-alert></xchange-browser-alert>
+
+  <h2 class="text-center mt-4 mb-4">Account Search</h2>
+  <div class="mb-3">
+    <alert
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="showErrorMessage"
+    >
+      <div class="container">
+        {{ errorMessage }}
+      </div>
+    </alert>
+  </div>
+  <div class="_card-container">
+    <!--<div class="col-12 col-sm-6 col-md-4 mb-3">
+      <h4>Customer name</h4>
+      <input
+        type="text"
+        placeholder="Enter Name"
+        class="form-control"
+        [(ngModel)]="customerName"
+      />
+    </div> -->
+
+    <tabset [justified]="true" responsiveTabs #staticTabs>
+      <!-- Cusotmer section -->
+      <tab class="tab-content" (selectTab)="selectTab(0)">
+        <ng-template tabHeading>Customer #</ng-template>
+
+        <form [formGroup]="customerForm">
+          <div class="row mt-3">
+            <div class="col-12 col-sm-6 col-md-3">
+              <h4>Customer # *</h4>
+              <input
+                (paste)="onPaste($event, template3)"
+                type="text"
+                placeholder="Enter #"
+                class="form-control"
+                formControlName="customerNumber"
+                (paste)="checkValue()"
+                (keypress)="keyPressNumbers($event)"
+                (keyup.enter)="onSearch(customerForm.value, template3)"
+                [ngClass]="
+                  customerForm.controls['customerNumber'].touched &&
+                  customerForm.controls['customerNumber'].hasError('required')
+                    ? 'is-invalid'
+                    : ''
+                "
+              />
+              <div class="invalid-feedback">Customer number is required</div>
+            </div>
+            <!-- <div class="col-12 col-sm-6 col-md-3">
+              <h4>Suffix #</h4>
+              <input
+                type="text"
+                placeholder="Enter #"
+                class="form-control"
+                formControlName="suffix"
+                (keypress)="keyPressNumbers($event)"
+                (keyup.enter)="onSearch(customerForm.value, template3)"
+              />
+            </div>-->
+            <!-- <div class="col-12 col-sm-6 col-md-3">
+              <h4>Store #</h4>
+              <input
+                type="text"
+                placeholder="Enter #"
+                class="form-control"
+                formControlName="storeNumber"
+                (keypress)="keyPressNumbers($event)"
+                (keyup.enter)="onSearch(customerForm.value, template3)"
+              />
+            </div> -->
+            <div
+              class="col-12 col-sm-6 col-md-3 d-flex align-items-start search-button cta-align"
+            >
+              <button
+                class="btn btn-primary w-100"
+                (click)="onSearch(customerForm.value, template3)"
+                [disabled]="!customerForm.valid"
+              >
+                SEARCH
+              </button>
+            </div>
+          </div>
+        </form>
+        <div>
+          <div class="col-12 mt-4 overflow-auto">
+            <ngx-table
+              [configuration]="configuration"
+              [data]="
+                customerBaseData
+                  | paginate
+                    : {
+                        id: 'pg1',
+                        itemsPerPage: tableItemsSize,
+                        currentPage: pageIndex,
+                        totalItems: customerBaseLength
+                      }
+              "
+              [columns]="columns"
+              [noResultsTemplate]="noResultsTemplate"
+              (event)="
+                onTableEvent(
+                  $event,
+                  'customerNumberBase',
+                  customerForm.value,
+                  template3
+                )
+              "
+            >
+              <ng-template let-row>
+                <td>
+                  <a (click)="checkForPassKeyRequired(row)">
+                    {{ displayCustNumber(row.customerNumber) }}
+                  </a>
+                </td>
+                <!-- <td>
+                  {{ row.companyCode }}
+                </td> -->
+                <!--   <td>
+                  {{ row.suffix }}
+                </td> -->
+                <!-- <td>
+                  {{ row.storeNumber }}
+                </td> -->
+                <td>{{ row.accountName }} <br />{{
+                    row.addressLine2 ? row.addressLine2 : ""
+                  }}
+                  {{ row.addressLine1 }}{{ row?.building ? ", "+ row.building : "" }}</td>
+                <td>
+                  {{ row.city }}, {{ row.state }}, {{ row.zip }}.
+                  <a href="tel:{{ row.phone }}">
+                    <p>
+                      {{ row.phone | slice : 0 : 3 }}-{{
+                        row.phone | slice : 3 : 6
+                      }}-{{ row.phone | slice : 6 : 10 }}
+                    </p>
+                  </a>
+                </td>
+              </ng-template>
+            </ngx-table>
+          </div>
+        </div>
+        <div class="row mb-4 mt-4" *ngIf="customerBaseLength > 0">
+          <div class="d-flex justify-content-center mx-auto">
+            <pagination-controls
+              id="pg1"
+              [maxSize]="5"
+              [responsive]="true"
+              [nextLabel]="''"
+              [previousLabel]="''"
+              (pageChange)="
+                onTableDataChange($event, customerForm.value, template3)
+              "
+            >
+            </pagination-controls>
+          </div>
+          <div class="col-md-12">
+            <p class="text-center mb-4">
+              {{ customerBaseLength > 0 ? startValue : 0 }} -
+              {{
+                lastValue > customerBaseLength ? customerBaseLength : lastValue
+              }}
+              OF
+              {{ customerBaseLength > 0 ? customerBaseLength : 0 }}
+              ACCOUNTS
+            </p>
+          </div>
+        </div>
+      </tab>
+      <!-- Cusotmer section -->
+
+      <!-- Phone section -->
+      <tab (selectTab)="selectTab(1)">
+        <ng-template tabHeading>Phone #</ng-template>
+
+        <form [formGroup]="phoneForm">
+          <div class="row mt-3">
+            <div class="col-12 col-sm-6 col-md-5 col-lg-3 col-xl-3">
+              <h4>Phone*</h4>
+              <input
+                type="text"
+                placeholder="Enter #"
+                class="form-control"
+                [ngClass]="{
+                  'is-invalid': phoneForm.touched && phoneForm.invalid
+                }"
+                formControlName="mobile"
+                maxlength="10"
+                (keypress)="keyPressNumbers($event)"
+                required
+              />
+              <div class="invalid-feedback">
+                Please enter a valid phone number
+              </div>
+            </div>
+            <div
+              class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex align-items-start cta-align"
+            >
+              <button
+                class="btn btn-primary w-100"
+                (click)="onSearch(phoneForm.value, template3)"
+                [disabled]="!phoneForm.valid"
+              >
+                SEARCH
+              </button>
+            </div>
+          </div>
+        </form>
+        <div>
+          <div class="col-12 mt-4 overflow-auto">
+            <ngx-table
+              [configuration]="configuration"
+              [data]="
+                phoneBaseData
+                  | paginate
+                    : {
+                        id: 'pg2',
+                        itemsPerPage: tableItemsSize2,
+                        currentPage: pageIndex2,
+                        totalItems: phoneBaseLength
+                      }
+              "
+              [columns]="columns"
+              [noResultsTemplate]="noResultsTemplate"
+              (event)="
+                onTableEvent($event, 'phoneBase', phoneForm.value, template3)
+              "
+            >
+              <ng-template let-row>
+                <td>
+                  <a (click)="onNext(row)">
+                    {{ displayCustNumber(row.customerNumber) }}
+                  </a>
+                </td>
+                <!-- <td>
+                  {{ row.companyCode }}
+                </td> -->
+                <!--   <td>
+                  {{ row.suffix }}
+                </td> -->
+                <!-- <td>
+                  {{ row.storeNumber }}
+                </td> -->
+                <td>{{ row.accountName }} <br />{{
+                    row.addressLine2 ? row.addressLine2 : ""
+                  }}
+                  {{ row.addressLine1 }}{{ row?.building ? ", "+ row.building : "" }}</td>
+                <td>
+                  {{ row.city }}, {{ row.state }}, {{ row.zip }}.
+                  <a href="tel:{{ row.phone }}">
+                    <p>
+                      {{ row.phone | slice : 0 : 3 }}-{{
+                        row.phone | slice : 3 : 6
+                      }}-{{ row.phone | slice : 6 : 10 }}
+                    </p>
+                  </a>
+                </td>
+              </ng-template>
+            </ngx-table>
+          </div>
+        </div>
+        <div class="row mb-4 mt-4" *ngIf="phoneBaseLength > 0">
+          <div class="d-flex justify-content-center">
+            <pagination-controls
+              id="pg2"
+              [maxSize]="5"
+              [responsive]="true"
+              [nextLabel]="''"
+              [previousLabel]="''"
+              (pageChange)="
+                onTableDataChange2($event, phoneForm.value, template3)
+              "
+            >
+            </pagination-controls>
+          </div>
+          <div class="col-md-12">
+            <p class="text-center mb-4">
+              {{ phoneBaseLength > 0 ? startValue2 : 0 }} -
+              {{ lastValue2 > phoneBaseLength ? phoneBaseLength : lastValue2 }}
+              OF
+              {{ phoneBaseLength > 0 ? phoneBaseLength : 0 }} ACCOUNTS
+            </p>
+          </div>
+        </div>
+      </tab>
+      <!-- Phone section -->
+      <!-- Account Name section -->
+      <tab (selectTab)="selectTab(2)">
+        <ng-template tabHeading>Account Name</ng-template>
+        <form [formGroup]="accountNameForm">
+          <div class="row mt-3">
+            <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+              <h4>Account Name*</h4>
+              <input
+                type="text"
+                placeholder="Enter Name"
+                class="form-control"
+                formControlName="accountName"
+                [ngClass]="
+                  accountNameForm.controls['accountName'].touched &&
+                  accountNameForm.controls['accountName'].hasError('required')
+                    ? 'is-invalid'
+                    : ''
+                "
+              />
+              <div class="invalid-feedback">Account Name is required</div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+              <h4>Address</h4>
+              <input
+                type="text"
+                placeholder="Enter Address"
+                class="form-control"
+                formControlName="address"
+              />
+            </div>
+            <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+              <h4>City</h4>
+              <input
+                type="text"
+                placeholder="Enter City"
+                class="form-control"
+                formControlName="city"
+              />
+            </div>
+            <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+              <h4>State</h4>
+              <ng-select
+                placeholder="Select"
+                formControlName="state"
+                [ngClass]="
+                  accountNameForm.controls['state'].touched &&
+                  accountNameForm.controls['state'].hasError('required')
+                    ? 'is-invalid'
+                    : ''
+                "
+              >
+                <ng-option
+                  [value]="state?.value"
+                  *ngFor="let state of states"
+                  >{{ state?.name }}</ng-option
+                >
+              </ng-select>
+            </div>
+            <div
+              class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex align-items-start m-top cta-align"
+            >
+              <button
+                class="btn btn-primary w-100"
+                (click)="onSearch(accountNameForm.value, template3)"
+                [disabled]="!accountNameForm.valid"
+              >
+                SEARCH
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <div>
+          <div class="col-12 mt-4 overflow-auto">
+            <ngx-table
+              [configuration]="configuration"
+              [data]="
+                accBasedData
+                  | paginate
+                    : {
+                        id: 'pg3',
+                        itemsPerPage: tableItemsSize3,
+                        currentPage: pageIndex3,
+                        totalItems: accBaseLength
+                      }
+              "
+              [columns]="columns"
+              [noResultsTemplate]="noResultsTemplate"
+              (event)="
+                onTableEvent(
+                  $event,
+                  'accountBase',
+                  accountNameForm.value,
+                  template3
+                )
+              "
+            >
+              <ng-template let-row>
+                <td>
+                  <a (click)="onNext(row)">
+                    {{ displayCustNumber(row.customerNumber) }}
+                  </a>
+                </td>
+                <!-- <td>
+                  {{ row.companyCode }}
+                </td> -->
+                <!--  <td>
+                  {{ row.suffix }}
+                </td> -->
+                <!-- <td>
+                  {{ row.storeNumber }}
+                </td> -->
+                <td>{{ row.accountName }} <br />{{
+                    row.addressLine2 ? row.addressLine2 : ""
+                  }}
+                  {{ row.addressLine1 }}{{ row?.building ? ", "+ row.building : "" }}</td>
+                <td>
+                  {{ row.city }}, {{ row.state }}, {{ row.zip }}.
+                  <a href="tel:{{ row.phone }}">
+                    <p>
+                      {{ row.phone | slice : 0 : 3 }}-{{
+                        row.phone | slice : 3 : 6
+                      }}-{{ row.phone | slice : 6 : 10 }}
+                    </p>
+                  </a>
+                </td>
+              </ng-template>
+            </ngx-table>
+          </div>
+        </div>
+        <div class="row mb-4 mt-4" *ngIf="accBaseLength > 0">
+          <div class="d-flex justify-content-center mx-auto">
+            <pagination-controls
+              id="pg3"
+              [maxSize]="5"
+              [responsive]="true"
+              [nextLabel]="''"
+              [previousLabel]="''"
+              (pageChange)="
+                onTableDataChange3($event, accountNameForm.value, template3)
+              "
+            >
+            </pagination-controls>
+          </div>
+          <div class="col-md-12">
+            <p class="text-center mb-4">
+              {{ accBaseLength > 0 ? startValue3 : 0 }} -
+              {{ lastValue3 > accBaseLength ? accBaseLength : lastValue3 }}
+              OF
+              {{ accBaseLength > 0 ? accBaseLength : 0 }} ACCOUNTS
+            </p>
+          </div>
+        </div>
+      </tab>
+      <!-- Account Name section -->
+      <!-- Zip Code section -->
+      <tab (selectTab)="selectTab(3)">
+        <ng-template tabHeading>Zip Code</ng-template>
+
+        <form [formGroup]="zipCodeForm">
+          <div class="row mt-3">
+            <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+              <h4>ZIP Code*</h4>
+              <input
+                type="text"
+                placeholder="Enter ZIP"
+                class="form-control"
+                [ngClass]="
+                  zipCodeForm.controls['zipCode'].touched &&
+                  (zipCodeForm.controls['zipCode'].hasError('required') ||
+                    zipCodeForm.controls['zipCode'].hasError('minlength') ||
+                    zipCodeForm.controls['zipCode'].hasError('pattern'))
+                    ? 'is-invalid'
+                    : ''
+                "
+                formControlName="zipCode"
+                maxlength="7"
+                (keypress)="keyPressForZip($event)"
+              />
+              <div class="invalid-feedback">Please enter a valid zip code</div>
+            </div>
+            <div
+              class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex align-items-start cta-align"
+            >
+              <button
+                class="btn btn-primary w-100"
+                (click)="onSearch(zipCodeForm.value, template3)"
+                [disabled]="!zipCodeForm.valid"
+              >
+                SEARCH
+              </button>
+            </div>
+          </div>
+        </form>
+        <div>
+          <div class="col-12 mt-4 overflow-auto">
+            <ngx-table
+              [configuration]="configuration"
+              [data]="
+                zipBaseData
+                  | paginate
+                    : {
+                        id: 'pg4',
+                        itemsPerPage: tableItemsSize4,
+                        currentPage: pageIndex4,
+                        totalItems: zipBaseLength
+                      }
+              "
+              [columns]="columns"
+              [noResultsTemplate]="noResultsTemplate"
+              (event)="
+                onTableEvent(
+                  $event,
+                  'zipCodeBase',
+                  zipCodeForm.value,
+                  template3
+                )
+              "
+            >
+              <ng-template let-row>
+                <td>
+                  <a (click)="onNext(row)">
+                    {{ displayCustNumber(row.customerNumber) }}
+                  </a>
+                </td>
+                <!-- <td>
+                  {{ row.companyCode }}
+                </td> -->
+                <!--  <td>
+                  {{ row.suffix }}
+                </td> -->
+                <!-- <td>
+                  {{ row.storeNumber }}
+                </td> -->
+                <td>{{ row.accountName }} <br />{{
+                    row.addressLine2 ? row.addressLine2 : ""
+                  }}
+                  {{ row.addressLine1 }}{{ row?.building ? ", "+ row.building : "" }}</td>
+                <td>
+                  {{ row.city }}, {{ row.state }}, {{ row.zip }}.
+                  <a href="tel:{{ row.phone }}">
+                    <p>
+                      {{ row.phone | slice : 0 : 3 }}-{{
+                        row.phone | slice : 3 : 6
+                      }}-{{ row.phone | slice : 6 : 10 }}
+                    </p>
+                  </a>
+                </td>
+              </ng-template>
+            </ngx-table>
+          </div>
+          <div class="row mb-4 mt-4" *ngIf="zipBaseLength > 0">
+            <div class="d-flex justify-content-center mx-auto">
+              <pagination-controls
+                id="pg4"
+                [maxSize]="5"
+                [responsive]="true"
+                [nextLabel]="''"
+                [previousLabel]="''"
+                (pageChange)="
+                  onTableDataChange4($event, zipCodeForm.value, template3)
+                "
+              >
+              </pagination-controls>
+            </div>
+            <div class="col-md-12">
+              <p class="text-center mb-4">
+                {{ zipBaseLength > 0 ? startValue4 : 0 }} -
+                {{ lastValue4 > zipBaseLength ? zipBaseLength : lastValue4 }}
+                OF
+                {{ zipBaseLength > 0 ? zipBaseLength : 0 }} ACCOUNTS
+              </p>
+            </div>
+          </div>
+        </div>
+      </tab>
+      <!-- Zip Code section -->
+       
+      <!-- Quote Number section -->
+      <tab class="tab-content" (selectTab)="selectTab(4)">
+        <ng-template tabHeading>Quote Number #</ng-template>
+
+        <form [formGroup]="quoteForm">
+          <div class="row mt-3">
+            <div class="col-12 col-sm-6 col-md-3">
+              <h4>Quote Number # *</h4>
+              <input
+                (paste)="onPaste($event, template3)"
+                type="text"
+                placeholder="Enter #"
+                class="form-control"
+                formControlName="quoteNumber"
+                (paste)="checkQuoteValue()"
+                (keypress)="keyPressNumbers($event)"
+                (keyup.enter)="onQuoteSearch(quoteForm.value, template3)"
+                [ngClass]="
+                  quoteForm.controls['quoteNumber'].touched &&
+                  quoteForm.controls['quoteNumber'].hasError('required')
+                    ? 'is-invalid'
+                    : ''
+                "
+              />
+              <div class="invalid-feedback">Quote number is required</div>
+            </div>
+            <div
+              class="col-12 col-sm-6 col-md-3 d-flex align-items-start search-button cta-align"
+            >
+              <button
+                class="btn btn-primary w-100"
+                (click)="onQuoteSearch(quoteForm.value, template3)"
+                [disabled]="!quoteForm.valid"
+              >
+                SEARCH
+              </button>
+            </div>
+          </div>
+        </form>
+        <div>
+          <div class="col-12 mt-4 overflow-auto">
+            <ngx-table
+              [configuration]="configuration"
+              [data]="
+                quoteBaseData
+                  | paginate
+                    : {
+                        id: 'pg1',
+                        itemsPerPage: tableItemsSize,
+                        currentPage: pageIndex,
+                        totalItems: quoteBaseLength
+                      }
+              "
+              [columns]="quoteBaseCol"
+              [noResultsTemplate]="noResultsTemplate"
+              (event)="
+                onTableEvent(
+                  $event,
+                  'quoteNumberBase',
+                  quoteForm.value,
+                  template3
+                )
+              "
+            >
+              <ng-template let-row>
+                <td>
+                  <a (click)="navigateToQuoteDetails(row)">
+                    {{ row?.quoteCode || row?.orderCode }}
+                  </a>
+                </td>
+                <td>{{ displayCustNumber(row?.customerNumber) }}</td>
+              </ng-template>
+            </ngx-table>
+          </div>
+        </div>
+        <div class="row mb-4 mt-4" *ngIf="quoteBaseLength > 0">
+          <!-- <div class="d-flex justify-content-center mx-auto">
+            <pagination-controls
+              id="pg1"
+              [maxSize]="5"
+              [responsive]="true"
+              [nextLabel]="''"
+              [previousLabel]="''"
+              (pageChange)="
+                onTableDataChange($event, quoteForm.value, template3)
+              "
+            >
+            </pagination-controls>
+          </div> -->
+          <!-- <div class="col-md-12">
+            <p class="text-center mb-4">
+              {{ quoteBaseLength > 0 ? startValue : 0 }} -
+              {{
+                lastValue > quoteBaseLength ? quoteBaseLength : lastValue
+              }}
+              OF
+              {{ quoteBaseLength > 0 ? quoteBaseLength : 0 }}
+              ACCOUNTS
+            </p>
+          </div> -->
+        </div>
+      </tab>
+      <!-- Quote Number section -->
+
+      <tab class="tab-content" (selectTab)="selectTab(5)">
+        <ng-template tabHeading>Legacy Customer #</ng-template>
+
+        <form [formGroup]="legacyCustomerForm">
+          <div class="row mt-3">
+            <div class="col-12 col-sm-6 col-md-3">
+              <h4>Customer # *</h4>
+              <input
+                (paste)="onPaste($event, template3)"
+                type="text"
+                placeholder="Enter #"
+                class="form-control"
+                formControlName="legacyCustomerNumber"
+                (paste)="checkValue()"
+                (keypress)="keyPressLegacy($event)"
+                (keyup.enter)="onSearch(legacyCustomerForm.value, template3)"
+                [ngClass]="
+                  ((legacyCustomerForm.controls['legacyCustomerNumber'].hasError('pattern') &&
+                  legacyCustomerForm.controls['legacyCustomerNumber'].touched ) ||(
+                    legacyCustomerForm.controls['legacyCustomerNumber'].touched &&
+                  legacyCustomerForm.controls['legacyCustomerNumber'].hasError('required')))
+                    ? 'is-invalid'
+                    : ''
+                "
+              />
+              <div class="invalid-feedback">Legacy customer is required</div>
+            </div>
+            <!-- <div class="col-12 col-sm-6 col-md-3">
+              <h4>Suffix #</h4>
+              <input
+                type="text"
+                placeholder="Enter #"
+                class="form-control"
+                formControlName="suffix"
+                (keypress)="keyPressNumbers($event)"
+                (keyup.enter)="onSearch(customerForm.value, template3)"
+              />
+            </div>-->
+            <!-- <div class="col-12 col-sm-6 col-md-3">
+              <h4>Store #</h4>
+              <input
+                type="text"
+                placeholder="Enter #"
+                class="form-control"
+                formControlName="storeNumber"
+                (keypress)="keyPressNumbers($event)"
+                (keyup.enter)="onSearch(customerForm.value, template3)"
+              />
+            </div> -->
+            <div
+              class="col-12 col-sm-6 col-md-3 d-flex align-items-start search-button cta-align"
+            >
+              <button
+                class="btn btn-primary w-100"
+                (click)="onSearch(legacyCustomerForm.value, template3)"
+                [disabled]="!legacyCustomerForm.valid"
+              >
+                SEARCH
+              </button>
+            </div>
+          </div>
+        </form>
+        <div>
+          <div class="col-12 mt-4 overflow-auto">
+            <ngx-table
+              [configuration]="configuration"
+              [data]="
+                customerBaseData
+                  | paginate
+                    : {
+                        id: 'pg1',
+                        itemsPerPage: tableItemsSize,
+                        currentPage: pageIndex,
+                        totalItems: customerBaseLength
+                      }
+              "
+              [columns]="legacyColumns"
+              [noResultsTemplate]="noResultsTemplate"
+              (event)="
+                onTableEvent(
+                  $event,
+                  'customerNumberBase',
+                  customerForm.value,
+                  template3
+                )
+              "
+            >
+              <ng-template let-row>
+                <td>
+                  <a (click)="checkForPassKeyRequired(row)">
+                    {{ displayCustNumber(row.customerNumber) }}
+                  </a>
+                </td>
+                <!-- <td>
+                  {{ row.companyCode }}
+                </td> -->
+                  <td>
+                  {{ row.suffix }}
+                </td>
+                <!-- <td>
+                  {{ row.storeNumber }}
+                </td> -->
+                <td>{{ row.accountName }} <br />{{
+                    row.addressLine2 ? row.addressLine2 : ""
+                  }}
+                  {{ row.addressLine1 }}{{ row?.building ? ", "+ row.building : "" }}</td>
+                <td>
+                  {{ row.city }}, {{ row.state }}, {{ row.zip }}.
+                  <a href="tel:{{ row.phone }}">
+                    <p>
+                      {{ row.phone | slice : 0 : 3 }}-{{
+                        row.phone | slice : 3 : 6
+                      }}-{{ row.phone | slice : 6 : 10 }}
+                    </p>
+                  </a>
+                </td>
+              </ng-template>
+            </ngx-table>
+          </div>
+        </div>
+        <div class="row mb-4 mt-4" *ngIf="customerBaseLength > 0">
+          <div class="d-flex justify-content-center mx-auto">
+            <pagination-controls
+              id="pg1"
+              [maxSize]="5"
+              [responsive]="true"
+              [nextLabel]="''"
+              [previousLabel]="''"
+              (pageChange)="
+                onTableDataChange($event, legacyCustomerForm.value, template3)
+              "
+            >
+            </pagination-controls>
+          </div>
+          <div class="col-md-12">
+            <p class="text-center mb-4">
+              {{ customerBaseLength > 0 ? startValue : 0 }} -
+              {{
+                lastValue > customerBaseLength ? customerBaseLength : lastValue
+              }}
+              OF
+              {{ customerBaseLength > 0 ? customerBaseLength : 0 }}
+              ACCOUNTS
+            </p>
+          </div>
+        </div>
+      </tab>
+    </tabset>
+  </div>
+</div>
+<ng-template #noResultsTemplate>
+  <td [attr.colspan]="columns.length" class="no-results text-center">
+    No Result
+  </td>
+</ng-template>
+
+<ng-template #template3>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w text-center"></h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="bsModalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>{{ errorMessage }}</p>
+      <div class="mt-4 mb-4">
+        <button class="btn btn-primary" (click)="bsModalRef?.hide()">OK</button>
+      </div>
+    </div>
+  </div>
+</ng-template>

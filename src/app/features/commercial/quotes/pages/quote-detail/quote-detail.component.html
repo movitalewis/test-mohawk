@@ -1,0 +1,1713 @@
+
+<div class="container quote-details" #scrollToTop>
+  <div #hidden>
+    <xchange-breadcrumb
+      [breadcrumbItems]="breadcrumbItems"
+    ></xchange-breadcrumb>
+  </div>
+  <div class="col-md-12 mb-0 mt-4">
+    <div class="row" #hidden>
+      <div class="col-12 col-sm-5" (click)="nagivateToQuotes()">
+        <xchange-icon-button
+          icon="back"
+          label="Back To Quotes"
+        ></xchange-icon-button>
+      </div>
+      <div class="col-12 col-sm-7 d-flex justify-content-end icon-sec">
+        <div class="d-flex">
+          <div (click)="printPage()">
+            <span class="mohawak-icon print-icon back-i"></span>Print
+          </div>
+          <div (click)="viewPdf()">
+            <span class="mohawak-icon pdf-icon back-i"></span>View PDF
+          </div>
+          <div (click)="viewPdf('share')" >
+            <span class="mohawak-icon share-icon back-i"></span>Share
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-12 mb-2 mt-4">
+    <alert
+      *ngIf="showAlert"
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+    >
+    <div class="container">
+      {{ alertMessage }} 
+    </div>
+  </alert>
+  
+  <div *ngIf="addtoCartFailed">
+    <div *ngFor="let item of addtoCartErrorMessage">
+      <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+        <div class="container">
+          {{ item?.message }}
+        </div>
+      </alert>
+    </div>
+  </div>
+  <div *ngIf="invalidProduct">
+    <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+        <div class="container">
+          One or more products are dropped or not allowed for sales anymore. Please create new Quote
+        </div>
+      </alert>
+  </div>
+</div>
+  <div class="_card-container print-content" id="print-section"  *ngIf="quote">
+    <!-- <img
+      class="print-element"
+      src="/assets/images/logo-residential-dark.png"
+      width="250"
+      style="margin: 40px 0px"
+    /> -->
+<div >
+  <div class="no-page-break">
+    <div class="d-flex justify-content-between align-items-center quotes-number" >
+      <h2 class="title">Quote #{{ quote?.code }}</h2>
+      <div class="link-matches" #hidden (click)="viewAllPotentialMatches(quote?.code)">
+        View All Potential Matches
+      </div>
+    </div>
+    <hr />
+  
+    <div class="row mt-4">
+      <div class="col-12 col-sm-12 ">
+        <div class="row ">
+          <div class="col-6 col-sm-4 col-md-3 mt-3 h-print">
+            <h4>Status</h4>
+            <p>{{ quote?.state }}</p>
+          </div>
+  
+          <div class="col-6 col-sm-4 col-md-3 mt-3 h-print">
+            <h4>Expiration Date</h4>
+            <p>{{ dateConvert(quote?.expirationTime) | date : "MM/dd/yyyy" }}</p>
+          </div>
+  
+          <div
+            class="col-6 col-sm-4 col-md-3 mt-3 h-print"
+            *ngIf="!!quote?.deliveryAddress"
+          >
+            <h4>Shipping Address</h4>
+            <span *ngIf="!!quote?.deliveryAddress?.companyName">
+              {{ quote?.deliveryAddress?.companyName }}<br />
+              <span *ngIf="!quote?.deliveryAddress?.oneTimeShippingAddress && !quote?.deliveryAddress?.isOneTimeShipTo">
+                Ship To # ({{ quote?.deliveryAddress?.id.split("_")[0] }}) <br /></span>
+            </span>
+            {{ quote?.deliveryAddress?.line1 }}  {{ quote?.deliveryAddress?.line2 }}<br />
+            {{ quote?.deliveryAddress?.town }},&nbsp;
+            {{ quote?.deliveryAddress?.region?.isocodeShort }}&nbsp;
+            {{ quote?.deliveryAddress?.postalCode }}<br />
+          </div>
+          <div
+            class="col-6 col-sm-4 col-md-3 mt-3 h-print"
+            *ngIf="!quote?.deliveryAddress"
+          >
+            <h4>Shipping Address</h4>
+            <span> NA </span>
+          </div>
+  
+          <div class="col-6 col-sm-4 col-md-3 mt-3 h-print">
+            <h4>Job Location</h4>
+            <p>{{ quote?.jobLocation }}</p>
+          </div>
+  
+          <div class="col-6 col-sm-4 col-md-3 mt-3 h-print">
+            <h4>End User</h4>
+            <p>{{ quote?.endUserDescription || "N/A" }}</p>
+          </div>
+          <div
+            class="col-6 col-sm-4 col-md-3 mt-3 h-print"
+            *ngIf="!sampleOrder"
+          >
+            <h4>Dealer Network</h4>
+            <p>{{ quote?.creUserDescription || "N/A" }}</p>
+          </div>
+          <div
+            class="col-6 col-sm-4 col-md-3 mt-3 h-print"
+            *ngIf="!sampleOrder"
+          >
+            <h4>GPO (Global Purchasing Organization)</h4>
+            <p>{{ quote?.gpoUserDescription || "N/A" }}</p>
+          </div>
+          <div class="col-6 col-sm-4 col-md-3 mt-3 h-print">
+            <h4>Real Estate Management Firm</h4>
+            <p>{{ quote?.adUserDescription || "N/A" }}</p>
+          </div>
+  
+          <div class="col-6 col-sm-4 col-md-3 mt-3 h-print">
+            <h4>Submitted For</h4>
+            <p>{{ this.quote?.submittedForName || "N/A" }}</p>
+          </div>
+          <!-- <div class="col-6 col-sm-4 col-md-3 mt-3 h-print">
+            <h4>Shipping Method</h4>
+            <p class="mb-0">
+              {{
+                quote?.shippingConditions ||
+                  "NA"
+              }}
+              {{
+                quote?.shippingConditionsDesc ? "-" : ""
+              }}
+              {{
+                quote?.shippingConditionsDesc 
+              }}
+            </p>
+          </div> -->
+          <!-- <div class="col-6 col-sm-4 col-md-3 mt-3 h-print">
+            <h4>Inco Terms</h4>
+            <p class="mb-0">
+              {{
+                quote?.incoTerms || "NA"
+              }}
+              {{
+                quote?.incoTermsDesc  ? "-" : ""
+              }}
+              {{
+                quote?.incoTermsDesc
+              }}
+            </p>
+          </div> -->
+          <!-- <div class="col-6 col-sm-4 col-md-3 mt-3 h-print">
+            <h4>Shipping Warehouse</h4>
+            <p>
+              {{
+                quote?.shippingWarehouse  || "NA"
+              }}
+              {{
+                quote?.shippingWarehouseDesc 
+                  ? "-"
+                  : ""
+              }}
+              {{
+                quote?.shippingWarehouseDesc 
+              }}
+            </p>
+          </div> -->
+          <!-- <div class="col-6 col-sm-4 col-md-3 mt-3 h-print">
+            <h4>ShipVia</h4>
+            <p>
+              {{ quote?.shipVia || "NA" }}
+            </p>
+          </div> -->
+          <div class="col-6 col-sm-4 col-md-3 mt-3 h-print">
+            <h4>Market Segment</h4>
+            <p>
+              {{ quote?.marketSegmentName || "N/A" }}
+            </p>
+          </div>
+  
+          <div class="col-12 col-sm-4 col-md-3 order-3 mt-3 h-print">
+            <h4>Contact Email</h4>
+            <p class="text-danger">
+              {{ quote?.contactEmail || "N/A" }}
+            </p>
+          </div>
+          <div class="col-12 col-sm-4 col-md-3 order-3 mt-3 h-print">
+          <div class="mb-2 " *ngIf="quote?.comments?.length > 0 && showComments">
+            <h4>Saved Comments</h4>
+            <div class="" *ngFor="let item of quote.comments">
+              <p class="mb-1 overflow-wrap">
+                {{ item?.author?.name }}: {{ item?.text }} ({{
+                  item.creationDate | date : "MM/dd/yyyy"
+                }})
+              </p>
+            </div>
+          </div>
+        </div>
+          <div class="col-6 col-sm-4 col-md-3 order-1 mt-3 h-print">
+            <h4>Creation Date</h4>
+            <p>
+              {{ quote?.creationTime | date : "MM/dd/yyyy" }}
+            </p>
+          </div>
+  
+          <div class="col-6 col-sm-4 col-md-3 order-2 mt-3 h-print">
+            <h4>Submitted By:</h4>
+            <p>{{ quote?.submittedByName || "N/A" }}</p>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+  </div>
+ 
+  <div class="row" #hidden>
+    <div 
+    class="col-12 col-sm-12 col-md-6 mt-4 "
+    *ngIf="quote?.comments?.length > 0 "
+  >
+    <div class="row pt-0 acco-content">
+      <div
+        (click)="commentsFlag = !commentsFlag"
+        class="col-md-12 info-header cursor-pointer col-md-11 d-flex justify-content-between align-items-center"
+      >
+        <h4 class="mb-0">Saved Comments</h4>
+        <span
+          [attr.aria-expanded]="!commentsFlag"
+          aria-controls="commentsBtn"
+        >
+          <h6
+            *ngIf="commentsFlag"
+            class="icon-h d-flex justify-content-center"
+          >
+            <span class="mohawak-icon angle-left-icon up-icon"></span>
+          </h6>
+          <h6
+            *ngIf="!commentsFlag"
+            class="icon-h d-flex justify-content-center"
+          >
+            <span class="mohawak-icon angle-left-icon down-icon"></span>
+          </h6>
+        </span>
+      </div>
+      <div
+        class="mt-2"
+        id="commentsBtn"
+        [collapse]="!commentsFlag"
+        [isAnimated]="true"
+        #hidden
+      >
+        <div class="mb-2 " *ngIf="quote?.comments?.length > 0">
+          <div class="" *ngFor="let item of quote.comments">
+            <p class="mb-1 overflow-wrap">
+              {{ item?.author?.name }}: {{ item?.text }} ({{
+                item.creationDate | date : "MM/dd/yyyy"
+              }})
+            </p>
+          </div>
+        </div>
+        <div class="row mb-2" *ngIf="!(quote?.comments?.length > 0)">
+          <p class="text-center mb-1">No Saved Comments</p>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="col-12 col-sm-4 mt-3" #hidden>
+              <ng-select placeholder="Saved Comments" bindLabel="status" autofocus bindValue="id">
+                <ng-option *ngFor="let item of comments">
+                  {{ item?.author?.name }}: {{ item?.text }} ({{
+                  item.creationDate | date : "MM/dd/yyyy"
+                  }})</ng-option>
+              </ng-select>
+            </div> -->
+  </div>
+  <div class="col-12 col-sm-12 col-md-6" >
+    <h4 class="position-relative mt-2">
+      Comments
+      <ng-container>
+        <span
+          tooltip="Saved Comments"
+          class="mohawak-icon help-icon help-info red-question-mark"
+        ></span>
+      </ng-container>
+    </h4>
+
+    <textarea
+      type="textarea"
+      [(ngModel)]="commentText"
+      placeholder="Type Here"
+      class="form-control w-100 mb-2"
+      [disabled]="!buyerOffered"
+    >
+    </textarea>
+    <app-alerts
+      [alertData]="alertData"
+      [alertType]="alertType"
+      *ngIf="commentTrigger"
+    ></app-alerts>
+    <div
+      class="col-12 col-sm-6 col-md-6 col-lg-5 col-xl-4 mt-2"
+      #hidden
+    >
+      <button
+      [disabled]="!buyerOffered || !commentText"
+        (click)="addQuoteComments(commentText)"
+        class="btn btn-primary w-100"
+      >
+        Save Comments
+      </button>
+    </div>
+  </div>
+  </div>
+</div>
+   
+
+    <div [formGroup]="form" class="col-lg-12 mt-4 ">
+      <div
+        formArrayName="entries"
+        class="card mt-4  no-page-break"
+        *ngFor="let item of entryData; let i = index; trackBy: trackByCode"
+      >
+        <div class="card-header mb-2 dark header-section">
+          <div class="header-logo">
+            <div>
+              <a
+                class="text-white d-inline"
+                (click)="navigateToProductPage(item?.product?.code)">
+                {{ item.styleName }} – {{ item.styleNumber }}
+              </a>
+            </div>
+            <div class="mohawk-logo  print-logo">
+              <xchange-logo-pdp
+                [selectedPdpData]="item?.product"
+                [isInverted]="true"
+              ></xchange-logo-pdp>
+              <!-- <xchange-logo type="commercial" theme="light"></xchange-logo> -->
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-4 col-md-4 col-lg-4 col-xl-2 p-col-3">
+              <div class="col-xs-6 col-sm-12 mobile-view">
+                <img
+                  [src]="
+                    item?.product?.productImageURL
+                      ? item?.product?.productImageURL + '?$xchangeThumb$'
+                      : 'https://s7d4.scene7.com/is/image/MohawkResidential/missing?$xchangeThumb$'
+                  "
+                  class="card-img-top img cursor-pointer"
+                  (click)="navigateToProductPage(item?.product?.code)"
+                />
+                <div class="add-remove-btns" #hidden>
+                  <button
+                    #hidden
+                    type="button"
+                    class="btn btn-secondary w-100 mt-2"
+                    (click)="removeEntry(item?.entryNumber)"
+                    [disabled]="quote?.state  === 'BUYER_SUBMITTED'"
+                    *ngIf="
+                      (item?.product?.productType == 'Accessories' ||
+                      item?.product?.productType == 'ACCESSORIES') &&
+                      !(quote?.cartId!='' && quote?.cartId != undefined)
+                    "
+                  >
+                    Remove
+                  </button>
+                  <button
+                    #hidden
+                    type="button"
+                    class="btn btn-primary btn-lg mt-2 below-margin w-100"
+                    (click)="openAccessories(item)"
+                    [disabled]="(!item.addAcessoriesCheckEntrylevel) || quote?.state  === 'BUYER_SUBMITTED'"
+                  >
+                    Add Accessories
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-8 col-md-8 col-lg-8 col-xl-5 p-col-9">
+              <div class="row">
+                <div class="col-6 col-sm-6 col-lg-6 col-xl-4 e-print p-col-4">
+                  <h4>Color</h4>
+                  <p>
+                    {{ item?.product?.sellingColorName }} -
+                    {{ item?.product?.sellingColorId }} <br />
+                    <a
+                      #hidden
+                      class="text-decoration-none"
+                      *ngIf="item?.checkAvailability && item.product.productType != 'ACCESSORIES'"
+                      href="javascript:void(0)"
+                      (click)="viewAllColors(item, item.entryNumber, i)"
+                      >change</a
+                    >
+                  </p>
+                </div>
+                <div class="col-6 col-sm-6 col-lg-6 col-xl-4 e-print p-col-4">
+                  <h4>
+                    {{
+                      item?.product?.subProductType === "CARPET_TILE" ||
+                      item?.product?.subProductType === "BROADLOOM"
+                        ? "Width"
+                        : "Size"
+                    }}
+                  </h4>
+
+                  <p>
+                    {{ item?.sizeDesc ? item?.sizeDesc : item?.sizeId || "NA" }}
+                  </p>
+                </div>
+                <div
+                  class="col-6 col-sm-6 col-lg-6 col-xl-4 e-print p-col-4"
+                  *ngIf="item?.availabilityStatus"
+                >
+                  <h4>Availability</h4>
+                  <p>{{ item?.availabilityStatus }}</p>
+                </div>
+
+                <div class="e-print col-6 col-sm-6 col-lg-6 col-xl-4 p-col-4">
+                  <h4>Backing</h4>
+                  <p>
+                    {{ item?.product?.sellingBackingId || "NA" }}
+                    -
+                    {{ item?.product?.sellingBackingName || "NA" }}
+                  </p>
+                </div>
+
+                <div class="e-print col-6 col-sm-6 col-lg-6 col-xl-4 p-col-4">
+                  <h4>Unit Price ({{ item?.unitPrice?.currencyIso }})</h4>
+                  <p>{{ (item?.unitPrice?.value > 0) ? (item.unitPrice.formattedValue + '/' + item.priceUOM.name) : "N/A" }}</p>
+                  <!-- <p>
+                    {{ item?.unitPrice.formattedValue }} /
+                    {{ item.priceUOM.name }}
+                  </p> -->
+                </div>
+
+                <div class="e-print col-6 col-sm-6 col-lg-6 col-xl-4 p-col-4">
+                  <h4>Line Price ({{ item?.linePrice?.currencyIso }})</h4>
+                  <!-- <p>{{ item?.linePrice?.formattedValue }}</p> -->
+                  <p>{{ (item?.linePrice?.value > 0) ? (item?.linePrice?.formattedValue) : "N/A" }}</p>
+                </div>
+                <div
+                  class="e-print col-6 col-sm-6 col-lg-6 col-xl-4 p-col-4"
+                  *ngIf="!!item.backorderDate"
+                >
+                  <h4>Backorder Date</h4>
+                  <p>{{ item.backorderDate }}</p>
+                </div>
+                <!-- <div class="e-print col-6 col-sm-6 col-lg-6 col-xl-4">
+                  <h4>Pattern Repeat</h4>
+                  <p>{{ item?.patternRepeat || "N/A" }}</p>
+                </div> -->
+                <div
+                class="e-print col-6 col-sm-6 col-lg-6 col-xl-4 p-col-4"
+               
+              >
+                <h4>User Requested Price </h4>
+                <p>
+                  {{item?.userRequestedPrice? "$":""}}{{ item?.userRequestedPrice || "N/A" }} 
+                  {{ item?.userRequestedPrice ? "/" : "" }}
+                   {{ item?.userRequestedPrice ? item.priceUOM.name  || "":"" }}
+                </p>
+              </div>
+                <!-- <div
+                  class="e-print col-6 col-sm-6 col-lg-6 col-xl-4 p-col-4"
+                  *ngIf="showTermsReason"
+                >
+                  <h4>Terms Reason</h4>
+                  <p>
+                    {{ item?.termsCode || "N/A" }}
+                    {{ item?.termsCodeDescription ? "-" : "" }}
+                    {{ item?.termsCodeDescription || "" }}
+                  </p>
+                </div> -->
+                <div class="e-print col-6 col-sm-6 col-lg-6 col-xl-4 p-col-4">
+                  <h4>Same DyeLot</h4>
+                  <p>{{ item?.sameDyeLot == true ? "Yes" : "No" }}</p>
+                </div>
+                <div
+                  class="e-print col-6 col-sm-6 col-lg-6 col-xl-4 p-col-4"
+                  *ngIf="item?.comment"
+                >
+                  <h4>Notes</h4>
+                  <p>{{ item?.comment || "N/A" }}</p>
+                </div>
+                <!-- *ngIf="item.checkUom =='RO'" -->
+
+                <div
+                  class="e-print col-6 col-sm-6 col-lg-6 col-xl-4 print-show p-col-4"
+                >
+                  <h4>Order QTY ({{ item.userRequestedUOM }})</h4>
+                  <p>{{ formatQuantity(item.selectedAmount, item.userRequestedUOMCode) }}</p>
+                </div>
+                <div
+                  class="e-print col-6 col-sm-6 col-lg-6 col-xl-4 print-show p-col-4" *ngIf="item?.product?.subProductType !='AREA_RUGS'"
+                >
+                  <h4>Quantity Calc.({{ convAlternateUOM }})</h4>
+                  <p>{{ calculateSize(item.selectedAmount, item.base) }}</p>
+                </div>
+                <div
+                  class="e-print col-6 col-sm-6 col-lg-6 col-xl-4 print-show p-col-4"
+                >
+                  <h4>Specific Dye Lot</h4>
+                  <p>{{ item.requestedDyelot || "NA" }}</p>
+                </div>
+              </div>
+              <div
+                class="col-12 p-col-8 col-sm-4 col-md-12 col-lg-12 mt-2 background-yellow"
+              >
+                <div class="row">
+                  <div class="e-print col-6 col-sm-6 col-lg-6 col-xl-6">
+                    <h4>Shipping Method</h4>
+                    <p>
+                      {{ item?.shippingCondition || "N/A" }}
+                      {{ item?.shippingConditionsDesc ? "-" : " " }}
+                      {{ item?.shippingConditionsDesc }}
+                    </p>
+                  </div>
+                  <div class="e-print col-6 col-sm-6 col-lg-6 col-xl-6">
+                    <h4>Inco Terms</h4>
+                    <p>
+                      {{ item?.incoTerms || "N/A" }}
+                      {{ item?.incoTermsDesc ? "-" : "" }}
+                      {{ item?.incoTermsDesc }}
+                    </p>
+                  </div>
+                  <div class="e-print col-6 col-sm-6 col-lg-6 col-xl-6">
+                    <h4>Shipping Warehouse</h4>
+                    <p>
+                      {{ item?.shippingWarehouse || "N/A" }}
+                      {{ item?.shippingWarehouseDesc ? " - " : "" }}
+                      {{ item?.shippingWarehouseDesc }}
+                    </p>
+                  </div>
+                  <div class="e-print col-6 col-sm-6 col-lg-6 col-xl-6">
+                    <h4>ShipVia</h4>
+                    <p>{{ item?.shipVia || "N/A" }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="col-sm-12 col-lg-12 col-xl-5 print-hide"
+              [ngClass]="pro || pLine || mini || air"
+            >
+              <form [formGroupName]="i" class="form-cls">
+                <div class="row fm-row">
+                  <div class="q-print col-6 col-xl-4">
+                    <h4>Order QTY</h4>
+                    <p>({{ item.userRequestedUOM }})</p>
+                    <input
+                      #feet
+                      id="feet"
+                      name="feet"
+                      [ngClass]="{'pdf-label': showComments}"
+                      placeholder="0"
+                      class="form-control w-100"
+                      (change)="updateSelectedQuantity(i, $event)"
+                      value="{{ item.selectedAmount }}"
+                      formControlName="selectedAmount"
+                      (input)="updateSelectedQuantity(i, $event)"
+                      (keypress)="numberOnly($event, item.userRequestedUOMCode)"
+                    />
+                  </div>
+
+                  <div class="q-print col-6 col-xl-4" *ngIf="item.product.productType != 'ACCESSORIES' && item.checkUom !== 'RO' && item?.product?.subProductType !='AREA_RUGS'">
+                    <h4>Quantity Calc.</h4>
+                    <p>({{ item?.convAlternateUOM }})</p>
+                    <input
+                    [ngClass]="{'pdf-label': showComments}"
+                      formControlName="calc"
+                      class="form-control w-100"
+                      [value]="conversionFunction2(item.selectedAmount,item)"
+                    />
+                  </div>
+                  <div class="q-print col-12 col-xl-4 dylotcheck">
+                    <h4>Specific Dye Lot</h4>
+                    <div class="dylot"></div>
+                    <input
+                    [ngClass]="{'pdf-label': showComments}"
+                      type="text"
+                      [disabled]="!item.checkAvailability"
+                      placeholder="Optional"
+                      class="form-control w-100"
+                      value="{{ item.requestedDyelot }}"
+                      (input)="item.requestedDyelot = onDyelot($event)"
+                    />
+                  </div>
+
+                  <div class="#hidden col-12 col-sm-12 col-lg-12 col-xl-12">
+                    <div class="row">
+                      
+                      <div  
+                      [ngClass]="getColumnClass(item)"
+                       #hidden>
+                        <button
+                          [disabled]="
+                            feet.value === '' ||
+                            item.quantity === item.selectedAmount ||
+                            !item.checkAvailability
+                          "
+                          (click)="
+                            updatequantity(
+                              feet.value,
+                              item.entryNumber,
+                              item.code,
+                              item.quantity,
+                              i
+                            )
+                          "
+                          type="button"
+                          class="btn btn-secondary mt-2"
+                        >
+                          SAVE QTY
+                        </button>
+                      </div>
+                      <div class="col-12 col-lg-6 col-md-6 col-xl-6" #hidden>
+                        <button
+                          #hidden
+                          type="button"
+                          [disabled]
+                          (click)="checkAvailability(item?.entryNumber, i)"
+                          [disabled]="!item.checkAvailability || checkExcessQuantity(i, item.userRequestedUOMCode)"
+                          class="btn btn-primary w-100 mt-2"
+                        >
+                          CHECK AVAILABILITY / INVENTORY
+                        </button>
+                      </div>
+                      <app-alerts
+                        [alertData]="alertData"
+                        [alertType]="alertType"
+                        *ngIf="alertTrigger && index == i"
+                      ></app-alerts>
+                    </div>
+                  </div>
+                  <div class="e-print col-12 col-sm-12 col-lg-12 col-xl-12">
+                    <form
+                      [formGroup]="feetYardFormData"
+                      *ngIf="item.checkUom == 'RO' && item?.product?.productType != 'ACCESSORIES' && 
+                            item?.product?.productType != 'HARDSURFACE'"
+                      class=""
+                    >
+                      <div class="row">
+                        <!-- <div
+                          class="col-lg-6 col-md-6"
+                          [ngClass]="poMtclass || pro || mini || air"
+                        >
+                          <h4>Target Length</h4>
+                          <input
+                          [ngClass]="{'pdf-label': showComments}"
+                            type="text"
+                            class="form-control"
+                            [placeholder]="rollsPlaceholder"
+                            formControlName="feet"
+                            (keypress)="numberOnly($event)"
+                            (blur)="getTargetLength($event, i, item)"
+                            value="{{ item?.targetvalue }}"
+                          />
+                        </div> -->
+                        <div
+                          class="col-lg-6 col-md-6"
+                          [ngClass]="poMtclass || pro || mini || air"
+                        >
+                          <h4>Min Length {{ item.minLength }}</h4>
+                          <input
+                          [ngClass]="{'pdf-label': showComments}"
+                            type="text"
+                            class="form-control"
+                            placeholder="180.0"
+                            formControlName="minLengthFT"
+                            (input)="restrictUptoTwoDecimal($event)"
+                            (keypress)="numberOnly($event, 'rolls')"
+                            value="{{ item?.minLengthFT }}"
+                            [readonly]="!csrSuperAdmin?.isCSRSuperAdmin"
+                          />
+                        </div>
+                        <div
+                          class="col-lg-6 col-md-6"
+                          [ngClass]="poMtclass || pro || mini || air"
+                        >
+                          <h4>Max Length</h4>
+                          <input
+                          [ngClass]="{'pdf-label': showComments}"
+                            type="text"
+                            class="form-control"
+                            placeholder="210.0"
+                            formControlName="maxLengthFT"
+                            (input)="restrictUptoTwoDecimal($event)"
+                            (keypress)="numberOnly($event, 'rolls')"
+                            value="{{ item?.maxLengthFT }}"
+                            [readonly]="!csrSuperAdmin?.isCSRSuperAdmin"
+                          />
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-12 col-lg-12 col-xl-12 mt-2">
+            <app-alerts
+              [alertData]="alertData"
+              [alertType]="alertType"
+              *ngIf="colorTrigger && index == i"
+            ></app-alerts>
+          </div>
+
+          <!-- 
+          <accordion [isAnimated]="true" class="bx-accordian my-4 px-4" *ngIf="
+              (item?.backOrderedDate === '' ||
+                item?.backOrderedDate === undefined) &&
+              item?.solution &&
+              item?.solution.length > 0 &&
+              item?.solution[0]?.rollAssignment != 'ROLL'
+            ">
+            <accordion-group [isOpen]="false">
+              <header accordion-heading class="bx-accordian-header p-2 w-100 d-flex justify-content-center"
+                (click)="solutionDetailsClicked()">
+                <div class="show arrow">
+                  Show Solutions Details
+                  <span class="mohawak-icon angle-left-icon down-icon"></span>
+                </div>
+                <div class="hide arrow">
+                  Hide Solutions Details
+                  <span class="mohawak-icon angle-left-icon up-icon"></span>
+                </div>
+                <ng-container *ngIf="!isSolutionDetailsClicked">
+                  <span tooltip="Click here to see your quantity, dyelot or roll number"
+                    class="mohawak-icon help-icon help-info red-question-mark"></span>
+                </ng-container>
+              </header>
+
+              <table class="black-header-table-one">
+                <thead>
+                  <tr>
+                    <th>Order Qty (LF)</th>
+                    <th>Order Qty (Sq Yrd)</th>
+                    <th>
+                      Assigned Qty <br />
+                      <mat-slide-toggle class="tp-margin" (change)="showAssignedSqFtYrd($event)">
+                        <span *ngIf="showAssignedSpec === false">Sq Yd</span>
+                        <span *ngIf="showAssignedSpec === true">Sq Ft</span>
+                      </mat-slide-toggle>
+                    </th>
+                    <th>Dyelot</th>
+                    <th>Roll #</th>
+                    <th>Plant</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let solution of item?.solution || []">
+                    <td>{{ solution?.rollAssigned || "NA" }}</td>
+                    <td>{{ solution?.rollAssignedInSY || "NA" }}</td>
+                
+                    <td>
+                      <ng-container *ngIf="showAssignedSpec === false">
+                        {{ solution?.assignedQuantity || "NA" }}
+                      </ng-container>
+                      <ng-container *ngIf="showAssignedSpec === true">
+                        {{ solution?.assignedQuantityInSF || "NA" }}
+                      </ng-container>
+                    </td>
+
+                    <td>{{ solution?.dyeLot }}</td>
+                    <td>{{ solution?.rollNumber }}</td>
+                    <td>{{ solution?.plant }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </accordion-group>
+          </accordion>
+
+          <accordion [isAnimated]="true" class="bx-accordian my-4 px-4" *ngIf="
+              (item?.backOrderedDate === '' ||
+                item?.backOrderedDate === undefined) &&
+              item?.solution &&
+              item?.solution.length > 0 &&
+              item?.solution[0]?.rollAssignment == 'ROLL'
+            ">
+            <accordion-group [isOpen]="false">
+              <header accordion-heading class="bx-accordian-header p-2 w-100 d-flex justify-content-center"
+                (click)="solutionDetailsClicked()">
+                <div class="show arrow">
+                  Show Solutions Details
+                  <span class="mohawak-icon angle-left-icon down-icon"></span>
+                </div>
+                <div class="hide arrow">
+                  Hide Solutions Details
+                  <span class="mohawak-icon angle-left-icon up-icon"></span>
+                </div>
+                <ng-container *ngIf="!isSolutionDetailsClicked">
+                  <span tooltip="Click here to see your quantity, dyelot or roll number"
+                    class="mohawak-icon help-icon help-info red-question-mark"></span>
+                </ng-container>
+              </header>
+
+              <table class="black-header-table-one">
+                <thead>
+                  <tr>
+                    <th>Order Qty (Min / Max)</th>
+
+                    <th>Assigned Qty</th>
+                    <th>Dyelot</th>
+                    <th>Roll #</th>
+                    <th>Plant</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let solution of item?.solution || []">
+                    <td>
+                      {{ solution?.rollAssigned || "NA" }}({{
+                      solution?.orderMax
+                      }}/{{ solution?.orderMin }})
+                    </td>
+                    <td>{{ solution?.rollAssignedInSY || "NA" }}</td>
+                 
+
+                    <td>{{ solution?.dyeLot }}</td>
+                    <td>{{ solution?.rollNumber }}</td>
+                    <td>{{ solution?.plant }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </accordion-group>
+          </accordion> -->
+
+          <accordion
+            [isAnimated]="true"
+            class="bx-accordian my-4"
+            *ngIf="
+              item?.availabilityStatus != 'BACK ORDER' &&
+              (((item?.product?.productType === 'SoftSurface' ||
+                item?.product?.productType === 'SOFTSURFACE') &&
+                item?.product?.subProductType !== 'PAD_CUSHION' &&
+                item?.product?.subProductType !== 'CARPET_TILE') ||
+                (item?.product?.subProductType === 'RESILIENT_VINYL' &&
+                  item?.product?.sellingBackingId === 'V')) &&
+              item?.solution &&
+              item?.solution[0]?.rollAssignment != 'ROLL'
+            "
+          >
+            <accordion-group [isOpen]="false">
+              <header
+                accordion-heading
+                class="bx-accordian-header p-2 w-100 d-flex justify-content-center"
+                (click)="solutionDetailsClicked()"
+              >
+                <div class="show arrow">
+                  Show Solutions Details
+                  <span class="mohawak-icon angle-left-icon down-icon"></span>
+                </div>
+                <div class="hide arrow">
+                  Hide Solutions Details
+                  <span class="mohawak-icon angle-left-icon up-icon"></span>
+                </div>
+                <ng-container *ngIf="!isSolutionDetailsClicked">
+                  <span
+                    tooltip="Click here to see your quantity, dyelot or roll number"
+                    class="mohawak-icon help-icon help-info red-question-mark"
+                  ></span>
+                </ng-container>
+              </header>
+              <table class="black-header-table-one">
+                <thead>
+                  <tr>
+                    <th>Order Qty (LF)</th>
+                    <th>Order Qty (Sq Yd)</th>
+                    <th>
+                      Assigned Qty <br />
+                      <mat-slide-toggle
+                        class="tp-margin"
+                        (change)="showAssignedSqFtYrd($event)"
+                      >
+                        <span *ngIf="showAssignedSpec === false">Sq Yd</span>
+                        <span *ngIf="showAssignedSpec === true">Sq Ft</span>
+                      </mat-slide-toggle>
+                    </th>
+                    <th>Dyelot</th>
+                    <th>Roll #</th>
+                    <th>Plant</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="
+                      let solution of item?.solution || [];
+                      let isFirst = first
+                    "
+                  >
+                    <td *ngIf="item?.uom?.code != 'RO'">
+                      <ng-container>
+                        {{ solution?.rollAssigned || "0" }}
+                      </ng-container>
+                    </td>
+                    <td [attr.rowspan]="item?.solution.length" *ngIf="isFirst && item?.uom?.code === 'RO'">
+                      <ng-container>
+                        {{ solution?.rollAssignedInSY || "0" }}
+                      </ng-container>
+                    </td>
+                    <td>
+                      <ng-container>
+                        {{ solution?.rollAssignedInSY || "0" }}
+                      </ng-container>
+                    </td>
+                    <td>
+                      <ng-container *ngIf="showAssignedSpec === false">
+                        {{ solution?.assignedQuantityInSY || "0" }}
+                      </ng-container>
+                      <ng-container *ngIf="showAssignedSpec === true">
+                        {{ solution?.assignedQuantityInSF || "0" }}
+                      </ng-container>
+                    </td>
+
+                    <td>{{ solution?.dyeLot }}</td>
+                    <td>{{ solution?.rollNumber }}</td>
+                    <td>
+                      {{ solution?.plant }} - {{ solution?.plantDescription }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </accordion-group>
+          </accordion>
+
+          <accordion
+            [isAnimated]="true"
+            class="bx-accordian my-4"
+            *ngIf="
+              item?.availabilityStatus != 'BACK ORDER' &&
+              (((item?.product?.productType === 'SoftSurface' ||
+                item?.product?.productType === 'SOFTSURFACE') &&
+                item?.product?.subProductType !== 'PAD_CUSHION' &&
+                item?.product?.subProductType !== 'CARPET_TILE') ||
+                (item?.product?.subProductType === 'RESILIENT_VINYL' &&
+                  item?.product?.sellingBackingId === 'V')) &&
+              item?.solution &&
+              item?.solution[0]?.rollAssignment === 'ROLL'
+            "
+          >
+            <accordion-group [isOpen]="false">
+              <header
+                accordion-heading
+                class="bx-accordian-header p-2 w-100 d-flex justify-content-center"
+                (click)="solutionDetailsClicked()"
+              >
+                <div class="show arrow">
+                  Show Solutions Details
+                  <span
+                    #hidden
+                    class="mohawak-icon angle-left-icon down-icon"
+                  ></span>
+                </div>
+                <div #hidden class="hide arrow">
+                  Hide Solutions Details
+                  <span class="mohawak-icon angle-left-icon up-icon"></span>
+                </div>
+                <ng-container *ngIf="!isSolutionDetailsClicked">
+                  <span
+                    tooltip="Click here to see your quantity, dyelot or roll number"
+                    class="mohawak-icon help-icon help-info red-question-mark"
+                  ></span>
+                </ng-container>
+              </header>
+              <table class="black-header-table-one">
+                <thead>
+                  <tr>
+                    <th>Order Qty (Min / Max)</th>
+                    <th>Assigned Qty</th>
+                    <th>Dyelot</th>
+                    <th>Roll #</th>
+                    <th>Plant</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="
+                      let solution of item?.solution || [];
+                      let isFirst = first
+                    "
+                  >
+                    <td [attr.rowspan]="item?.solution.length" *ngIf="isFirst && item?.uom?.code === 'RO'">
+                      <ng-container>
+                        {{ formatQuantity(item?.userRequestedQuantity, item?.userRequestedUOMCode) }}
+                        {{ item?.uom?.name }}
+                        ({{ solution?.orderMinInFeet }}/{{
+                          solution?.orderMaxInFeet
+                        }})
+                      </ng-container>
+                    </td>
+                    <td *ngIf="item?.uom?.code != 'RO'">
+                      <ng-container>
+                        {{ item?.userRequestedQuantity || "0" }}
+                        {{ item?.uom?.name }}
+                        ({{
+                          solution?.orderMinInFeet
+                            ? solution?.orderMinInFeet
+                            : solution?.rollAssigned
+                        }}/{{
+                          solution?.orderMaxInFeet
+                            ? solution?.orderMaxInFeet
+                            : solution?.rollAssigned
+                        }})
+                      </ng-container>
+                    </td>
+                    <td>{{ solution?.rollAssigned || "0" }}</td>
+                    <!--  <td>{{cartData?.quantityShipped || "NA"}}</td> -->
+
+                    <td>{{ solution?.dyeLot }}</td>
+                    <td>{{ solution?.rollNumber }}</td>
+                    <td>
+                      {{ solution?.plant }} - {{ solution?.plantDescription }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </accordion-group>
+          </accordion>
+
+          <accordion
+            [isAnimated]="true"
+            class="bx-accordian my-4"
+            *ngIf="
+              item?.availabilityStatus != 'BACK ORDER' &&
+              (item?.product?.productType === 'SoftSurface' ||
+                item?.product?.productType === 'SOFTSURFACE') &&
+              item?.product?.subProductType === 'PAD_CUSHION' &&
+              item?.solution
+            "
+          >
+            <accordion-group [isOpen]="false">
+              <header
+                accordion-heading
+                class="bx-accordian-header p-2 w-100 d-flex justify-content-center"
+                (click)="solutionDetailsClicked()"
+              >
+                <div class="show arrow">
+                  Show Solutions Details
+                  <span
+                    #hidden
+                    class="mohawak-icon angle-left-icon down-icon"
+                  ></span>
+                </div>
+                <div #hidden class="hide arrow">
+                  Hide Solutions Details
+                  <span class="mohawak-icon angle-left-icon up-icon"></span>
+                </div>
+                <ng-container *ngIf="!isSolutionDetailsClicked">
+                  <span
+                    #hidden
+                    tooltip="Click here to see your quantity, dyelot or roll number"
+                    class="mohawak-icon help-icon help-info red-question-mark"
+                  ></span>
+                </ng-container>
+              </header>
+              <table class="black-header-table-one">
+                <thead>
+                  <tr>
+                    <th>Order Qty</th>
+                    <th>Assigned Qty</th>
+                    <th>Plant</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="
+                      let solution of item?.solution || [];
+                      let isFirst = first
+                    "
+                  >
+                    <td [attr.rowspan]="item?.solution.length" *ngIf="isFirst && item?.uom?.code === 'RO'">
+                      <ng-container>
+                        {{ formatQuantity(item?.userRequestedQuantity, item?.userRequestedUOMCode) }}
+                        {{ item?.uom?.name }}
+                      </ng-container>
+                    </td>
+                    <td *ngIf="item?.uom?.code != 'RO'">
+                      <ng-container>
+                        {{ item?.userRequestedQuantity || "0" }}
+                        {{ item?.uom?.name }}
+                      </ng-container>
+                    </td>
+                    <td>
+                      {{ solution?.assignedQuantityInSY || "0" }}
+                      {{ solution?.uomDesc }}
+                    </td>
+                    <td>
+                      {{ solution?.plant }} - {{ solution?.plantDescription }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </accordion-group>
+          </accordion>
+
+          <accordion
+            [isAnimated]="true"
+            class="bx-accordian my-4"
+            *ngIf="
+              item?.availabilityStatus != 'BACK ORDER' &&
+              (((item?.product?.productType === 'SoftSurface' ||
+                item?.product?.productType === 'SOFTSURFACE') &&
+                item?.product?.subProductType === 'CARPET_TILE') ||
+                item?.product?.productType === 'HardSurface' ||
+                item?.product?.productType === 'HARDSURFACE' ||
+                ((item?.product?.productType === 'Accessories' ||
+                  item?.product?.productType === 'ACCESSORIES') &&
+                  item?.product?.subProductType != 'PAD_CUSHION')) &&
+              item?.solution
+            "
+          >
+            <accordion-group [isOpen]="false">
+              <header
+                accordion-heading
+                class="bx-accordian-header p-2 w-100 d-flex justify-content-center"
+                (click)="solutionDetailsClicked()"
+              >
+                <div class="show arrow">
+                  Show Solutions Details
+                  <span
+                    #hidden
+                    class="mohawak-icon angle-left-icon down-icon"
+                  ></span>
+                </div>
+                <div class="hide arrow" #hidden>
+                  Hide Solutions Details
+                  <span class="mohawak-icon angle-left-icon up-icon"></span>
+                </div>
+                <ng-container *ngIf="!isSolutionDetailsClicked">
+                  <span
+                    tooltip="Click here to see your quantity, dyelot or roll number"
+                    class="mohawak-icon help-icon help-info red-question-mark"
+                  ></span>
+                </ng-container>
+              </header>
+              <table class="black-header-table-one">
+                <thead>
+                  <tr>
+                    <th>Order Qty</th>
+
+                    <th>Assigned Qty</th>
+                    <th>Dye Lot</th>
+                    <th>Plant</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="
+                      let solution of item?.solution || [];
+                      let isFirst = first
+                    "
+                  >
+                    <td [attr.rowspan]="item?.solution.length" *ngIf="isFirst && item?.uom?.code === 'RO'">
+                      <ng-container>
+                        {{ formatQuantity(item?.quantity, item?.userRequestedUOMCode) }}
+                        {{ item?.uom?.name }}
+                      </ng-container>
+                    </td>
+                    <td *ngIf="item?.uom?.code != 'RO'">
+                      <ng-container>
+                        {{ item?.userRequestedQuantity || "0" }}
+                        {{ item?.uom?.name }}
+                      </ng-container>
+                    </td>
+                    <td>
+                      {{ solution?.assignedQuantity || "0" }}
+                      {{ solution?.uomDesc }}
+                    </td>
+                    <td>{{ solution?.dyeLot || "0" }}</td>
+                    <td>
+                      {{ solution?.plant }} - {{ solution?.plantDescription }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </accordion-group>
+          </accordion>
+
+          <accordion
+            [isAnimated]="true"
+            class="bx-accordian my-4"
+            *ngIf="
+              item?.availabilityStatus != 'BACK ORDER' &&
+              (item?.product?.productType === 'Accessories' ||
+                item?.product?.productType === 'ACCESSORIES') &&
+              item?.product?.subProductType === 'PAD_CUSHION' &&
+              item?.solution
+            "
+          >
+            <accordion-group [isOpen]="false">
+              <header
+                accordion-heading
+                class="bx-accordian-header p-2 w-100 d-flex justify-content-center"
+                (click)="solutionDetailsClicked()"
+              >
+                <div class="show arrow">
+                  Show Solutions Details
+                  <span class="mohawak-icon angle-left-icon down-icon"></span>
+                </div>
+                <div class="hide arrow">
+                  Hide Solutions Details
+                  <span class="mohawak-icon angle-left-icon up-icon"></span>
+                </div>
+                <ng-container *ngIf="!isSolutionDetailsClicked">
+                  <span
+                    tooltip="Click here to see your quantity, dyelot or roll number"
+                    class="mohawak-icon help-icon help-info red-question-mark"
+                  ></span>
+                </ng-container>
+              </header>
+              <table class="black-header-table-one">
+                <thead>
+                  <tr>
+                    <th>Order Qty</th>
+
+                    <th>Assigned Qty</th>
+
+                    <th>Plant</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="
+                      let solution of item?.solution || [];
+                      let isFirst = first
+                    "
+                  >
+                    <td [attr.rowspan]="item?.solution.length" *ngIf="isFirst && item?.uom?.code === 'RO'">
+                      <ng-container>
+                        {{ formatQuantity(item?.userRequestedQuantity, item?.userRequestedUOMCode) }}
+                        {{ item?.uom?.name }}
+                      </ng-container>
+                    </td>
+                    <td *ngIf="item?.uom?.code != 'RO'">
+                      <ng-container *ngIf="isFirst">
+                        {{ item?.userRequestedQuantity || "0" }}
+                        {{ item?.uom?.name }}
+                      </ng-container>
+                    </td>
+                    <td>
+                      {{ solution?.assignedQuantity || "0" }}
+                      {{ solution?.uomDesc }}
+                    </td>
+
+                    <td>
+                      {{ solution?.plant }} - {{ solution?.plantDescription }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </accordion-group>
+          </accordion>
+          <div class="row">
+            <div class="col-12 col-sm-12 col-lg-12">
+              <p class="text-f-s mt-2 p-info">
+                Unless a specific dyelot is specified, assigned inventory may be
+                substituted during shipment (if necessary).
+              </p>
+            </div>
+            <alert
+              [type]="excessQntyErrType"
+              class="dashboard-page-alert"
+              [dismissible]="false"
+              *ngIf="excessQntyErrMsg"
+            >
+              <div class="container mx-0">
+                {{ excessQntyErrMsg }}
+              </div>
+            </alert>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-page-break">
+    <table class="table w-100 text-end mt-4">
+      <tr>
+        <td class="fw-bold">Estimated Total</td>
+        <td>{{ totalPrice }}</td>
+      </tr>
+      <tr>
+        <td colspan="1" class="mt-2 esti-p">
+          Tax, freight, and other charges may vary. {{ currentDate }}
+        </td>
+      </tr>
+    </table>
+    <div class="bg1-parent ">
+      <div class="bg-0 mt-4">
+        <p class="mb-1">
+          Quote prepared by {{ quote?.preparedByName || "N/A" }} – Email
+          <a href="mailto:{{ quote?.preparedByEmail || 'N/A' }}" class="text-danger text-decoration-none">
+            {{ quote?.preparedByEmail || "N/A" }}
+          </a>
+          or call
+          <a href="tel:{{ quote?.preparedByPhone || 'N/A' }}" class="text-danger text-decoration-none">{{
+            quote?.preparedByPhone || "N/A"
+          }}</a>
+        </p>
+      </div>
+      <div
+        class="bg-1 mt-2 terms-conditions"
+      >
+        <p>
+          This quote reflects current pricing based on applicable tariffs as of 
+          the date issued. In the event of any changes to tariff regulations, duties, 
+          import costs, raw material prices, or other related product inputs, 
+          we reserve the right to adjust pricing accordingly. If any changes to 
+          pricing are implemented, we will confirm the new pricing before order acceptance.
+        </p>
+       
+      </div>
+      <div
+        class="bg-1 mt-2 terms-conditions"
+        *ngIf="subProductType == 'CARPET_TILE' || subProductType == 'BROADLOOM'"
+      >
+        <p>
+          Pricing valid for 30 days . Mohawk Standard Terms are Net 30 days.<br />
+          Mohawk recommended adhesives are required to ensure the warranty is
+          valid. The Quoted price are reflective of the product prices alone
+          additional cost including but not limited to, taxes, freight,
+          surcharges, etc they apply. Please go to
+          <a
+            href="https://www.mohawkxchange.com"
+            class="text-danger text-decoration-none"
+            >www.mohawkxchange.com </a
+          >to place your order, receive order notifications, and track your
+          order. Custom orders are not cancellable. Running Line order
+          cancellations can be subject to a cancellation/restocking fee.  Prices
+          are subject to subsequent Mohawk price increases and unless otherwise
+          noted do not include: installation, freight, drop ship fees, taxes or
+          other government imposed fees. This project quotation supersedes prior
+          quotations provided for the same project. Please go to: Installation
+          Instructions are available in the product pages at
+          <a
+            href="https://www.mohawkxchange.com"
+            class="text-danger text-decoration-none"
+            >www.mohawkxchange.com.</a
+          > See Mohawk’s Terms and Conditions at  
+          <a href="https://www.mohawkind.com/_pdf/MOHAWK_INDUSTRIES_Terms_and_Conditions_of_Sale.pdf"
+           class="text-danger text-decoration-none" target="_blank">MOHAWK_INDUSTRIES_Terms_and_Conditions_of_Sale</a>
+        </p>
+        <p>
+          <b>CALIFORNIA -</b> CalRecycle has implemented a differential
+          assessment structure for broadloom carpet and carpet tile shipped into
+          California: Broadloom carpet = $0.70 Sy; Broadloom Carpet with =>10%
+          Post Consumer Content = $0.68 Sy; Carpet Tile = $0.99 sy; Carpet Tile
+          with => 10% Post Consumer Content = $0.97 Sy.
+        </p>
+      </div>
+      <div
+        class="bg-1 mt-2 terms-conditions"
+        *ngIf="subProductType != 'CARPET_TILE' && subProductType != 'BROADLOOM'"
+      >
+        <p>
+          Mohawk recommended adhesives are required to ensure the warranty is
+          valid. The price(s) quoted above are applicable only for the stated
+          quantity per product minus a 10% variance. Please go to
+          <a
+            href="https://www.mohawkxchange.com"
+            class="text-danger text-decoration-none"
+            >www.mohawkxchange.com</a
+          >
+          to place your order, receive order notifications, and track your
+          order. Custom orders are not cancellable. Running Line order
+          cancellations can be subject to a cancellation/restocking fee.
+        </p>
+        <p>
+          Prices are subject to subsequent Mohawk price increases and unless
+          otherwise noted do not include: installation, freight, drop ship fees,
+          taxes or other government imposed fees. This project quotation
+          supersedes prior quotations provided for the same project. Please go
+          to: <br />
+          Installation Instructions are available in the product pages {{'@'}}
+          <a
+            href="https://www.mohawkxchange.com"
+            class="text-danger text-decoration-none"
+            >www.mohawkxchange.com</a
+          >
+        </p>
+      </div>
+      
+    </div>
+    
+    </div>
+
+    <div class="mt-4 no-page-break print-element" *ngIf="recommendedAccessories?.length > 0" >
+      <ng-container *ngFor="let accessories of recommendedAccessories; trackBy: trackByKey">
+        <h2 class="title mb-2 bg-1" >Recommended Accessories</h2>
+        <h2 class="title mb-2 mt-3">{{accessories?.key}}</h2>
+        <table class="black-header-table-one mt-3">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Spread</th>
+              <th>Size</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of accessories?.value?.recommendedAccessories; trackBy: trackByName">
+              <td><p [innerHTML]="item?.name"></p></td>
+              <td><p [innerHTML]="item?.spread"></p></td>
+              <td>{{item?.size}}</td>
+              <td>{{item?.price}}</td>
+            </tr>
+          </tbody>
+      </table>
+      </ng-container>
+    </div>
+    <div  class="buttons  d-flex flex-wrap justify-content-center mt-4 btnGroup-print" #hidden>
+        <button class="btn btn-secondary" (click)="nagivateToQuotes()">
+          BACK TO QUOTES
+        </button>
+        <button
+          class="btn btn-secondary"
+          [disabled]="!buyerOffered  || (quote?.cartId!='' && quote?.cartId != undefined)"
+          (click)="rejectQuoteModal()"
+        >
+          REJECT QUOTE
+        </button>
+        <button
+          [disabled]="!enableCancelQuote || (quote?.cartId!='' && quote?.cartId != undefined)"
+          class="btn btn-primary"
+          (click)="cancelQuoteModal()"
+        >
+          CANCEL QUOTE
+        </button>
+        <button
+        *ngIf="quote?.cartId =='' || quote?.cartId === undefined"
+          (click)="convertOrderClick()"
+          [disabled]="!enableConvertToOrder"
+          class="btn btn-primary"
+        >
+        CONVERT TO ORDER
+        </button>
+        <button
+        *ngIf="quote?.cartId!='' && quote?.cartId != undefined"
+          (click)="convertCartClick()"
+          [disabled]="!enableConvertToOrder"
+          class="btn btn-primary"
+        >
+          Back To Cart
+        </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #template1>
+  <cancel-quote-popup></cancel-quote-popup>
+</ng-template>
+
+<ng-template #template2>
+  <share-via-email></share-via-email>
+</ng-template>
+<ng-template #template3>
+  <reject-quote-popup></reject-quote-popup>
+</ng-template>
+
+<ng-template #shippingOption>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Shipping Options</h4>
+    <app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeShippingOptionsModalModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing">
+    <alert
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="showValidationError"
+    >
+      <div class="container">{{ validationErrorMessage }}</div>
+    </alert>
+    <div class="row p-3">
+      <div class="col-md-6 col-lg-6 col-sm-12 mt-2 left-details border-right">
+        <div class="w-100">
+          <h3 class="modal-title f-w">Shipping Method</h3>
+          <p class="mb-0 address-text">
+            {{ defaultShippingMethod }}
+            {{ defaultShippingConditionDesc ? "-" : "" }}
+            {{
+              defaultShippingConditionDesc ? defaultShippingConditionDesc : ""
+            }}
+          </p>
+        </div>
+        <div class="w-100 mt-2">
+          <h3 class="modal-title f-w">Shipping WareHouse</h3>
+          <p class="mb-0">
+            {{ defaultShippingWarehouse }}
+            {{ defaultShippingWarehouseDesc ? "-" : "" }}
+            {{
+              defaultShippingWarehouseDesc ? defaultShippingWarehouseDesc : ""
+            }}
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-6 col-sm-12 mt-2 left-details">
+        <div class="w-100">
+          <h3 class="modal-title f-w">Inco Terms</h3>
+          <p class="mb-0">
+            {{ defaultIncoTerms }}
+            {{ defaultIncoTermsDesc ? "-" : "" }}
+            {{ defaultIncoTermsDesc }}
+          </p>
+        </div>
+        <div class="w-100 mt-2">
+          <h3 class="modal-title f-w">Ship Via</h3>
+          <p class="mb-0">
+            {{ defaultShipVia }}
+          </p>
+        </div>
+      </div>
+      <!-- <div class="col-6 mt-2">
+            
+                   </div>
+          <div class="col-6 mt-2">
+            
+          
+          </div> -->
+    </div>
+    <!-- <div class="row mb-2 left-details">
+          <div class="col-6 mt-2">
+            
+          
+          </div>
+          <div class="col-6 mt-2">
+            
+           
+          </div>
+        </div> -->
+
+    <div class="row text-center">
+      <div class="col-12 mt-2">
+        <button
+          (click)="closeShippingOptionsModalModal()"
+          class="btn btn-secondary m-2 btn-w-100"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="shippingOptionsModal(shippingOptionTemplate)"
+          class="btn btn-outline-primary m-2 btn-w-100"
+        >
+          Change Shipping Options
+        </button>
+        <button
+          (click)="validateShippingOptions()"
+          class="btn btn-primary m-2 btn-w-100"
+          [disabled]="showValidationError"
+        >
+          Choose Solution / Add To quote
+        </button>
+      </div>
+      <!-- <div class="col-4 mt-3">
+        
+      </div> 
+      <div class="col-4 mt-3">
+        
+      </div>  -->
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #shippingOptionTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Change Shipping Options</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeChangeShippingOptionModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing">
+    <alert
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="showValidationError"
+    >
+      <div class="container">{{ validationErrorMessage }}</div>
+    </alert>
+    <form #form="ngForm">
+      <div class="row">
+        <div class="col-md-6 col-sm-12">
+          <h4>Shipping Methods* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="
+              changeshipViaOptions($event); incoTermsSelectedOption = null
+            "
+            [(ngModel)]="shipViaSelectedOption"
+            name="ShipVia"
+            required
+          >
+            <ng-option [value]="item?.value" *ngFor="let item of shipViaOptions"
+              >{{ item?.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <h4>Inco Terms* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="changeincoTermsOptions($event)"
+            [(ngModel)]="incoTermsSelectedOption"
+            name="IncoTerms"
+            required
+            [disabled]="!shipViaSelectedOption || csrSuperAdmin?.isCustomer || csrSuperAdmin?.isSalesPerson || csrSuperAdmin?.isSalesOps"
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of incoTermsOptions"
+              >{{ item?.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-6 col-sm-12 mt-3">
+          <h4>Shipping WareHouse* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="
+              changeShippingWareHouseOptions($event);
+              incoTermsLoc2SelectedOption = null
+            "
+            [disabled]="csrSuperAdmin?.isCustomer || csrSuperAdmin?.isSalesPerson || csrSuperAdmin?.isSalesOps"
+            [(ngModel)]="shippingWareHouseSelectedOption"
+            name="shippingWareHouse"
+            required
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of shippingWareHouseOptions"
+              >{{ item?.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-6 col-sm-12 mt-3 shipvia-change">
+          <h4>Ship Via* Req.</h4>
+          <ng-select
+            placeholder="Select"
+            class="shipvia"
+            [(ngModel)]="incoTermsLoc2SelectedOption"
+            name="incoTermsLoc2"
+            required
+            [disabled]="!shippingWareHouseSelectedOption || csrSuperAdmin?.isCustomer || csrSuperAdmin?.isSalesPerson || csrSuperAdmin?.isSalesOps"
+            [addTag]="true"
+            (ngModelChange)="validateShipVia($event)"
+          >
+            <ng-option
+              [value]="item?.label"
+              *ngFor="let item of incoTermsLoc2Options"
+              >{{ item?.label }} <span class="span-preferred" *ngIf="item?.preferred == true">(Preferred)</span> </ng-option
+            >
+          </ng-select>
+        </div>
+      </div>
+    </form>
+
+    <div class="row text-center">
+      <div class="col-12 mt-4">
+        <button
+          class="btn btn-outline-secondary m-2 btn-w-100"
+          (click)="closeChangeShippingOptionModal()"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary m-2 btn-w-100"
+          id="confirmShippingWareHouseChange"
+          (click)="validateShipViaAddress('changeShippingOption')"
+          [disabled]="!form.dirty || !form.valid || showValidationError"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

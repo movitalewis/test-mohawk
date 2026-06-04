@@ -1,0 +1,304 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+@import 'src/styles/mixins/box-shadow.mixin';
+
+.input{
+  position: relative;
+}
+::ng-deep ng-select.hide-empty-msg {
+  .ng-dropdown-panel {
+    &:has(.ng-option-disabled) {
+      display: none !important;
+    }
+  }
+}
+
+.b-c{
+    padding-top: 20px;
+    text-align: left;
+    @include breakpoint-range($max : sm) {
+        padding-top: 10px;
+    }
+}
+.desk-view {
+    @include breakpoint-range($max : sm) {
+        display: none;
+    }
+}
+.m-view {
+    display: none;
+    @include breakpoint-range($max : sm) {
+        display: block;
+        text-align: center;
+        width: 100%;
+    }
+}
+.full-btns{
+    justify-items: center;
+    justify-content: center;
+    width: 100%;
+    .btn{
+        width: 100%;
+    }
+}
+.icon-link {
+    text-align: right;
+
+    @include breakpoint-range($max : sm) {
+        text-align: left;
+        margin-bottom: 20px;
+    }
+
+    button {
+        background-color: transparent;
+        border: none;
+        color: #CE0E2D;
+        margin: 0 5px;
+
+        @include breakpoint-range($max : sm) {
+            margin-right: 10px;
+            margin-left: 0;
+            padding: 0;
+        }
+
+        span {
+            @include breakpoint-range($max : sm) {
+                margin-right: 0px;
+            }
+
+            width: 15px;
+            height: 15px;
+            position: relative;
+            top: 0px;
+            margin-right: 7px;
+        }
+    }
+}
+.fs-12{
+    font-size: 12px;
+}
+
+/** ngx-pagination styling **/
+::ng-deep {
+    pagination-controls {
+      pagination-template {
+        ul {
+          border-radius: unset !important;
+          li {
+            border: none !important;
+            border-radius: 0 5px 5px 0;
+            box-shadow: inset 0px 5px 6px #00000014;
+            &:nth-child(3) {
+              &.current {
+                border-radius: 5px 0px 0px 5px;
+              }
+            }
+            &:nth-last-child(2) {
+              &.current {
+                border-radius: 0px 5px 5px 0px;
+              }
+            }
+            &.current {
+              display: flex !important;
+              box-shadow: unset;
+            }
+            a {
+              text-decoration: unset !important;
+              height: 100%;
+              display: flex !important;
+              align-items: center;
+              justify-content: center;
+            }
+            &.pagination-next,
+            &.pagination-previous {
+              a {
+                color: $color-red;
+                font-size: 24px;
+                &::after,
+                &::before {
+                  margin-left: 0px !important;
+                  margin-bottom: 3px !important;
+                }
+              }
+            }
+          }
+          &.ngx-pagination.responsive {
+            li:not(.small-screen):not(.pagination-previous):not(
+                .pagination-next
+              ) {
+              display: inline-block;
+            }
+            li.small-screen {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+}
+
+.errorBorder {
+  border: 0.5px solid #ce0e2d;
+  border-radius: 5px;
+}
+
+::ng-deep {
+  xchange-custom-checkbox {
+    .xchange-checkbox-label{
+      flex-wrap: unset !important;
+    }
+  }
+}
+
+@media (max-width: 1040px) and (min-width: 768px){
+  .cust-col-md-4{
+    width: 50%;
+  }
+}
+::ng-deep {
+  .sorting-arrow {
+    .pointer {
+
+      display: block !important;
+      &::after {
+        content: "";
+        width: 22px;
+        height: 22px;
+        background: url("../../../../../../assets/icons/sort.png") no-repeat;
+        top: 14px;
+        bottom: 0px;
+        right: 0px;
+        position: absolute;
+        display: inline-block;
+      }
+      .ngx-table__header-title {
+        .ngx-icon {
+          display: none;
+        }
+      }
+    }
+  }
+  .sorting-arrow-active {
+    .pointer {
+      display: block !important;
+      &::after {
+        content: "";
+        width: 22px;
+        height: 22px;
+        background: url("../../../../../../assets/icons/sort-ascending-icon.svg")
+          no-repeat;
+        top: 8px;
+        bottom: 0px;
+        right: 0px;
+        position: absolute;
+        display: inline-block;
+        -webkit-transform: scaleY(-1);
+        transform: scaleY(-1);
+      }
+      .ngx-table__header-title {
+        .ngx-icon {
+          display: none;
+        }
+      }
+    }
+  }
+  .sorting-arrow-down-icon {
+    .pointer {
+      display: block !important;
+      &::after {
+        content: "";
+        width: 22px;
+        height: 22px;
+        background: url("../../../../../../assets/icons/sort-descending-icon.svg")
+          no-repeat;
+        top: 14px;
+        bottom: 0px;
+        right: 0px;
+        position: absolute;
+        display: inline-block;
+        // -webkit-transform: scaleY(-1);
+        // transform: scaleY(-1);
+      }
+      .ngx-table__header-title {
+        .ngx-icon {
+          display: none;
+        }
+      }
+    }
+  }
+  .ngx-table__header-title {
+    padding: 10px 25px 10px 10px;
+  }
+  .ngx-table__table--normal > thead > tr > th {
+    vertical-align: top;
+  }
+  .date-width{
+    min-width: 118px;
+  }
+}
+.loading-input-wrapper {
+  position: relative;
+  display: inline-block;
+ 
+}
+
+
+.cssload-loading {
+  position: absolute;
+  /* right: 10px; */
+  padding: 83px;
+  top: 63%;
+  transform: translateY(-54%);
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.cssload-loading i {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  border-radius: 50%;
+  background: #ce0e2d;
+}
+
+.cssload-loading i:first-child {
+  opacity: 0;
+  animation: cssload-loading-ani2 0.5s linear infinite;
+  transform: translate(-8px);
+}
+
+.cssload-loading i:nth-child(2),
+.cssload-loading i:nth-child(3) {
+  animation: cssload-loading-ani3 0.5s linear infinite;
+}
+
+.cssload-loading i:last-child {
+  animation: cssload-loading-ani1 0.5s linear infinite;
+}
+
+@keyframes cssload-loading-ani1 {
+  100% {
+    transform: translate(17px);
+    opacity: 0;
+  }
+}
+
+@keyframes cssload-loading-ani2 {
+  100% {
+    transform: translate(8px);
+    opacity: 1;
+  }
+}
+
+@keyframes cssload-loading-ani3 {
+  100% {
+    transform: translate(8px);
+  }
+}
+::ng-deep{
+  .align-right {
+    text-align: right !important;
+  }
+  
+}

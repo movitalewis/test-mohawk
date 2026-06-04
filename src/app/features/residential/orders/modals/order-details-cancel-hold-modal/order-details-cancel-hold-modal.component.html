@@ -1,0 +1,82 @@
+<div class="modal-header text-center">
+  <h4 class="modal-title w-100" *ngIf="type.includes('HOLD_REASON')">
+    {{ selectedData ? " Hold Line Order" : " Hold Order" }}
+  </h4>
+  <h4 class="modal-title w-100" *ngIf="type.includes('CANCEL_CODE')">
+    {{ selectedData ? " Cancel Line - Step 1" : " Cancel Order - Step 1" }}
+  </h4>
+
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="modalService.hide('1')"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body p-20">
+  <div class="row d-flex justify-content-center">
+    <div class="w-50">
+      <h4
+        *ngIf="
+          type == 'HOLD_REASON_CODE_HEADER' || type == 'HOLD_REASON_CODE_LINE'
+        "
+      >
+        {{
+          type == "HOLD_REASON_CODE_HEADER"
+            ? " Hold Reason"
+            : " Hold Line Reason"
+        }}
+      </h4>
+      <h4 *ngIf="type == 'CANCEL_CODE'">
+        {{
+          type == "CANCEL_CODE"
+            ? " Cancellation Reason"
+            : " Cancellation Line Reason"
+        }}
+      </h4>
+      <ng-select
+        [items]="itemList"
+        bindLabel="label"
+        bindValue="value"
+        [(ngModel)]="selectedReason"
+        [clearable]="false"
+        [editableSearchTerm]="false"
+        [multiple]="false"
+        [searchable]="false"
+        [placeholder]="placeHolder"
+      >
+      </ng-select>
+    </div>
+    <p *ngIf="type == 'HOLD_REASON_CODE'">
+      {{
+        selectedData
+          ? "Are you sure you would like to hold this order line?"
+          : "Are you sure you would like to hold this order line?"
+      }}
+    </p>
+    <p *ngIf="type == 'HOLD_REASON_CODE'">Hold is subject to a fee</p>
+    <!-- of ${{ cancellationFee }} -->
+    <!-- of ${{ cancellationFee }} -->
+
+    
+  </div>
+  <div class="mt-5 mb-4 text-center">
+    <button
+      class="btn btn-outline-secondary me-2"
+      (click)="modalService.hide('1')"
+    >
+      Cancel
+    </button>
+    <button
+      class="btn btn-primary"
+      [disabled]="
+        !selectedReason || selectedReason == initialState?.selectedReason
+      "
+      (click)="submit()"
+    >
+      Proceed
+    </button>
+  </div>
+</div>

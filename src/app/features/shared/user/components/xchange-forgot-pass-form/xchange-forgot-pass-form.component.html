@@ -1,0 +1,62 @@
+<form class="sign-in-form" [formGroup]="forgotpwdForm">
+  <div class="mb-3"><app-alerts
+    [alertData]="alertData"
+    *ngIf="messageSuccess"
+    [alertType]="alertType"
+    class="dashboard-page-alert"
+  ></app-alerts></div>
+  <h2><strong>Forgot Your Password?</strong></h2>
+  <p>Receive instructions for resetting your password.</p>
+  <div class="form-fields-container">
+    <div class="mb-3">
+      <label class="form-label">Email </label>
+      <input
+        type="text"
+        placeholder="Enter user email address"
+        class="form-control"
+        [ngClass]="
+          forgotpwdForm.controls['userEmail'].touched &&
+          forgotpwdForm.controls['userEmail'].hasError('pattern') &&
+          userEmailSelected === false
+            ? 'is-invalid'
+            : ''
+        "
+        formControlName="userEmail"
+        (blur)="userEmailSelected = false"
+        (focus)="userEmailSelected = true"
+        (keyup)="filterEmail($event)"
+      />
+      <div class="invalid-feedback">Please enter a valid email</div>
+    </div>
+    <div *ngIf="isInternal">
+      <h5 class="text-primary">
+        To reset password for Mohawk Internal Employees, please reach out to
+        Mohawk Internal Support Desk
+      </h5>
+    </div>
+
+    <div class="form-group">
+      <p class="form-info">
+        If you don’t have a username, please contact<br />
+        <a href="mailto:Xchange_Support@mohawkind.com">Mohawk Support.</a>
+      </p>
+    </div>
+    <div
+      class="mb-4 d-flex justify-content-between align-items-center flex-wrap"
+    >
+      <a class="text-decoration-none sign-up-link" routerLink="/">
+        <strong class="form-icon">
+          <fa-icon [icon]="faAngleLeft"></fa-icon> Return to Login
+        </strong>
+      </a>
+      <button
+        class="btn btn-primary submit-btn "
+        [disabled]="!forgotpwdForm.valid || isInternal"
+        (click)="onSubmit(forgotpwdForm.value.userEmail)"
+      >
+      <span class="custom-spinner" *ngIf="showLoader"></span>
+      <span *ngIf="!showLoader">Submit</span>
+      </button>
+    </div>
+  </div>
+</form>

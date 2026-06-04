@@ -1,0 +1,28 @@
+<div
+  #scrollContainer
+  class="product-list-container row"
+  (scroll)="onScroll()"
+  [style.marginBottom]="compareList.length > 0 ? '8.5rem' : ''"
+>
+  <div
+    class="col-lg-6 col-sm-6 col-xl-{{columnSize}} col-md-6 product-container"
+    *ngFor="let product of productList"
+  >
+    <xchange-product
+      (compareOutput)="handleCompareProduct($event)"
+      [product]="product"
+      [compareList]="itemTobeRemoved"
+      [isPostOrder]="isPostOrder"
+      [orderNumber]="orderNumber"
+      [isWalkOff]="isWalkOff"
+      [postModificationOrders]="postModificationOrders"
+    ></xchange-product>
+  </div>
+</div>
+
+<xchange-compare-bottom-sheet
+  *ngIf="compareList && compareList.length > 0"
+  (removeItem)="removeSelectedData($event)"
+  [compareData]="compareList"
+></xchange-compare-bottom-sheet>
+

@@ -1,0 +1,237 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+
+:host ::ng-deep {
+  .mohawk-logo img {
+    width: 150px !important;
+  }
+}
+
+.f-s {
+  font-size: 0.875rem;
+  color: $color-red;
+  text-decoration: none;
+}
+.back-link {
+  text-align: left;
+
+  @include breakpoint-range($max: xs) {
+    text-align: center;
+  }
+}
+.back-to {
+  color: #{$color-red};
+  display: flex;
+  cursor: pointer;
+  div{
+    margin-right: 8px;
+  }
+}
+.justify-content-end{
+  .back-i{
+   top: 1px;
+  }
+}
+.social-sec {
+  padding-right: 0rem;
+  font-size: 0.875rem;
+  margin-top: -0.625rem;
+
+  @include breakpoint-range($max: xs) {
+    padding-right: 0.5rem;
+    justify-content: center;
+    margin-top: 0rem;
+  }
+}
+
+.back-to {
+  display: flex;
+
+  .back-icon {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    position: relative;
+    margin-right: 5px;
+    font-size: 12px;
+    top: -6px;
+  }
+}
+
+.order-body-sec {
+  padding: 0.5rem 1.5rem;
+
+  @include breakpoint-range($max: md) {
+    padding: 0rem;
+  }
+}
+.order-txt-sec {
+  text-align: left;
+
+  @include breakpoint-range($max: xs) {
+    text-align: center;
+  }
+}
+.ship-txt-sec {
+  padding-right: 0rem;
+  text-align: left;
+
+  @include breakpoint-range($max: xs) {
+    padding-right: 1rem;
+    text-align: center;
+  }
+}
+.line {
+  border-top: 0px solid $color-gray;
+
+  @include breakpoint-range($max: md) {
+    border-top: 1px solid $color-gray;
+    margin-bottom: 1rem;
+  }
+}
+.status-line {
+  border-top: 0px solid $color-gray;
+
+  @include breakpoint-range($max: xs) {
+    border-bottom: 1px solid $color-gray;
+    margin-bottom: 1rem;
+  }
+}
+
+.text-f-s {
+  font-size: 0.75rem;
+}
+.text-f-s p {
+  font-size: 0.875rem;
+}
+.text-f-s span {
+  font-size: 0.625rem;
+  display: block;
+  color: $color-light-black;
+  margin-bottom: 1rem;
+}
+.text-f-s a {
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.header-section {
+  padding: 1.25rem;
+  border-radius: 10px;
+  background: $color-dark-gray;
+  border-radius: 7px 7px 0px 0px;
+
+  @include breakpoint-range($max: xs) {
+    margin: 0 -1.25rem;
+  }
+}
+.header-section-down {
+  padding: 10px 20px;
+  border: 1px solid $color-medium-gray;
+  border-radius: 10px;
+  border-radius: 0px 0px 7px 7px;
+
+  @include breakpoint-range($max: xs) {
+    margin: 0 -1.25rem;
+  }
+}
+
+.cancel-btn-1 {
+  display: block;
+
+  @include breakpoint-range($max: xs) {
+    display: none;
+  }
+}
+// .cancel-btn-2 {
+//   display: none;
+//   @include breakpoint-range($max: xs) {
+//     display: block;
+//   }
+// }
+.card {
+  border: none;
+
+  .card-header {
+    background-color: $color-medium-gray;
+    border: none;
+    padding: 0px;
+
+    button {
+      text-decoration: none;
+      text-transform: capitalize;
+      border: none !important;
+      padding-top: 0.75rem;
+      margin-bottom: 0rem;
+    }
+    .down-icon {
+      transform: rotate(-90deg);
+      display: inline-flex;
+      font-size: 0.625rem;
+      margin-left: 0.313rem;
+    }
+    .up-icon {
+      transform: rotate(-270deg);
+      display: inline-flex;
+      font-size: 0.625rem;
+      margin-left: 0.625rem;
+    }
+  }
+}
+
+// .img {
+//   height: 8.125rem;
+//   object-fit: cover;
+// }
+.back-i {
+  @include breakpoint-range($max : sm) {
+      margin-right: 5px;
+  }
+  margin-right: 5px;
+  top: 4px;
+  position: relative;
+  //transform: rotate(180deg);
+}
+.card-img-top{
+  border-radius: 0px;
+}
+
+.tool-tip {
+    background-color: transparent;
+    border: none;
+    color: #CE0E2D;
+    @include breakpoint-range($max : sm) {
+        margin-right: 10px;
+        margin-left: 0;
+        padding: 0;
+    }
+    span {
+        @include breakpoint-range($max : sm) {
+            margin-right: 0px;
+        }
+        // width: 15px;
+        // height: 15px;
+        position: relative;
+        top: 0px;
+        margin-bottom: 0;
+        color: #CE0E2D;
+    }
+}
+.mr-10{
+    margin-right: 10px;
+}
+.link{
+  background-color: transparent;
+  color: #CE0E2D;
+  border: none;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.m-view {
+  display: none;
+
+  @include breakpoint-range($max : sm) {
+      display: block;
+  }
+}

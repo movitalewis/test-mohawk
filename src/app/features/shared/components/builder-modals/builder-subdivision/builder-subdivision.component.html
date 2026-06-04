@@ -1,0 +1,180 @@
+<div class="modal-header text-center">
+  <div class="w-100">
+    <h4 class="modal-title">Builder Subdivision</h4>
+    <p class="m-0 text-white-50">Step 3 of 4</p>
+  </div>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="closePopupUsingService('builder-subdivision')"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <ng-container *ngIf="showErrorMessage">
+    <div class="mb-3" *ngFor="let item of errorMessage">
+      <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+        <div class="container">
+          {{ item?.message }}
+        </div>
+      </alert>
+    </div>
+  </ng-container>
+  <div class="text-center mb-2">
+    <div class="row mb-2 mt-2 text-start">
+      <div class="col-md-4">
+        <h4>Builder</h4>
+        <p class="mb-0">
+          {{ ( initialState?.selectedBuilder?.builderName | titlecase ) || "NA" }}
+        </p>
+        <p class="mb-0">
+          {{ ( initialState?.selectedBuilder?.builderCity | titlecase ) || "NA" }},
+          {{ ( initialState?.selectedBuilder?.builderState | titlecase ) || "NA" }}
+        </p>
+      </div>
+      <div class="col-md-4">
+        <h4>Division</h4>
+        <p class="mb-0">
+          {{ ( initialState?.selectedDivision?.divName | titlecase ) || "NA" }}
+        </p>
+        <p class="mb-0">
+          {{ ( initialState?.selectedDivision?.divCity | titlecase ) || "NA" }},
+          {{ ( initialState?.selectedDivision?.divState | titlecase ) || "NA" }}
+        </p>
+      </div>
+    </div>
+    <div class="mt-4 mb-4">
+      <div class="row mb-2 full-btns p-50">
+        <div class="col-lg-5 col-md-8">
+          <xchange-search-control
+            #searchSubdivRef
+            [isGlobalSearchEnabled]="false"
+            placeholder="Search Subdivision"
+            [searchKey]="searchText"
+            (input)="onSearch($event)"
+          ></xchange-search-control>
+        </div>
+      </div>
+      <div class="overflow-auto">
+        <ngx-table
+          [configuration]="configuration"
+          [data]="builderDivData
+            | paginate
+              : {
+                  id: 'pagination-divison',
+                  itemsPerPage: tableItemsSize,
+                  currentPage: pageIndex,
+                  totalItems: totalDivisonLength
+                }
+        "
+          [columns]="builderColumns"
+          [noResultsTemplate]="noResultsTemplate"
+          [loadingTemplate]="tableLoader"
+        >
+          <ng-template let-row let-index="index">
+            <td>
+              <xchange-custom-radio
+                [type]="'radio'"
+                [id]="'sub-division' + index"
+                [checked]="selectedSubDivision?.subDivNumber == row?.subDivNumber"
+                [value]="row"
+                (change)="getSelctedVal($event, row)"
+              ></xchange-custom-radio>
+            </td>
+            <td>
+              <p>
+                {{ row?.subDivName | titlecase }} <b *ngIf="selectedSubDivision?.subDivNumber == row?.subDivNumber && row?.subDivName?.toLowerCase() === 'other'">*</b>
+
+                <input
+                  type="text"
+                  class="form-control sub-div-input mb-0"
+                  name="subDivFreeText"
+                  #subDivFreeTextCtrl="ngModel"
+                  ngModel
+                  placeholder="Enter subdivision name"
+                  [(ngModel)]="selectedSubDivision.subDivisionFreeText"
+                  *ngIf="selectedSubDivision?.subDivNumber == row?.subDivNumber && row?.subDivName?.toLowerCase() === 'other'"
+                  required="selectedSubDivision?.subDivNumber == row?.subDivNumber && row?.subDivName?.toLowerCase() === 'other'"
+                  (input)="onInput($event)"
+                  />
+                <span 
+                  *ngIf="selectedSubDivision?.subDivNumber == row?.subDivNumber && 
+                      row?.subDivName?.toLowerCase() === 'other' &&
+                      !selectedSubDivision.subDivisionFreeText
+                    "
+                  class="text-danger"
+                >
+                  This field is required.
+                </span>
+              </p>
+            </td>
+            <td>
+              <p>{{ row?.subDivCity | titlecase }}</p>
+            </td>
+            <td>
+              <p>{{ row?.subDivState | titlecase }}</p>
+            </td>
+          </ng-template>
+        </ngx-table>
+      </div>
+      <div class="row my-3">
+        <div class="d-flex justify-content-center" *ngIf="builderDivData.length > 0">
+          <pagination-controls
+            id="pagination-divison"
+            [maxSize]="5"
+            [responsive]="true"
+            [nextLabel]="''"
+            [previousLabel]="''"
+            (pageChange)="onTableDataChange($event)"
+          >
+          </pagination-controls>
+        </div>
+        <div class="col-md-12">
+          <p class="text-center mb-0">
+            {{ totalDivisonLength > 0 ? (startValue > totalDivisonLength ? 1 : startValue) : 0 }} -
+            {{ lastValue > totalDivisonLength ? totalDivisonLength : lastValue }}
+            OF {{ totalDivisonLength > 0 ? totalDivisonLength : 0 }} Sub Divisions
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-3 justify-content-center">
+    <div class="col-md-3">
+      <button
+        class="btn btn-outline-secondary w-100 mb-3"
+        (click)="closePopupUsingService('builder-subdivision')"
+      >
+        BACK
+      </button>
+    </div>
+    <div class="col-md-3">
+      <button class="btn btn-secondary w-100 mb-3" (click)="onClose(); modalService.hide()">
+        CANCEL
+      </button>
+    </div>
+    <div class="col-md-3">
+      <button
+        class="btn btn-primary w-100 mb-3"
+        (click)="openBuilderSubDivision()"
+        [disabled]="!selectedSubDivision || (!selectedSubDivision?.subDivisionFreeText && selectedSubDivision?.subDivName?.toLowerCase() === 'other') || disabledContinueBtn || totalDivisonLength == 0"
+      >
+        CONTINUE
+      </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #noResultsTemplate>
+  <td *ngIf="configuration?.isLoading == false" [attr.colspan]="builderColumns?.length" class="text-center">
+    No Result
+  </td>
+</ng-template>
+
+<ng-template #tableLoader>
+  <td *ngIf="configuration?.isLoading == true" [attr.colspan]="builderColumns.length" class="no-results text-center">
+    <div class="loader">Loading...</div>
+  </td>
+</ng-template>

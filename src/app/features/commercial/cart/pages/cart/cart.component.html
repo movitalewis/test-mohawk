@@ -1,0 +1,4028 @@
+<div class="container cart_conatiner">
+  <xchange-breadcrumb
+    [breadcrumbItems]="breadcrumbItems"
+    (breadcrumbClick)="breadcrumbClick($event)"
+  ></xchange-breadcrumb>
+  <!-- <alert
+    type="info"
+    class="dashboard-page-alert"
+    [dismissible]="true"
+    *ngIf="messageSuccess"
+  >
+    <div class="container">Product(s) removed Successfully.</div>
+  </alert> -->
+  <ng-container *ngIf="addtoCartFailed">
+    <div class="mb-3" *ngIf="addtoCartErrorMessage">
+      <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+        <div class="container">
+          {{ addtoCartErrorMessage }}
+        </div>
+      </alert>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!allowShippingPreferenceChange">
+    <div class="mb-3" *ngIf="!allowShippingPreferenceChange">
+      <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+        <div class="container">
+          Please check line items before changing Shipping Preference
+        </div>
+      </alert>
+    </div>
+  </ng-container>
+  <app-alerts
+    [alertData]="alertData"
+    *ngIf="messageSuccess"
+    [alertType]="'success'"
+    class="dashboard-page-alert"
+  ></app-alerts>
+  <div class="row">
+    <alert
+      [type]="alertType"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="alertMsg != ''"
+    >
+      <div class="container">{{ alertMsg }}</div>
+    </alert>
+  </div>
+  <div class="_card-container mt-2 pdf-card-container">
+    <app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+    <tabset responsiveTabs [justified]="true" #staticTabs>
+      <!-- Cart section -->
+      <tab class="tab-content">
+        <ng-container
+          *ngIf="
+            cartIsLoading == false &&
+            (totalItems == 0 ||
+              cartData?.code == undefined ||
+              cartData?.code == '')
+          "
+        >
+          <div class="row mt-4 align-center">
+            <h3 class="mb-2">0 ITEM(S) Total</h3>
+            <h2>Your shopping cart is empty</h2>
+          </div>
+        </ng-container>
+        <ng-template tabHeading>1. Cart</ng-template>
+        <ng-container *ngIf="totalItems > 0">
+          <div class="row mt-2">
+            <alert
+              [type]="alertType"
+              class="dashboard-page-alert"
+              [dismissible]="true"
+              *ngIf="errorMsg != ''"
+            >
+              <div class="container">{{ errorMsg }}</div>
+            </alert>
+          </div>
+          <form [formGroup]="checkoutForm">
+            <div class="row mt-4" *ngIf="cartData?.code">
+              <div class="col-12 col-sm-12">
+                <div class="row">
+                  <div class="col-12 col-sm-4">
+                    <h4>
+                      Submitted For* <span class="text-black-50">Req.</span>
+                    </h4>
+                    <ng-select
+                      #selectElements
+                      (input)="onKey($event)"
+                      class="w385 mb-4 {{
+                        submitFor == '' || submitFor == null ? 'invalid' : ''
+                      }}"
+                      [items]="userList"
+                      bindLabel="name"
+                      placeholder="Select One"
+                      [(ngModel)]="submitFor"
+                      formControlName="submitFor"
+                      (change)="checkForNewUser($event)"
+                    ></ng-select>
+                  </div>
+                  <ng-template #enduserFormatItem let-item="item">
+                    <span>{{ endUserFormattedText(item) }}</span>
+                  </ng-template>
+                  <div class="col-12 col-sm-4">
+                    <h4>End User* <span class="text-black-50">Req.</span></h4>
+
+                    <div class="endUser-suggestions" >
+                      <input
+                        formControlName="endUser"
+                        typeaheadOptionField="value.unitName"
+                        [typeaheadItemTemplate]="enduserFormatItem"
+                        [typeahead]="suggestions$"
+                        [typeaheadAsync]="true"
+                        class="form-control"
+                        placeholder="Enter End User"
+                        [typeaheadMinLength]="3"
+                        (typeaheadOnBlur)="typeaheadOnBlur($event)"
+                        (typeaheadOnSelect)="onSelectEndUser($event)"
+                        [(ngModel)]="endUser"
+                      />
+                      <button
+                        *ngIf="checkoutForm.value.endUser"
+                        (click)="typeaheadOnBlur('', true)"
+                        class="mx-clear-input-brn"
+                      >
+                        <img
+                          src="/assets/images/icons/close-primary.svg"
+                          alt="Search Input Clear"
+                        />
+                      </button>
+                      <span class="help-info" *ngIf="notFoundendUser"
+                        >This end user customer does not exist in our Database.
+                        We have used your account name as end user.</span
+                      >
+                    </div>
+                    <!-- <input
+                      *ngIf="isQuoteCart"
+                      class="form-control"
+                      bindLabel="value"
+                      bindValue="key"
+                      formControlName="endUser"
+                      [(ngModel)]="endUser"
+                    /> -->
+                  </div>
+                  <div class="col-12 col-sm-4">
+                    <h4>Shipping Address</h4>
+                    <p *ngIf="!!defaultAddress?.line1">
+                      <span *ngIf="!!defaultAddress?.companyName">
+                        {{ defaultAddress?.companyName }}<br />
+                        <span *ngIf="defaultAddress?.id.includes('_')">
+                        {{
+                          defaultAddress?.id.includes("_")
+                            ? "Ship To #" + defaultAddress?.id.split("_")[0]
+                            : ""
+                        }}
+                        <br />
+                        </span>
+                      </span>
+                      <span *ngIf="(storedShippingAddress?.oneTimeShippingAddress || storedShippingAddress?.isOneTimeShipTo)">
+                        {{ defaultAddress?.line1 }} {{ defaultAddress?.line2 }}
+                      </span>
+                      <span *ngIf="!(storedShippingAddress?.oneTimeShippingAddress || storedShippingAddress?.isOneTimeShipTo)">
+                        {{ defaultAddress?.line2 }} {{ defaultAddress?.line1 }}</span>{{ defaultAddress?.building ? ", " : "" }}{{ defaultAddress?.building ? defaultAddress?.building : "" }}<br />
+                      {{ defaultAddress?.town ? defaultAddress?.town+", " : "" }}
+                      {{ defaultAddress?.region?.isocodeShort }}
+                      {{ defaultAddress?.postalCode }}<br />
+                    </p>
+                    <p *ngIf="!defaultAddress?.line1">
+                      {{ defaultAddress?.formattedAdress }}<br />
+                    </p>
+                  </div>
+
+                  <div class="col-12 col-sm-4" *ngIf="!isSampleOrder">
+                    <h4>Dealer Network</h4>
+                    <div class="endUser-suggestions" *ngIf="!isQuoteCart">
+                      <ng-template #creFormatItem let-item="item">
+                        <span>{{ creFormattedText(item) }}</span>
+                      </ng-template>
+                      <input
+                        formControlName="cre"
+                        typeaheadOptionField="value.unitName"
+                        [typeaheadItemTemplate]="creFormatItem"
+                        [typeahead]="suggestionsCre$"
+                        [typeaheadAsync]="true"
+                        [typeaheadMinLength]="3"
+                        (typeaheadOnBlur)="creTypeAheadOnBlur($event)"
+                        (typeaheadOnSelect)="onSelectCre($event)"
+                        class="form-control"
+                        placeholder="Enter Cre"
+                        [(ngModel)]="creUser"
+                      />
+                      <button
+                        *ngIf="checkoutForm.value.cre"
+                        (click)="creTypeAheadOnBlur('', true)"
+                        class="mx-clear-input-brn"
+                      >
+                        <img
+                          src="/assets/images/icons/close-primary.svg"
+                          alt="Search Input Clear"
+                        />
+                      </button>
+                      <!-- <span class="help-info" *ngIf="notFoundCre">This dealer network does not exist in our Database.</span> -->
+                    </div>
+                    <input
+                      *ngIf="isQuoteCart"
+                      class="form-control"
+                      bindLabel="value"
+                      bindValue="key"
+                      formControlName="cre"
+                    />
+                  </div>
+
+                  <div class="col-12 col-sm-4" *ngIf="!isSampleOrder">
+                    <h4>GPO (Global Purchasing Organization)</h4>
+                    <div class="endUser-suggestions" *ngIf="!isQuoteCart">
+                      <ng-template #gpoFormatItem let-item="item">
+                        <span>{{ gpoFormattedText(item) }}</span>
+                      </ng-template>
+                      <input
+                        formControlName="gpo"
+                        typeaheadOptionField="value.unitName"
+                        [typeaheadItemTemplate]="gpoFormatItem"
+                        [typeahead]="suggestionsGpo$"
+                        [typeaheadAsync]="true"
+                        [typeaheadMinLength]="3"
+                        (typeaheadOnBlur)="gpoTypeAheadOnBlur($event)"
+                        (typeaheadOnSelect)="onSelectGpo($event)"
+                        class="form-control"
+                        placeholder="Enter GPO"
+                        [(ngModel)]="gpoUser"
+                      />
+                      <button
+                        *ngIf="checkoutForm.value.gpo"
+                        (click)="gpoTypeAheadOnBlur('', true)"
+                        class="mx-clear-input-brn"
+                      >
+                        <img
+                          src="/assets/images/icons/close-primary.svg"
+                          alt="Search Input Clear"
+                        />
+                      </button>
+                      <!-- <span class="help-info" *ngIf="notFoundGpo">This GPO does not exist in our Database.</span> -->
+                    </div>
+                    <input
+                      *ngIf="isQuoteCart"
+                      class="form-control"
+                      bindLabel="value"
+                      bindValue="key"
+                      formControlName="gpo"
+                    />
+                  </div>
+
+                  <div
+                    class="col-12 col-sm-4"
+                    [ngClass]="{ 'mb-3': deviceType !== 'mobile' }"
+                  >
+                    <h4>Real Estate Management Firm</h4>
+                    <div class="endUser-suggestions" *ngIf="!isQuoteCart">
+                      <ng-template #adFormatItem let-item="item">
+                        <span>{{ adFormattedText(item) }}</span>
+                      </ng-template>
+                      <input
+                        formControlName="ad"
+                        typeaheadOptionField="value.unitName"
+                        [typeaheadItemTemplate]="adFormatItem"
+                        [typeahead]="suggestionsAd$"
+                        [typeaheadAsync]="true"
+                        [typeaheadMinLength]="3"
+                        (typeaheadOnBlur)="adTypeAheadOnBlur($event)"
+                        (typeaheadOnSelect)="onSelectAd($event)"
+                        class="form-control"
+                        placeholder="Enter AD"
+                        [(ngModel)]="adUser"
+                      />
+                      <button
+                        *ngIf="checkoutForm.value.ad"
+                        (click)="adTypeAheadOnBlur('', true)"
+                        class="mx-clear-input-brn"
+                      >
+                        <img
+                          src="/assets/images/icons/close-primary.svg"
+                          alt="Search Input Clear"
+                        />
+                      </button>
+                      <!-- <span class="help-info" *ngIf="notFoundAd">This AD does not exist in our Database.</span> -->
+                    </div>
+                    <input
+                      *ngIf="isQuoteCart"
+                      class="form-control"
+                      bindLabel="value"
+                      bindValue="key"
+                      formControlName="ad"
+                    />
+                  </div>
+
+                  <div
+                    class="col-12 col-sm-4"
+                    [ngClass]="{ 'mb-3': deviceType !== 'mobile' }"
+                  >
+                    <h4>
+                      Market Segment* <span class="text-black-50">Req.</span>
+                    </h4>
+                    <ng-select
+                      placeholder="Select One"
+                      formControlName="marketSegment"
+                      (change)="marketSegmentSelection($event)"
+                    >
+                      <ng-option
+                        [value]="item.code"
+                        *ngFor="let item of marketsegmentdata"
+                        >{{ item?.name }}</ng-option
+                      >
+                    </ng-select>
+                  </div>
+                  <div
+                    class="col-12 col-sm-4"
+                    [ngClass]="{ 'mmb-3': deviceType !== 'mobile' }"
+                  >
+                    <h4>
+                      Job Location* <span class="text-black-50">Req.</span>
+                    </h4>
+                    <input
+                      type="text"
+                      placeholder="Empty Field"
+                      class="form-control"
+                      formControlName="jobLocation"
+                      [(ngModel)]="cartData.jobLocation"
+                    />
+                  </div>
+                  <div
+                    *ngIf="!isQuoteCart && customerFlag == false"
+                    class="col-12 col-sm-4"
+                    [ngClass]="{ 'my-4': deviceType !== 'mobile' }"
+                  >
+                    <!-- <h4>Builder Order?</h4> -->
+                    <xchange-custom-checkbox
+                      [label]="'Model Room'"
+                      [checked]="
+                        checkoutForm.value?.modelRoom || cartData?.modelRoom || modelRoom
+                      "
+                      (model)="changeEvent($event)"
+                    ></xchange-custom-checkbox>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card checkout-card mt-4" *ngIf="cartData?.code">
+              <div
+                id="collapseBasic"
+                [collapse]="isCollapsed"
+                [isAnimated]="true"
+              >
+                <div class="card-body">
+                  <!-- <div class="file-upload"> -->
+                  <ng-container *ngIf="!cartNumberData?.sampleOrder">
+                    <h4>Purchase Order(PO):</h4>
+                    <span class="text-black-50">
+                      File format JPG, PNG, GIF, PDF, Word, Excel & 5 MB max
+                      file size..</span
+                    >
+                    <div class="mt-3 file-upload">
+                      <input
+                        type="file"
+                        id="myfile"
+                        name="myfile[]"
+                        #upload
+                        class="d-none"
+                        (change)="uploadFile($event, upload)"
+                        multiple
+                        accept=".pdf,.gif,.jpeg,.jpg,.png,.doc,.docx,.xlsx,.xls"
+                      />
+                      <button class="btn btn-primary" (click)="upload.click()">
+                        Upload file
+                      </button>
+                      <span *ngIf="filesArray?.length == 0">
+                        No file chosen</span
+                      >
+                      <div class="po-added remove-upload">
+                        <ul>
+                          <li *ngFor="let item of filesArray; let i = index">
+                            <span>{{ item?.fileName || item?.value }} </span>
+
+                            <button
+                              type="button"
+                              class="btn-close close pull-right"
+                              (click)="removeFile(item)"
+                            >
+                              <span aria-hidden="true" class="visually-hidden"
+                                >&times;</span
+                              >
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </ng-container>
+
+                  <form [formGroup]="checkoutForm">
+                    <div class="container">
+                      <div class="row">
+                        <h4 *ngIf="cartData?.replacementOrder && cartData?.sampleOrder === false" class="text-red">
+                          REPLACEMENT ORDER
+                          <a
+                            #hidden
+                            href="javascript:void(0)"
+                            (click)="
+                              openViewReplacementOrderModal(
+                                viewReplacementOrderTemplate
+                              )
+                            "
+                            >(View)</a
+                          >
+                        </h4>
+                      </div>
+                      <div class="row">
+                        <!-- First Column (2/3 of the row) -->
+                        <div
+                          class="col-12 col-sm-8 col-md-12 col-lg-12 col-xl-8 p-0"
+                        >
+                          <div
+                            class="row"
+                          >
+                            <div class="{{ csrFlag ? 'col-6' : 'col-12' }} mb-2">
+                              <input
+                                type="radio"
+                                value="Ship Complete Order"
+                                name="shipCompleteOrder"
+                                id="radio-button-1"
+                                [checked]="radioButtonValue === 'radio-button-1'"
+                                (change)="onRadioButtonSelected('radio-button-1')"
+                                [disabled]="!allowShippingPreferenceChange"
+                              />
+                              <label
+                                class="radio-label"
+                                for="radio-button-1"
+                                (click)="onRadioButtonSelected('radio-button-1')"
+                                >Ship Complete Order</label
+                              >
+                              <br />
+                              <input
+                                type="radio"
+                                value="Ship Order Based on Availability"
+                                name="shipCompleteOrder"
+                                id="radio-button-2"
+                                [checked]="radioButtonValue === 'radio-button-2'"
+                                (change)="onRadioButtonSelected('radio-button-2')"
+                              />
+                              <label
+                                class="radio-label"
+                                for="radio-button-2"
+                                (click)="onRadioButtonSelected('radio-button-2')"
+                                >Ship Order Based on Availability</label
+                              >
+                            </div>
+                            <div class="col-6 mb-2" *ngIf="csrFlag">
+                              <input
+                                type="radio"
+                                value="Order via Email"
+                                name="orderViaType"
+                                id="radio-button-email"
+                                [class.radio-invalid]="orderIndicator == '' || orderIndicator == null"
+                                [checked]="orderIndicator == 'email'"
+                                (change)="onOrderIndicatorSelected('email')"
+                              />
+                              <label
+                                class="radio-label"
+                                for="radio-button-email"
+                                (click)="onOrderIndicatorSelected('email')"
+                                >Order via Email</label
+                              >
+                              <br />
+                              <input
+                                type="radio"
+                                value="Order via Phone"
+                                name="orderViaType"
+                                id="radio-button-phone"
+                                [class.radio-invalid]="orderIndicator == '' || orderIndicator == null"
+                                [checked]="orderIndicator == 'phone'"
+                                (change)="onOrderIndicatorSelected('phone')"
+                              />
+                              <label
+                                class="radio-label"
+                                for="radio-button-phone"
+                                (click)="onOrderIndicatorSelected('phone')"
+                                >Order via Phone</label
+                              >
+                            </div>
+                            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                              <div class="">
+                                <h4>
+                                  PO #<span
+                                    class="text-black-50"
+                                    *ngIf="poMandatoryFlag"
+                                  >
+                                    * Req.</span
+                                  >
+                                </h4>
+                                <input
+                                  type="text"
+                                  placeholder=""
+                                  class="form-control"
+                                  formControlName="porequest"
+                                  (keypress)="keyPressAlphaNumeric($event)"
+                                  [(ngModel)]="poNumber"
+                                  maxlength="15"
+                                  (paste)="onPastePONumber($event)"
+                                  [class.is-invalid]="
+                                    isSubmitted &&
+                                    checkoutForm.controls['porequest'].hasError(
+                                      'required'
+                                    )
+                                  "
+                                  oninput="if(this.value.length > 15) this.value = this.value.slice(0, 15)"
+                                />
+                                <p
+                                  class="help-info"
+                                  *ngIf="showPoSuggestionMsg"
+                                >
+                                  {{ poSuggestionMsg }}
+                                </p>
+                                <div
+                                  class="invalid-feedback"
+                                  *ngIf="
+                                    isSubmitted &&
+                                    checkoutForm.controls['porequest'].hasError(
+                                      'required'
+                                    )
+                                  "
+                                >
+                                  Please enter PO
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                              <div class="">
+                                <h4>
+                                  Promo Code
+                                </h4>
+                                <input
+                                  type="text"
+                                  placeholder="Promo Code"
+                                  class="form-control"
+                                  formControlName="promocode"
+                                  [(ngModel)]="promoCode"
+                                  (keypress)="alphaNumberic($event)"
+                                  (blur)="validatePromoCode($event)"
+                                  [class.is-invalid]="invalidPromo"
+                                />
+                                <p class="help-info" *ngIf="invalidPromo">
+                                  {{ promoCodeError }}
+                                </p>
+                              </div>
+                            </div>
+                            <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-11 mt-3">
+                              <h4>Comments</h4>
+                              <textarea
+                                formControlName="comments"
+                                type="textarea"
+                                placeholder=""
+                                class="form-control"
+                                maxlength="92"
+                                (input)="onTyping()"
+                                row="3"
+                                [ngStyle]="{resize:'none'}"
+                              ></textarea>
+                              <p class="help-info" *ngIf="!csrFlag && isTyping">
+                                Comments will be reviewed and may cause a delay
+                              </p>
+                            </div>
+                           
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <ng-container *ngTemplateOutlet="cartCardsRef"></ng-container>
+
+            <div
+              class="row justify-content-center mt-5 mb-3"
+              *ngIf="cartData?.code"
+            >
+              <div
+                class="col-12 col-sm-4 col-md-4 col-lg-3"
+                *ngIf="
+                  !isQuoteCart && !getStorageService?.cartData?.sampleClone
+                "
+              >
+                <button
+                  type="button"
+                  class="btn btn-secondary w-100 mb-3"
+                  (click)="
+                  this.proceed(null, true, true);
+                  continueShopping()"
+                >
+                  CONTINUE SHOPPING
+                </button>
+              </div>
+              <div
+                *ngIf="!isQuoteCart"
+                class="col-12 col-sm-4 col-md-4 col-lg-3"
+              >
+                <button
+                  *ngIf="!isQuoteCart"
+                  type="button"
+                  class="btn btn-secondary w-100 mb-3"
+                  (click)="cancelCartConfirmation()"
+                >
+                  CANCEL CART
+                </button>
+              </div>
+              <!-- <div
+                *ngIf="isQuoteCart"
+                class="col-12 col-sm-4 col-md-4 col-lg-3"
+              >
+                <button
+                  *ngIf="isQuoteCart"
+                  type="button"
+                  class="btn btn-secondary w-100 mb-3"
+                  (click)="returnToQuote()"
+                >
+                  Return TO QUOTE
+                </button>
+              </div> -->
+              <div
+                class="col-12 col-sm-4 col-md-4 col-lg-3"
+                *ngIf="
+                  !isQuoteCart &&
+                  getStorageService.userInfo?.userPermissions.includes(
+                    'View, Create, Extend & Delete Reserves'
+                  )
+                "
+              >
+                <button
+                  [disabled]="this.userService.isMarketingReadOnly() || !isCartHasInStockLine || cartData?.reserveCartNumber"
+                  type="button"
+                  class="btn btn-primary w-100 mb-3"
+                  (click)="reserveProductsModal()"
+                  title="Reserve ALL items for 24 hours"
+                >
+                  PLACE RESERVE
+                </button>
+              </div>
+              <div
+                class="col-12 col-sm-4 col-md-4 col-lg-3"
+                *ngIf="
+                  (cartData?.quoteNumber === '' ||
+                  cartData?.quoteNumber === undefined) && !isShipToUser
+                "
+              >
+                <button
+                  type="button"
+                  class="btn btn-secondary w-100 mb-3"
+                  (click)="requestQuote()"
+                  [disabled]="
+                    isQuoteCart ||
+                    this.cartNumberData?.sampleOrder ||
+                    !this.cartData?.enableRequestQuote ||
+                    this.userService.isMarketingReadOnly()
+                  "
+                >
+                  REQUEST QUOTE
+                </button>
+              </div>
+              <div
+                class="col-12 col-sm-4 col-md-4 col-lg-3"
+                *ngIf="
+                  cartData?.quoteNumber != '' &&
+                  cartData?.quoteNumber != undefined
+                "
+              >
+                <button
+                  type="button"
+                  class="btn btn-secondary w-100 mb-3"
+                  (click)="requestQuoteBack()"
+                >
+                  BACK TO QUOTE
+                </button>
+              </div>
+              <div class="col-12 col-sm-4 col-md-4 col-lg-3">
+                <button
+                  type="button"
+                  class="btn btn-primary w-100 mb-3"
+                  (click)="proceedFlag = true; proceedWithPOvalidation(staticTabs)"
+                  [disabled]="
+                    (submitFor == '' ||
+                    submitFor == null ||
+                    !checkoutForm.valid ||
+                    checkNoChargeReasonSelected() ||
+                    invalidPromo || checkoutRequestedPrice() || 
+                    orderIndicator == null) ||
+                    this.restrictPlaceOrder
+                  "
+                >
+                  Proceed to Checkout
+                </button>
+              </div>
+              <!-- (needTodisabled && staticTabs.tabs[0].active === true) -->
+            </div>
+          </form>
+        </ng-container>
+      </tab>
+      <!-- Cart section -->
+
+      <!-- Checkout section -->
+      <tab>
+        <ng-template tabHeading>2. Checkout</ng-template>
+
+        <div class="col-12 col-sm-12 mt-5">
+          <div class="row">
+            <div class="col-12 col-sm-3">
+              <h4>Submitted For</h4>
+              <p>{{ checkoutData?.submittedFor?.name || "NA" }}</p>
+            </div>
+            <div class="col-12 col-sm-3">
+              <h4>Number Of Items</h4>
+              <p>{{ cartData?.totalItems }}</p>
+            </div>
+            <ng-container>
+              <div class="col-12 col-sm-3">
+                <h4>End User</h4>
+                <p>
+                  {{
+                    checkoutData?.endUser?.name
+                      ? checkoutData?.endUser?.name
+                      : checkoutData?.endUser?.uid
+                      ? checkoutData?.endUser?.uid
+                      : "NA"
+                  }}
+                </p>
+              </div>
+              <div class="col-12 col-sm-3" *ngIf="!isSampleOrder">
+                <h4>Dealer Network</h4>
+                <p>
+                  {{
+                    checkoutData?.creUser?.name
+                      ? checkoutData?.creUser?.name
+                      : checkoutData?.creUser?.uid
+                      ? checkoutData?.creUser?.uid
+                      : "NA"
+                  }}
+                </p>
+              </div>
+              <div class="col-12 col-sm-3" *ngIf="!isSampleOrder">
+                <h4>GPO (Global Purchasing Organization)</h4>
+                <p>
+                  {{
+                    checkoutData?.gpoUser?.name
+                      ? checkoutData?.gpoUser?.name
+                      : checkoutData?.gpoUser?.uid
+                      ? checkoutData?.gpoUser?.uid
+                      : "NA"
+                  }}
+                </p>
+              </div>
+              <div class="col-12 col-sm-3">
+                <h4>Real Estate Management Firm</h4>
+                <p>
+                  {{
+                    checkoutData?.adUser?.name
+                      ? checkoutData?.adUser?.name
+                      : checkoutData?.adUser?.uid
+                      ? checkoutData?.adUser?.uid
+                      : "NA"
+                  }}
+                </p>
+              </div>
+              <div class="col-12 col-sm-3">
+                <h4>Market Segment</h4>
+                <p>{{ checkoutData?.marketSegmentName || "NA" }}</p>
+              </div>
+              <div class="col-12 col-sm-3">
+                <h4>Job Location</h4>
+                <p>{{ checkoutData?.jobLocation || "NA" }}</p>
+              </div>
+              <div class="col-12 col-sm-3" *ngIf="customerFlag == false">
+                <h4>Model Room</h4>
+                <p>
+                  <!-- {{ checkoutData?.modelRoom == true ? "Yes" : "No" || "NA" }} -->
+                  {{ checkoutForm.value.modelRoom === true ? "Yes" : checkoutForm.value.modelRoom === false ? "No" : "NA" }}
+                </p>
+              </div>
+            </ng-container>
+            <div class="col-12 col-sm-3">
+              <h4>Total Order Weight</h4>
+              <p>{{ cartData?.orderWeight}}</p>
+            </div>
+            <div class="col-12 col-sm-3">
+              <h4>Shipping Address</h4>
+              <p *ngIf="!!defaultAddress?.line1">
+                <span *ngIf="!!defaultAddress?.companyName">
+                  {{ defaultAddress?.companyName }}<br />
+                  <span *ngIf="defaultAddress?.id.includes('_')">
+                  {{
+                    defaultAddress?.id.includes("_")
+                      ? "Ship To #" + defaultAddress?.id.split("_")[0]
+                      : ""
+                  }}
+                  <br />
+                  </span>
+                </span>
+                <span *ngIf="(storedShippingAddress?.oneTimeShippingAddress || storedShippingAddress?.isOneTimeShipTo)">
+                  {{ defaultAddress?.line1 }} {{ defaultAddress?.line2 }}
+                </span>
+                <span *ngIf="!(storedShippingAddress?.oneTimeShippingAddress || storedShippingAddress?.isOneTimeShipTo)">
+                  {{ defaultAddress?.line2 }} {{ defaultAddress?.line1 }}</span>{{ defaultAddress?.building ? ", " : "" }}{{ defaultAddress?.building ? defaultAddress?.building : "" }}<br />
+                {{ defaultAddress?.town ? defaultAddress?.town+", " : "" }}
+                {{ defaultAddress?.region?.isocodeShort }}
+                {{ defaultAddress?.postalCode }}<br />
+              </p>
+              <p *ngIf="!defaultAddress?.line1">
+                {{ defaultAddress?.formattedAdress }}<br />
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-12" [ngClass]="{ 'mt-4': deviceType !== 'mobile' }">
+          <div class="card checkout-card">
+            <!--  <div class="card-header checkout-card-header">
+              <div class="row">
+                <div class="col-12 col-sm-10">
+                  <h4 class="d-inline">Order Reference #1</h4>
+                </div>
+
+                <div class="col-12 col-sm-2">
+                  <div class="float-end text-end hide-w-100">
+                    <button type="button" class="btn btn-secondary show-hide-btn" (click)="isCollapsed = !isCollapsed"
+                      [attr.aria-expanded]="!isCollapsed" aria-controls="collapseBasic">
+                      <h6 *ngIf="isCollapsed">
+                        Show Details
+                        <span class="mohawak-icon angle-left-icon down-icon"></span>
+                      </h6>
+                      <h6 *ngIf="!isCollapsed">
+                        Hide Details<span class="mohawak-icon angle-left-icon up-icon"></span>
+                      </h6>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div> -->
+
+            <div
+              id="collapseBasic"
+              [collapse]="isCollapsed"
+              [isAnimated]="true"
+            >
+              <div class="card-body">
+                <div class="col-12">
+                  <form>
+                    <div class="container">
+                      <div class="row" *ngIf="checkoutData?.replacementOrder && cartData?.sampleOrder === false">
+                        <h4 class="text-red">
+                          REPLACEMENT ORDER
+                          <a
+                            #hidden
+                            href="javascript:void(0)"
+                            (click)="
+                              openViewReplacementOrderModal(
+                                viewReplacementOrderTemplate
+                              )
+                            "
+                            >(View)</a
+                          >
+                        </h4>
+                      </div>
+                      
+                      <div class="row">
+                        <!-- First Column (2/3 of the row) -->
+                        <div
+                          class="col-12 col-sm-8 col-md-12 col-lg-12 col-xl-8 p-0"
+                          [ngClass]="{ 'mt-3': deviceType !== 'mobile' }"
+                        >
+                          <div class="row">
+                            <div class="col-12 col-sm-6 col-md-6 col-lg-4 mb-2">
+                              <h4>
+                                {{
+                                  checkoutData?.shipComplete
+                                    ? "Ship Complete Order"
+                                    : checkoutData?.deliveryGrouping
+                                    ? "Ship With Fewer Shipments"
+                                    : "Ship Order Based on Availability"
+                                }}
+                              </h4>
+                            </div>
+                            <div class="col-12 col-sm-6 col-md-6 col-lg-4 mb-2" *ngIf="csrFlag">
+                              <h4>
+                                Order Placed Via
+                              </h4>
+                              {{ checkoutData?.orderIndicatorPhoneOrEmail | titlecase }}
+                            </div>
+                            <div
+                              class="col-12 col-sm-6 col-md-6 col-lg-4"
+                              *ngIf="!cartNumberData?.sampleOrder"
+                            >
+                              <h4>Purchase Order(PO):</h4>
+                              <!-- <span *ngIf="filesArray?.length == 0"> No file chosen</span> -->
+                              <div class="po-added remove-upload">
+                                <ul>
+                                  <li
+                                    *ngFor="let item of filesArray; let i = index"
+                                  >
+                                    <span class="po-list"
+                                      >{{ item?.fileName || item?.value }}
+                                    </span>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                            
+                            <!-- <div class="col-12 col-sm-6 col-md-6 col-lg-2">
+                              <h4>Carrier</h4>
+                              <label
+                                >{{ checkoutData?.carrier || "" }} -
+                                {{ checkoutData?.carrierVal || "NA" }}</label
+                              >
+                            </div> -->
+                            
+                            <div class="col-12 col-sm-6 col-md-6 col-lg-4">
+                              <h4>PO #</h4>
+                              {{
+                                checkoutForm.value.porequest
+                                  ? checkoutForm.value?.porequest
+                                  : ""
+                              }}
+                            </div>                        
+                            <div class="col-12 col-sm-6 col-md-6 col-lg-4">
+                              <h4>Promo Code</h4>
+                              <p>{{ cartData?.promoCode }}</p>
+                            </div>
+                            <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-11 mb-1">
+                              <h4>Comments</h4>
+                              <textarea
+                                [value]="checkoutForm.value?.comments"
+                                type="textarea"
+                                placeholder=""
+                                class="form-control"
+                                disabled
+                                row="3"
+                                [ngStyle]="{resize:'none'}"
+                              ></textarea>
+                              <p class="help-info" *ngIf="!csrFlag">
+                                Comments will be reviewed and may cause a delay
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-12 mt-4 p-col-12">
+            <ng-container *ngTemplateOutlet="cartCardsRef"></ng-container>
+            <div class="row">
+              <div class="col-12 text-center mt-4">
+                <button
+                  type="button"
+                  class="btn btn-secondary col-12 col-sm-4 col-md-3 btn-grid btn-align"
+                  (click)="
+                    changeTab(0);
+                    staticTabs.tabs[0].active = true;
+                    getCartData()
+                  "
+                >
+                  RETURN TO CART
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary col-12 col-sm-4 col-md-3 btn-grid"
+                  (click)="
+                    checkPlaceOrder(staticTabs, proceedWithOutParcel, carrierTemplate, cartData, true)
+                  "
+                  [disabled]="!checkoutForm.valid || this.userService.isMarketingReadOnly()"
+                >
+                  <!-- submitOrder(staticTabs) -->
+                  PLACE ORDER
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </tab>
+      <!-- Checkout section -->
+      <!-- Order Confirmation section -->
+      <tab>
+        <ng-template tabHeading>3. Order Confirmation</ng-template>
+        <div
+          class="col-12 mb-0 mt-4 back-to d-flex justify-content-end icon-sec"
+          [class.not-allowed]="notAllowedFlag"
+        >
+          <div (click)="printPage()">
+            <span class="mohawak-icon print-icon back-i"></span
+            >&nbsp;Print&nbsp;
+          </div>
+          <div (click)="viewPdf()">
+            <span class="mohawak-icon pdf-icon back-i"></span>&nbsp;View
+            PDF&nbsp;
+          </div>
+          <div (click)="viewPdf('share')">
+            <span class="mohawak-icon share-icon back-i"></span
+            >&nbsp;Share&nbsp;
+          </div>
+        </div>
+        <div id="print-area">
+        <div #hidden class="col-12 text-center mt-4 text-f-line">
+          <h1>Thank you for your Order!</h1>
+          <h3 class="mt-3">Your order number is</h3>
+          <p>
+            <span class="text-danger"
+              ><a
+              *ngIf="!getStorageService.selectedCloneOrders || (getStorageService.selectedCloneOrders && getStorageService.selectedCloneOrders?.selectedLines?.length == 0)"
+              [routerLink]="url"
+                (click)="routeToOrderHistoryDetail(submitOrderVal?.orderNumber)"
+                class="link"
+                >{{ submitOrderVal?.orderNumber }}</a
+                ><span *ngIf="getStorageService.selectedCloneOrders && getStorageService.selectedCloneOrders?.selectedLines?.length > 0">
+                  {{ submitOrderVal?.orderNumber }}</span
+              ></span
+            >
+          </p>
+          <div class="col-12 text-center">
+            <button
+              type="button"
+              class="cart-action-cta btn btn-primary col-12 col-sm-4 col-md-3 btn-grid mx-2"
+              (click)="proceedCloneOrdrs()"
+              *ngIf="
+                getStorageService.selectedCloneOrders?.selectedLines?.length > 0
+              "
+              #hidden
+            >
+              Proceed with next Account
+            </button>
+            <button
+              type="button"
+              class="cart-action-cta btn btn-primary col-12 col-sm-4 col-md-3 btn-grid mx-2"
+              (click)="backToCloneOrders()"
+              *ngIf="
+                getStorageService.selectedCloneOrders?.selectedLines?.length ==
+                  0 && getStorageService.selectedCloneOrders?.sampleOrder != ''
+              "
+              #hidden
+            >
+              Back to Clone Orders
+            </button>
+          </div>
+          <p class="mt-3">
+            Additionally, you will receive order confirmation via email based on
+            <a class="link" (click)="routeToProfile()">
+              notification preferences </a
+            >.
+          </p>
+        </div>
+        <div class="col-lg-12 line mb-2"></div>
+          <!-- <img
+          #hidden
+            src="/assets/images/logo-residential-dark.png"
+            width="250"
+            style="margin: 10px 0px"
+          /> -->
+          <div class="col-12 col-sm-12 mt-4 order-body-sec no-page-break">
+            <div class="col-12 print-element col-sm-6 order-txt-sec  mt-4 orderID">
+              <h5 class="p-ordernumber">
+                ORDER # <span class="order-number"><span
+                  *ngIf="!getStorageService.selectedCloneOrders || (getStorageService.selectedCloneOrders && getStorageService.selectedCloneOrders?.selectedLines?.length == 0)"
+                  [routerLink]="url"
+                  (click)="routeToOrderHistoryDetail(submitOrderVal?.orderNumber)"
+                  class="link"
+                  >{{ submitOrderVal?.orderNumber }}</span
+                ><span *ngIf="getStorageService.selectedCloneOrders && getStorageService.selectedCloneOrders?.selectedLines?.length > 0">
+                  {{ submitOrderVal?.orderNumber }}</span
+                ></span>
+              </h5>
+            </div>
+            <div class="row   mt-4 text-f-s ">
+              <div class="col-12 col-sm-3">
+                <h4>Submitted For</h4>
+                <p>{{ checkoutData?.submittedFor?.name || "NA" }}</p>
+              </div>
+              <div class="col-12 col-sm-3">
+                <h4>Number Of Items</h4>
+                <p>{{ cartData?.totalItems }}</p>
+              </div>
+              <div class="col-12 col-sm-3">
+                <h4>End User</h4>
+                <p>
+                  {{
+                    checkoutData?.endUser?.name
+                      ? checkoutData?.endUser?.name
+                      : checkoutData?.endUser?.uid
+                      ? checkoutData?.endUser?.uid
+                      : "NA"
+                  }}
+                </p>
+              </div>
+              <div class="col-12 col-sm-3" *ngIf="!cartNumberData?.sampleOrder">
+                <h4>Dealer Network</h4>
+                <p>
+                  {{
+                    checkoutData?.creUser?.name
+                      ? checkoutData?.creUser?.name
+                      : checkoutData?.creUser?.uid
+                      ? checkoutData?.creUser?.uid
+                      : "NA"
+                  }}
+                </p>
+              </div>
+              <div class="col-12 col-sm-3" *ngIf="!cartNumberData?.sampleOrder">
+                <h4>GPO (Global Purchasing Organization)</h4>
+                <p>
+                  {{
+                    checkoutData?.gpoUser?.name
+                      ? checkoutData?.gpoUser?.name
+                      : checkoutData?.gpoUser?.uid
+                      ? checkoutData?.gpoUser?.uid
+                      : "NA"
+                  }}
+                </p>
+              </div>
+              <div class="col-12 col-sm-3">
+                <h4>Real Estate Management Firm</h4>
+                <p>
+                  {{
+                    checkoutData?.adUser?.name
+                      ? checkoutData?.adUser?.name
+                      : checkoutData?.adUser?.uid
+                      ? checkoutData?.adUser?.uid
+                      : "NA"
+                  }}
+                </p>
+              </div>
+              <div class="col-12 col-sm-3">
+                <h4>Market Segment</h4>
+                <p>{{ checkoutData?.marketSegmentName || "NA" }}</p>
+              </div>
+              <div class="col-12 col-sm-3" *ngIf="!cartNumberData?.sampleOrder">
+                <h4>Job Location</h4>
+                <p>{{ checkoutData?.jobLocation || "NA" }}</p>
+              </div>
+              <div class="col-12 col-sm-3" *ngIf="!cartNumberData?.sampleOrder && customerFlag == false">
+                <h4>Model Room</h4>
+                <p>
+                  {{
+                    checkoutForm.value.modelRoom == true ? "Yes" : "No" || "NA"
+                  }}
+                </p>
+              </div>
+              <div class="col-12 col-sm-3">
+                <h4>Total Order Weight</h4>
+                <p>{{ cartData?.orderWeight}}</p>
+              </div>
+              <div class="col-12 col-sm-3">
+                <h4>Shipping Address</h4>
+                <p *ngIf="!!defaultAddress?.line1">
+                  <span
+                    *ngIf="!!defaultAddress?.companyName"
+                    class="space-normalizer text-f-s"
+                  >
+                    {{ defaultAddress?.companyName }}</span
+                  ><br />
+                  <span *ngIf="defaultAddress?.id.includes('_')">
+                  {{
+                    defaultAddress?.id.includes("_")
+                      ? "Ship To #" + defaultAddress?.id.split("_")[0]
+                      : ""
+                  }}
+                  <br />
+                  </span>
+                  <span *ngIf="(storedShippingAddress?.oneTimeShippingAddress || storedShippingAddress?.isOneTimeShipTo)">
+                    {{ defaultAddress?.line1 }} {{ defaultAddress?.line2 }}
+                  </span>
+                  <span *ngIf="!(storedShippingAddress?.oneTimeShippingAddress || storedShippingAddress?.isOneTimeShipTo)">
+                    {{ defaultAddress?.line2 }} {{ defaultAddress?.line1 }}</span>{{ defaultAddress?.building ? ", " : "" }}{{ defaultAddress?.building ? defaultAddress?.building : "" }}<br />
+                  {{ defaultAddress?.town ? defaultAddress?.town + ", " : "" }}
+                  {{ defaultAddress?.region?.isocodeShort }}&nbsp;
+                  {{ defaultAddress?.postalCode }}<br />
+                </p>
+                <p *ngIf="!defaultAddress?.line1">
+                  {{ defaultAddress?.formattedAdress }}<br />
+                </p>
+              </div>
+              <!-- <div class="col-12 col-sm-3">
+              <h4>Purchase Order Attachments</h4>
+              <ul class="po-attachments">
+                <li *ngFor="let item of filesArray; let i = index">
+                  <span class="po-list">{{ item?.fileName || item?.value }} </span>
+                </li>
+              </ul>
+            </div> -->
+            </div>
+          </div>
+
+          <div class="col-lg-12 mt-4  print-padding no-page-break cart-print-border" [ngClass]="{ 'mt-4': deviceType !== 'mobile' }">
+            <div class="card checkout-card mt-4">
+              <!--<div class="card-header checkout-card-header">
+            <div class="row">
+                <div class="col-12 col-sm-10">
+                  <h4 class="d-inline">
+                    Order Reference {{ orderPlacedData?.orderNumber }}
+                  </h4>
+                </div>
+
+                <div class="col-12 col-sm-2">
+                  <div class="float-end text-end hide-w-100">
+                    <button
+                      type="button"
+                      class="btn btn-secondary show-hide-btn"
+                      (click)="isCollapsed = !isCollapsed"
+                      [attr.aria-expanded]="!isCollapsed"
+                      aria-controls="collapseBasic"
+                    >
+                      <h6 *ngIf="isCollapsed">
+                        Show Details
+                        <span
+                          class="mohawak-icon angle-left-icon down-icon"
+                        ></span>
+                      </h6>
+                      <h6 *ngIf="!isCollapsed">
+                        Hide Details<span
+                          class="mohawak-icon angle-left-icon up-icon"
+                        ></span>
+                      </h6>
+                    </button>
+                  </div>
+                </div>
+              </div> 
+            </div>-->
+
+              <div
+                id="collapseBasic"
+                [collapse]="isCollapsed"
+                [isAnimated]="true"
+              >
+                <div class="card-body print-padding p-col-12">
+                  <div class="col-12">
+                    <div class="shipping-container print-padding">                      
+                      <div
+                        class="row"
+                        *ngIf="checkoutData?.replacementOrder && cartData?.sampleOrder === false"
+                      >
+                        <h4 class="text-red">
+                          REPLACEMENT ORDER
+                          <a
+                            #hidden
+                            href="javascript:void(0)"
+                            (click)="
+                              openViewReplacementOrderModal(
+                                viewReplacementOrderTemplate
+                              )
+                            "
+                            >(View)</a
+                          >
+                        </h4>
+                      </div>
+                      <div class="row text-f-s">
+                        <div
+                          class="col-12 col-sm-12 col-md-12 col-lg-8 col-xl-8 p-0 p-col-12"
+                          [ngClass]="{ 'mt-3': deviceType !== 'mobile' }"
+                         >
+                         <div class="row text-f-s">
+                          <div class="col-6 col-sm-6 col-md-6 col-lg-4">
+                            <h4>
+                              {{
+                                checkoutData?.shipComplete
+                                  ? "Ship Complete Order"
+                                  : checkoutData?.deliveryGrouping
+                                  ? "Ship With Fewer Shipments"
+                                  : "Ship Order Based on Availability"
+                              }}
+                            </h4>
+                          </div>
+                          <div class="col-6 col-sm-6 col-md-6 col-lg-4 p-col-4" *ngIf="csrFlag">
+                            <h4>
+                              Order Placed Via
+                            </h4>
+                            <p>{{ checkoutData?.orderIndicatorPhoneOrEmail | titlecase }}</p>
+                          </div>
+                          <div
+                            class="col-12 col-sm-6 col-md-6 col-lg-4 p-col-4"
+                            *ngIf="!cartNumberData?.sampleOrder"
+                          >
+                            <h4>Purchase Order(PO):</h4>
+                            <!-- <span *ngIf="filesArray?.length == 0"> No files chosen</span> -->
+                            <div class="po-added remove-upload">
+                              <ul>
+                                <li *ngFor="let item of filesArray; let i = index">
+                                  <span class="po-list"
+                                    >{{ item?.fileName || item?.value }}
+                                  </span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                          <div class="col-12 col-sm-6 col-md-6 col-lg-4 p-col-4">
+                            <h4>PO #</h4>
+                            <p>
+                              {{
+                                checkoutForm.value.porequest
+                                  ? checkoutForm.value?.porequest
+                                  : ""
+                              }}
+                            </p>
+                          </div>
+                          <div class="col-12 col-sm-6 col-md-6 col-lg-4 p-col-4">
+                            <h4>Promo Code</h4>
+                            <label>{{ cartData?.promoCode || "" }}</label>
+                          </div>
+                          <div class="col-12 col-sm-6 col-md-6 col-lg-4 p-col-4">
+                            <h4>Comments</h4>
+                            <p>{{ checkoutForm.value.comments }}</p>
+                          </div>
+                         
+                        </div>
+                      </div>
+
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ng-container *ngTemplateOutlet="cartCardsRef"></ng-container>
+        </div>
+      </tab>
+      <!-- Order Confirmation section -->
+    </tabset>
+  </div>
+
+  <!-- Remove item modal -->
+  <ng-template #template>
+    <div class="modal-header text-center">
+      <h4 class="modal-title w-100">Remove Item</h4>
+      <button
+        type="button"
+        class="btn-close close pull-right"
+        aria-label="Close"
+        (click)="modalRef.hide()"
+      >
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="text-center">
+        <p>Are you sure you want to remove this order line?</p>
+        <div class="mt-4 mb-4">
+          <button
+            class="btn btn-outline-secondary me-3"
+            (click)="closePopup('remove-item-from-cart')"
+          >
+            No
+          </button>
+          <button
+            class="btn btn-primary"
+            (click)="
+              removeSingleItemFromCart(
+                'remove-item-from-cart',
+                selectedItemNumber
+              )
+            "
+          >
+            Yes
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #shipViaTemplate>
+    <div class="modal-header text-center">
+      <h4 class="modal-title w-100">Change Shipping Methods and Inco Terms</h4>
+      <button
+        type="button"
+        class="btn-close close pull-right"
+        aria-label="Close"
+        (click)="modalRef.hide()"
+      >
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body change-pricing">
+      <form #form="ngForm">
+        <div class="">
+          <h4>Available Shipping Methods</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="changeshipViaOptions($event)"
+            [(ngModel)]="shipViaSelectedOption"
+            [disabled]="shipViaType == 'incoTerms'"
+            name="shipVia"
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of shipViaOptions"
+              >{{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="mt-3" *ngIf="shipViaSelectedOption">
+          <h4>Inco Terms</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="changeincoTermsOptions($event)"
+            [(ngModel)]="incoTermsSelectedOption"
+            name="inco"
+            required
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of incoTermsOptions"
+              >{{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+      </form>
+
+      <div
+        class="mt-4 mb-4 pt-4 full-btns d-flex p-50 align-center change-date"
+      >
+        <div class="">
+          <button
+            class="btn btn-outline-secondary me-2"
+            (click)="modalRef.hide()"
+          >
+            Cancel
+          </button>
+        </div>
+        <div class="" *ngIf="shipViaType != 'incoTerms'">
+          <button
+            type="button"
+            class="btn btn-primary"
+            id="confirmPoChange"
+            (click)="incoTermSubmit(); modalRef.hide()"
+            [disabled]="!form.dirty || !form.valid"
+          >
+            Submit
+          </button>
+        </div>
+        <div class="" *ngIf="shipViaType == 'incoTerms'">
+          <button
+            type="button"
+            class="btn btn-primary"
+            id="confirmPoChange"
+            (click)="changeInco(); modalRef.hide()"
+            [disabled]="!form.dirty || !form.valid"
+          >
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #carrierTemplate>
+    <div class="modal-header text-center">
+      <h4 class="modal-title w-100">{{ cartData?.shippingConditions == 'PA' && cartData?.incoTerms == 'C3P' ? 'Change Carrier' : 'Billing Address' }}</h4>
+      <button
+        type="button"
+        class="btn-close close pull-right"
+        aria-label="Close"
+        (click)="modalRef.hide()"
+      >
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body change-pricing">
+      <alert
+        [type]="carrierMoAlertData?.type"
+        class="dashboard-page-alert"
+        [dismissible]="true"
+        *ngIf="carrierMoAlertData?.message"
+      >
+        <div class="container">{{ carrierMoAlertData?.message }}</div>
+      </alert>
+      <app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader>
+
+      <form #carrierForm="ngForm">
+        <ng-container >
+          <div class="row mb-4">
+            <div class="col-md-6 mt-3"  *ngIf="cartData?.shippingConditions == 'PA' && cartData?.incoTerms == 'C3P'">
+              <h4>Shipper Account Number* Req.</h4>
+              <input
+                name="shipAcctNum"
+                class="form-control"
+                [(ngModel)]="carrierModalObj.shipperAccountNumber"
+                (keypress)="keyPressForAccount($event)"
+                required
+              />
+            </div>
+            <div class="col-md-6 mt-3"  *ngIf="cartData?.shippingConditions == 'PA' && cartData?.incoTerms == 'C3P'">
+              <h4>Shipper Zip code* Req.</h4>
+              <input
+                name="shipperZipCode"
+                class="form-control"
+                [(ngModel)]="carrierModalObj.shipperZipCode"
+                (keypress)="keyPressForZip($event)"
+                maxlength="7"
+                required
+              />
+            </div>
+          </div>
+          
+          <div class="mt-3" *ngIf="cartData?.shippingConditions == 'PA' && cartData?.incoTerms == 'C3P'">
+            <h4>Billing Address</h4>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-6 mt-3">
+              <h4>Name* Req.</h4>
+              <input
+                #name="ngModel"
+                name="name"
+                class="form-control"
+                [(ngModel)]="carrierModalObj.name"
+                required
+              />
+              <div *ngIf="name.invalid && name.touched" class="text-danger">
+                Name is required.
+              </div>
+            </div>
+            <div class="col-md-6 mt-3">
+              <h4>Address Line 1* Req.</h4>
+              <input
+                #addressLine1="ngModel"
+                name="addressLine1"
+                class="form-control"
+                [(ngModel)]="carrierModalObj.addressLine1"
+                required
+              />
+              <div *ngIf="addressLine1.invalid && addressLine1.touched" class="text-danger">
+                Address Line 1 is required.
+              </div>
+            </div>
+            <div class="col-md-6 mt-3">
+              <h4>Address Line 2</h4>
+              <input
+                name="addressLine2"
+                class="form-control"
+                [(ngModel)]="carrierModalObj.addressLine2"
+              />
+            </div>
+            <div class="col-md-6 mt-3">
+              <h4>City* Req.</h4>
+              <input
+                #city="ngModel"
+                name="city"
+                class="form-control"
+                [(ngModel)]="carrierModalObj.city"
+                onkeydown="return /[a-zA-Z- ]/.test(event.key)"
+                required
+              />
+              <div *ngIf="city.invalid && city.touched" class="text-danger">
+                City is required.
+              </div>
+            </div>
+            <div class="col-md-6 mt-3">
+              <h4>Country* Req.</h4>
+              <ng-select
+                #country="ngModel"
+                placeholder="Please Select"
+                name="country"
+                (change)="getcountry($event)"
+                [(ngModel)]="carrierModalObj.country"
+                required
+              >
+                <ng-option value="US">USA</ng-option>
+                <ng-option value="CA">Canada</ng-option>
+              </ng-select>
+              <div *ngIf="country.invalid && country.touched" class="text-danger">
+                Country is required.
+              </div>
+            </div>
+            <div class="col-md-6 mt-3">
+              <h4>State* Req.</h4>
+              <ng-select
+                placeholder="Select"
+                name="state"
+                [(ngModel)]="carrierModalObj.state"
+                #state="ngModel"
+                [items]="states"
+                bindLabel="name"
+                bindValue="abbreviation"
+                required
+              >
+              </ng-select>
+              <div *ngIf="state.invalid && state.touched" class="text-danger">
+                State is required.
+              </div>
+            </div>
+            <div class="col-md-6 mt-3">
+              <h4>Postal Code* Req.</h4>
+              <input
+                #postalCode="ngModel"
+                name="postalCode"
+                class="form-control"
+                [(ngModel)]="carrierModalObj.postalCode"
+                required
+                maxlength="7"
+                (keypress)="keyPressForZip($event)"
+              />
+              <div *ngIf="postalCode.invalid && postalCode.touched" class="text-danger">
+                Postal Code is required and must be 7 characters max.
+              </div>
+            </div>
+          </div>
+          
+         
+        </ng-container>
+      
+      </form>
+  <div
+    class="mt-4 mb-4 pt-4 d-flex full-btns p-50 align-center change-date"
+  >
+    <div class="">
+      <button
+        type="button"
+        class="btn btn-primary me-2"
+        id="confirmPoChange"
+        [disabled]="carrierForm.invalid"      
+        (click)="carrierSubmit(staticTabs)"
+      >
+         Place Order
+      </button>
+    </div>
+  </div>
+</div>
+</ng-template>
+  <ng-template #requestAPriceTemp>
+    <div class="modal-header align-center">
+      <h4 class="modal-title f-w text-center">Requesting new price</h4>
+    </div>
+    <div class="modal-body p-20">
+      <form [formGroup]="requestingPriceForm">
+        <div class="text-center">
+          <div class="row">
+            <div class="col-6">
+              <h4 class="text-start">Unit Price</h4>
+              <input
+                type="text"
+                placeholder="Type Here"
+                class="form-control"
+                maxlength="6"
+                (keypress)="numberAndDcecimalvaluesOnly($event)"
+                (input)="checkRequestedPriceValidator($event)"
+                formControlName="requestedPrice"
+                [class.is-invalid]="
+                  (requestingPriceForm.controls['requestedPrice'].touched ==
+                    true &&
+                    requestingPriceForm.controls['requestedPrice'].hasError(
+                      'required'
+                    )) ||
+                  requestingPriceForm.controls['requestedPrice'].hasError(
+                    'min'
+                  ) ||
+                  requestingPriceForm.controls['requestedPrice'].hasError('max')
+                "
+              />/ {{ showPricingUOM }}
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  requestingPriceForm.controls['requestedPrice'].hasError(
+                    'required'
+                  ) ||
+                  requestingPriceForm.controls['requestedPrice'].hasError('min')
+                "
+              >
+                Unit Price must be greater than 0
+              </div>
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  requestingPriceForm.controls['requestedPrice'].hasError('max')
+                "
+              >
+                Requested price should be equal to or less than the original
+                price
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12 col-xs-12">
+            <h4 class="text-start">
+              <label for="comments" class="control-label">Comments*</label>
+            </h4>
+            <textarea
+              placeholder="Comments"
+              id="comments"
+              class="form-control"
+              maxlength="100"
+              formControlName="priceComment"
+            ></textarea>
+            <p class="help-info" *ngIf="!csrFlag">
+              Comments will be reviewed and may cause a delay
+            </p>
+          </div>
+          <p>
+            All pricing changes/requests are reviewed and subject to approval
+            prior to shipment
+          </p>
+          <div class="mt-4 mb-4 buttons d-flex justify-content-center">
+            <button
+              class="btn btn-outline-secondary me-2"
+              (click)="cancelRequestForNewPrice()"
+            >
+              Cancel
+            </button>
+            <button
+              class="btn btn-primary"
+              [disabled]="!requestingPriceForm.valid"
+              (click)="submitRequestForNewPrice(); modalRef.hide()"
+            >
+              Send
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+
+  <ng-template #template1>
+    <place-reserve-popup></place-reserve-popup>
+  </ng-template>
+
+  <ng-template #cartCardsRef>
+    <!-- <div class="col-lg-12 mt-4 text-center" *ngIf="cartData.code == '' || cartData.code == undefined">
+      <p>Cart is Empty.</p>
+    </div> -->
+    <div class="col-lg-12 mt-4 print-padding p-col-12" *ngIf="cartData?.code">
+      <div class="col-lg-12 mt-4 p-col-12">
+        <ng-container *ngFor="let camsEntries of camsCartEntries; let index = index; trackBy: trackByCamsOrder">
+          <div class="yellow-border mb-4 no-page-break">
+            <div class="row m-0">
+              <div class="cams-order-header p-col-12">
+                <div class="col-8 p-col-9">
+                  <h4 *ngIf="sampleCamsOrderNumber != '' && sampleCamsOrderNumber != undefined"> CART NUMBER  <span>{{camsEntries?.camsOrderNumber}}</span></h4>
+                </div>
+                <div class="col-4 p-col-3" *ngIf="!cartData?.sampleOrder">
+                  <h4 class="d-inline">Req. Delivery Date: {{ camsEntries?.requestedDeliveryDate | date : "MM/dd/yyyy" }}</h4>
+                  <button
+                    (click)="
+                      changeDateModal(
+                        changeDataTemplate,
+                        camsEntries?.requestedDeliveryDate,
+                        index,
+                        false,
+                        true
+                      )
+                    "
+                    *ngIf="staticTabs.tabs[0].active && sampleCamsOrderNumber != '' && sampleCamsOrderNumber != undefined"
+                    class="btn btn-secondary change-shipping-options m-3 mt-0 mb-0"
+                    >
+                      CHANGE
+                  </button>
+                </div>
+                <div class="col-4 p-col-3" *ngIf="cartData?.sampleOrder">
+                  <h4 class="d-inline">Req. Delivery Date: 
+                    {{ formatDateMessage(camsEntries?.requestedDeliveryDate) }}
+                  </h4>
+                  <button
+                    (click)="
+                      changeDateModal(
+                        changeDataTemplate,
+                        camsEntries?.requestedDeliveryDate,
+                        index,
+                        false,
+                        true
+                      )
+                    "
+                    *ngIf="staticTabs.tabs[0].active && cartData?.shipComplete"
+                    class="btn btn-secondary change-shipping-options m-3 mt-0 mb-0"
+                    >
+                      CHANGE
+                  </button>
+                </div>
+              </div>
+            </div>  
+            <hr class="cams-order-border"/>
+            <div class="row m-2">
+              <div class="col-12 mt-2 light-blue-bg p-col-12">
+                <div class="row p-col-12">
+                  <div class="col-xs-3 col-sm-3 col-md-2 col-lg-2 p-col-3">
+                    <h4>Shipping Method</h4>
+                    <label> {{ camsEntries?.shippingConditions || "" }}
+                      {{
+                        camsEntries?.shippingConditionsDesc != "" &&
+                        camsEntries?.shippingConditionsDesc != undefined
+                          ? "-"
+                          : ""
+                      }}
+                      {{
+                        camsEntries?.shippingConditionsDesc
+                          ? camsEntries?.shippingConditionsDesc
+                          : ""
+                      }}</label>
+                  </div>
+                  <div class="col-xs-3 col-sm-3 col-md-2 col-lg-2 p-col-3">
+                    <h4>Inco Terms</h4>
+                    <label>{{ camsEntries?.incoTerms || "" }}
+                      {{
+                        camsEntries?.incoTermsDesc != "" &&
+                        camsEntries?.incoTermsDesc != undefined
+                          ? "-"
+                          : ""
+                      }}
+                      {{
+                        camsEntries?.incoTermsDesc
+                          ? camsEntries?.incoTermsDesc
+                          : ""
+                      }}</label>
+                  </div>
+                  <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 p-col-3">
+                    <h4>Shipping Warehouse</h4>
+                    <label>{{ camsEntries?.shippingWarehouse || "" }}
+                      {{
+                        camsEntries?.shippingWarehouseDesc != "" &&
+                        camsEntries?.shippingWarehouseDesc != undefined
+                          ? "-"
+                          : ""
+                      }}
+                      {{
+                        camsEntries?.shippingWarehouseDesc
+                          ? camsEntries?.shippingWarehouseDesc
+                          : ""
+                      }}</label>
+                  </div>
+                  <div class="col-xs-3 col-sm-3 col-md-2 col-lg-2 p-col-3">
+                    <h4>Ship Via</h4>
+                    <label>
+                      {{ camsEntries?.shipVia }}
+                      {{ camsEntries?.shipViaDesc ? "-" : "" }}
+                      {{
+                        camsEntries?.shipViaDesc
+                          ? camsEntries?.shipViaDesc
+                          : ""
+                      }}
+                    </label>
+                  </div>
+                  <div class="col-xs-12 justify-content-xs-center col-sm-12 justify-content-xs-center col-md-2 col-lg-2 d-flex" 
+                    *ngIf="staticTabs.tabs[0].active && sampleCamsOrderNumber != '' && sampleCamsOrderNumber != undefined"
+                  >
+                      <button
+                        (click)="
+                          changeShippingConfirmation(
+                            combinedTemplate,
+                            camsEntries,
+                            true
+                          )
+                        "
+                        class="btn btn-secondary mt-2 w-100 change-shipping-options"
+                      >
+                        CHANGE SHIPPING OPTIONS
+                      </button>
+                  </div>
+                  <div class="col-xs-12 justify-content-xs-center col-sm-12 justify-content-xs-center col-md-2 col-lg-2 d-flex" 
+                          *ngIf="cartData?.sampleOrder == true &&  cartData?.shipComplete && staticTabs.tabs[0].active == true">
+                    <button
+                      (click)="
+                        changeShippingConfirmation(
+                          combinedTemplate,
+                          camsEntries,
+                          true
+                        )
+                      "
+                      
+                      class="btn btn-secondary mt-2 w-100 change-shipping-options"
+                    >
+                      CHANGE SHIPPING OPTIONS
+                    </button>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+
+            <div
+              class="card card-print mt-4 m-2"
+              *ngFor="let cartIndexData of camsEntries?.cartEntries; let i = index; trackBy: trackByEntryNumber"
+            >
+              <div class="card-header header-section mb-2 dark">
+                <a
+                  class="text-white"
+                  (click)="navigateToProductPage(cartIndexData?.product?.code)"
+                  *ngIf="cartIndexData?.product?.productType != 'SAMPLE' && cartIndexData?.serviceMaterialLine != true"
+                >
+                  {{ cartIndexData?.product?.name }} –
+                  {{ cartIndexData?.product?.styleNumber }}
+                  <span *ngIf="cartIndexData?.replacementOrder && cartData?.sampleOrder === false"
+                    >REPLACEMENT ORDER
+                    <a
+                      #hidden
+                      href="javascript:void(0)"
+                      (click)="
+                        openViewReplacementOrderModal(viewReplacementOrderTemplate)
+                      "
+                      >(View)</a
+                    ></span
+                  >
+                </a>
+                 <a
+                  class="text-white"
+                  (click)="navigateToProductPage(cartIndexData?.product?.code)"
+                  *ngIf="cartIndexData?.product?.productType != 'SAMPLE' && cartIndexData?.serviceMaterialLine === true"
+                >
+                  {{ cartIndexData?. customStyleName}} 
+                  <span *ngIf="cartIndexData?.replacementOrder && cartData?.sampleOrder === false"
+                    >REPLACEMENT ORDER
+                    <a
+                      #hidden
+                      href="javascript:void(0)"
+                      (click)="
+                        openViewReplacementOrderModal(viewReplacementOrderTemplate)
+                      "
+                      >(View)</a
+                    ></span
+                  >
+                </a>
+                <p
+                  class="mb-0 mx-1"
+                  *ngIf="
+                    cartData?.sampleOrder == true &&
+                    cartIndexData?.product?.productType == 'SAMPLE'
+                  "
+                >
+                  {{ cartIndexData?.product?.name }} -
+                  {{ cartIndexData?.product?.styleNumber }}
+                </p>
+                <div class="mohawk-logo print-logo">
+                  <xchange-logo-pdp
+                    [selectedPdpData]="cartIndexData?.product"
+                    [isInverted]="true"
+                  ></xchange-logo-pdp>
+                  <!-- <xchange-logo type="commercial" theme="light"></xchange-logo> -->
+                </div>
+              </div>
+              <div class="card-body header-section-down">
+                <!-- <div class="col-12 col-sm-12 col-md-12 col-lg-12 mt-2">
+                <div class="row">
+                  <div class="col-sm-3 col-md-4 col-lg-3 col-xl-2">
+                    <div class="col-6 col-sm-12">
+                    
+                      <img
+                        class="card-img-top rounded img"
+                        [src]="
+                          cartIndexData?.img ||
+                          'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                        "
+                      />
+                    
+                      <button
+                        *ngIf="staticTabs.tabs[0].active === true"
+                        type="button"
+                        (click)="
+                          selectedItemNumber = cartIndexData?.entryNumber;
+                          openModal(template)
+                        "
+                        class="btn btn-secondary w-100 mt-2"
+                      >
+                        Remove
+                      </button>
+                      <button
+                        *ngIf="staticTabs.tabs[0].active === true"
+                        type="button"
+                        class="btn btn-primary btn-lg mt-2 w-100"
+                        (click)="openCartAccessoriesModal(cartIndexData)"
+                      >
+                        Add Accessories
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="row text-f-s col-sm-9 col-md-8 col-lg-9 col-xl-10">
+                  
+                    <div class="col-6 col-sm-6 col-lg-4 col-xl-3">
+                      <h4>Order Quantity</h4>
+                      <p></p>
+                    </div>
+                    <div class="col-6 col-sm-6 col-lg-4 col-xl-3">
+                      <h4>Availability</h4>
+                      <p>
+                      
+                      </p>
+                    </div>
+                    <div class="col-6 col-sm-6 col-lg-4 col-xl-3">
+                      <h4>Salesperson</h4>
+                      <p></p>
+                    </div>
+                    <div class="col-6 col-sm-6 col-lg-4 col-xl-3">
+                      <h4>Price (USD)</h4>
+                      <p></p>
+                    </div>
+                    <div class="col-6 col-sm-6 col-lg-4 col-xl-3">
+                      <h4>Warehouse</h4>
+                      <p></p>
+                    </div>
+                    <div class="col-12 col-sm-12 col-lg-12 col-xl-12">
+                      <div class="row">
+                        <div
+                          class="d-flex justify-content-between solution-card align-items-center"
+                          (click)="
+                            cartIndexData.isCollapsed = !cartIndexData.isCollapsed
+                          "
+                          [attr.aria-expanded]="!cartIndexData?.isCollapsed"
+                          aria-controls="collapseBasicSecond"
+                        >
+                          <div>
+                            <h4>Solutions</h4>
+                          </div>
+                          <div>
+                            <span
+                              *ngIf="!cartIndexData?.isCollapsed"
+                              class="mohawak-icon angle-left-icon down-icon"
+                            ></span>
+                            <span
+                              *ngIf="cartIndexData?.isCollapsed"
+                              class="mohawak-icon angle-left-icon up-icon"
+                            ></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      id="collapseBasicSecond"
+                      [collapse]="cartIndexData.isCollapsed"
+                      [isAnimated]="true"
+                      class="mt-4 table-view-data p-0"
+                    >
+                      <app-table-view
+                        [tableData]="cartIndexData?.solution"
+                        [columns]="columns"
+                        [checkboxes]="false"
+                        [pagination]="false"
+                        [showOutput]="false"
+                      >
+                      </app-table-view>
+                    </div>
+                    <div class="col-12 col-sm-12 col-lg-12 col-xl-12 mt-2">
+                      <div class="col-9">
+                        <h4>
+                          Sidemark
+
+                          <ng-template #popTemplate
+                            >Tooptip content comes here..</ng-template
+                          >
+                          <button
+                            type="button"
+                            placement="bottom"
+                            [adaptivePosition]="false"
+                            class="tool-tip"
+                            triggers="mouseenter:mouseleave"
+                            [outsideClick]="true"
+                            [popover]="popTemplate"
+                          >
+                            <span class="mohawak-icon help-icon"></span>
+                          </button>
+                        </h4>
+
+                        <input
+                          *ngIf="staticTabs.tabs[0].active == true"
+                          [disabled]="staticTabs.tabs[0].active !== true"
+                          type="text"
+                          placeholder="Handling, Usage, Location, etc"
+                          class="form-control"
+                          [(ngModel)]="cartIndexData.sidemark"
+                        />
+                        <p *ngIf="staticTabs.tabs[0].active !== true">
+                          {{ cartIndexData?.sidemark }}
+                        </p>
+
+                        <div class="mt-2" *ngIf="staticTabs.tabs[0].active == true">
+                          <xchange-custom-checkbox
+                            type="checkbox"
+                            [id]="'xyz'"
+                            label="Apply This Sidemark To All Items."
+                          >
+                          </xchange-custom-checkbox>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div> -->
+                <div class="row header-section-down">
+                  <div class="col-12 col-sm-12 col-md-12 col-lg-7 p-col-7 print-padding">
+                    <div class="row p-col-12">
+                      <div class="col-sm-3 col-md-4 col-lg-4 col-xl-3 p-col-3 print-padding p-col-3">
+                        <div class="col-xs-6 col-md-12 col-sm-12 cart print-padding image-overlay-container  p-col-12">
+                          <img
+                            [src]="
+                              cartIndexData?.product?.productImageURL
+                                ? getProductImage(
+                                    cartIndexData?.product?.productImageURL
+                                  )
+                                : 'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                            "
+                            class="card-img-top imgs"
+                            (click)="
+                              navigateToProductPage(cartIndexData?.product?.code)
+                            "
+                            *ngIf="cartIndexData?.product?.productType != 'SAMPLE'"
+                          />
+                          <img
+                            [src]="
+                              cartIndexData?.product?.productImageURL
+                                ? getProductImage(
+                                    cartIndexData?.product?.productImageURL
+                                  )
+                                : 'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                            "
+                            class="card-img-top imgs sample-prod-img"
+                            *ngIf="cartIndexData?.product?.productType == 'SAMPLE'"
+                          />
+                          <div class="ribbon-wrapper-preview" *ngIf="cartIndexData?.preferredStock">
+                            <div class="ribbon preferred-stock">
+                                PREFERRED <br/> STOCKING
+                            </div>
+                          </div>
+                          <div class="">
+                            <button
+                              *ngIf="
+                                staticTabs.tabs[0].active === true && !isQuoteCart
+                              "
+                              type="button"
+                              (click)="
+                                selectedItemNumber = cartIndexData?.entryNumber;
+                                openModal(template)
+                              "
+                              class="btn btn-secondary w-100 mt-2"
+                              [disabled]="cartIndexData?.isBundledEntry"
+                            >
+                              Remove
+                            </button>
+                            <button
+                              *ngIf="staticTabs.tabs[0].active === true"
+                              type="button"
+                              class="btn btn-primary btn-lg mt-2 below-margin w-100"
+                              (click)="
+                              skipGetCartProgrossModal = true;
+                              this.proceed(null, true, true);
+                              openCartAccessoriesModal(cartIndexData)"
+                              [disabled]="
+                                !(
+                                  cartIndexData?.enableAddAccessories &&
+                                  cartIndexData?.product?.productType !=
+                                    'ACCESSORIES'
+                                  
+                                ) || (cartData?.quoteNumber != '' && cartData?.quoteNumber != undefined) || cartIndexData?.isBundledEntry
+
+                              "
+                            >
+                              Add Accessories
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="row text-f-s col-sm-12 col-md-8 col-lg-8 col-xl-9 p-col-9 details"
+                        [ngClass]="{ 'mt-3': deviceType === 'mobile' }"
+                      >
+                        <div class="col-6 col-sm-6 col-lg-6 col-xl-4 p-col-4">
+                          <h4>Color</h4>
+                          <p>
+                            {{ cartIndexData?.product?.sellingColorName || "NA" }}
+                            <br />
+                            {{ cartIndexData?.product?.sellingColorId || "NA" }}
+                          </p>
+                        </div>
+                        <div class="col-6 col-sm-6 col-lg-6 col-xl-4 p-col-4">
+                          <h4 *ngIf="cartNumberData?.sampleOrder">Size</h4>
+                          <h4
+                            *ngIf="
+                              !cartNumberData?.sampleOrder &&
+                              cartIndexData?.product?.subProductType ===
+                                'PAD_CUSHION'
+                            "
+                          >
+                            Width
+                          </h4>
+                          <h4
+                            *ngIf="
+                              !cartNumberData?.sampleOrder &&
+                              cartIndexData?.product?.subProductType !==
+                                'PAD_CUSHION'
+                            "
+                          >
+                            Size
+                          </h4>
+                          <p>
+                            {{
+                              cartIndexData?.product?.sellingSizeDescription
+                                ? cartIndexData?.product?.sellingSizeDescription
+                                : cartIndexData?.product?.sellingSizeId || "NA"
+                            }}
+                          </p>
+                        </div>
+                        <div class="col-6 col-sm-6 col-lg-6 col-xl-4 p-col-4">
+                          <h4>Backing</h4>
+                          <p>
+                            <span *ngIf="cartIndexData?.product?.sellingBackingId"
+                              >{{
+                                cartIndexData?.product?.sellingBackingId || "NA"
+                              }}
+                              -
+                            </span>
+                            {{ cartIndexData?.product?.sellingBackingName || "NA" }}
+                          </p>
+                        </div>
+                        <!-- <div class="col-6 col-sm-6 col-lg-6 col-xl-4">
+                          <h4>Salesperson Name</h4>
+                          <p>{{ cartIndexData?.salesmanName || "NA" }}</p>
+                        </div> -->
+                        <div class="col-sm-6 col-md-8 col-lg-8 mb-3 p-col-8">
+                          <h4>
+                            Sidemark
+                            <span #hidden
+                              tooltip="Add Sidemark/tag"
+                              class="mohawak-icon help-icon help-info"
+                            ></span
+                            ><!---->
+                          </h4>
+                          <input
+                            *ngIf="staticTabs.tabs[0].active == true"
+                            type="text"
+                            placeholder="Handling, Usage, Location, etc"
+                            class="form-control"
+                            [(ngModel)]="cartIndexData.sideMark"
+                            (ngModelChange)="onSideMarkChange($event, maxlengthTemplate)"
+                          />
+                          <div *ngIf="staticTabs.tabs[0].active !== true">
+                            <div class="text-break">
+                              <div *ngIf="!showFullText">
+                                <p class="truncate-text mb-0">
+                                  {{ cartIndexData?.sideMark | slice: 0:20 }}
+                                  <span *ngIf="cartIndexData?.sideMark?.length > 20">...</span>
+                                  <br>
+                                  <a *ngIf="cartIndexData?.sideMark?.length > 20" href="javascript:void(0)" class="read-more-link" (click)="toggleText()">Read More</a> 
+                              
+                                </p>
+                          </div>
+                              <p *ngIf="showFullText" class="mb-0">
+                                {{ cartIndexData?.sideMark }}
+                                <br>
+                                <a *ngIf="cartIndexData?.sideMark?.length > 20" href="javascript:void(0)" class="read-more-link" (click)="toggleText()">Read Less</a>   
+                              </p>
+                                
+                            </div>
+                          </div>
+                          <div class="mt-2 sidemark" *ngIf="cartEntries.length > 1" #hidden>
+                            <xchange-custom-checkbox
+                              type="checkbox"
+                              label="Apply This Sidemark To All Items."
+                              [id]="cartIndexData?.product?.code"
+                              (model)="checkAllBox($event, i, cartIndexData)"
+                              [checked]="cartIndexData.sideMarkChecked == true"
+                              [disabled]="
+                                cartIndexData.sideMark == undefined ||
+                                cartIndexData.sideMark === '' || 
+                                staticTabs.tabs[0].active !== true
+                              "
+                            ></xchange-custom-checkbox>
+                          </div>
+                        </div>
+                        <!-- <div class="col-6 col-sm-6 col-lg-10 col-xl-4">
+                          <h4>Shipping Warehouse</h4>
+                          <p>
+                            {{ cartIndexData?.shippingWarehouse || "NA" }}
+                            {{ cartIndexData?.shippingWarehouseDesc ? " - " : "" }}
+                            {{ cartIndexData?.shippingWarehouseDesc }}
+                            <a
+                              *ngIf="
+                                !this.reviewActiveTab &&
+                                this.radioButtonValue == 'radio-button-2'
+                              "
+                              href="javascript:void(0)"
+                              (click)="
+                                shipingWareHouseModal(
+                                  shippingWareHouseTemplate,
+                                  'shippingWareHouse',
+                                  cartIndexData,
+                                  false
+                                )
+                              "
+                              >Change</a
+                            >
+                          </p>
+                        </div>
+                        <div class="col-6 col-md-4 col-sm-6 col-lg-6">
+                          <h4>ShipVia</h4>
+                          <p>
+                            {{ cartIndexData?.shipVia || "NA" }}
+
+                            <a
+                              *ngIf="
+                                !this.reviewActiveTab &&
+                                this.radioButtonValue == 'radio-button-2'
+                              "
+                              href="javascript:void(0)"
+                              (click)="
+                                shipingWareHouseModal(
+                                  shippingWareHouseTemplate,
+                                  'incoTermsLoc2',
+                                  cartIndexData,
+                                  false
+                                )
+                              "
+                              >Change</a
+                            >
+                          </p>
+                        </div> -->
+                        <div class="col-sm-6 d-none d-sm-block d-md-none"></div>
+                        <ng-container *ngIf="userInfo?.isCSR || (userInfo?.isSalesPerson && cartData?.sampleOrder) || (userInfo?.isSalesOps && cartData?.sampleOrder)">                      
+                        <div class="row p-col-12 row-charge">
+                          <!-- <div class="col-6 col-sm-6 col-lg-6 col-xl-4">
+                            <xchange-custom-checkbox
+                              [disabled]="staticTabs.tabs[0].active !== true"
+                              type="checkbox"
+                              [id]="'xyz1'"
+                              label="No Freight"
+                              (model)="cartIndexData.noFreight = $event.state"
+                              [checked]="cartIndexData?.noFreight"
+                              *ngIf="
+                                !cartInfo?.sampleOrder &&
+                                showNoFreightAndNoCharge &&
+                                !cartInfo?.merchandisingProduct
+                              "
+                            >
+                            </xchange-custom-checkbox>
+                          </div> -->
+                          <div class="col-6 col-sm-6 col-md-6 col-lg-6 p-col-4 charge">
+                            <xchange-custom-checkbox
+                              [disabled]="staticTabs.tabs[0].active !== true || cartIndexData?.isBundledEntry"
+                              type="checkbox"
+                              [id]="'xyz1'"
+                              label="No Charge"
+                              (model)="
+                                cartIndexData.noCharge = $event.state;
+                                proceed(null, true, true)
+                              "
+                              [checked]="cartIndexData?.noCharge"
+                              *ngIf="
+                                !cartInfo?.sampleOrder && showNoFreightAndNoCharge
+                              "
+                            >
+                            </xchange-custom-checkbox>
+                          </div>
+                          <div
+                            class="col-sm-12 col-12 mt-3 col-md-8 p-col-8"
+                            *ngIf="
+                              cartIndexData?.noCharge == true &&
+                              cartData?.modelRoom !== undefined &&
+                              !cartData?.modelRoom
+                            "
+                          >
+                            <h4>
+                              No Charge Reason Code*
+                              <span class="text-black-50">Req.</span>
+                            </h4>
+
+                            <ng-select
+                              *ngIf="staticTabs.tabs[0].active == true"
+                              class="w385 mb-4 {{
+                                checkNoChargeReasonSelected() ? 'invalid' : ''
+                              }}"
+                              [items]="noChargeReasonsList"
+                              bindValue="value"
+                              placeholder="Select One"
+                              [(ngModel)]="cartIndexData.noChargeReasonCode"
+                              (change)="checkForNewUser($event)"
+                            ></ng-select>
+                            <label *ngIf="staticTabs.tabs[0].active !== true"
+                              >{{ cartIndexData.noChargeReasonCode }} -
+                              {{
+                                noChargeReasonsObj[cartIndexData.noChargeReasonCode]
+                              }}</label
+                            >
+                          </div>
+                        </div>
+                        </ng-container>
+                        <!-- </div> -->
+                        <!-- <div class="col-6 col-sm-6 col-lg-6 col-xl-4 specifiedDye">
+                          <h4>Same DyeLot</h4>
+                          <p class="sameDye">{{cartIndexData.sameDyeLot == true ? "Yes":"No"}}</p>
+                        
+
+                        </div> -->
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    class="col-12 col-sm-12 col-md-12 col-lg-5 p-col-5"
+                    [ngClass]="mtClass || mini || air"
+                  >
+                    <div class=" row text-f-s flex-wrap p-col-12">
+                      <div class="col-6 col-sm-6 col-lg-6 p-col-6">
+                        <h4>Availability</h4>
+                        <!-- <p
+                          *ngIf="cartIndexData?.availabilityStatus !== 'BACK ORDER'"
+                        > -->
+                        <p>
+                          {{  cartIndexData?.availabilityStatus }}
+                        </p>
+                        <!-- </p>
+                        <p
+                          *ngIf="cartIndexData?.availabilityStatus === 'BACK ORDER'"
+                        >
+                          {{ cartIndexData?.availabilityStatus || "NA" }} <br />
+                        </p> -->
+                        <ng-template #noKeyCase>
+                          <p>NA</p>
+                        </ng-template>
+                      </div>
+                      <div class="col-6 col-sm-6 col-lg-6 p-col-6">
+                        <h4>Order QTY</h4>
+                        <p>{{ getOrderQuantity(cartIndexData) }}</p>
+                      </div>
+                      <div class="col-6 col-sm-6 col-lg-6 p-col-6">
+                        <h4>
+                          {{
+                            cartIndexData?.shippingCondition == "MN" ||
+                            cartIndexData?.shippingCondition == "CA"
+                              ? "Available to Ship Date"
+                              : staticTabs.tabs[0].active === true
+                              ? "Available for Pick-Up"
+                              : "Estimated Delivery Date"
+                          }}
+                        </h4>
+                        <p>
+                          {{
+                            staticTabs.tabs[0].active === true
+                              ? cartIndexData?.materialAvailableDate || "IN PROGRESS"
+                               : cartIndexData?.availabilityStatus === 'BACK ORDER' ? cartIndexData?.backOrderedDate  : cartIndexData?.eddDate || "IN PROGRESS"
+                          }}
+                        </p>
+                      </div>
+                      <div
+                      class="col-6 col-sm-6 col-lg-6 p-col-6"
+                      *ngIf="cartNumberData?.sampleOrder"
+                    >
+                      <h4>Warehouse</h4>
+                      <p>
+                        {{ cartIndexData?.wareHouse || "NA" }}
+                        {{ cartIndexData?.wareHouseDescription ? "-" : "" }}
+                        {{ cartIndexData?.wareHouseDescription || "" }}
+                      </p>
+                    </div>
+                    <div class="col-6 col-md-4 col-sm-6 col-lg-6 p-col-6" *ngIf="sampleCamsOrderNumber == '' || sampleCamsOrderNumber == undefined">
+                      <h4>Req. Delivery Date</h4>
+                      <p>
+                        {{
+                          cartIndexData?.requestedDeliveryDate
+                            | date : "MM/dd/yyyy"
+                        }}
+                        <a
+                          #hidden
+                          *ngIf="
+                            !this.reviewActiveTab && cartData?.shipComplete == false
+                          "
+                          href="javascript:void(0)"
+                          (click)="
+                            changeDateModal(
+                              changeDataTemplate,
+                              cartIndexData,
+                              index, true, false
+                            )
+                          "
+                          >Change</a
+                        >
+                      </p>
+                    </div>
+                      <div class="col-6 col-sm-6 col-lg-6 mb-2 p-col-6" *ngIf="!cartIndexData?.requestedPrice">
+                        <h4 class="{{checkoutRequestedPrice() && !cartIndexData?.isBundledEntry ? 'color-red' : ''}}">
+                          Unit Price ({{ cartIndexData?.unitPrice?.currencyIso }})
+                        </h4>
+                        <p class="m-0" *ngIf="cartIndexData?.noCharge">
+                          NA
+                        </p>
+                        <p class="m-0" *ngIf=" !cartIndexData?.noCharge && cartIndexData?.unitPrice?.value != 0 && this.userService?.isShowPrice()
+                                              && !(!isQuoteCart && cartIndexData?.product?.styleBlocked == true && userInfo?.isCustomer == true)">
+                          {{ cartIndexData?.unitPrice?.formattedValue || "NA" }} /
+                          {{ cartIndexData?.pricingUomDescription }}
+                        </p>
+                        <p class="m-0" *ngIf=" (!cartIndexData?.noCharge && cartIndexData?.unitPrice?.value == 0) || (!isQuoteCart && cartIndexData?.product?.styleBlocked == true && userInfo?.isCustomer == true)">
+                          <!-- {{ cartIndexData?.unitPrice?.formattedValue || "0.0" }} -->NA
+                        </p>
+                        
+                        <button class="btn btn-primary request-price-btn"
+                          *ngIf="cartIndexData?.unitPrice?.value >= 0 &&
+                          !cartIndexData?.requestedPrice &&
+                          staticTabs.tabs[0].active == true && !(cartNumberData?.sampleOrder) && !cartIndexData?.noCharge && !isQuoteCart"
+                          [disabled]="cartIndexData?.isBundledEntry"
+                          (click)="
+                            priceRequestModal(requestAPriceTemp, cartIndexData, i)
+                          "
+                          >Request a price</button>
+                      </div>
+                      <div
+                      class="col-6 mb-2"
+                      *ngIf="cartIndexData?.requestedPrice > 0  && !cartIndexData?.noCharge"
+                    >
+                      <h4>
+                        Unit Price ({{
+                          cartIndexData?.totalPrice?.currencyIso
+                        }})
+                      </h4>
+                      <p class="m-0" >
+                        ${{
+                          cartIndexData?.requestedPrice || "0.00"
+                            | number : "1.2-2"
+                        }}/{{ cartIndexData?.pricingUomDescription }}
+                        <span *ngIf="!isQuoteCart"
+                          #hidden
+                          (click)="
+                            openPriceComment(
+                              cartIndexData?.priceComment,
+                              priceCommentModal
+                            )
+                          "
+                          class="mohawak-icon info-icon help-info pr-2"
+                        ></span>
+                      </p>
+                      <button class="btn btn-primary request-price-btn mt-1"
+                        *ngIf="(cartIndexData?.totalPrice.value >= 0 || getStorageService.userInfo?.primaryRole == 'Operations') && tabId == 0 && !isQuoteCart"
+                        (click)="priceRequestModal(requestAPriceTemp, cartIndexData, i)"
+                      >
+                        Request Price
+                      </button>
+                    </div>
+                    <ng-container *ngIf="userInfo?.isCSR || (userInfo?.isSalesPerson && cartData?.sampleOrder) || (userInfo?.isSalesOps && cartData?.sampleOrder)">                      
+                      <div class="col-6 mb-3 p-col-6" *ngIf="!cartNumberData?.sampleOrder">
+
+                      </div>
+                      <div class="col-6 mb-3 mt-1 charge">
+                        <xchange-custom-checkbox
+                          [disabled]="staticTabs.tabs[0].active !== true || cartIndexData?.isBundledEntry"
+                          type="checkbox"
+                          [id]="'xyz1'"
+                          label="No Charge Freight"
+                          (model)="cartIndexData.noFreight = $event.state"
+                          [checked]="cartIndexData?.noFreight"
+                          *ngIf="
+                            !cartInfo?.sampleOrder &&
+                            showNoFreightAndNoCharge &&
+                            !cartInfo?.merchandisingProduct
+                          "
+                        >
+                        </xchange-custom-checkbox>
+                      </div>
+                    </ng-container>
+                 
+                    
+                      <div
+                        class="col-6 reinspect"
+                        *ngIf="
+                          !cartData?.replacementOrder &&
+                          !cartNumberData?.sampleOrder &&
+                          cartIndexData?.product?.productType === 'SOFTSURFACE'
+                        "
+                      >
+                        <span *ngIf="!userInfo.isCustomer">
+                          <xchange-custom-checkbox
+                            [label]="'Re Inspect'"
+                            (model)="
+                              changeReInspectEvent($event, false, cartIndexData)
+                            "
+                            [checked]="cartIndexData?.reInspect"
+                            [disabled]="
+                              staticTabs.tabs[0].active !== true ||
+                              cartIndexData?.reInspect ||
+                              !this.csrFlag
+                            "
+                          ></xchange-custom-checkbox>
+                        </span>
+                      </div>
+                      <div
+                        class="col-6 mb-3 specifiedDye p-col-6"
+                        *ngIf="!cartNumberData?.sampleOrder && !userInfo.isCustomer"
+                      >
+                        <h4>Same DyeLot</h4>
+                        <p class="sameDye">
+                          {{ cartIndexData.sameDyeLot == true ? "Yes" : "No" }}
+                        </p>
+                        <!-- <span>
+                          <xchange-custom-checkbox
+                            [label]="'Same DyeLot'"
+                            [checked]="cartIndexData.sameDyeLot"
+                            [disabled]="cartIndexData.sameDyeLot"
+                          ></xchange-custom-checkbox>
+                        </span> -->
+                      </div>
+                    
+                      <div class="col-6 col-sm-6 col-lg-6 p-col-6"  *ngIf="cartIndexData?.product?.patternRepeat">
+                        <h4>Pattern Repeat</h4>
+                        <p>
+                          {{ cartIndexData?.product?.patternRepeat || "NA" }}
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="mt-3 col-12 col-md-12 col-lg-12 col-xl-12 background-yellow backgound-yellow1"
+                      *ngIf="sampleCamsOrderNumber == '' || sampleCamsOrderNumber == undefined">
+                      <div class="row">
+                        <div class="col-6 col-md-6 col-sm-6 col-lg-6">
+                          <h4>Shipping Method</h4>
+                          <p>
+                            {{ cartIndexData?.shippingCondition || "" }}
+                            {{
+                              cartIndexData?.shippingConditionsDesc != "" &&
+                              cartIndexData?.shippingConditionsDesc != undefined
+                                ? "-"
+                                : ""
+                            }}
+                            {{
+                              cartIndexData?.shippingConditionsDesc
+                                ? cartIndexData?.shippingConditionsDesc
+                                : ""
+                            }}
+                          </p>
+                          <!-- <a *ngIf="this.radioButtonValue == 'radio-button-1'" href="javascript:void(0)" (click)="shipViaModal(shipViaTemplate, cartData, 'shippingMethod', true)">Change</a> -->
+                        </div>
+                        <div class="col-6 col-md-6 col-sm-6 col-lg-6">
+                          <h4>Inco Terms</h4>
+                          <p>
+                            {{ cartIndexData?.incoTerms || "" }}
+                            {{
+                              cartIndexData?.incoTermsDesc != "" &&
+                              cartIndexData?.incoTermsDesc != undefined
+                                ? "-"
+                                : ""
+                            }}
+                            {{
+                              cartIndexData?.incoTermsDesc == ""
+                                ? " "
+                                : cartIndexData?.incoTermsDesc
+                            }}&nbsp;
+                          </p>
+                          <!-- <a *ngIf="cartData?.incoTerms != '' && this.radioButtonValue == 'radio-button-1'" href="javascript:void(0)" (click)="shipViaModal(shipViaTemplate, cartData, 'incoTerms', true)">Change</a> -->
+                        </div>
+                      </div>
+                      <div class="row mt-3">
+                        <div class="col-6 col-md-6 col-sm-6 col-lg-6">
+                          <h4>Shipping Warehouse</h4>
+                          <p>
+                            {{ cartIndexData?.shippingWarehouse || "" }}
+                            {{
+                              cartIndexData?.shippingWarehouseDesc == "" ||
+                              cartIndexData?.shippingWarehouseDesc == undefined
+                                ? " "
+                                : "-"
+                            }}
+                            {{
+                              cartIndexData?.shippingWarehouseDesc == ""
+                                ? " "
+                                : cartIndexData?.shippingWarehouseDesc
+                            }}
+                          </p>
+                          <!-- <a *ngIf="this.radioButtonValue == 'radio-button-1'" href="javascript:void(0)" (click)="shipingWareHouseModal(shippingWareHouseTemplate, 'shippingWareHouse', cartData, true)">Change</a> -->
+                        </div>
+                        <div class="col-6 col-md-6 col-sm-6 col-lg-6">
+                          <h4>Ship Via</h4>
+                          <p>
+                            {{ cartIndexData?.shipVia }}
+                            {{ cartIndexData?.shipViaDesc ? "-" : "" }}
+                            {{
+                              cartIndexData?.shipViaDesc
+                                ? cartIndexData?.shipViaDesc
+                                : ""
+                            }}
+                          </p>
+                          <!-- <a *ngIf="this.radioButtonValue == 'radio-button-1'" href="javascript:void(0)" (click)="shipingWareHouseModal(shippingWareHouseTemplate, 'incoTermsLoc2', cartData, true)">Change</a> -->
+                        </div>
+                      </div>
+                      <div
+                        class="row text-center-change-shipping-options"
+                        *ngIf="
+                        
+                          staticTabs.tabs[0].active == true &&  cartData?.shipComplete == false
+                        "
+                      >
+                        <button
+                          (click)="
+                            changeShippingConfirmation(
+                              combinedTemplate,
+                              cartIndexData,
+                              false
+                            )
+                          "
+                          class="btn btn-secondary mt-2 w-100 change-shipping-options"
+                        >
+                          CHANGE SHIPPING OPTIONS
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <accordion
+                  [isAnimated]="true"
+                  class="bx-accordian my-4 px-0"
+                  *ngIf="
+                    cartIndexData?.availabilityStatus != 'BACK ORDER' &&
+                    (((cartIndexData?.product?.productType === 'SoftSurface' ||
+                      cartIndexData?.product?.productType === 'SOFTSURFACE') &&
+                      cartIndexData?.product?.subProductType !== 'CUSHION_PAD' &&
+                      cartIndexData?.product?.subProductType !== 'CARPET_TILE') ||
+                      ((cartIndexData?.product?.subProductType ===
+                        'RESILIENT_VINYL' ||
+                        cartIndexData?.product?.subProductType ===
+                          'RESILIENT_SHEET') &&
+                        cartIndexData?.product?.sellingBackingId === 'V')) &&
+                    cartIndexData?.solution &&
+                    (cartIndexData?.uom.code === 'YDK' ||
+                      cartIndexData?.uom.code === 'LF' ||
+                      cartIndexData?.uom.code === 'FTK') &&
+                    (cartIndexData?.uom.code !== 'ZCT' ||
+                      cartIndexData?.uom.code !== 'RO')
+                  "
+                >
+                  <accordion-group [isOpen]="false">
+                    <header
+                      accordion-heading
+                      class="bx-accordian-header p-2 w-100 d-flex justify-content-center"
+                      (click)="solutionDetailsClicked()"
+                    >
+                      <div class="show arrow">
+                        Show Solutions Details
+                        <span class="mohawak-icon angle-left-icon down-icon"></span>
+                      </div>
+                      <div class="hide arrow">
+                        Hide Solutions Details
+                        <span class="mohawak-icon angle-left-icon up-icon"></span>
+                      </div>
+                      <ng-container *ngIf="!isSolutionDetailsClicked">
+                        <span
+                          tooltip="Click here to see your quantity, dyelot or roll number"
+                          class="mohawak-icon help-icon help-info red-question-mark"
+                        ></span>
+                      </ng-container>
+                    </header>
+                    <div class="overflow-auto">
+                      <table class="black-header-table-one">
+                        <thead>
+                          <tr>
+                            <th>Order Qty (LF)</th>
+                            <th>Order Qty (Sq Yd)</th>
+                            <th>
+                              <div class="switch">Assigned Qty &nbsp;</div>
+
+                              <div class="toggle" *ngIf="openToggles">
+                                <span>Sq Yd</span>
+                                <mat-slide-toggle
+                                  [checked]="isToggleChecked(cartIndexData?.entryNumber)"
+                                  (change)="showAssignedSqFtYrd($event, cartIndexData?.entryNumber)"
+                                >
+                                </mat-slide-toggle>
+                                <span>Sq Ft</span>
+                              </div>
+                            </th>
+                            <th *ngIf="cartIndexData?.specifiedDyeLot">
+                              <var>Dyelot<sup>1</sup></var>
+                            </th>
+                            <th *ngIf="!cartIndexData?.specifiedDyeLot">Dyelot</th>
+                            <th>Roll #</th>
+                            <th>Plant</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr
+                            *ngFor="
+                              let solution of cartIndexData?.solution || [];
+                              let isFirst = first
+                            "
+                          >
+                            <td
+                              [attr.rowspan]="cartIndexData?.solution.length"
+                              *ngIf="isFirst && cartIndexData?.uom?.code === 'RO'"
+                            >
+                              <ng-container>
+                                {{ solution?.rollAssignedInSF || "0" }}
+                              </ng-container>
+                            </td>
+                            <td *ngIf="cartIndexData?.uom?.code != 'RO'">
+                              <ng-container>
+                                {{ solution?.rollAssigned || "0" }}
+                              </ng-container>
+                            </td>
+                            <td>
+                              <ng-container>
+                                {{ solution?.rollAssignedInSY || "0" }}
+                              </ng-container>
+                            </td>
+                            <!--  <td>{{cartData?.quantityShipped || "NA"}}</td> -->
+                            <td>
+                              <ng-container *ngIf="!isToggleChecked(cartIndexData?.entryNumber)">
+                                {{ solution?.assignedQuantityInSY || "0" }}
+                              </ng-container>
+                              <ng-container *ngIf="isToggleChecked(cartIndexData?.entryNumber)">
+                                {{ solution?.assignedQuantityInSF || "0" }}
+                              </ng-container>
+                            </td>
+
+                            <td>{{ solution?.dyeLot || "" }}</td>
+                            <td>{{ solution?.rollNumber }}</td>
+                            <td>
+                              {{ solution?.plant }} -
+                              {{ solution?.plantDescription }}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div class="mt-2" *ngIf="cartIndexData?.specifiedDyeLot">
+                        <span
+                          ><var>1<sub>- As Specified</sub></var></span
+                        >
+                        <p class="text-f-s">
+                          Unless a specific dyelot is specified, assigned inventory
+                          may be substituted during shipment (if necessary).
+                        </p>
+                      </div>
+                    </div>
+                  </accordion-group>
+                </accordion>
+                <accordion
+                  [isAnimated]="true"
+                  class="bx-accordian my-4 px-0"
+                  *ngIf="
+                    cartIndexData?.availabilityStatus != 'BACK ORDER' &&
+                    (((cartIndexData?.product?.productType === 'SoftSurface' ||
+                      cartIndexData?.product?.productType === 'SOFTSURFACE') &&
+                      cartIndexData?.product?.subProductType !== 'CUSHION_PAD' &&
+                      cartIndexData?.product?.subProductType !== 'CARPET_TILE') ||
+                      ((cartIndexData?.product?.subProductType ===
+                        'RESILIENT_VINYL' ||
+                        cartIndexData?.product?.subProductType ===
+                          'RESILIENT_SHEET') &&
+                        cartIndexData?.product?.sellingBackingId === 'V')) &&
+                    cartIndexData?.solution &&
+                    (cartIndexData?.uom.code !== 'YDK' ||
+                      cartIndexData?.uom.code !== 'LF' ||
+                      cartIndexData?.uom.code !== 'FTK') &&
+                    (cartIndexData?.uom.code === 'ZCT' ||
+                      cartIndexData?.uom.code === 'RO')
+                  "
+                >
+                  <accordion-group [isOpen]="false">
+                    <header
+                      accordion-heading
+                      class="bx-accordian-header p-2 w-100 d-flex justify-content-center"
+                      (click)="solutionDetailsClicked()"
+                    >
+                      <div class="show arrow">
+                        Show Solutions Details
+                        <span class="mohawak-icon angle-left-icon down-icon"></span>
+                      </div>
+                      <div class="hide arrow">
+                        Hide Solutions Details
+                        <span class="mohawak-icon angle-left-icon up-icon"></span>
+                      </div>
+                      <ng-container *ngIf="!isSolutionDetailsClicked">
+                        <span
+                          tooltip="Click here to see your quantity, dyelot or roll number"
+                          class="mohawak-icon help-icon help-info red-question-mark"
+                        ></span>
+                      </ng-container>
+                    </header>
+                    <div class="overflow-auto">
+                      <table class="black-header-table-one">
+                        <thead>
+                          <tr>
+                            <th>Order Qty (Min / Max)</th>
+                            <th>Assigned Qty</th>
+                            <th *ngIf="cartIndexData?.specifiedDyeLot">
+                              <var>Dyelot<sup>1</sup></var>
+                            </th>
+                            <th *ngIf="!cartIndexData?.specifiedDyeLot">Dyelot</th>
+                            <th>Roll #</th>
+                            <th>Plant</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr
+                            *ngFor="
+                              let solution of cartIndexData?.solution || [];
+                              let isFirst = first
+                            "
+                          >
+                            <td
+                              [attr.rowspan]="cartIndexData?.solution.length"
+                              *ngIf="isFirst && cartIndexData?.uom?.code === 'RO'"
+                            >
+                              <ng-container>
+                                {{ cartIndexData?.userRequestedQuantity || "0" }}
+                                {{ cartIndexData?.uom?.name }}
+                                ({{
+                                  solution?.orderMinInFeet
+                                    ? solution?.orderMinInFeet
+                                    : solution?.rollAssigned
+                                }}/{{
+                                  solution?.orderMaxInFeet
+                                    ? solution?.orderMaxInFeet
+                                    : solution?.rollAssigned
+                                }})
+                              </ng-container>
+                            </td>
+                            <td *ngIf="cartIndexData?.uom?.code != 'RO'">
+                              <ng-container>
+                                {{ cartIndexData?.userRequestedQuantity || "0" }}
+                                {{ cartIndexData?.uom?.name }}
+                                ({{
+                                  solution?.orderMinInFeet
+                                    ? solution?.orderMinInFeet
+                                    : solution?.rollAssigned
+                                }}/{{
+                                  solution?.orderMaxInFeet
+                                    ? solution?.orderMaxInFeet
+                                    : solution?.rollAssigned
+                                }})
+                              </ng-container>
+                            </td>
+                            <td>
+                              {{ solution?.rollAssigned || "0" }}
+                              {{
+                                cartIndexData?.uom?.code === "RO"
+                                  ? ""
+                                  : cartIndexData?.uom?.name
+                              }}
+                            </td>
+                            <!--  <td>{{cartData?.quantityShipped || "NA"}}</td> -->
+
+                            <td>{{ solution?.dyeLot || "" }}</td>
+                            <td>{{ solution?.rollNumber }}</td>
+                            <td>
+                              {{ solution?.plant }} -
+                              {{ solution?.plantDescription }}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div class="mt-2" *ngIf="cartIndexData?.specifiedDyeLot">
+                        <span
+                          ><var>1<sub>- As Specified</sub></var></span
+                        >
+                        <p class="text-f-s">
+                          Unless a specific dyelot is specified, assigned inventory
+                          may be substituted during shipment (if necessary).
+                        </p>
+                      </div>
+                    </div>
+                  </accordion-group>
+                </accordion>
+
+                <accordion
+                  [isAnimated]="true"
+                  class="bx-accordian my-4 px-0"
+                  *ngIf="
+                    cartIndexData?.availabilityStatus != 'BACK ORDER' &&
+                    (cartIndexData?.product?.productType === 'Accessories' ||
+                      cartIndexData?.product?.productType === 'ACCESSORIES') &&
+                    cartIndexData?.product?.subProductType === 'CUSHION_PAD'
+                  "
+                >
+                  <accordion-group [isOpen]="false">
+                    <header
+                      accordion-heading
+                      class="bx-accordian-header p-2 w-100 d-flex justify-content-center"
+                      (click)="solutionDetailsClicked()"
+                    >
+                      <div class="show arrow">
+                        Show Solutions Details
+                        <span class="mohawak-icon angle-left-icon down-icon"></span>
+                      </div>
+                      <div class="hide arrow">
+                        Hide Solutions Details
+                        <span class="mohawak-icon angle-left-icon up-icon"></span>
+                      </div>
+                      <ng-container *ngIf="!isSolutionDetailsClicked">
+                        <span
+                          tooltip="Click here to see your quantity, dyelot or roll number"
+                          class="mohawak-icon help-icon help-info red-question-mark"
+                        ></span>
+                      </ng-container>
+                    </header>
+                    <div class="overflow-auto">
+                      <table class="black-header-table-one">
+                        <thead>
+                          <tr>
+                            <th>Order Qty</th>
+
+                            <th>Assigned Qty</th>
+
+                            <th>Plant</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr
+                            *ngFor="
+                              let solution of cartIndexData?.solution || [];
+                              let isFirst = first
+                            "
+                          >
+                            <td
+                              [attr.rowspan]="cartIndexData?.solution.length"
+                              *ngIf="isFirst && cartIndexData?.uom?.code === 'RO'"
+                            >
+                              <ng-container>
+                                {{ cartIndexData?.userRequestedQuantity || "0" }}
+                                {{
+                                  cartIndexData?.uom?.code === "RO"
+                                  ? cartIndexData?.uom?.name
+                                  : ""
+                                }}
+                              </ng-container>
+                            </td>
+
+                            <td *ngIf="cartIndexData?.uom?.code != 'RO'">
+                              <ng-container>
+                                {{ cartIndexData?.userRequestedQuantity || "0" }}
+                                {{ cartIndexData?.uom?.name }}
+                              </ng-container>
+                            </td>
+
+                            <td>
+                              {{ solution?.assignedQuantityInSY || "0" }}
+                              {{ cartIndexData?.pricingUomDescription}}
+                            </td>
+                            <td>
+                              {{ solution?.plant }} -
+                              {{ solution?.plantDescription }}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </accordion-group>
+                </accordion>
+
+                <accordion
+                  [isAnimated]="true"
+                  class="bx-accordian my-4 px-0"
+                  *ngIf="
+                    cartIndexData?.availabilityStatus != 'BACK ORDER' &&
+                    (((cartIndexData?.product?.productType === 'SoftSurface' ||
+                      cartIndexData?.product?.productType === 'SOFTSURFACE') &&
+                      cartIndexData?.product?.subProductType === 'CARPET_TILE') ||
+                      ((cartIndexData?.product?.productType === 'HardSurface' ||
+                        cartIndexData?.product?.productType === 'HARDSURFACE') &&
+                        cartIndexData?.solution[0]?.rollAssignment != 'ROLL' &&
+                        (cartIndexData?.product?.subProductType !=
+                          'RESILIENT_VINYL' ||
+                          cartIndexData?.product?.subProductType !=
+                            'RESILIENT_SHEET') &&
+                        cartIndexData?.product?.sellingBackingId != 'V') ||
+                      cartIndexData?.product?.productType === 'MERCHANDISING' ||
+                      cartIndexData?.product?.productType === 'Merchandising' ||
+                      ((cartIndexData?.product?.productType === 'Accessories' ||
+                        cartIndexData?.product?.productType === 'ACCESSORIES') &&
+                        cartIndexData?.product?.subProductType != 'CUSHION_PAD'))
+                  "
+                >
+                  <accordion-group [isOpen]="false">
+                    <header
+                      accordion-heading
+                      class="bx-accordian-header p-2 w-100 d-flex justify-content-center"
+                      (click)="solutionDetailsClicked()"
+                    >
+                      <div class="show arrow">
+                        Show Solutions Details
+                        <span class="mohawak-icon angle-left-icon down-icon"></span>
+                      </div>
+                      <div class="hide arrow">
+                        Hide Solutions Details
+                        <span class="mohawak-icon angle-left-icon up-icon"></span>
+                      </div>
+                      <ng-container *ngIf="!isSolutionDetailsClicked">
+                        <span
+                          tooltip="Click here to see your quantity, dyelot or roll number"
+                          class="mohawak-icon help-icon help-info red-question-mark"
+                        ></span>
+                      </ng-container>
+                    </header>
+                    <div class="overflow-auto">
+                      <table class="black-header-table-one">
+                        <thead>
+                          <tr>
+                            <th>Order Qty</th>
+
+                            <th>Assigned Qty</th>
+                            <th *ngIf="cartIndexData?.specifiedDyeLot">
+                              <var>Dyelot<sup>1</sup></var>
+                            </th>
+                            <th *ngIf="!cartIndexData?.specifiedDyeLot">Dyelot</th>
+                            <th>Plant</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr
+                            *ngFor="
+                              let solution of cartIndexData?.solution || [];
+                              let isFirst = first
+                            "
+                          >
+                            <td
+                              [attr.rowspan]="cartIndexData?.solution.length"
+                              *ngIf="isFirst && cartIndexData?.uom?.code === 'RO'"
+                            >
+                              <ng-container>
+                                {{ cartIndexData?.userRequestedQuantity || "0" }}
+                                {{
+                                  cartIndexData?.uom?.code === "RO"
+                                    ? ""
+                                    : cartIndexData?.uom?.name
+                                }}
+                              </ng-container>
+                            </td>
+                            <td *ngIf="cartIndexData?.uom?.code != 'RO'">
+                              <ng-container>
+                                {{ cartIndexData?.userRequestedQuantity || "0" }}
+                                {{ cartIndexData?.uom?.name }}
+                              </ng-container>
+                            </td>
+                            <td>
+                              {{ solution?.assignedQuantity || "0" }}
+                              {{
+                                cartIndexData?.uom?.code === "RO"
+                                  ? ""
+                                  : cartIndexData?.uom?.name
+                              }}
+                            </td>
+                            <td>{{ solution?.dyeLot || "" }}</td>
+                            <td>
+                              {{ solution?.plant }} -
+                              {{ solution?.plantDescription }}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div class="mt-2" *ngIf="cartIndexData?.specifiedDyeLot">
+                        <span
+                          ><var>1<sub>- As Specified</sub></var></span
+                        >
+                        <p class="text-f-s">
+                          Unless a specific dyelot is specified, assigned inventory
+                          may be substituted during shipment (if necessary).
+                        </p>
+                      </div>
+                    </div>
+                  </accordion-group>
+                </accordion>
+
+                <accordion
+                  [isAnimated]="true"
+                  class="bx-accordian my-4 px-0"
+                  *ngIf="
+                    cartIndexData?.availabilityStatus != 'BACK ORDER' &&
+                    (cartIndexData?.product?.productType === 'Accessories' ||
+                      cartIndexData?.product?.productType === 'ACCESSORIES') &&
+                    cartIndexData?.product?.subProductType === 'PAD_CUSHION'
+                  "
+                >
+                  <accordion-group [isOpen]="false">
+                    <header
+                      accordion-heading
+                      class="bx-accordian-header p-2 w-100 d-flex justify-content-center"
+                      (click)="solutionDetailsClicked()"
+                    >
+                      <div class="show arrow">
+                        Show Solutions Details
+                        <span class="mohawak-icon angle-left-icon down-icon"></span>
+                      </div>
+                      <div class="hide arrow">
+                        Hide Solutions Details
+                        <span class="mohawak-icon angle-left-icon up-icon"></span>
+                      </div>
+                      <ng-container *ngIf="!isSolutionDetailsClicked">
+                        <span
+                          tooltip="Click here to see your quantity, dyelot or roll number"
+                          class="mohawak-icon help-icon help-info red-question-mark"
+                        ></span>
+                      </ng-container>
+                    </header>
+                    <div class="overflow-auto">
+                      <table class="black-header-table-one">
+                        <thead>
+                          <tr>
+                            <th>Order Qty</th>
+
+                            <th>Assigned Qty</th>
+
+                            <th>Plant</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr
+                            *ngFor="
+                              let solution of cartIndexData?.solution || [];
+                              let isFirst = first
+                            "
+                          >
+                            <td
+                              [attr.rowspan]="cartIndexData?.solution.length"
+                              *ngIf="isFirst && cartIndexData?.uom?.code === 'RO'"
+                            >
+                              <ng-container *ngIf="isFirst">
+                                {{ cartIndexData?.userRequestedQuantity || "0" }}
+                                {{
+                                  cartIndexData?.uom?.code === "RO"
+                                    ? ""
+                                    : cartIndexData?.uom?.name
+                                }}
+                              </ng-container>
+                            </td>
+                            <td *ngIf="cartIndexData?.uom?.code != 'RO'">
+                              <ng-container *ngIf="isFirst">
+                                {{ cartIndexData?.userRequestedQuantity || "0" }}
+                                {{ cartIndexData?.uom?.name }}
+                              </ng-container>
+                            </td>
+                            <td>
+                              {{ solution?.assignedQuantity || "0" }}
+                              {{
+                                cartIndexData?.uom?.code === "RO"
+                                  ? ""
+                                  : cartIndexData?.uom?.name
+                              }}
+                            </td>
+
+                            <td>
+                              {{ solution?.plant }} -
+                              {{ solution?.plantDescription }}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </accordion-group>
+                </accordion>
+                <!--   <div *ngIf="cartIndexData.solution" class="mt-2">
+              
+                  <div class="d-flex justify-content-center solution-card align-items-center"
+                    (click)="cartIndexData.isCollapsed = !cartIndexData.isCollapsed"
+                    [attr.aria-expanded]="!cartIndexData?.isCollapsed" aria-controls="collapseBasicSecond">
+                    <div>
+                      <h4 class="m-0">
+                        {{ cartIndexData.isCollapsed ? "SHOW" : "HIDE" }} SOLUTION
+                        DETAILS
+                        <span *ngIf="!cartIndexData?.isCollapsed" class="mohawak-icon angle-left-icon down-icon"></span>
+                        <span *ngIf="cartIndexData?.isCollapsed" class="mohawak-icon angle-left-icon up-icon"></span>
+                      </h4>
+                    </div>
+                  </div>
+                </div>
+                <div id="collapseBasicSecond" [collapse]="cartIndexData.isCollapsed" [isAnimated]="true"
+                  class="mt-4 table-view-data p-0">
+                  <app-table-view [tableData]="cartIndexData?.solution" [columns]="columns" [checkboxes]="false"
+                    [pagination]="false" [showOutput]="false">
+                  </app-table-view>
+                </div>-->
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <div class="row no-page-break p-row">
+        <div class="col-12 col-sm-5 p-col-6 col-md-5 col-lg-5 p-col-5">
+        </div>
+        <div class="col-12 col-sm-1 col-md-1 col-lg-1 p-col-1"></div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 mt-3 p-col-6">
+        <div class="row amount">
+        <div
+          class="print-total p-col-12"
+          *ngIf="cartData?.code && staticTabs.tabs[0].active != true && this.userService?.isShowPrice()"
+        >
+          <div class="d-flex space-between mb-2" *ngIf="!(checkoutData?.styleBlocked == true && customerFlag && (cartData?.quoteNumber === '' ||
+                  cartData?.quoteNumber === undefined)) && !isRequestedPriceChanged">
+            <div class="col-md-8 p-col-7 text-bold mb-0 pdf-text-end">
+              {{ isRequestedPriceChanged == true ? "Estimated Product Total (Based on price per unit)": "Estimated Product Total" }}
+            </div>
+            <div class="col-md-4 mb-0 p-col-5 text-end ">
+              {{ checkoutData?.subTotal?.currencyIso }}
+              {{ checkoutData?.subTotal?.formattedValue }}
+            </div>
+          </div>
+          <div class="d-flex space-between mb-2" *ngIf="isRequestedPriceChanged">
+            <div class="col-md-8 p-col-7 text-bold mb-0 pdf-text-end">Estimated Product Total (Based on Requested Price)</div>
+            <div class="col-md-4 mb-0 p-col-5 text-end ">
+              {{ checkoutData?.requestedSubTotalPrice?.currencyIso  }}
+              {{ checkoutData?.requestedSubTotalPrice?.formattedValue }}
+            </div>
+          </div>
+
+          <div class="d-flex space-between mb-2">
+            <div class="col-md-8 p-col-7 text-bold mb-0 pdf-text-end">Estimated Freight</div>
+            <div class="col-md-4 p-col-5 mb-0 text-end">
+              {{ checkoutData?.freightCharges?.currencyIso }}
+              {{ checkoutData?.freightCharges?.formattedValue }}
+            </div>
+          </div>
+          <div class="d-flex space-between mb-2">
+            <div class="col-md-8 p-col-7 text-bold mb-0 pdf-text-end">Est. Misc. Charges</div>
+            <div class="col-md-4 p-col-5 mb-0 text-end">
+              {{ checkoutData?.miscCharges?.currencyIso }}
+              {{ checkoutData?.miscCharges?.formattedValue }}
+            </div>
+          </div>
+          <div
+            class="d-flex space-between mb-2"
+            *ngIf="checkoutData?.multiPieceDiscount?.value > 0"
+          >
+            <div class="col-md-8 p-col-7 text-bold mb-0 pdf-text-end">Multi Piece Discount</div>
+            <div class="col-md-4 p-col-5 mb-0 text-end">
+              {{ checkoutData?.multiPieceDiscount?.currencyIso }}
+              {{ checkoutData?.multiPieceDiscount?.formattedValue }}
+            </div>
+          </div>
+          <div
+            class="d-flex space-between mb-2"
+            *ngIf="checkoutData?.hdDiscountInvoice?.value > 0"
+          >
+            <div class="col-md-8 p-col-7 text-bold mb-0 pdf-text-end">Hd Discount Invoice</div>
+            <div class="col-md-4 p-col-5 mb-0 text-end">
+              {{ checkoutData?.hdDiscountInvoice?.currencyIso }}
+              {{ checkoutData?.hdDiscountInvoice?.formattedValue }}
+            </div>
+          </div>
+          <div
+            class="d-flex space-between mb-2"
+            *ngIf="checkoutData?.hdDiscount?.value > 0"
+          >
+            <div class="col-md-8 p-col-7 text-bold mb-0">Hd Discount</div>
+            <div class="col-md-4 p-col-5 mb-0 text-end">
+              {{ checkoutData?.hdDiscount?.currencyIso }}
+              {{ checkoutData?.hdDiscount?.formattedValue }}
+            </div>
+          </div>
+          <div
+            class="d-flex space-between mb-2"
+            *ngIf="checkoutData?.freightAllowanceDiscount?.value > 0"
+          >
+            <div class="col-md-8 p-col-7 text-bold mb-0 pdf-text-end">Freight Allowance Discount</div>
+            <div class="col-md-4 p-col-5 mb-0 text-end">
+              {{ checkoutData?.freightAllowanceDiscount?.currencyIso }}
+              {{ checkoutData?.freightAllowanceDiscount?.formattedValue }}
+            </div>
+          </div>
+          <div
+            class="d-flex space-between mb-2"
+            *ngIf="checkoutData?.hdStoreServiceDiscount?.value > 0"
+          >
+            <div class="col-md-8 p-col-7 text-bold mb-0 pdf-text-end">Hd Store Service Discount</div>
+            <div class="col-md-4 p-col-5 mb-0 text-end">
+              {{ checkoutData?.hdStoreServiceDiscount?.currencyIso }}
+              {{ checkoutData?.hdStoreServiceDiscount?.formattedValue }}
+            </div>
+          </div>
+          <div
+            class="d-flex space-between mb-2"
+            *ngIf="checkoutData?.serviceDiscount?.value > 0"
+          >
+            <div class="col-md-8 p-col-7 text-bold mb-0 pdf-text-end">Service Discount</div>
+            <div class="col-md-4 p-col-5 mb-0 text-end">
+              {{ checkoutData?.serviceDiscount?.currencyIso }}
+              {{ checkoutData?.serviceDiscount?.formattedValue }}
+            </div>
+          </div>
+          <div class="d-flex space-between mb-2">
+            <div class="col-md-8 p-col-7 text-bold mb-0 pdf-text-end">Estimated Tax</div>
+            <div class="col-md-4 p-col-5 mb-0 text-end">
+              {{ checkoutData?.totalSurcharge?.currencyIso }}
+              {{ checkoutData?.totalSurcharge?.formattedValue }}
+            </div>
+          </div>
+          <div class="d-flex space-between mb-2" *ngIf="!(checkoutData?.styleBlocked == true && customerFlag && (cartData?.quoteNumber === '' ||
+                  cartData?.quoteNumber === undefined)) && !isRequestedPriceChanged">
+            <div class="col-md-8 p-col-7 text-bold mb-0 pdf-text-end">
+              {{isRequestedPriceChanged == true ? "Estimated* Order Total (Based on price per unit)" : "Estimated* Order Total" }}
+            </div>
+            <div class="col-md-4 p-col-5 mb-0 text-end">
+              {{ checkoutData?.totalPrice?.currencyIso }}
+              {{ checkoutData?.totalPrice?.formattedValue }}
+            </div>
+          </div>
+          <div class="d-flex space-between mb-2" *ngIf="isRequestedPriceChanged">
+            <div class="col-md-8 p-col-7 text-bold mb-0 pdf-text-end">
+              Estimated* Order Total (Based on Requested Price)
+            </div>
+            <div class="col-md-4 p-col-5 mb-0 text-end">
+              {{ checkoutData?.requestedTotalPrice?.currencyIso  }}
+              {{ checkoutData?.requestedTotalPrice?.formattedValue }}
+            </div>
+          </div>
+          <div class="col-lg-12 row mt-2 mb-2  pdf-text-center">
+            <div class="p-col-12">
+              Tax, freight, and other Charges may vary.
+              <br />
+              <p *ngIf="priceLabel=='CAD'">
+                Brokerage and Duty are not included in the price.
+                <br/>
+              </p>
+              {{ currentDate }}
+            </div>
+          </div>
+          </div>
+          </div>
+        </div>
+      </div>
+      <!-- </ng-template> -->
+    </div>
+  </ng-template>
+</div>
+
+<ng-template #priceCommentModal>
+  <div class="modal-header text-center">
+    <div class="w-100">
+      <h4 class="modal-title">Pricing Comments</h4>
+    </div>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body mb-4 p-4">
+    {{ selectedPriceComment }}
+  </div>
+  <div class="modal-footer justify-content-center">
+    <button class="btn btn-secondary me-3" (click)="modalService.hide()">
+      CLOSE
+    </button>
+  </div>
+</ng-template>
+<ng-template #shippingWareHouseTemplate>
+  <div class="modal-header text-center">
+    <h4
+      class="modal-title w-100"
+      *ngIf="shippingWareHouseType !== 'incoTermsLoc2'"
+    >
+      Change Shipping WareHouse
+    </h4>
+    <h4
+      class="modal-title w-100"
+      *ngIf="shippingWareHouseType == 'incoTermsLoc2'"
+    >
+      Change ShipVia
+    </h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeShippingWareHouseModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing">
+    <form #form="ngForm">
+      <div class="">
+        <h4>Available Shipping WareHouse</h4>
+        <ng-select
+          placeholder="Select"
+          (change)="
+            changeShippingWareHouseOptions($event);
+            incoTermsLoc2SelectedOption = null
+          "
+          [(ngModel)]="shippingWareHouseSelectedOption"
+          [disabled]="shippingWareHouseType == 'incoTermsLoc2'"
+          name="shippingWareHouse"
+          required
+        >
+          <ng-option
+            [value]="item?.value"
+            *ngFor="let item of shippingWareHouseOptions"
+            >{{ item?.label }}</ng-option
+          >
+        </ng-select>
+      </div>
+      <div class="mt-3" *ngIf="shippingWareHouseSelectedOption">
+        <h4>Ship Via</h4>
+        <ng-select
+          placeholder="Select"
+          (change)="changeIncoTermsLoc2Options($event)"
+          [(ngModel)]="incoTermsLoc2SelectedOption"
+          name="incoTermsLoc2"
+          required
+        >
+          <ng-option
+            [value]="item?.value"
+            *ngFor="let item of incoTermsLoc2Options"
+            >{{ item?.value }} - {{ item?.label }} <span class="span-preferred" *ngIf="item?.preferred == true">(Preferred)</span> </ng-option
+          >
+        </ng-select>
+      </div>
+    </form>
+
+    <div class="mt-4 mb-4 pt-4 full-btns p-50 align-center change-date">
+      <div class="">
+        <button
+          class="btn btn-outline-secondary me-2"
+          (click)="closeShippingWareHouseModal()"
+        >
+          Cancel
+        </button>
+      </div>
+      <div class="">
+        <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="!form.dirty || !form.valid"
+          id="confirmShippingWareHouseChange"
+          (click)="
+            shippingWareHouseModalSubmit(); closeShippingWareHouseModal()
+          "
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #changeDataTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Change Delivery Date</h4>
+    <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button> -->
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="cancelRddChange()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div class="form-group">
+        <label for="dateInput">Delivery Date</label>
+        <input
+          onkeydown="return false"
+          type="text"
+          placeholder="Select Date"
+          class="form-control"
+          bsDatepicker
+          [datesEnabled]="daysToBeEnabled"
+          [daysDisabled]="disabledDate"
+          [(ngModel)]="ReqDelDate"
+          [ngModelOptions]="{ standalone: true }"
+          [minDate]="minDate"
+        />
+      </div>
+    </form>
+  </div>
+  <div class="mt-4 mb-4 pt-4 full-btns p-50 align-center change-date">
+    <div class="">
+      <button
+        class="btn btn-outline-secondary me-2"
+        (click)="cancelRddChange()"
+      >
+        Cancel
+      </button>
+    </div>
+    <div class="">
+      <button
+        type="button"
+        class="btn btn-primary"
+        id="confirmDateChange"
+        (click)="changeRDD()"
+      >
+        Confirm
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #changeTermCodeTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Change Term Code</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing">
+    <!-- <app-alerts
+      [alertData]="carrierMoAlertData"
+      *ngIf="carrierMoAlertData?.message"
+      [alertType]="carrierMoAlertData?.type"
+      class="dashboard-page-alert"
+    ></app-alerts> -->
+
+    <form #termCodeForm="ngForm">
+      <div class="">
+        <h4>Term Code</h4>
+        <ng-select
+          placeholder="Select"
+          name="termCode"
+          required
+          class=""
+          [(ngModel)]="selectedTermCode"
+        >
+          <ng-option [value]="item?.key" *ngFor="let item of termsCodeList">{{
+            item?.value
+          }}</ng-option>
+        </ng-select>
+      </div>
+    </form>
+
+    <div class="mt-4 mb-4 pt-4 d-flex full-btns p-50 align-center change-date">
+      <div class="">
+        <button
+          class="btn btn-outline-secondary me-2"
+          (click)="modalRef.hide()"
+        >
+          Cancel
+        </button>
+      </div>
+      <div class="">
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="confirmTermCodeChange"
+          [disabled]="!termCodeForm.valid || !termCodeForm.dirty"
+          (click)="submitTermCode()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #combinedTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Change Shipping Options</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeShippingWareHouseModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing">
+    <alert
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="showValidationError"
+    >
+      <div class="container">{{ validationErrorMessage }}</div>
+    </alert>
+    <form #form="ngForm">
+      <div class="row">
+        <div class="col-md-6">
+          <h4>Shipping Methods</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="changeshipViaOptions($event)"
+            [(ngModel)]="shipViaSelectedOption"
+            [disabled]="shipViaType == 'incoTerms'"
+            [clearable]="false"
+            name="shipVia"
+          >
+            <ng-option [value]="item?.value" *ngFor="let item of shipViaOptions"
+              >{{ item.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-6" *ngIf="shipViaSelectedOption">
+          <h4>Inco Terms</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="changeincoTermsOptions($event)"
+            [clearable]="false"
+            [(ngModel)]="incoTermsSelectedOption"
+            [disabled]="!shipViaSelectedOption || customerFlag || userInfo?.isSalesPerson  || userInfo?.isSalesOps"
+            name="inco"
+            required
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of incoTermsOptions"
+              >{{ item.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-6">
+          <h4>Shipping WareHouse</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="
+              combineChangeshippingWareHOuseOptions($event);
+              incoTermsLoc2SelectedOption = null
+            "
+            [(ngModel)]="shippingWareHouseSelectedOption"
+            [disabled]="shippingWareHouseType == 'incoTermsLoc2'"
+            name="shippingWareHouse"
+            [clearable]="false"
+            required
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of shippingWareHouseOptions"
+              >{{ item.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div
+          class="col-md-6 shipvia-change"
+          *ngIf="shippingWareHouseSelectedOption"
+        >
+          <h4>Ship Via</h4>
+          <ng-select
+            placeholder="Select"
+            class="shipvia"
+            (change)="changeIncoTermsLoc2Options($event)"
+            [(ngModel)]="incoTermsLoc2SelectedOption"
+            name="incoTermsLoc2"
+            [addTag]="true"
+            (ngModelChange)="validateShipVia($event)"
+            [clearable]="false"
+            [disabled]="!shippingWareHouseSelectedOption || customerFlag || userInfo?.isSalesPerson  || userInfo?.isSalesOps"
+            required
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of incoTermsLoc2Options"
+              >{{ item?.value }} - {{ item?.label }} <span class="span-preferred" *ngIf="item?.preferred == true">(Preferred)</span> </ng-option
+            >
+          </ng-select>
+        </div>
+      </div>
+    </form>
+
+    <div class="mt-4 mb-4 pt-4 full-btns p-50 align-center change-date">
+      <div>
+        <button
+          class="btn btn-outline-secondary me-2"
+          (click)="closeShippingWareHouseModal()"
+        >
+          Cancel
+        </button>
+      </div>
+      <div>
+        <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="!form.valid || showValidationError"
+          id="confirmShippingWareHouseChange"
+          (click)="validateShipViaAddress('changeShippingOption')"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #viewReplacementOrderTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Replacement Order</h4>
+    <!-- <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="this.modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button> -->
+  </div>
+  <div class="modal-body">
+    <div class="row mx-2">
+      <div
+        class="col-6 mb-2"
+        *ngIf="cartData?.replacementOrderInfo?.replacementOrderNumber"
+      >
+        <h4>Replacement Order#</h4>
+        {{ cartData?.replacementOrderInfo?.replacementOrderNumber }}
+      </div>
+      <div
+        class="col-6 mb-2"
+        *ngIf="cartData?.replacementOrderInfo?.replacementReason"
+      >
+        <h4>Replacement Reason</h4>
+        {{
+          cartData?.replacementOrderInfo?.replacementReason === "ZE1"
+            ? "Wrong Product"
+            : cartData?.replacementOrderInfo?.replacementReason === "ZE2"
+            ? "Wrong Quality"
+            : cartData?.replacementOrderInfo?.replacementReason === "ZE3"
+            ? "Damaged"
+            : cartData?.replacementOrderInfo?.replacementReason === "ZE4"
+            ? "Customer Choice / Accommodation Return"
+            : "Quality Concern"
+        }}
+      </div>
+      <div
+        class="col-6 mb-2"
+        *ngIf="cartData?.replacementOrderInfo?.claimNumber"
+      >
+        <h4>Claim #</h4>
+        {{ cartData?.replacementOrderInfo?.claimNumber }}
+      </div>
+      <div
+        class="col-6 mb-2"
+        *ngIf="cartData?.replacementOrderInfo?.invoiceNumber"
+      >
+        <h4>Invoice #</h4>
+        {{ cartData?.replacementOrderInfo?.invoiceNumber }}
+      </div>
+      <div
+        class="col-6 mb-2"
+        *ngIf="cartData?.replacementOrderInfo?.purchaseOrderNumber"
+      >
+        <h4>PurchaseOrder #</h4>
+        {{ cartData?.replacementOrderInfo?.purchaseOrderNumber }}
+      </div>
+    </div>
+    <div class="my-4">
+      <div class="modal-footer justify-content-center">
+        <button
+          class="btn btn-outline-secondary mb-0"
+          (click)="this.modalRef.hide()"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #shippingOptions>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Shipping Options</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeShippingOptionsModalModal()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing">
+    <alert
+      type="danger"
+      class="dashboard-page-alert"
+      [dismissible]="true"
+      *ngIf="showValidationError"
+    >
+      <div class="container">{{ validationErrorMessage }}</div>
+    </alert>
+    <form #form="ngForm">
+      <div class="row">
+        <div class="col-md-6">
+          <h4>Shipping Methods</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="changeshipViaOptions($event)"
+            [(ngModel)]="shipViaSelectedOption"
+            [disabled]="shipViaType == 'incoTerms'"
+            [clearable]="false"
+            name="shipVia"
+          >
+            <ng-option [value]="item?.value" *ngFor="let item of shipViaOptions"
+              >{{ item?.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-6" *ngIf="shipViaSelectedOption">
+          <h4>Inco Terms</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="changeincoTermsOptions($event)"
+            [(ngModel)]="incoTermsSelectedOption"
+            name="inco"
+            [clearable]="false"
+            [disabled]="!shipViaSelectedOption || customerFlag"
+            required
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of incoTermsOptions"
+              >{{ item?.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-6">
+          <h4>Shipping WareHouse</h4>
+          <ng-select
+            placeholder="Select"
+            (change)="
+              combineChangeshippingWareHOuseOptions($event);
+              incoTermsLoc2SelectedOption = null
+            "
+            [(ngModel)]="shippingWareHouseSelectedOption"
+            [disabled]="shippingWareHouseType == 'incoTermsLoc2'"
+            name="shippingWareHouse"
+            [clearable]="false"
+            required
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of shippingWareHouseOptions"
+              >{{ item?.value }} - {{ item?.label }}</ng-option
+            >
+          </ng-select>
+        </div>
+        <div class="col-md-6 shipvia-change">
+          <h4>Ship Via</h4>
+          <ng-select
+            placeholder="Select"
+            class="shipvia"
+            (change)="changeIncoTermsLoc2Options($event)"
+            [(ngModel)]="incoTermsLoc2SelectedOption"
+            name="incoTermsLoc2"
+            [addTag]="userInfo?.isCSR ? true : ((userInfo?.isCustomer || userInfo?.isSalesPerson || userInfo?.isSalesOps) && shipViaSelectedOption !='MA') ? true : false"
+            (ngModelChange)="validateShipVia($event)"
+            [disabled]="!shippingWareHouseSelectedOption || customerFlag"
+            [clearable]="false"
+            [required]="userInfo?.isCSR ? true : ((userInfo?.isCustomer || userInfo?.isSalesPerson || userInfo?.isSalesOps) && shipViaSelectedOption !='MA') ? false : true"
+
+          >
+            <ng-option
+              [value]="item?.value"
+              *ngFor="let item of incoTermsLoc2Options"
+              >{{ item?.value }} - {{ item?.label }} <span class="span-preferred" *ngIf="item?.preferred == true">(Preferred)</span> </ng-option
+            >
+          </ng-select>
+        </div>
+      </div>
+    </form>
+    <div class="mt-4 mb-4 pt-4 full-btns p-50 align-center change-date">
+      <div>
+        <button
+          class="btn btn-outline-secondary me-2"
+          (click)="closeShippingOptionsModalModal()"
+        >
+        Cancel
+        </button>
+      </div>
+      <div>
+        <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="!form.dirty || !form.valid || showValidationError"
+          id="confirmShippingWareHouseChange"
+          (click)="validateShipViaAddress('changeShippingOption');  changeTab(0);
+                    staticTabs.tabs[0].active = true;"
+        >
+        Proceed with Small Parcel
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #proceedWithOutParcel>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">Small Parcel Confirmation </h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="closeInfoChanges()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body change-pricing text-center">
+    <div class="row mt-2">
+      <!-- <h4>Do you wish to Continue</h4> -->
+      <p>This order is eligible for Small Parcel. Do you wish to continue?</p>
+    </div>
+
+    <div class="row text-center">
+      <div class="col-12 mb-4">
+        <button
+          class="btn btn-outline-secondary m-2 btn-w-100"
+          (click)="continueChanges(staticTabs,carrierTemplate, cartData, true);closeInfoChanges();"
+        >
+          No
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary m-2 btn-w-100"
+          (click)="closeInfoChanges();showShippingOptions(shippingOptions)"
+        >
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #maxlengthTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title f-w text-center"></h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="this.maxmodalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-20">
+    <div class="text-center">
+      <p>{{ errorMaxLength }}</p>
+      <div class="mt-4 mb-4">
+        <button class="btn btn-primary" (click)="this.maxmodalRef?.hide()">OK</button>
+      </div>
+    </div>
+  </div>
+</ng-template>

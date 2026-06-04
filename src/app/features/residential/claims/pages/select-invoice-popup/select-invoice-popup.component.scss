@@ -1,0 +1,286 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+
+::ng-deep {
+  .tab-content {
+    padding: 0px !important;
+  }
+  .mohawk-logo img {
+    width: 50% !important;
+  }
+  .tooltip.show {
+    position: absolute;
+    margin: -30px 0px 0px 85px !important;
+    --mx-tooltip-bg: #ce0e2d;
+    font-size: 12px;
+  }
+  .bs-tooltip-top .tooltip-arrow::before {
+    left: 15px;
+    top: 38px;
+  }
+}
+.card {
+  @include breakpoint-range($max: xs) {
+   // margin: 0 -1.25rem;
+  }
+}
+.disabled-row {
+  cursor: not-allowed !important;
+  // background: #f6f6f6;
+}
+.disabled-row-checkbox {
+  cursor: not-allowed !important;
+  background: #e8e8e8;
+}
+.disabled-row-checkbox-colour{
+  background: #e8e8e8 !important;
+}
+.ngx-form-checkbox.disabled-row{
+  opacity: 0.5;
+}
+td.enabled-row{
+  cursor: pointer;
+}
+
+.card-header {
+  background-color: $color-dark-gray;
+}
+.img {
+  height: 9.125rem;
+  object-fit: cover;
+}
+.btn-align {
+  margin-left: 15px;
+  margin-right: 15px;
+  @include breakpoint-range($max: xs) {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+}
+.modal-header {
+  border: none;
+
+  h4 {
+    font-size: 20px;
+  }
+}
+.modal-body {
+  padding: 0 30px;
+
+  @include breakpoint-range($max: sm) {
+    padding: 0 20px;
+  }
+}
+.checkout-card {
+  border-color: $color-medium-gray;
+padding:0;
+  button {
+    text-decoration: none;
+    text-transform: capitalize;
+    background-color: $color-white;
+    @include breakpoint-range($max: xs) {
+      width: 100%;
+      margin-top: 15px;
+    }
+  }
+  .down-icon {
+    transform: rotate(-270deg);
+    display: inline-flex;
+    font-size: 0.625rem;
+    margin-left: 0.313rem;
+  }
+  .up-icon {
+    transform: rotate(-90deg);
+    display: inline-flex;
+    font-size: 0.75rem;
+    margin-left: 0.625rem;
+  }
+}
+.checkout-card-header {
+  background-color: $color-medium-gray;
+  border-color: $color-medium-gray;
+}
+.show-hide-btn {
+  height: 35px;
+}
+.hide-w-100 {
+  width: auto;
+  @include breakpoint-range($max: xs) {
+    width: 100%;
+  }
+}
+.line {
+  border-top: 1px solid $color-gray;
+}
+.text-f-line h1 {
+  @include breakpoint-range($max: xs) {
+    font-size: 25px;
+  }
+}
+.help-info {
+  color: $color-red;
+}
+.info-text {
+  margin: 0 10px;
+  width: 20%;
+  p {
+    margin: 0;
+  }
+}
+.full-btns {
+  justify-items: center;
+  justify-content: center;
+  .btn {
+    width: 100%;
+  }
+}
+.no-results {
+  text-align: center;
+}
+
+::ng-deep {
+  th.col-disabled {
+    display: none;
+  }
+  td.col-disabled {
+    display: none;
+  }
+}
+.card-body {
+  overflow: auto;
+}
+
+//
+.table-data {
+  overflow-x: auto;
+  table {
+    width: 100%;
+    thead,
+    tbody {
+      tr {
+        label {
+          position: relative;
+          input {
+            clip: rect(0, 0, 0, 0);
+            height: 1px;
+            margin: -1px;
+            overflow: hidden;
+            position: absolute;
+            width: 1px;
+          }
+          input:checked + .checkbox {
+            background: #383838;
+          }
+          input:checked + .checkbox::before {
+            background-clip: padding-box;
+            border: 0.1rem solid $color-white;
+            border-left-width: 0;
+            border-top-width: 0;
+            content: "";
+            height: 12px;
+            left: 50%;
+            margin-left: -3px;
+            margin-top: -8px;
+            position: absolute;
+            top: 50%;
+            transform: rotate(45deg);
+            width: 6px;
+          }
+          .checkbox {
+            height: 20px;
+            width: 20px;
+            border: 1px solid $color-gray;
+            background: $color-white;
+            cursor: pointer;
+            border-radius: 2px;
+          }
+        }
+        th {
+          width: 11.1111%;
+          background: #e8e8e8;
+          padding: 6px 15px;
+          border-right: 1px solid $color-gray;
+          border-left: 1px solid $color-gray;
+          // cursor: pointer;
+          // &:last-child {
+          //   border-right: unset;
+          // }
+          &:first-child {
+            width: 5.9%;
+          }
+          color: #383838;
+          font-size: 16px;
+          font-weight: 600;
+          img {
+            display: none;
+            &.active {
+              display: inline-block;
+            }
+            &.rotate {
+              transform: rotate(180deg);
+            }
+          }
+        }
+        td {
+          width: 11.1111%;
+          height: 63px;
+
+          padding: 6px 15px;
+          border-right: 1px solid $color-gray;
+          border-left: 1px solid $color-gray;
+          vertical-align: center;
+
+          // &:last-child {
+          //   border-right: unset;
+          // }
+          &:first-child {
+            width: 5.9%;
+          //  border-left: unset;
+          }
+
+          .mohawak-icon {
+            color: $color-red;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+    tbody {
+      tr {
+        &:nth-child(odd) {
+          background: $color-white;
+        }
+        &:nth-child(even) {
+          background: $color-light-gray;
+        }
+        border-bottom: 1px solid #e8e8e8;
+        &:last-child {
+        border-bottom: 1px solid #e8e8e8;
+        }
+        .non-product-lines {
+          color: #a5a5a5;
+        }
+      }
+    }
+  }
+}
+
+// ::ng-deep {
+//   .select-invoice-popup {
+//     justify-content: center;
+//     .modal-content {
+//       width: auto;
+//     }
+//   }
+// }
+
+::ng-deep .modal-dialog.modal-dialog-centered.modal-xl.select-invoice-popup{
+  --mx-modal-width: 1270px;
+}
+
+.non-product-line-bg{
+  background-color: #f8f8f8 !important;
+}
+.product-line-bg{
+  background-color: #fff !important;
+}

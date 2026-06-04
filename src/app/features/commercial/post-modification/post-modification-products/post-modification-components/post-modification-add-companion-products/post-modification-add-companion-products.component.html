@@ -1,0 +1,559 @@
+<app-loader *ngIf="spinnerLoading"></app-loader>
+<div class="modal-header text-center">
+  <h4 class="modal-title f-w w-100">Choose a Solution</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="onHideModal()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<!-- <alert
+type="danger"
+class="dashboard-page-alert"
+[dismissible]="true"
+*ngIf="addtoCartFailed"
+>
+<div class="container">
+  Error occured while adding product to the cart.
+</div>
+</alert> -->
+<div class="modal-body p-20" #scrollToTop>
+  <ng-container *ngIf="addtoCartFailed">
+    <div class="mb-3" *ngFor="let item of addtoCartErrorMessage">
+      <alert type="danger" class="dashboard-page-alert" [dismissible]="true">
+        <div class="container">
+          {{ item }}
+        </div>
+      </alert>
+    </div>
+  </ng-container>
+
+  <div class="container position-relative">
+    <div class="row mt-4 pt-2 mb-4">
+      <div class="col-md-12 col-xs-12">
+        <!-- {{solutions | json}} -->
+        <ng-container *ngIf="solutions?.length > 0">
+          <div class="card mt-2" *ngFor="let item of solutions">
+            <div class="card-header mb-2 dark">
+              <h4 class="text-white d-inline">
+                {{ item?.sellingStyleName }} - {{ item?.sellingStyleId }}
+              </h4>
+              <div class="float-end mohawk-logo text-end">
+                <xchange-logo-pdp
+                  type="commercial"
+                  theme="light"
+                  [selectedPdpData]="item"
+                  [isInverted]="true"
+                ></xchange-logo-pdp>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="col-12 col-sm-12 col-md-12 col-lg-12 mt-2">
+                <div class="row">
+                  <div class="col-sm-3 col-md-4 col-lg-3 col-xl-2 mb-4">
+                    <div class="col-6 col-sm-12">
+                      <!-- <div class="shadow-lg "> -->
+                      <img
+                        class="card-img-top rounded img"
+                        [src]="
+                          item?.img ||
+                          'https://s7d4.scene7.com/is/image/MohawkResidential/missing'
+                        "
+                      />
+                      <!-- </div> -->
+                    </div>
+                  </div>
+
+                  <div class="col-sm-9 col-md-8 col-lg-9 col-xl-10">
+                    <div class="box-flex">
+                      <div class="info-text">
+                        <h4>Color #</h4>
+                        <p>
+                          {{
+                            showContinue
+                              ? item?.product?.sellingColorId
+                              : item?.sellingColorId || "NA"
+                          }}
+                        </p>
+                      </div>
+                      <div class="info-text">
+                        <h4>Color</h4>
+                        <p>
+                          {{
+                            showContinue
+                              ? item?.product?.sellingColorName
+                              : item?.sellingColorName || "NA"
+                          }}
+                        </p>
+                      </div>
+                      <div class="info-text">
+                        <h4>Size</h4>
+                        <p>
+                          {{
+                            showContinue
+                              ? item?.product?.sellingSizeDescription
+                              : item?.sellingSizeDescription || "NA"
+                          }}
+                        </p>
+                      </div>
+                      <div class="info-text">
+                        <h4>Backing</h4>
+                        <p>
+                          {{
+                            showContinue
+                              ? item?.product?.sellingBackingName || "NA"
+                              : item?.sellingBackingName || "NA"
+                          }}
+                        </p>
+                      </div>
+                      <div class="info-text">
+                        <h4>Shipping Address</h4>
+                        <p>
+                          ({{ shippingAddress?.companyName }})<br />
+                          {{ shippingAddress?.line1 }}<br />
+                          {{ shippingAddress?.town }},
+                          {{ shippingAddress?.region?.isocodeShort }}
+                          {{ shippingAddress?.postalCode }} <br />
+                        </p>
+                        <h4>Shipping Method</h4>
+
+                        <p>
+                          {{
+                            shippingAddress?.defaultShippingCondition || "NA"
+                          }}
+                          -
+                          {{
+                            shippingAddress?.defaultShippingConditionDesc ||
+                              "NA"
+                          }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <hr />
+    <ng-container *ngIf="!!availableSolutions?.length">
+      <div class="avl-s-container">
+        <h2>Available Solutions</h2>
+        <p>
+          Requested Order Quantity <br />
+          {{ feetYardFormData?.requestedQty }}
+          {{ getUomDesc(feetYardFormData?.unit) }}
+          <!-- {{ requestedOrderQuantityLabel }} -->
+        </p>
+      </div>
+      <ngx-table
+        [configuration]="config"
+        [data]="availableSolutions || []"
+        [columns]="columns"
+        [filtersTemplate]="toggleRollTemplate"
+      >
+        <ng-template let-row>
+          <td>
+            <label class="ngx-form-checkbox">
+              <!-- <input type="checkbox" /> -->
+              <!-- <xchange-radio-button
+                classNames="size-22"
+                [name]="'name-' + row.solutionID"
+                [value]="row.solutionID"
+                [id]="row.solutionID"
+                [checked]="selectedSolution?.solutionID === row.solutionID"
+                (change)="selectedSolution = row"
+              ></xchange-radio-button> -->
+              <xchange-radio-button
+                *ngIf="!fromViewInventory"
+                classNames="size-22"
+                [name]="'name-' + row.solutionID"
+                [value]="row.solutionID"
+                [id]="row.solutionID"
+                [checked]="selectedSolution?.solutionID === row.solutionID"
+                (change)="selectedSolution = row"
+              ></xchange-radio-button>
+              <xchange-custom-checkbox
+                *ngIf="fromViewInventory"
+                [id]="row.solutionID"
+                (change)="handleMultiSelect($event, row, balanceTemplate)"
+              ></xchange-custom-checkbox>
+              <!-- <i class="ngx-form-icon custom-checkbox-color"></i> -->
+            </label>
+          </td>
+          <td>
+            <p *ngFor="let item of row.solutionEntries">
+              {{ item.rollAssignment }}
+            </p>
+          </td>
+          <td>
+            <p *ngFor="let item of row.solutionEntries">
+              {{ item.rollAssignedInFeet }}
+            </p>
+          </td>
+          <td class="dymica-length-column">
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{
+                toggleLengthColumn
+                  ? item.rollAssignedInSF
+                  : item.rollAssignedInSY
+              }}
+            </p>
+          </td>
+          <!--  <td>
+                  <p *ngFor="let item of row.solutionEntries ">{{ handleUserQty(item) }}</p> 
+              </td> -->
+          <td>
+            <p *ngFor="let item of row.solutionEntries">{{ item.dyeLot }}</p>
+          </td>
+          <td>
+            <p *ngFor="let item of row.solutionEntries">
+              {{ item.rollNumber }}
+            </p>
+          </td>
+          <td>
+            <p *ngFor="let item of row.solutionEntries">{{ item.plant }}</p>
+          </td>
+          <td>
+            <p *ngFor="let item of row.solutionEntries">
+              {{ item.estimatedDeliveryDate }}
+            </p>
+          </td>
+        </ng-template>
+      </ngx-table>
+    </ng-container>
+
+    <ng-container *ngIf="!!backorderSolutions?.length && solutionType != 'RO'">
+      <div class="avl-s-container" class="mt-4">
+        <h2>BACKORDER OPTIONS</h2>
+        <p>
+          Requested Order Quantity <br />
+          <!-- 1' 0" (1.33 Sq Yds) -->
+          <!-- {{ feetYardFormData | json }} -->
+          {{ feetYardFormData?.requestedQty }}
+          {{ getUomDesc(feetYardFormData?.unit) }}
+
+          <!-- {{data?.originalQuantity}} {{data?.originalUOM}} -->
+          <!-- {{ requestedOrderQuantityLabel }} -->
+        </p>
+      </div>
+      <ngx-table
+        [configuration]="config"
+        [data]="backorderSolutions || []"
+        [columns]="bkcolumns"
+        [filtersTemplate]="toggleRollTemplate"
+      >
+        <ng-template let-row>
+          <td>
+            <label class="ngx-form-checkbox">
+              <!-- <input type="checkbox" /> -->
+              <xchange-radio-button
+                *ngIf="!fromViewInventory"
+                classNames="size-22"
+                [name]="'name-' + row.solutionID"
+                [value]="row.solutionID"
+                [id]="row.solutionID"
+                [checked]="selectedSolution?.solutionID === row.solutionID"
+                (change)="openBalanceModal(row, balanceTemplate)"
+              ></xchange-radio-button>
+              <xchange-custom-checkbox
+                *ngIf="fromViewInventory"
+                [id]="row.solutionID"
+                (change)="handleMultiSelect($event, row, balanceTemplate)"
+              ></xchange-custom-checkbox>
+              <!-- <i class="ngx-form-icon custom-checkbox-color"></i> -->
+            </label>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              <!-- {{ item.requestedUOM }} -->
+              {{ item?.type || 'NA'}}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              <!-- {{ item.requestedOrderQuantityLabel }} -->
+              {{
+                !item.rollAssignedInFeet ||
+                item.rollAssignedInFeet.trim() === ""
+                  ? "NA"
+                  : item.rollAssignedInFeet
+              }}
+            </p>
+          </td>
+          <td class="dymica-length-column">
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{
+                toggleLengthColumn
+                  ? item.rollAssignedInSF
+                  : item.rollAssignedInSY
+              }}
+            </p>
+          </td>
+          <!-- <td>
+              <p *ngFor="let item of row.solutionEntries ">{{ handleUserQty(item) }}</p>
+          </td> -->
+          <!-- <td>
+          <p class="mb-0" *ngFor="let item of row.solutionEntries">
+            {{ item.orderMinInFeet }}
+          </p>
+        </td>
+        <td>
+          <p class="mb-0" *ngFor="let item of row.solutionEntries">
+            {{ item.orderMaxInFeet }}
+          </p>
+        </td> -->
+
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.estimatedDeliveryDate }}
+            </p>
+          </td>
+        </ng-template>
+      </ngx-table>
+    </ng-container>
+    <ng-container *ngIf="!!backorderSolutions?.length && solutionType === 'RO'">
+      <div class="avl-s-container" class="mt-4">
+        <h2>BACKORDER OPTIONS</h2>
+        <p>
+          Requested Order Quantity <br />
+          <!-- 1' 0" (1.33 Sq Yds) -->
+          <!-- {{ feetYardFormData | json }} -->
+          {{ feetYardFormData?.requestedQty }}
+          {{ getUomDesc(feetYardFormData?.unit) }}
+
+          <!-- {{data?.originalQuantity}} {{data?.originalUOM}} -->
+          <!-- {{ requestedOrderQuantityLabel }} -->
+        </p>
+      </div>
+      <ngx-table
+        [configuration]="config"
+        [data]="backorderSolutions || []"
+        [columns]="bkcolumnsRoll"
+      >
+        <ng-template let-row>
+          <td>
+            <label class="ngx-form-checkbox">
+              <!-- <input type="checkbox" /> -->
+              <xchange-radio-button
+                *ngIf="!fromViewInventory"
+                classNames="size-22"
+                [name]="'name-' + row.solutionID"
+                [value]="row.solutionID"
+                [id]="row.solutionID"
+                [checked]="selectedSolution?.solutionID === row.solutionID"
+                (change)="openBalanceModal(row, balanceTemplate)"
+              ></xchange-radio-button>
+              <xchange-custom-checkbox
+                *ngIf="fromViewInventory"
+                [id]="row.solutionID"
+                (change)="handleMultiSelect($event, row, balanceTemplate)"
+              ></xchange-custom-checkbox>
+              <!-- <i class="ngx-form-icon custom-checkbox-color"></i> -->
+            </label>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.requestedUOM }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              <!-- {{ item.requestedOrderQuantityLabel }} -->
+              {{ item.requestedQty }}
+              {{ item.requestedUOM === "Roll" ? "RL" : "" }}
+            </p>
+          </td>
+          <!-- <td class="dymica-length-column">
+          <p *ngFor="let item of row.solutionEntries">
+            {{ item.rollAssignedInSY }}
+          </p>
+        </td> -->
+          <!-- <td>
+              <p *ngFor="let item of row.solutionEntries ">{{ handleUserQty(item) }}</p>
+          </td> -->
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.orderMinInFeet }}
+            </p>
+          </td>
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.orderMaxInFeet }}
+            </p>
+          </td>
+
+          <td>
+            <p class="mb-0" *ngFor="let item of row.solutionEntries">
+              {{ item.estimatedDeliveryDate }}
+            </p>
+          </td>
+        </ng-template>
+      </ngx-table>
+    </ng-container>
+
+    <ng-container *ngIf="isLoading">
+      <div class="d-flex justify-content-center">
+        <app-loader class="loader-add"></app-loader>
+      </div>
+    </ng-container>
+
+    <!--   <div class="row">
+      <div class="col-md-12">
+        <h4>Available Solutions</h4>
+        <p class="m-0">Requested Order Quantity</p>
+        <p>ddd</p>
+      </div>
+    </div>
+    <div class="mb-2">
+      <ngx-table
+        [configuration]="configuration"
+        [data]="aptCheckEntrie"
+        [columns]="columns"
+        class="d-inline-table"
+      >
+        <ng-template let-row let-index="index">
+          <td>
+            <xchange-custom-radio
+              *ngIf="row.ShowCheckbox"
+              [type]="'radio'"
+              [id]="'radio-' + index"
+              [checked]="row.selected"
+              [value]="row"
+              (model)="checkBoxChangeSelect($event, index)"
+            ></xchange-custom-radio>
+          </td>
+          <td>
+            {{ row?.rollAssigned ? row?.rollAssigned : "NA" }}
+          </td>
+          <td>
+            {{
+              (row?.feet ? row?.feet + '"' : 0 + '"') +
+                (row?.inches ? row?.inches + "'" : 0 + "'")
+            }}
+          </td>
+          <td>
+            {{ row?.dyeLot ? row?.dyeLot : "NA" }}
+          </td>
+          <td>
+            {{ row?.rollNumber ? row?.rollNumber : "NA" }}
+          </td>
+          <td>
+            {{ row?.plant ? row?.plant : "" }}
+          </td>
+          <td>
+            {{ row?.rollAssignment ? row?.rollAssignment : "NA" }}
+          </td>
+          <td>
+            {{ row?.estimatedDeliveryDate ? row?.estimatedDeliveryDate :"NA" }}
+          </td>
+        </ng-template>
+      </ngx-table>
+    </div> -->
+    <div class="row">
+      <p>1 Date(s) subject to change.</p>
+    </div>
+
+    <div class="row mt-4 mb-4 full-btns p-50">
+      <div class="col-md-3">
+        <button class="btn btn-outline-secondary mb-2" (click)="onHideModal()">
+          Back
+        </button>
+      </div>
+      <div class="col-md-3">
+        <button
+          *ngIf="!showContinue"
+          class="btn btn-primary mb-2"
+          (click)="addToCart()"
+          [disabled]="!selectedSolution"
+        >
+          Update Order
+        </button>
+        <button
+          *ngIf="showContinue"
+          class="btn btn-primary mb-2"
+          (click)="updatePostModification()"
+          [disabled]="!selectedSolution"
+        >
+          Continue
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <ng-template #toggleLengthTemplate>
+  <div class="solution-table-column-switch d-flex align-item-center">
+    <p class="mx-2 my-0">SqYd</p>
+    <label class="switch">
+      <input
+        type="checkbox"
+        [(ngModel)]="toggleLengthColumn"
+        [checked]="toggleLengthColumn"
+        (change)="handleColumnToggle(toggleLengthColumn)"
+      />
+      <span class="slider round"></span>
+    </label>
+    <p class="mx-2 my-0">SqFt</p>
+  </div>
+</ng-template> -->
+<ng-template #balanceTemplate>
+  <div class="modal-header text-center">
+    <h4 class="modal-title w-100">You Save</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body text-center">
+    ${{ balance }}<br />
+    Ordering Discount Inventroy
+  </div>
+  <div class="mt-4 mb-4 pt-4 d-flex full-btns p-50 align-center change-date">
+    <div class="">
+      <button class="btn btn-outline-secondary me-2" (click)="modalRef?.hide()">
+        Close
+      </button>
+    </div>
+    <!-- <div class="">
+    <button
+      type="button"
+      class="btn btn-primary"
+      id="confirmCommentChange"
+      (click)="updateComment()"
+    >
+      Confirm
+    </button>
+  </div> -->
+  </div>
+</ng-template>
+<ng-template #toggleRollTemplate>
+  <th *ngFor="let item of columns">
+    <ng-container
+      *ngIf="item.key == 'rollAssignedInSY' || item.key == 'rollAssignedInSF'"
+    >
+      <div class="solution-table-column-switch d-flex align-item-center mx-2">
+        <p class="mx-2 my-0">SqYd</p>
+        <label class="switch">
+          <input
+            type="checkbox"
+            [(ngModel)]="toggleLengthColumn"
+            [checked]="toggleLengthColumn"
+            (change)="handleColumnToggle(toggleLengthColumn)"
+          />
+          <span class="slider round"></span>
+        </label>
+        <p class="mx-2 my-0">SqFt</p>
+      </div>
+    </ng-container>
+  </th>
+</ng-template>

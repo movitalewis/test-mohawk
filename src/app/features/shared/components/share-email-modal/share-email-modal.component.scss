@@ -1,0 +1,99 @@
+@import "src/styles/colors";
+@import "src/styles/mixins/breakpoints";
+@import 'src/styles/mixins/box-shadow.mixin';
+
+.p-50{
+    padding: 0 30px;
+    @include breakpoint-range($max: sm) {
+        padding: 0 10px;
+    }
+}
+.fs-12{
+    font-size: 12px;
+}
+.btn{
+    margin: 0 10px;
+    @include breakpoint-range($max: xs) {
+        margin: 0 10px;
+    }
+}
+
+.suggestions {
+    position: relative;
+
+    .dropdown-menu {
+      top: 100%;
+      left: 0;
+      display: block;
+      width: 100%;
+      max-height: 150px;
+      overflow-y: auto;
+      padding: 0px;
+
+      .dropdown-item {
+        padding: 5px 12px;
+        cursor: pointer;
+
+        .name {
+          font-weight: bold;
+          // margin-bottom: 4px;
+          font-size: 14px;
+        }
+
+        .email {
+          color: #6c757d;
+          font-size: 14px;
+        }
+
+        &:hover {
+          background-color: #ce0e2d;
+          color: #fff;
+
+          .email {
+            color: #fff;
+          }
+        }
+      }
+
+      .dropdown-item-error {
+        padding: 4px 12px;
+
+        .error {
+          color: #ce0e2d;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+.sender-email-suggestions{
+    position: relative;
+    textarea{
+      padding-right: 39px;
+    }
+    ::ng-deep{
+      typeahead-container{
+        width: 97.2%;
+        .dropdown-item{
+          &:active{
+            color: inherit !important;
+            background-color: #e9ecef !important;
+          }
+          &.active{
+            color: inherit !important;
+            background-color: #e9ecef !important;
+          }
+        }
+      }
+    }
+    button{
+        position: absolute;
+        background: transparent;
+        border: none;
+        top: 8px;
+        right: 6px;
+        img{
+            height: 8px;
+        }
+    }
+  }

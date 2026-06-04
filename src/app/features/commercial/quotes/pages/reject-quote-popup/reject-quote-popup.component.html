@@ -1,0 +1,40 @@
+<!-- <app-loader [fullScreen]="true" *ngIf="spinnerLoading"></app-loader> -->
+<div class="modal-header text-center">
+  <h4 class="modal-title w-100">Reject Quote</h4>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="onHideModal()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="text-center">
+    <div class="col-12 mt-2 mb-2">
+      <h4 class="text-start">
+        Comments* <span class="text-black-50">Req.</span>
+      </h4>
+      <textarea
+        type="textarea"
+        placeholder="Type reason for cancellation"
+        class="form-control w-100 mb-2"
+        (input)="onComment($event)"
+      ></textarea>
+      <app-alerts
+      [alertData]="alertData"
+      [alertType]="alertType"
+      *ngIf="alertTrigger"
+    ></app-alerts>
+    </div>
+  </div>
+  <div class="row mt-4 mb-4 pt-0">
+    <div class="col-12 col-md-6">
+      <button class="btn btn-outline-secondary my-2" (click)="onHideModal()">CANCEL</button>
+    </div>    
+    <div class="col-12 col-md-6">
+      <button class="btn btn-primary my-2" [disabled]="isDisabled" (click)="rejectQuote()">Rejecting Pricing</button>
+    </div>
+  </div>
+</div>

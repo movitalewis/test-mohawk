@@ -1,0 +1,93 @@
+@import "src/styles/mixins/box-shadow.mixin";
+@import 'src/styles/mixins/breakpoints';
+.card-icon {
+    width: 75px;
+    height: 75px;
+    margin: 10px 25px 20px 25px !important;
+}
+.clr-red {
+    color: #{$color-red};
+}
+
+.down-icon {
+  transform: rotate(-90deg);
+  display: inline-flex;
+  font-size: 0.625rem;
+  margin-left: 0.313rem;
+  color: $color-red;
+}
+.up-icon {
+  transform: rotate(-270deg);
+  display: inline-flex;
+  font-size: 0.625rem;
+  margin-left: 0.625rem;
+  color: $color-red;
+}
+.btn.btn1{
+  text-decoration: none;
+  text-transform: capitalize;
+  border: none !important;
+  padding-top: 0.75rem;
+  margin: auto;
+  min-width: 45px;
+}
+
+  .info-header{
+    background-color: #f4f4f4;
+    div{
+      .status-complete{
+              color: green;
+              padding: 0px 16px;
+              background-color: #d6ffd6;
+      }
+      .status-incomplete{
+        color: rgb(128, 0, 0);
+        padding: 0px 16px;
+        background-color: #ffd6d6;
+      }
+      .btn1{
+        h6{
+          span{
+            font-size: 20px;
+          }
+        }
+      }
+    }
+  }
+
+   .acco-content{
+    padding: 10px 0px;
+  }
+  
+.invoice-list-card {
+  .card-header {
+    padding: 0px 15px 0px 10px;
+    .column {
+      padding: 10px;
+      &:first-child {
+        background: #202020;
+        border-radius: 5px 0 0 0px;
+        p,
+        h4 {
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+  .disabled-input {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+  
+.err-msg> span{
+  color: $color-red;
+  font-size: 14px;
+  line-height: 16px;    
+  font-weight: 600;
+  margin: 4px;
+}
+.h2-title{
+  line-height: 45px;
+}

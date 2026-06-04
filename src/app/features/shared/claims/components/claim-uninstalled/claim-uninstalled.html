@@ -1,0 +1,149 @@
+<form [formGroup]="newClaimForm">
+  <div class="col-md-12 mb-2">
+    <div>* = Required input</div>
+  </div>
+  <div class="col-md-12 mb-3" *ngIf="newClaimForm.getRawValue().productInstalled == false">
+    <h4>Reason for Claim*</h4>
+    <textarea maxlength="1000" formControlName="reasonForClaimNotes" id="reasonForClaimNotes#" class="form-control"
+      [class.is-invalid]="
+                    newClaimForm.controls['reasonForClaimNotes'].touched ==
+                      true &&
+                    !newClaimForm.controls['reasonForClaimNotes'].valid
+                  " (input)="updateCompleteUninstallInfo()"></textarea>
+    <div class="invalid-feedback">
+      Please enter a valid Reason
+    </div>
+  </div>
+  <div class="col-md-4 mb-3" *ngIf="newClaimForm.getRawValue().productInstalled == false">
+    <h4>Suggested Resolution *</h4>
+    <ng-select placeholder="Please Select" formControlName="suggestedResolution" id="suggestedResolution"
+      [class.errorBorder]="
+                    !newClaimForm.controls['suggestedResolution'].valid &&
+                    newClaimForm.controls['suggestedResolution'].touched
+                  " [class.is-invalid]="
+                    !newClaimForm.controls['suggestedResolution'].valid &&
+                    newClaimForm.controls['suggestedResolution'].touched
+                  " (change)="
+                     updateCompleteUninstallInfo()
+                  ">
+      <ng-option value="FULL_REPLACEMENT">Full replacement</ng-option>
+      <ng-option value="PARTIAL_REPLACEMENT">Partial replacement</ng-option>
+      <ng-option value="ATK">ATK (Allowance to keep)</ng-option>
+      <ng-option value="STK">STK (Service to keep)</ng-option>
+      <ng-option value="RETURN">Return</ng-option>
+    </ng-select>
+    <div class="invalid-feedback">
+      Please select option
+    </div>
+  </div>
+  <div formArrayName="invoiceLines">
+
+    <ng-container *ngFor="let item of invoiceLines?.controls; let a = index">
+      <div class="card invoice-list-card checkout-card mt-2 mb-3" [formGroupName]="a" id="{{'invoiceLine-' + a}}">
+        <div class="card-header checkout-card-header">
+          <div class="row">
+            <div class="col-12 col-sm-12">
+              <div class="row">
+                <div class="col-sm-2 column">
+                  <h4 class="d-inline">Invoice Line</h4>
+                  <p class="mb-0">
+                    {{ getInvoiceLineFormGroup(a)?.get('line')?.value.invoiceSeq }}
+                  </p>
+                </div>
+                <div class="col-sm-2 column">
+                  <h4 class="d-inline">Type</h4>
+                  <p class="mb-0">
+                    {{ getInvoiceLineFormGroup(a)?.get('line')?.value.component }}
+                  </p>
+                </div>
+                <div class="col-sm-3 column">
+                  <h4 class="d-inline">Style / Desc</h4>
+                  <p class="mb-0">
+                    {{ getInvoiceLineFormGroup(a)?.get('line')?.value.styleName }}
+                  </p>
+                </div>
+                <div class="col-sm-2 column">
+                  <h4 class="d-inline">Color #/Desc</h4>
+                  <p class="mb-0">
+                    {{ getInvoiceLineFormGroup(a)?.get('line')?.value.colorName }}
+                  </p>
+                </div>
+                <div class="col-sm-2 column">
+                  <h4 class="d-inline">Invoice Qty</h4>
+                  <p class="mb-0">
+                    {{ getInvoiceLineFormGroup(a)?.get('line')?.value.shipQuantity }} ({{
+                    getInvoiceLineFormGroup(a)?.get('line')?.value.uomDesc }})
+                  </p>
+                </div>
+                <div class="col-sm-1 d-flex">
+                  <button class="btn btn1 text-center"
+                    (click)="showAccordion(getInvoiceLineFormGroup(a)?.get('line')?.value)"
+                    [attr.aria-expanded]="!getInvoiceLineFormGroup(a)?.get('line')?.value.isOpen"
+                    aria-controls="collapseBasic-{{a}}">
+                    <h6 *ngIf="getInvoiceLineFormGroup(a)?.get('line')?.value.isOpen"
+                      class="d-flex justify-content-center">
+                      <span class="mohawak-icon angle-left-icon up-icon"></span>
+                    </h6>
+                    <h6 *ngIf="!getInvoiceLineFormGroup(a)?.get('line')?.value.isOpen"
+                      class="d-flex justify-content-center">
+                      <span class="mohawak-icon angle-left-icon down-icon"></span>
+                    </h6>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="" id="collapseBasic-{{a}}" [collapse]="!getInvoiceLineFormGroup(a)?.get('line')?.value.isOpen"
+          [isAnimated]="true">
+          <div class="row card-body">
+            <div class="col-md-4 mb-2 mt-3">
+              <h4>Amount of Product affected *</h4>
+              <ng-select placeholder="Please Select" (change)="
+                                onAffectedQuantityChange(getInvoiceLineFormGroup(a)?.get('line')?.value, a);
+                                updateAmountofProduct($event, getInvoiceLineFormGroup(a)?.get('line')?.value);
+                                updateCompleteUninstallInfo()
+                              " [class.errorBorder]="
+                                getInvoiceLineFormGroup(a)?.get('affectedQuantity')?.touched &&
+                                getInvoiceLineFormGroup(a)?.get('affectedQuantity')?.invalid
+                              " [class.is-invalid]="
+                                getInvoiceLineFormGroup(a)?.get('affectedQuantity')?.touched &&
+                                getInvoiceLineFormGroup(a)?.get('affectedQuantity')?.invalid
+                              " [attr.id]="'affectedQuantity-line-' + a " formControlName="affectedQuantity"
+                [class.disabled-input]="disabledMyAcc">
+                <ng-option value="All">All</ng-option>
+                <ng-option value="Partial">Partial</ng-option>
+              </ng-select>
+              <!-- [disabled]="disabledMyAcc" -->
+
+              <div class="invalid-feedback">
+                Please select option
+              </div>
+            </div>
+            <div class="col-md-4 mb-2 mt-3"
+              *ngIf="getInvoiceLineFormGroup(a)?.get('line')?.value.affectedQuantity == 'Partial'">
+              <h4>Quantity Effected * ({{ getInvoiceLineFormGroup(a)?.get('line')?.value?.uomDesc }})</h4>
+              <input max="{{ getInvoiceLineFormGroup(a)?.get('line')?.value?.shipQuantity }}" (keypress)="
+                                quantityKey(
+                                  $event,
+                                  getInvoiceLineFormGroup(a)?.get('line')?.value?.shipQuantity,
+                                  getInvoiceLineFormGroup(a)?.get('line')?.value?.uom
+                                )" type="number" placeholder="Type Numbers Here" class="form-control" (input)="onQuantityChange(getInvoiceLineFormGroup(a)?.get('line')?.value, a, 'amountProductAffected', $event);
+                                updateCompleteUninstallInfo()
+                              " [class.errorBorder]="
+                                getInvoiceLineFormGroup(a)?.get('amountProductAffected')?.touched &&
+                                getInvoiceLineFormGroup(a)?.get('amountProductAffected')?.invalid
+                              " [class.is-invalid]="
+                                getInvoiceLineFormGroup(a)?.get('amountProductAffected')?.touched &&
+                                getInvoiceLineFormGroup(a)?.get('amountProductAffected')?.invalid
+                              " formControlName="amountProductAffected" id="{{ 'amountProductAffected-' + a}}"
+                [class.disabled-input]="disabledMyAcc" />
+              <!-- [disabled]="disabledMyAcc" -->
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</form>

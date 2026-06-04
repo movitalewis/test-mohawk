@@ -1,0 +1,21 @@
+<div class="xchange-checkbox">
+  <input
+    [type]="type"
+    class="xchange-checkbox-input"
+    [id]="id"
+    [value]="value"
+    [name]="name"
+    [disabled]="disabled"
+    [checked]="checked"
+    ngModel
+    (ngModelChange)="onControlChange($event)"
+  />
+  <label
+    class="xchange-checkbox-label"
+    [ngClass]="{ 'right-control': rtl, checkdisable: disabled }"
+    [for]="id"
+    [class.isInvalid]="isInvalid"
+  >
+    {{ label }}
+  </label>
+</div>

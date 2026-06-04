@@ -1,0 +1,288 @@
+<app-loader *ngIf="spinnerLoading"></app-loader>
+<div class="container" #scrollToTop>
+    <xchange-breadcrumb [breadcrumbItems]="breadcrumbItems"></xchange-breadcrumb>
+    <h2 class="text-center mb-4">Entitlement Manager</h2>
+    <div class="mb-3">
+        <app-alerts
+        [alertData]="alertData"
+        *ngIf="alertData?.showAlert"
+        [alertType]="alertData.type"
+    ></app-alerts> 
+    </div>
+   <div class="_card-container">
+      <form #searchForm="ngForm">
+        <div class="row">
+          <div class="col-md-3 col-sm-6 col-xs-6 search-mob-width">
+            <h4>Selling Group (Brand)</h4>
+            <ng-select
+              placeholder="Selling Group (Brand)"
+              class="mb-3"
+              name="SG"
+              (change)="onFilterChange($event, 'SG')"
+              [ngModel] = "filterPayload.filterBy == 'SG' ? filterPayload.filterValue : undefined"
+              (ngModelChange) = "filterPayload.filterBy == 'SG' ? filterPayload.filterValue : 'undefined'"
+            >
+              <ng-option [value]="item" *ngFor="let item of filtersData?.brands">{{ item }}</ng-option>
+            </ng-select>
+          </div>
+
+          <div class="col-md-3 col-sm-6 col-xs-6 search-mob-width">
+            <h4>Sub Product Type</h4>
+            <ng-select
+              placeholder="Sub Product Type"
+              class="mb-3"
+              name="SP"
+              (change)="onFilterChange($event, 'SP')"
+              [ngModel] = "filterPayload.filterBy == 'SP' ? filterPayload.filterValue : undefined"
+              (ngModelChange) = "filterPayload.filterBy == 'SP' ? filterPayload.filterValue : 'undefined'"
+            >
+              <ng-option [value]="item" *ngFor="let item of filtersData?.subProductType">{{ item }}</ng-option>
+            </ng-select>
+          </div>
+  
+          <div class="col-md-3 col-sm-6 col-xs-6 search-mob-width">
+            <h4>Product Class</h4>
+            <ng-select
+              name="PC"
+              placeholder="Product Class"
+              class="mb-3"
+              (change)="onFilterChange($event, 'PC')"
+              [ngModel] = "filterPayload.filterBy == 'PC' ? filterPayload.filterValue : undefined"
+              (ngModelChange) = "filterPayload.filterBy == 'PC' ? filterPayload.filterValue : 'undefined'"
+            >
+              <ng-option [value]="item" *ngFor="let item of filtersData?.productClass">{{ item }}</ng-option>
+            </ng-select>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-6 search-mob-width">
+            <h4>Product Line</h4>
+            <ng-select
+              placeholder="Product Line"
+              class="mb-3"
+              name="PL"
+              (change)="onFilterChange($event, 'PL')"
+              [ngModel] = "filterPayload.filterBy == 'PL' ? filterPayload.filterValue : undefined"
+              (ngModelChange) = "filterPayload.filterBy == 'PL' ? filterPayload.filterValue : 'undefined'"
+            >
+              <ng-option [value]="item" *ngFor="let item of filtersData?.productLine">{{ item }}</ng-option>
+            </ng-select>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-6 search-mob-width">
+            <h4>Collection</h4>
+            <ng-select
+              placeholder="Collection"
+              class="mb-3"
+              name="C"
+              (change)="onFilterChange($event, 'C')"
+              [ngModel] = "filterPayload.filterBy == 'C' ? filterPayload.filterValue : undefined"
+              (ngModelChange) = "filterPayload.filterBy == 'C' ? filterPayload.filterValue : 'undefined'"
+            >
+              <ng-option [value]="item" *ngFor="let item of filtersData?.collection">{{ item }}</ng-option>
+            </ng-select>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-6 search-mob-width">
+            <h4>Display</h4>
+            <ng-select
+              name="D"
+              placeholder="Display"
+              class="mb-3"
+              (change)="onFilterChange($event, 'D')"
+              [ngModel] = "filterPayload.filterBy == 'D' ? filterPayload.filterValue : undefined"
+              (ngModelChange) = "filterPayload.filterBy == 'D' ? filterPayload.filterValue : 'undefined'"
+            >
+              <ng-option [value]="item" *ngFor="let item of filtersData?.display">{{ item }}</ng-option>
+            </ng-select>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-6 search-mob-width">
+            <h4>Entitled Y/N</h4>
+            <ng-select
+              placeholder="Entitle Y/N"
+              class="mb-3"
+              name="entitled"
+              (change)="onFilterChange($event, 'entitled')"
+              [ngModel] = "filterPayload.filterBy == 'styleBlocked' ? filterPayload.filterValue : undefined"
+              (ngModelChange) = "filterPayload.filterBy == 'styleBlocked' ? filterPayload.filterValue : 'undefined'"
+            >
+              <ng-option [value]="item" *ngFor="let item of styleBlocked">{{ item }}</ng-option>
+            </ng-select>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-6 search-mob-width">
+            <div class="search-section">
+              <h4>Styles</h4>
+              <xchange-search-control
+                placeholder="Styles"
+                [isGlobalSearchEnabled]="false"
+                [searchByIcon]="true"
+                [searchKey] = "payload.style"
+                (sendValue)="getsearchStyles($event)"
+                (change)="onChange($event)"
+                (keyup)="onChange($event)"
+              ></xchange-search-control>
+             <div class="mx-search-suggestions" *ngIf="showStyles">
+              <ng-container *ngIf="filteredStyles?.length > 0; else noStylesFound">
+                <span *ngFor="let item of filteredStyles">
+                  <ul>
+                    <a (click)="setStyleValue(item)">
+                      {{ item }}
+                    </a>
+                  </ul>
+                </span>
+              </ng-container>
+              <ng-template #noStylesFound>
+                <div class="no-styles">No styles found</div>
+              </ng-template>
+            </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 d-flex justify-content-first mb-2">
+            <button
+              class="btn btn-primary"
+              (click)="updateEntitlement('B', '')"
+              [disabled]="!selectedRows.length || !showBlockedBtn"
+              *ngIf="!(isSalesOps && uid == 'EMPTY_B2BUNIT')"
+              
+            >
+              Block 
+            </button>
+            <button
+              class="btn btn-primary ml-15"
+              (click)="updateEntitlement('B', 'all')"
+              [disabled]="!selectedRows.length || !showBlockedBtn"
+              *ngIf="isSalesOps"
+            >
+              BLOCK ALL CUSTOMERS
+            </button>
+            <button
+              class="btn btn-primary ml-15"
+              (click)="updateEntitlement('U', '')"
+              [disabled]="!selectedRows.length || !showUnBlockedBtn"
+              *ngIf="!(isSalesOps && uid == 'EMPTY_B2BUNIT')"
+            >
+              UnBlock
+            </button>
+            <button
+              class="btn btn-primary ml-15"
+              (click)="updateEntitlement('U', 'all')"
+              [disabled]="!selectedRows.length || !showUnBlockedBtn"
+              *ngIf="isSalesOps"
+            >
+              UNBLOCK ALL CUSTOMERS
+            </button>
+          </div>
+        </div>
+      </form>
+  
+      <div class="col-12 mt-4">
+        <ngx-table
+          [configuration]="configuration"
+          [columns]="columns"
+          [data]="
+            productsData
+              | paginate
+                : {
+                    itemsPerPage: tableItemsSize,
+                    currentPage: pageIndex,
+                    id: 'productsPagination',
+                    totalItems: productsDataLength
+                  }
+          "
+          [selectAllTemplate]="selectAllTemplate2"
+          (event)="tableEventEmitted($event)"
+        >
+          <ng-template let-row>
+            <td>
+                <label class="ngx-form-checkbox">
+                  <input type="checkbox" [(ngModel)]="row.isSelected" (ngModelChange)="onCheckboxSeleted(row)" />
+                  <i class="ngx-form-icon custom-checkbox-color"></i>
+                </label>
+                <!-- <label class="ngx-form-checkbox">
+                  <input type="checkbox" 
+                  [checked]=""
+                  (change)="onCheckboxSeleted(row)" />
+                  <i class="ngx-form-icon custom-checkbox-color"></i>
+                </label> -->
+            </td>
+            <td>
+              {{ row?.styleId }}
+            </td>
+            <td>
+              {{ row?.styleName | uppercase }}
+            </td>
+            <td>
+              {{ row?.brand }}
+            </td>
+            <td>
+              {{ row?.productClass }}
+            </td>
+            <td>
+              {{ row?.productLine }}
+            </td>
+            <td>
+              {{ row?.collection }}
+            </td>
+             <td>
+              {{ row?.styleBlocked == false ? 'YES' : 'NO'}}
+            </td>
+            <!--<td>
+              {{ row?.styleBlocked == false ? 'UnBlock' : 'Block'}}
+                 <button
+                  class="btn-status"
+                  href="javascript:void(0)"
+                  (click)="updateCustEntitlement(row, row?.styleBlocked == false ? 'B' : 'U','')"
+                >
+                {{ row?.styleBlocked == false ? 'Block' : 'UnBlock'}}</button>
+                <button
+                  class="btn-status btn-status-secondary"
+                  href="javascript:void(0)"
+                  (click)="updateCustEntitlement(row, row?.styleBlocked == false ? 'B' : 'U','all')"
+                >
+                {{ row?.styleBlocked == false ? 'Block All' : 'UnBlock All'}}</button>
+            </td> -->
+          </ng-template>
+        </ngx-table>
+      </div>
+    </div>
+    <div class="row mb-4 mt-4" *ngIf="productsDataLength > 1">
+      <div class="col-md-7 d-flex justify-content-end">
+        <pagination-controls
+          id="productsPagination"
+          [maxSize]="5"
+          [responsive]="true"
+          [nextLabel]="''"
+          [previousLabel]="''"
+          (pageChange)="onTableDataChange($event)"
+        >
+        </pagination-controls>
+      </div>
+      <div class="page-size-container col-md-5 text-end">
+        <label for="pageSize" class="page-size-label">Records per page</label>
+        <select
+          id="pageSize"
+          class="page-size-dropdown"
+          [ngModel]="tableItemsSize"
+          (change)="onPageSizeChange($event.target)"
+        >
+          <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+        </select>
+      </div>
+      
+      <!-- <div class="page-size-container col-xs-1">
+        <label for="pageSize" class="page-size-label">Records per page</label>
+        <select id="pageSize"  class="page-size-dropdown" (change)="onPageSizeChange($event)">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div> -->
+    </div>
+  </div>
+
+  <ng-template #selectAllTemplate2 let-changeEvent>
+    <label class="ngx-form-checkbox">
+      <input type="checkbox" [checked]="allSelected" [(ngModel)]="allSelected" (change)="changeEvent()" />
+      <i class="ngx-form-icon custom-checkbox-color" id="selectAllCheckbox2"></i>
+    </label>
+  </ng-template>

@@ -54,3 +54,32 @@ npm run start-local
 ---
 For more details, see the scripts in `package.json` and project documentation.
 
+
+
+### https://dev-alpha.mohawkxchange.com
+```sh
+branch: develop
+CX API endpoint: d1
+Angular Version: 21.0.0
+```
+
+### https://staging-alpha.mohawkxchange.com
+```sh
+branch: staging-becon
+CX API endpoint: s2
+Angular Version: 14.x
+```
+
+### https://qa-alpha.mohawkxchange.com
+```sh
+branch: staging-becon-w2
+CX API endpoint: s1
+Angular Version: 14.x
+```
+
+### https://www.mohawkxchange.com
+```sh
+branch: master-crest
+CX API endpoint: p1
+Angular Version: 14.x
+```
