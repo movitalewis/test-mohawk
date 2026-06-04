@@ -24,7 +24,9 @@
     "serve:ssr": "node dist/mohawk-xchange/server/main.js",
     "prerender": "ng run mohawk-xchange:prerender",
     "prepare": "husky install",
-    "gzipcompress": "gulp compress"
+    "gzipcompress": "gulp compress",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "private": true,
   "dependencies": {
@@ -40,11 +42,11 @@
     "@angular/platform-server": "^21.0.0",
     "@angular/router": "^21.0.0",
     "@angular/service-worker": "^21.0.0",
+    "@angular/ssr": "^21.0.0",
     "@fortawesome/angular-fontawesome": "^4.0.0",
     "@fortawesome/fontawesome-svg-core": "^6.1.2",
     "@fortawesome/free-solid-svg-icons": "^6.1.2",
     "@ng-select/ng-select": "^21.0.0",
-    "@angular/ssr": "^21.0.0",
     "@solidexpert/ng-sidebar": "^20.0.0",
     "agent-base": "^7.1.4",
     "bootstrap": "^5.2.0",
@@ -74,6 +76,7 @@
     "@angular-devkit/schematics": "^21.0.0",
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
+    "@cypress/schematic": "^5.0.0",
     "@schematics/angular": "^21.0.0",
     "@types/file-saver": "^2.0.5",
     "@types/jasmine": "~4.0.0",
@@ -86,7 +89,8 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
-    "typescript": "~5.9.0"
+    "typescript": "~5.9.0",
+    "cypress": "15.16.0"
   },
   "husky": {
     "hooks": {
